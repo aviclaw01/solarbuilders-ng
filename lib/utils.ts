@@ -1,11 +1,5 @@
-import { type ClassValue, clsx } from "clsx";
-
-export function cn(...inputs: ClassValue[]) {
-  // Minimal className utility without clsx dependency
-  return inputs
-    .flat()
-    .filter(Boolean)
-    .join(" ");
+export function cn(...inputs: (string | undefined | null | false)[]): string {
+  return inputs.filter(Boolean).join(" ");
 }
 
 export function slugify(text: string): string {
