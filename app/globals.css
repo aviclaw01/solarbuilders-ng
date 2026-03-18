@@ -1,26 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --color-primary: #F59E0B;
-  --color-primary-dark: #D97706;
-  --color-navy: #0F172A;
-  --color-navy-mid: #1E293B;
-  --color-bg: #FAFAF7;
-  --color-surface: #FFFFFF;
-  --color-verified: #10B981;
-  --color-whatsapp: #25D366;
-  --color-text: #0F172A;
-  --color-text-muted: #64748B;
-  --color-error: #EF4444;
+@theme {
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --color-navy: #0A0F1E;
+  --color-amber: #F59E0B;
+  --color-amber-light: #FEF3C7;
+  --color-surface: #F8FAFC;
   --color-border: #E2E8F0;
+  --color-whatsapp: #25D366;
+  --color-verified: #059669;
+}
+
+:root {
+  --navy: #0A0F1E;
+  --amber: #F59E0B;
+  --amber-light: #FEF3C7;
+  --white: #FFFFFF;
+  --surface: #F8FAFC;
+  --border: #E2E8F0;
+  --text-primary: #0A0F1E;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --whatsapp: #25D366;
+  --verified: #059669;
 }
 
 body {
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: #FFFFFF;
+  color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -35,6 +46,49 @@ html {
   scroll-behavior: smooth;
 }
 
+.font-heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Social proof ticker animation */
+@keyframes ticker {
+  0% { opacity: 0; transform: translateY(8px); }
+  10% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+.ticker-item {
+  animation: ticker 3s ease-in-out infinite;
+}
+
+.ticker-item:nth-child(1) { animation-delay: 0s; }
+.ticker-item:nth-child(2) { animation-delay: 3s; }
+.ticker-item:nth-child(3) { animation-delay: 6s; }
+
+/* Bar chart animation */
+@keyframes growUp {
+  from { height: 0; }
+  to { height: var(--target-height); }
+}
+
+.bar-animate {
+  animation: growUp 1s ease-out forwards;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes shimmer {
   0% { background-position: -200px 0; }
   100% { background-position: calc(200px + 100%) 0; }
@@ -44,20 +98,4 @@ html {
   background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
-}
-
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-count-up {
-  animation: countUp 150ms ease-out;
 }

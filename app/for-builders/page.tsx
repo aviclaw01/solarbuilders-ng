@@ -131,18 +131,18 @@ export default function ForBuildersPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#FAFAF7]">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="max-w-lg mx-auto px-4 py-16 text-center">
           <div className="text-6xl mb-6">⚡</div>
-          <h1 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-3xl font-extrabold text-[#0F172A] mb-4">
+          <h1 className="font-heading text-3xl font-extrabold text-[#0A0F1E] mb-4">
             You&apos;re on your way!
           </h1>
           <p className="text-[#64748B] text-lg mb-8 leading-relaxed">
             Your profile is under review. We&apos;ll call your references and WhatsApp you within 48 hours.
           </p>
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6 text-left">
-            <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] mb-3">While you wait:</h3>
+          <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 text-left">
+            <h3 className="font-heading font-bold text-[#0A0F1E] mb-3">While you wait:</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-[#64748B] text-sm">
                 <CheckCircle className="w-4 h-4 text-[#10B981]" />
@@ -162,8 +162,7 @@ export default function ForBuildersPage() {
             href={`https://wa.me/?text=${encodeURIComponent('I just listed my solar business on SolarBuilders.ng! Check out Nigeria\'s verified solar marketplace: https://solarbuilders.ng')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full bg-[#25D366] text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#22c55e] transition-colors"
-            style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+            className="font-heading w-full bg-[#25D366] text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#22c55e] transition-colors"
           >
             💬 Share on WhatsApp
           </a>
@@ -175,13 +174,13 @@ export default function ForBuildersPage() {
 
   if (activeSection === 'signup') {
     return (
-      <div className="min-h-screen bg-[#FAFAF7]">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="max-w-xl mx-auto px-4 py-8">
           {/* Progress */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-2">
-              <span style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-semibold text-[#0F172A]">
+              <span className="font-heading font-semibold text-[#0A0F1E]">
                 Step {step} of 3: {step === 1 ? 'Your Business' : step === 2 ? 'Your Services' : 'Photos & Verification'}
               </span>
               <span className="text-[#64748B] text-sm">{Math.round((step / 3) * 100)}%</span>
@@ -194,7 +193,7 @@ export default function ForBuildersPage() {
           {/* Bolt chip */}
           <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 flex items-start gap-3">
             <span className="text-2xl">⚡</span>
-            <p className="text-[#0F172A] text-sm">
+            <p className="text-[#0A0F1E] text-sm">
               {step === 1 && "Let's set up your profile. We'll have you live in under 5 minutes."}
               {step === 2 && "What do you actually do? Select everything that applies."}
               {step === 3 && "Photos get you 3× more enquiries. No stock images — real job site photos only."}
@@ -205,33 +204,33 @@ export default function ForBuildersPage() {
           {step === 1 && (
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-2">Business name *</label>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">Business name *</label>
                 <input
                   type="text"
                   value={formData.businessName}
                   onChange={e => updateForm('businessName', e.target.value)}
                   placeholder="SunPower Installations"
-                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-2">WhatsApp number *</label>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">WhatsApp number *</label>
                 <input
                   type="tel"
                   value={formData.whatsapp}
                   onChange={e => updateForm('whatsapp', e.target.value)}
                   placeholder="+234 803 000 0000"
-                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-2">State *</label>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">State *</label>
                 <select
                   value={formData.state}
                   onChange={e => updateForm('state', e.target.value)}
-                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0F172A] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] focus:outline-none focus:border-[#F59E0B] transition-colors"
                 >
                   <option value="">Select your state</option>
                   {NIGERIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -239,7 +238,7 @@ export default function ForBuildersPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-2">Years in business *</label>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">Years in business *</label>
                 <div className="space-y-2">
                   {['Less than 1 year', '1–3 years', '3–5 years', '5+ years'].map(opt => (
                     <label key={opt} className="flex items-center gap-2 cursor-pointer">
@@ -251,7 +250,7 @@ export default function ForBuildersPage() {
                         onChange={e => updateForm('yearsInBusiness', e.target.value)}
                         className="accent-[#F59E0B] w-4 h-4"
                       />
-                      <span className="text-[#0F172A]">{opt}</span>
+                      <span className="text-[#0A0F1E]">{opt}</span>
                     </label>
                   ))}
                 </div>
@@ -263,7 +262,7 @@ export default function ForBuildersPage() {
           {step === 2 && (
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-3">What do you offer? *</label>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-3">What do you offer? *</label>
                 <div className="grid grid-cols-2 gap-3">
                   {SERVICE_TYPES.map(service => (
                     <button
@@ -276,14 +275,14 @@ export default function ForBuildersPage() {
                       }`}
                     >
                       <div className="text-2xl mb-2">{service.emoji}</div>
-                      <p style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-semibold text-[#0F172A] text-sm">{service.label}</p>
+                      <p className="font-heading font-semibold text-[#0A0F1E] text-sm">{service.label}</p>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-3">System sizes you handle *</label>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-3">System sizes you handle *</label>
                 <div className="flex flex-wrap gap-2">
                   {SYSTEM_SIZES.map(size => (
                     <button
@@ -291,8 +290,8 @@ export default function ForBuildersPage() {
                       onClick={() => toggleSize(size)}
                       className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
                         formData.systemSizes.includes(size)
-                          ? 'bg-[#0F172A] text-white border-[#0F172A]'
-                          : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#0F172A]'
+                          ? 'bg-[#0A0F1E] text-white border-[#0A0F1E]'
+                          : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#0A0F1E]'
                       }`}
                     >
                       {size}
@@ -302,7 +301,7 @@ export default function ForBuildersPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-1">
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-1">
                   Starting price for a 5kVA system (optional)
                 </label>
                 <p className="text-[#F59E0B] text-xs mb-2">Listings with prices get 2× more enquiries</p>
@@ -313,20 +312,20 @@ export default function ForBuildersPage() {
                     value={formData.startingPrice}
                     onChange={e => updateForm('startingPrice', e.target.value)}
                     placeholder="680000"
-                    className="w-full bg-white border border-[#E2E8F0] rounded-lg pl-8 pr-4 py-3 text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                    className="w-full bg-white border border-[#E2E8F0] rounded-lg pl-8 pr-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#0F172A] mb-1">Brief description (optional)</label>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-1">Brief description (optional)</label>
                 <textarea
                   value={formData.bio}
                   onChange={e => updateForm('bio', e.target.value)}
                   placeholder="Lagos-based installer since 2019. 47 completed projects."
                   rows={3}
                   maxLength={150}
-                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors resize-none"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors resize-none"
                 />
                 <p className="text-[#94A3B8] text-xs text-right">{formData.bio.length}/150</p>
               </div>
@@ -347,20 +346,20 @@ export default function ForBuildersPage() {
                     { label: 'Reference 2 *', nameKey: 'ref2Name', phoneKey: 'ref2Phone' },
                   ].map((ref) => (
                     <div key={ref.label} className="bg-white rounded-xl p-4 border border-[#E2E8F0]">
-                      <p className="font-semibold text-[#0F172A] mb-3">{ref.label}</p>
+                      <p className="font-semibold text-[#0A0F1E] mb-3">{ref.label}</p>
                       <input
                         type="text"
                         placeholder="Customer name"
                         value={formData[ref.nameKey as keyof FormData] as string}
                         onChange={e => updateForm(ref.nameKey as keyof FormData, e.target.value)}
-                        className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] mb-3 transition-colors"
+                        className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] mb-3 transition-colors"
                       />
                       <input
                         type="tel"
                         placeholder="+234 803 000 0000"
                         value={formData[ref.phoneKey as keyof FormData] as string}
                         onChange={e => updateForm(ref.phoneKey as keyof FormData, e.target.value)}
-                        className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                        className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
                       />
                     </div>
                   ))}
@@ -378,7 +377,7 @@ export default function ForBuildersPage() {
             {step > 1 && (
               <button
                 onClick={() => setStep(step - 1)}
-                className="flex items-center gap-2 text-[#64748B] hover:text-[#0F172A] font-semibold py-4 px-4 transition-colors"
+                className="flex items-center gap-2 text-[#64748B] hover:text-[#0A0F1E] font-semibold py-4 px-4 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" /> Back
               </button>
@@ -390,10 +389,10 @@ export default function ForBuildersPage() {
                 disabled={step === 1 ? !step1Valid : !step2Valid}
                 className={`flex-1 py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-2 transition-colors ${
                   (step === 1 ? step1Valid : step2Valid)
-                    ? 'bg-[#F59E0B] text-[#0F172A] hover:bg-[#D97706]'
+                    ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]'
                     : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed opacity-50'
-                }`}
-                style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+                }
+              `}
               >
                 Continue <ArrowRight className="w-5 h-5" />
               </button>
@@ -403,10 +402,10 @@ export default function ForBuildersPage() {
                 disabled={!step3Valid}
                 className={`flex-1 py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-2 transition-colors ${
                   step3Valid
-                    ? 'bg-[#F59E0B] text-[#0F172A] hover:bg-[#D97706]'
+                    ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]'
                     : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed opacity-50'
-                }`}
-                style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+                }
+              `}
               >
                 Submit My Profile →
               </button>
@@ -420,13 +419,13 @@ export default function ForBuildersPage() {
 
   // Landing page
   return (
-    <div className="min-h-screen bg-[#FAFAF7]">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-[#0F172A] py-16 px-4">
+      <section className="bg-white border-b border-[#E2E8F0] py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+          <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-white mb-4">
             Get more customers for your solar business.
           </h1>
           <p className="text-[#94A3B8] text-xl mb-8 leading-relaxed">
@@ -436,8 +435,7 @@ export default function ForBuildersPage() {
           </p>
           <button
             onClick={() => setActiveSection('signup')}
-            className="inline-flex items-center gap-2 bg-[#F59E0B] text-[#0F172A] px-8 py-5 rounded-xl font-bold text-xl hover:bg-[#D97706] transition-colors"
-            style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+            className="font-heading inline-flex items-center gap-2 bg-[#F59E0B] text-[#0A0F1E] px-8 py-5 rounded-xl font-bold text-xl hover:bg-[#D97706] transition-colors"
           >
             <Zap className="w-6 h-6" fill="currentColor" />
             List Your Business — Free
@@ -449,7 +447,7 @@ export default function ForBuildersPage() {
       {/* Why list */}
       <section className="py-16 px-4">
         <div className="max-w-5xl mx-auto">
-          <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-3xl font-bold text-[#0F172A] text-center mb-12">
+          <h2 className="font-heading text-3xl font-bold text-[#0A0F1E] text-center mb-12">
             Why builders choose SolarBuilders.ng
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -472,7 +470,7 @@ export default function ForBuildersPage() {
             ].map((item) => (
               <div key={item.title} className="bg-white rounded-xl p-6 shadow-sm">
                 <div className="text-4xl mb-4">{item.emoji}</div>
-                <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] text-xl mb-2">{item.title}</h3>
+                <h3 className="font-heading font-bold text-[#0A0F1E] text-xl mb-2">{item.title}</h3>
                 <p className="text-[#64748B]">{item.desc}</p>
               </div>
             ))}
@@ -483,7 +481,7 @@ export default function ForBuildersPage() {
       {/* Pricing */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-5xl mx-auto">
-          <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-3xl font-bold text-[#0F172A] text-center mb-4">
+          <h2 className="font-heading text-3xl font-bold text-[#0A0F1E] text-center mb-4">
             Simple pricing
           </h2>
           <p className="text-center text-[#64748B] mb-12">Start free. Upgrade when the leads start flowing.</p>
@@ -494,27 +492,27 @@ export default function ForBuildersPage() {
                 key={tier.name}
                 className={`rounded-xl p-6 relative ${
                   tier.highlight
-                    ? 'bg-[#0F172A] border-2 border-[#F59E0B]'
+                    ? 'bg-[#0A0F1E] border-2 border-[#F59E0B]'
                     : 'bg-white border border-[#E2E8F0]'
                 } shadow-sm`}
               >
                 {tier.badge && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-[#0F172A] text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-[#0A0F1E] text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
                     {tier.badge}
                   </span>
                 )}
 
-                <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className={`font-bold text-xl mb-2 ${tier.highlight ? 'text-white' : 'text-[#0F172A]'}`}>
+                <h3 className={`font-heading font-bold text-xl mb-2 ${tier.highlight ? 'text-white' : 'text-[#0A0F1E]'}`}>
                   {tier.name}
                 </h3>
                 <div className="mb-6">
                   {tier.price === 0 ? (
-                    <span style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className={`text-3xl font-extrabold ${tier.highlight ? 'text-[#F59E0B]' : 'text-[#0F172A]'}`}>
+                    <span className={`font-heading text-3xl font-extrabold ${tier.highlight ? 'text-[#F59E0B]' : 'text-[#0A0F1E]'}`}>
                       Free
                     </span>
                   ) : (
                     <div>
-                      <span style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className={`text-3xl font-extrabold ${tier.highlight ? 'text-[#F59E0B]' : 'text-[#0F172A]'}`}>
+                      <span className={`font-heading text-3xl font-extrabold ${tier.highlight ? 'text-[#F59E0B]' : 'text-[#0A0F1E]'}`}>
                         ₦{tier.price.toLocaleString()}
                       </span>
                       <span className={`text-sm ml-1 ${tier.highlight ? 'text-[#94A3B8]' : 'text-[#64748B]'}`}>
@@ -537,10 +535,10 @@ export default function ForBuildersPage() {
                   onClick={() => setActiveSection('signup')}
                   className={`w-full py-3 rounded-lg font-bold text-base transition-colors ${
                     tier.highlight
-                      ? 'bg-[#F59E0B] text-[#0F172A] hover:bg-[#D97706]'
-                      : 'border-2 border-[#F59E0B] text-[#F59E0B] hover:bg-[#F59E0B] hover:text-[#0F172A]'
-                  }`}
-                  style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+                      ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]'
+                      : 'border-2 border-[#F59E0B] text-[#F59E0B] hover:bg-[#F59E0B] hover:text-[#0A0F1E]'
+                  }
+                `}
                 >
                   {tier.cta}
                 </button>
@@ -553,7 +551,7 @@ export default function ForBuildersPage() {
       {/* FAQ */}
       <section className="py-16 px-4">
         <div className="max-w-3xl mx-auto">
-          <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-2xl font-bold text-[#0F172A] mb-8">Common questions</h2>
+          <h2 className="font-heading text-2xl font-bold text-[#0A0F1E] mb-8">Common questions</h2>
           <div className="space-y-4">
             {[
               {
@@ -574,7 +572,7 @@ export default function ForBuildersPage() {
               },
             ].map(item => (
               <div key={item.q} className="bg-white rounded-xl p-5 shadow-sm">
-                <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] mb-2">{item.q}</h3>
+                <h3 className="font-heading font-bold text-[#0A0F1E] mb-2">{item.q}</h3>
                 <p className="text-[#64748B] text-sm leading-relaxed">{item.a}</p>
               </div>
             ))}
@@ -583,15 +581,14 @@ export default function ForBuildersPage() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-12 px-4 bg-[#0F172A]">
+      <section className="py-12 px-4 bg-[#0A0F1E]">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-3xl font-bold text-white mb-4">
+          <h2 className="font-heading text-3xl font-bold text-white mb-4">
             Your next customer is ready. Are you listed?
           </h2>
           <button
             onClick={() => setActiveSection('signup')}
-            className="inline-flex items-center gap-2 bg-[#F59E0B] text-[#0F172A] px-8 py-5 rounded-xl font-bold text-xl hover:bg-[#D97706] transition-colors"
-            style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+            className="font-heading inline-flex items-center gap-2 bg-[#F59E0B] text-[#0A0F1E] px-8 py-5 rounded-xl font-bold text-xl hover:bg-[#D97706] transition-colors"
           >
             List Your Business Free →
           </button>

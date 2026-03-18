@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
+import Footer from '@/components/ui/Footer';
 import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface ApplianceItem {
@@ -63,18 +64,15 @@ function calculateSystem(appliances: ApplianceItem[]) {
   const totalWatts = appliances.filter(a => a.qty > 0).reduce((sum, a) => sum + a.watts * a.qty, 0);
   const dailyKwh = (totalWatts * 6) / 1000;
   
-  // Budget: ~60% coverage
   const budgetWatts = totalWatts * 0.6;
   const budgetKva = roundUpKva(budgetWatts);
   const budgetBatteries = Math.max(2, Math.ceil((budgetWatts * 4) / (24 * 0.5 * 0.8 * 200)));
   const budgetPanels = Math.max(2, Math.ceil((dailyKwh * 0.6 * 1000) / (6 * 0.8 * 400)));
 
-  // Standard: 100% coverage + 20% headroom  
   const stdKva = roundUpKva(totalWatts * 1.2);
   const stdBatteries = Math.max(4, Math.ceil((totalWatts * 8) / (24 * 0.5 * 0.8 * 200)));
   const stdPanels = Math.max(4, Math.ceil((dailyKwh * 1000) / (6 * 0.8 * 400)));
 
-  // Premium: 150% headroom, lithium battery tier
   const premKva = roundUpKva(totalWatts * 1.5);
   const premBatteries = Math.max(6, Math.ceil((totalWatts * 12) / (24 * 0.8 * 0.8 * 200)));
   const premPanels = Math.max(6, Math.ceil((dailyKwh * 1.5 * 1000) / (6 * 0.8 * 400)));
@@ -82,42 +80,9 @@ function calculateSystem(appliances: ApplianceItem[]) {
   return {
     totalWatts,
     dailyKwh,
-    budget: {
-      label: 'Budget',
-      emoji: '💰',
-      kva: budgetKva,
-      batteries: budgetBatteries,
-      panels: budgetPanels,
-      panelWatts: 250,
-      minCost: 350000,
-      maxCost: 600000,
-      coverage: 60,
-      note: 'Covers essentials (lights, fans, fridge). Not suitable for AC.',
-    },
-    standard: {
-      label: 'Standard',
-      emoji: '⚡',
-      kva: stdKva,
-      batteries: stdBatteries,
-      panels: stdPanels,
-      panelWatts: 300,
-      minCost: 600000,
-      maxCost: 1200000,
-      coverage: 100,
-      note: 'Runs everything on your list comfortably.',
-    },
-    premium: {
-      label: 'Premium',
-      emoji: '👑',
-      kva: premKva,
-      batteries: premBatteries,
-      panels: premPanels,
-      panelWatts: 400,
-      minCost: 1200000,
-      maxCost: 2500000,
-      coverage: 120,
-      note: 'Everything + future expansion headroom. Lithium batteries.',
-    },
+    budget: { label: 'Budget', emoji: '💰', kva: budgetKva, batteries: budgetBatteries, panels: budgetPanels, panelWatts: 250, minCost: 350000, maxCost: 600000, coverage: 60, note: 'Covers essentials (lights, fans, fridge). Not suitable for AC.' },
+    standard: { label: 'Standard', emoji: '⚡', kva: stdKva, batteries: stdBatteries, panels: stdPanels, panelWatts: 300, minCost: 600000, maxCost: 1200000, coverage: 100, note: 'Runs everything on your list comfortably.' },
+    premium: { label: 'Premium', emoji: '👑', kva: premKva, batteries: premBatteries, panels: premPanels, panelWatts: 400, minCost: 1200000, maxCost: 2500000, coverage: 120, note: 'Everything + future expansion headroom. Lithium batteries.' },
   };
 }
 
@@ -132,14 +97,18 @@ function Stepper({ qty, onDecrement, onIncrement }: { qty: number; onDecrement: 
       <button
         onClick={onDecrement}
         disabled={qty === 0}
-        className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${qty === 0 ? 'opacity-30 cursor-not-allowed text-[#64748B]' : 'text-[#64748B] hover:bg-[#F1F5F9]'}`}
+        className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors font-bold text-lg ${
+          qty === 0
+            ? 'opacity-30 cursor-not-allowed text-[#64748B]'
+            : 'bg-[#0A0F1E] text-white hover:bg-[#1E293B]'
+        }`}
       >
         <Minus className="w-4 h-4" />
       </button>
-      <span style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-lg text-[#0F172A] min-w-[28px] text-center">{qty}</span>
+      <span className="font-heading font-bold text-lg text-[#0A0F1E] min-w-[28px] text-center">{qty}</span>
       <button
         onClick={onIncrement}
-        className="w-9 h-9 rounded-lg flex items-center justify-center text-[#F59E0B] hover:bg-[#FFFBEB] transition-colors"
+        className="w-9 h-9 rounded-full flex items-center justify-center bg-[#0A0F1E] text-white hover:bg-[#1E293B] transition-colors"
       >
         <Plus className="w-4 h-4" />
       </button>
@@ -151,9 +120,7 @@ export default function CalculatorPage() {
   const [step, setStep] = useState(1);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
-  const [boltDismissed, setBoltDismissed] = useState(false);
 
-  // Load from localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem('sb_calculator');
@@ -164,7 +131,6 @@ export default function CalculatorPage() {
     } catch {}
   }, []);
 
-  // Save to localStorage on every change
   useEffect(() => {
     try {
       localStorage.setItem('sb_calculator', JSON.stringify({ quantities }));
@@ -189,54 +155,44 @@ export default function CalculatorPage() {
 
   const selectedAppliances = allAppliances.filter(a => a.qty > 0);
   const totalWatts = selectedAppliances.reduce((sum, a) => sum + a.watts * a.qty, 0);
-
   const currentStepAppliances = step === 1 ? STEP1_APPLIANCES : step === 2 ? STEP2_APPLIANCES : STEP3_APPLIANCES;
 
-  const boltMessages: Record<number, string> = {
-    1: "Let's figure out your system. Pick heavy appliances first — AC uses the most power.",
-    2: "Almost there — these use moderate power.",
-    3: "Last step — these are small but they add up!",
+  const stepTitles: Record<number, string> = {
+    1: 'Heavy Appliances',
+    2: 'Medium Appliances',
+    3: 'Light Appliances',
   };
 
   if (showResults) {
     const result = calculateSystem(selectedAppliances);
-    const waLink = (location = 'Lagos') => {
-      const msg = encodeURIComponent(`Hi, I found you on SolarBuilders.ng. I need a ${result.standard.kva}kVA solar system in ${location}. Can you help?`);
-      return `/marketplace`;
-    };
 
     return (
-      <div className="min-h-screen bg-[#FAFAF7]">
+      <div className="min-h-screen bg-white">
         <Navbar />
-        <div className="max-w-3xl mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-6">
-            <button onClick={() => setShowResults(false)} className="text-[#64748B] hover:text-[#0F172A] flex items-center gap-1 text-sm">
-              <ArrowLeft className="w-4 h-4" /> Recalculate
-            </button>
-          </div>
+        <div className="max-w-3xl mx-auto px-4 py-8 pb-16">
+          <button onClick={() => setShowResults(false)} className="text-[#64748B] hover:text-[#0A0F1E] flex items-center gap-1 text-sm mb-6 font-medium">
+            <ArrowLeft className="w-4 h-4" /> Recalculate
+          </button>
 
-          {/* Bolt celebration chip */}
-          <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 flex items-start gap-3">
+          <div className="bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-2xl p-5 mb-8 flex items-start gap-3">
             <span className="text-3xl">⚡</span>
             <div>
-              <p className="text-[#0F172A] font-semibold">Your system is ready!</p>
-              <p className="text-[#64748B] text-sm">Based on <strong>{selectedAppliances.length} appliances</strong> · {(totalWatts / 1000).toFixed(1)}kW total load · ~{result.dailyKwh.toFixed(1)} kWh/day</p>
+              <p className="font-heading font-semibold text-[#0A0F1E]">Your system estimate is ready</p>
+              <p className="text-[#64748B] text-sm">{selectedAppliances.length} appliances · {(totalWatts / 1000).toFixed(1)}kW total load · ~{result.dailyKwh.toFixed(1)} kWh/day</p>
             </div>
           </div>
 
-          {/* System cards */}
           <div className="space-y-4 mb-8">
             {/* Budget */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white rounded-2xl border border-[#E2E8F0] p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">💰</span>
-                  <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] text-lg">Budget System</h3>
+                  <h3 className="font-heading font-bold text-[#0A0F1E] text-lg">Budget System</h3>
                 </div>
-                <span className="text-xs bg-[#F1F5F9] text-[#64748B] px-2 py-1 rounded-full">~{result.budget.coverage}% load</span>
+                <span className="text-xs bg-[#F8FAFC] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0]">~{result.budget.coverage}% coverage</span>
               </div>
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 {[
                   { label: 'Inverter', value: `${result.budget.kva}kVA` },
                   { label: 'Battery Bank', value: `${result.budget.batteries}× 200Ah` },
@@ -244,24 +200,24 @@ export default function CalculatorPage() {
                   { label: 'Est. Cost', value: `${formatNaira(result.budget.minCost)}–${formatNaira(result.budget.maxCost)}` },
                 ].map(item => (
                   <div key={item.label}>
-                    <p className="text-xs text-[#64748B]">{item.label}</p>
-                    <p style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A]">{item.value}</p>
+                    <p className="text-xs text-[#94A3B8] mb-0.5">{item.label}</p>
+                    <p className="font-heading font-bold text-[#0A0F1E]">{item.value}</p>
                   </div>
                 ))}
               </div>
               <p className="text-[#64748B] text-sm">⚠️ {result.budget.note}</p>
             </div>
 
-            {/* Standard - RECOMMENDED */}
-            <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-[#F59E0B]">
+            {/* Standard — Recommended */}
+            <div className="bg-white rounded-2xl border-2 border-[#F59E0B] p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">⚡</span>
-                  <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] text-xl">Standard System</h3>
+                  <h3 className="font-heading font-bold text-[#0A0F1E] text-xl">Standard System</h3>
                 </div>
-                <span className="bg-[#F59E0B] text-[#0F172A] text-xs font-bold px-3 py-1 rounded-full">★ Best Value</span>
+                <span className="bg-[#F59E0B] text-[#0A0F1E] text-xs font-heading font-bold px-3 py-1 rounded-full">★ Recommended</span>
               </div>
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 {[
                   { label: 'Inverter', value: `${result.standard.kva}kVA` },
                   { label: 'Battery Bank', value: `${result.standard.batteries}× 200Ah` },
@@ -269,24 +225,24 @@ export default function CalculatorPage() {
                   { label: 'Est. Cost', value: `${formatNaira(result.standard.minCost)}–${formatNaira(result.standard.maxCost)}` },
                 ].map(item => (
                   <div key={item.label}>
-                    <p className="text-xs text-[#64748B]">{item.label}</p>
-                    <p style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] text-lg">{item.value}</p>
+                    <p className="text-xs text-[#94A3B8] mb-0.5">{item.label}</p>
+                    <p className="font-heading font-bold text-[#0A0F1E] text-lg">{item.value}</p>
                   </div>
                 ))}
               </div>
-              <p className="text-[#10B981] text-sm font-medium">✅ {result.standard.note}</p>
+              <p className="text-[#059669] text-sm font-medium">✅ {result.standard.note}</p>
             </div>
 
             {/* Premium */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white rounded-2xl border border-[#E2E8F0] p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">👑</span>
-                  <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] text-lg">Premium System</h3>
+                  <h3 className="font-heading font-bold text-[#0A0F1E] text-lg">Premium System</h3>
                 </div>
-                <span className="text-xs bg-[#F1F5F9] text-[#64748B] px-2 py-1 rounded-full">Max headroom</span>
+                <span className="text-xs bg-[#F8FAFC] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0]">Max headroom</span>
               </div>
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 {[
                   { label: 'Inverter', value: `${result.premium.kva}kVA` },
                   { label: 'Battery Bank', value: `${result.premium.batteries}× 200Ah` },
@@ -294,29 +250,23 @@ export default function CalculatorPage() {
                   { label: 'Est. Cost', value: `${formatNaira(result.premium.minCost)}–${formatNaira(result.premium.maxCost)}` },
                 ].map(item => (
                   <div key={item.label}>
-                    <p className="text-xs text-[#64748B]">{item.label}</p>
-                    <p style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A]">{item.value}</p>
+                    <p className="text-xs text-[#94A3B8] mb-0.5">{item.label}</p>
+                    <p className="font-heading font-bold text-[#0A0F1E]">{item.value}</p>
                   </div>
                 ))}
               </div>
-              <p className="text-[#10B981] text-sm font-medium">✅ {result.premium.note}</p>
+              <p className="text-[#059669] text-sm font-medium">✅ {result.premium.note}</p>
             </div>
           </div>
 
-          {/* Adjust load */}
           {selectedAppliances.length > 0 && (
-            <div className="bg-white rounded-xl p-6 mb-6 shadow-sm">
-              <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-semibold text-[#64748B] text-sm uppercase tracking-wide mb-3">
-                Adjust your load
-              </h3>
+            <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] p-6 mb-6">
+              <h3 className="font-heading font-semibold text-[#64748B] text-xs uppercase tracking-widest mb-4">Your appliances</h3>
               <div className="space-y-2">
                 {selectedAppliances.map(appliance => (
-                  <div key={appliance.id} className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
-                    <span className="text-[#0F172A] text-sm">{appliance.qty}× {appliance.name}</span>
-                    <button
-                      onClick={() => setQty(appliance.id, 0)}
-                      className="text-[#64748B] hover:text-[#EF4444] transition-colors p-1"
-                    >
+                  <div key={appliance.id} className="flex items-center justify-between py-2 border-b border-[#E2E8F0] last:border-0">
+                    <span className="text-[#0A0F1E] text-sm">{appliance.qty}× {appliance.name}</span>
+                    <button onClick={() => setQty(appliance.id, 0)} className="text-[#94A3B8] hover:text-red-500 transition-colors p-1">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -325,34 +275,32 @@ export default function CalculatorPage() {
             </div>
           )}
 
-          {/* CTA */}
           <Link
             href="/marketplace"
-            className="w-full bg-[#F59E0B] text-[#0F172A] py-5 rounded-xl font-bold text-xl text-center flex items-center justify-center gap-2 hover:bg-[#D97706] transition-colors"
-            style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+            className="w-full bg-[#F59E0B] text-[#0A0F1E] py-5 rounded-full font-heading font-bold text-xl text-center flex items-center justify-center gap-2 hover:bg-[#D97706] transition-colors"
           >
-            <Zap className="w-6 h-6" fill="currentColor" />
-            See Matching Builders →
+            Ready to get quotes? Browse matched builders →
           </Link>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7]">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Progress */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-semibold text-[#0F172A] text-lg">
-              Step {step} of 3: {step === 1 ? 'Heavy Appliances' : step === 2 ? 'Medium Appliances' : 'Light Appliances'}
+      <div className="max-w-2xl mx-auto px-4 py-10">
+        {/* Step indicator */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-heading font-bold text-[#0A0F1E] text-sm">
+              Step {step} of 3 — {stepTitles[step]}
             </span>
-            <span className="text-[#64748B] text-sm">{Math.round((step / 3) * 100)}%</span>
+            <span className="text-[#94A3B8] text-sm">{Math.round((step / 3) * 100)}%</span>
           </div>
-          <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
+          <div className="h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
             <div
               className="h-full bg-[#F59E0B] rounded-full transition-all duration-300"
               style={{ width: `${(step / 3) * 100}%` }}
@@ -360,24 +308,13 @@ export default function CalculatorPage() {
           </div>
         </div>
 
-        {/* Bolt chip */}
-        {!boltDismissed && (
-          <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 flex items-start gap-3">
-            <span className="text-3xl">⚡</span>
-            <p className="text-[#0F172A] text-sm flex-1">{boltMessages[step]}</p>
-            <button onClick={() => setBoltDismissed(true)} className="text-[#64748B] hover:text-[#0F172A]">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
-        {/* Typical home preset (Step 1 only) */}
+        {/* Typical home preset */}
         {step === 1 && (
           <button
             onClick={applyTypicalHome}
-            className="mb-6 bg-[#0F172A] text-[#FAFAF7] text-sm font-semibold px-4 py-2.5 rounded-full hover:bg-[#1E293B] transition-colors"
+            className="mb-6 bg-[#0A0F1E] text-white text-sm font-heading font-semibold px-5 py-2.5 rounded-full hover:bg-[#1E293B] transition-colors"
           >
-            🏠 Typical 3-bedroom home
+            🏠 Load typical 3-bedroom home
           </button>
         )}
 
@@ -390,15 +327,15 @@ export default function CalculatorPage() {
             return (
               <div
                 key={appliance.id}
-                className={`bg-white rounded-xl p-4 transition-all ${
+                className={`bg-white rounded-2xl p-5 transition-all ${
                   isSelected
-                    ? 'border-2 border-[#F59E0B] bg-[#FFFBEB]'
-                    : 'border border-[#E2E8F0] shadow-sm'
+                    ? 'border-2 border-[#F59E0B] bg-[#FEF3C7]'
+                    : 'border-2 border-[#E2E8F0] hover:border-[#F59E0B]/50'
                 }`}
               >
                 <div className="text-3xl text-center mb-2">{appliance.emoji}</div>
-                <p style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-semibold text-[#0F172A] text-sm text-center leading-tight">{appliance.name}</p>
-                <p className="text-[#64748B] text-xs text-center mb-1">{appliance.watts}W</p>
+                <p className="font-heading font-semibold text-[#0A0F1E] text-sm text-center leading-tight">{appliance.name}</p>
+                <p className="text-[#94A3B8] text-xs text-center mb-1">{appliance.watts}W</p>
                 <Stepper
                   qty={qty}
                   onDecrement={() => setQty(appliance.id, qty - 1)}
@@ -409,14 +346,15 @@ export default function CalculatorPage() {
           })}
         </div>
 
-        {/* Load summary bar */}
+        {/* Live load summary */}
         {totalWatts > 0 && (
-          <div className="bg-[#0F172A] rounded-xl p-4 mb-6 flex items-center justify-between">
+          <div className="bg-[#0A0F1E] rounded-2xl p-5 mb-6 flex items-center justify-between">
             <div>
-              <p className="text-white text-sm font-semibold">{selectedAppliances.length} appliance{selectedAppliances.length !== 1 ? 's' : ''} selected</p>
-              <p className="text-[#F59E0B] font-bold">{(totalWatts / 1000).toFixed(2)}kW total</p>
+              <p className="text-[#94A3B8] text-xs mb-1">Current load estimate</p>
+              <p className="font-heading font-extrabold text-[#F59E0B] text-2xl">{(totalWatts / 1000).toFixed(2)} kW</p>
+              <p className="text-[#64748B] text-xs">{selectedAppliances.length} appliance{selectedAppliances.length !== 1 ? 's' : ''} · Add more to refine</p>
             </div>
-            <Zap className="w-6 h-6 text-[#F59E0B]" fill="currentColor" />
+            <Zap className="w-8 h-8 text-[#F59E0B]" fill="currentColor" />
           </div>
         )}
 
@@ -424,8 +362,8 @@ export default function CalculatorPage() {
         <div className="flex items-center gap-3">
           {step > 1 && (
             <button
-              onClick={() => { setStep(step - 1); setBoltDismissed(false); }}
-              className="flex items-center gap-2 text-[#64748B] hover:text-[#0F172A] font-semibold py-4 px-4 transition-colors"
+              onClick={() => setStep(step - 1)}
+              className="flex items-center gap-2 text-[#64748B] hover:text-[#0A0F1E] font-semibold py-4 px-4 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
@@ -433,9 +371,8 @@ export default function CalculatorPage() {
 
           {step < 3 ? (
             <button
-              onClick={() => { setStep(step + 1); setBoltDismissed(false); }}
-              className="flex-1 bg-[#F59E0B] text-[#0F172A] py-4 rounded-lg font-bold text-lg hover:bg-[#D97706] transition-colors flex items-center justify-center gap-2"
-              style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+              onClick={() => setStep(step + 1)}
+              className="flex-1 bg-[#F59E0B] text-[#0A0F1E] py-4 rounded-full font-heading font-bold text-base hover:bg-[#D97706] transition-colors flex items-center justify-center gap-2"
             >
               Next: {step === 1 ? 'Medium Appliances' : 'Light Appliances'}
               <ArrowRight className="w-5 h-5" />
@@ -444,12 +381,11 @@ export default function CalculatorPage() {
             <button
               onClick={() => setShowResults(true)}
               disabled={selectedAppliances.length === 0}
-              className={`flex-1 py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-2 transition-colors ${
+              className={`flex-1 py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors ${
                 selectedAppliances.length > 0
-                  ? 'bg-[#F59E0B] text-[#0F172A] hover:bg-[#D97706]'
+                  ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]'
                   : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
               }`}
-              style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
             >
               <Zap className="w-5 h-5" fill={selectedAppliances.length > 0 ? 'currentColor' : 'none'} />
               Calculate My System

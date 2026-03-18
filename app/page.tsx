@@ -1,54 +1,70 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import { BUILDERS, formatNaira } from '@/lib/mock-data';
-import { CheckCircle, Zap, Search, MessageCircle, Star, MapPin, ArrowRight, Globe } from 'lucide-react';
+import { Star, MapPin, CheckCircle } from 'lucide-react';
+import HomepageClient from '@/components/ui/HomepageClient';
+
+export const metadata: Metadata = {
+  title: "SolarBuilders.ng — Nigeria's Solar Marketplace",
+  description: "Calculate exactly what solar system you need. Find verified solar installers in Lagos, Abuja, Port Harcourt and across Nigeria. Free solar calculator, no signup.",
+  alternates: { canonical: 'https://solarbuilders.ng' },
+};
 
 function VerifiedBadge() {
   return (
-    <span className="inline-flex items-center gap-1 bg-[#10B981] text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+    <span className="inline-flex items-center gap-1 bg-[#059669] text-white text-xs font-heading font-semibold px-2.5 py-1 rounded-full">
       <CheckCircle className="w-3 h-3" />
-      Nexprove Verified
+      Verified
     </span>
   );
 }
 
 function BuilderCard({ builder }: { builder: typeof BUILDERS[0] }) {
   const waLink = `https://wa.me/${builder.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent('Hi, I found you on SolarBuilders.ng. I\'m interested in a solar installation.')}`;
-
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden min-w-[260px] w-[260px] flex-shrink-0 md:min-w-0 md:w-auto">
-      <div className="aspect-[4/3] overflow-hidden bg-[#E2E8F0]">
-        <img
+    <div className="bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden hover:border-[#F59E0B] hover:shadow-lg transition-all duration-200">
+      <div className="aspect-video overflow-hidden bg-[#F8FAFC] relative">
+        <Image
           src={builder.coverImage}
-          alt={builder.name}
+          alt={`${builder.name} solar installation`}
+          width={400}
+          height={225}
           className="w-full h-full object-cover"
         />
+        {builder.verified && (
+          <div className="absolute top-3 right-3">
+            <VerifiedBadge />
+          </div>
+        )}
       </div>
-      <div className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          {builder.verified && <VerifiedBadge />}
-        </div>
-        <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] text-lg mb-1">{builder.name}</h3>
+      <div className="p-5">
+        <h3 className="font-heading font-bold text-[#0A0F1E] text-lg mb-1">{builder.name}</h3>
         <div className="flex items-center gap-1 text-[#64748B] text-sm mb-2">
-          <MapPin className="w-3.5 h-3.5" />
+          <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
           <span>{builder.location}, {builder.state}</span>
         </div>
-        <div className="flex items-center gap-1 mb-3">
-          <Star className="w-4 h-4 text-[#F59E0B] fill-current" />
-          <span className="font-semibold text-sm text-[#0F172A]">{builder.rating}</span>
-          <span className="text-[#64748B] text-sm">({builder.reviewCount} reviews)</span>
+        <div className="flex items-center gap-1.5 mb-3">
+          <div className="flex gap-0.5">
+            {[1,2,3,4,5].map(s => (
+              <Star key={s} className={`w-3.5 h-3.5 ${s <= Math.round(builder.rating) ? 'text-[#F59E0B] fill-current' : 'text-[#E2E8F0]'}`} />
+            ))}
+          </div>
+          <span className="font-semibold text-sm text-[#0A0F1E]">{builder.rating}</span>
+          <span className="text-[#94A3B8] text-sm">({builder.reviewCount})</span>
         </div>
-        <p className="text-[#F59E0B] font-bold text-base mb-3">
+        <p className="text-[#F59E0B] font-heading font-bold text-base mb-4">
           From {formatNaira(builder.startingPrice)}
         </p>
         <div className="flex gap-2">
           <Link href={`/builders/${builder.slug}`}
-            className="flex-1 border border-[#0F172A] text-[#0F172A] text-sm font-semibold py-2 rounded-lg text-center hover:bg-[#0F172A] hover:text-white transition-colors">
+            className="flex-1 border-2 border-[#0A0F1E] text-[#0A0F1E] text-sm font-heading font-semibold py-2.5 rounded-full text-center hover:bg-[#0A0F1E] hover:text-white transition-colors">
             View Profile
           </Link>
           <a href={waLink} target="_blank" rel="noopener noreferrer"
-            className="flex-1 bg-[#25D366] text-white text-sm font-semibold py-2 rounded-lg text-center hover:bg-[#22c55e] transition-colors">
+            className="flex-1 bg-[#25D366] text-white text-sm font-heading font-semibold py-2.5 rounded-full text-center hover:bg-[#22c55e] transition-colors">
             💬 WhatsApp
           </a>
         </div>
@@ -57,210 +73,333 @@ function BuilderCard({ builder }: { builder: typeof BUILDERS[0] }) {
   );
 }
 
+function TestimonialCard({ quote, name, city, type, rating }: {
+  quote: string; name: string; city: string; type: string; rating: number;
+}) {
+  return (
+    <div className="bg-white rounded-2xl border border-[#E2E8F0] p-6">
+      <div className="flex gap-0.5 mb-4">
+        {[1,2,3,4,5].map(s => (
+          <Star key={s} className={`w-4 h-4 ${s <= rating ? 'text-[#F59E0B] fill-current' : 'text-[#E2E8F0]'}`} />
+        ))}
+      </div>
+      <p className="text-[#0A0F1E] text-base leading-relaxed mb-4">&ldquo;{quote}&rdquo;</p>
+      <div>
+        <p className="font-heading font-semibold text-[#0A0F1E] text-sm">{name}</p>
+        <p className="text-[#64748B] text-xs">{city} · {type}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
-  const featuredBuilders = BUILDERS.slice(0, 4);
+  const featuredBuilders = BUILDERS.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7]">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* HERO */}
-      <section className="bg-[#0F172A] px-4 py-16 md:py-24">
-        <div className="max-w-7xl mx-auto md:grid md:grid-cols-2 md:gap-12 md:items-center">
+      {/* HERO — white bg, dark text */}
+      <section className="bg-white px-4 py-20 md:py-28">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
-            <h1 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-4">
+            <h1 className="font-heading font-extrabold text-[#0A0F1E] text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6">
               Nigeria&apos;s Solar<br />Marketplace.
             </h1>
-            <p className="text-[#94A3B8] text-lg md:text-xl leading-relaxed mb-8">
-              Find out exactly what you need.<br className="hidden md:block" />
-              Then find someone you can trust to build it.
+            <p className="text-[#64748B] text-xl leading-relaxed mb-8 max-w-md">
+              Calculate what you need. Find who you can trust.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 mb-8">
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <Link
                 href="/calculator"
-                className="flex items-center justify-center gap-2 bg-[#F59E0B] text-[#0F172A] px-6 py-4 rounded-lg font-bold text-lg hover:bg-[#D97706] transition-colors"
-                style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+                className="inline-flex items-center justify-center gap-2 bg-[#F59E0B] text-[#0A0F1E] px-7 py-3.5 rounded-full font-heading font-bold text-base hover:bg-[#D97706] transition-colors"
               >
-                <Zap className="w-5 h-5" fill="currentColor" />
-                Calculate My Load
+                Calculate My System →
               </Link>
               <Link
                 href="/marketplace"
-                className="flex items-center justify-center gap-2 border border-[#94A3B8] text-[#94A3B8] px-6 py-4 rounded-lg font-semibold hover:border-white hover:text-white transition-colors"
+                className="inline-flex items-center justify-center gap-2 border-2 border-[#0A0F1E] text-[#0A0F1E] px-7 py-3.5 rounded-full font-heading font-semibold text-base hover:bg-[#0A0F1E] hover:text-white transition-colors"
               >
-                Browse verified builders →
+                Browse Builders
               </Link>
             </div>
-
-            <div className="flex flex-col gap-2">
-              {[
-                '47 verified builders across Nigeria',
-                'Free calculator, no signup needed',
-                'WhatsApp-native contact — no forms',
-              ].map(item => (
-                <div key={item} className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                  <span className="text-[#94A3B8] text-sm">{item}</span>
-                </div>
-              ))}
-            </div>
+            <p className="text-[#94A3B8] text-sm">
+              200+ verified builders · 28 states · ₦0 to get started
+            </p>
           </div>
 
-          {/* Hero image */}
-          <div className="hidden md:block mt-8 md:mt-0">
-            <div className="rounded-2xl overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop&q=80"
-                alt="Solar panels installed on Nigerian home"
-                className="w-full h-80 object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section className="py-16 px-4 bg-[#FAFAF7]">
-        <div className="max-w-7xl mx-auto">
-          <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-3xl md:text-4xl font-bold text-[#0F172A] text-center mb-3">
-            Nigeria&apos;s solar marketplace, made simple.
-          </h2>
-          <p className="text-center text-[#64748B] mb-12">Three steps to go solar</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: <Zap className="w-8 h-8 text-[#F59E0B]" fill="currentColor" />,
-                step: '1',
-                title: 'Calculate your load',
-                desc: 'Tell us what appliances you run. We calculate exactly what system size you need — in seconds.',
-              },
-              {
-                icon: <Search className="w-8 h-8 text-[#F59E0B]" />,
-                step: '2',
-                title: 'Match with verified builders',
-                desc: 'See builders who can handle your exact system, near you, with real reviews from real customers.',
-              },
-              {
-                icon: <MessageCircle className="w-8 h-8 text-[#F59E0B]" />,
-                step: '3',
-                title: 'Contact directly on WhatsApp',
-                desc: 'No middleman. One tap. Their number, your message, your job. Nigeria runs on WhatsApp.',
-              },
-            ].map((item) => (
-              <div key={item.step} className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="mb-4">{item.icon}</div>
-                <div className="w-7 h-7 bg-[#F59E0B] rounded-full flex items-center justify-center mb-3">
-                  <span style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-[#0F172A] font-bold text-sm">{item.step}</span>
-                </div>
-                <h3 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] text-xl mb-2">{item.title}</h3>
-                <p className="text-[#64748B] text-base leading-relaxed">{item.desc}</p>
+          {/* Right: mini calculator preview card */}
+          <div className="hidden md:block">
+            <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-xl p-6">
+              <p className="font-heading font-semibold text-[#0A0F1E] text-sm mb-4">What do you run at home?</p>
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                {[
+                  { emoji: '❄️', name: 'AC', selected: true },
+                  { emoji: '🧊', name: 'Fridge', selected: true },
+                  { emoji: '📺', name: 'TV', selected: false },
+                  { emoji: '🌀', name: 'Fan', selected: true },
+                  { emoji: '💡', name: 'Lights', selected: true },
+                  { emoji: '💻', name: 'Laptop', selected: false },
+                ].map(item => (
+                  <div key={item.name} className={`rounded-xl border-2 p-3 text-center transition-colors ${
+                    item.selected
+                      ? 'border-[#F59E0B] bg-[#FEF3C7]'
+                      : 'border-[#E2E8F0] bg-white'
+                  }`}>
+                    <div className="text-2xl mb-1">{item.emoji}</div>
+                    <div className="text-xs font-medium text-[#0A0F1E]">{item.name}</div>
+                  </div>
+                ))}
               </div>
-            ))}
+              <div className="bg-[#F8FAFC] rounded-xl p-4 mb-4">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-[#64748B] text-xs">Estimated system size</span>
+                  <span className="font-heading font-bold text-[#0A0F1E] text-sm">3.5 kVA</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-[#64748B] text-xs">Estimated cost range</span>
+                  <span className="font-heading font-bold text-[#F59E0B] text-sm">₦450k–₦750k</span>
+                </div>
+              </div>
+              <Link href="/calculator" className="block w-full bg-[#F59E0B] text-[#0A0F1E] py-3 rounded-full text-center font-heading font-bold text-sm hover:bg-[#D97706] transition-colors">
+                Get My Real Estimate →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* STATS BAR */}
-      <section className="bg-[#0F172A] py-12 px-4">
+      {/* SOCIAL PROOF TICKER */}
+      <HomepageClient />
+
+      {/* TRUST BAR — amber bg */}
+      <section className="bg-[#F59E0B] py-10 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { number: '47+', label: 'Verified Builders' },
-              { number: '4.8★', label: 'Average Rating' },
-              { number: 'Free', label: 'Calculator Tool' },
-            ].map((stat) => (
+              { number: '200+', label: 'Verified Builders' },
+              { number: '28', label: 'States Covered' },
+              { number: '1,400+', label: 'Installs Done' },
+              { number: '₦0', label: 'Fee to Start' },
+            ].map(stat => (
               <div key={stat.label}>
-                <div style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-3xl md:text-4xl font-extrabold text-[#F59E0B] mb-1">
-                  {stat.number}
-                </div>
-                <div className="text-[#94A3B8] text-sm">{stat.label}</div>
+                <div className="font-heading font-extrabold text-[#0A0F1E] text-3xl md:text-4xl mb-1">{stat.number}</div>
+                <div className="text-[#0A0F1E] text-sm font-medium opacity-70">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CALCULATOR CTA */}
-      <section className="py-12 px-4">
-        <div className="max-w-3xl mx-auto bg-white rounded-2xl p-8 shadow-sm">
-          <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-2xl font-bold text-[#0F172A] mb-2">What do you run at home?</h2>
-          <p className="text-[#64748B] mb-6">Tell us your appliances. We&apos;ll tell you exactly what system you need and what it costs.</p>
-          <div className="text-3xl mb-6 flex flex-wrap gap-3">
-            {['🌬️', '❄️', '🧊', '📺', '💡', '📱', '💻', '🚿'].map((emoji) => (
-              <span key={emoji}>{emoji}</span>
+      {/* HOW IT WORKS — white bg, editorial */}
+      <section className="bg-white py-20 md:py-28 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-xl mb-16">
+            <h2 className="font-heading font-extrabold text-[#0A0F1E] text-4xl md:text-5xl leading-tight mb-4">
+              Three steps.<br />That&apos;s all.
+            </h2>
+            <p className="text-[#64748B] text-lg">No agents, no commission, no forms. Just solar.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              {
+                num: '01',
+                title: 'Calculate',
+                desc: 'Tell us what appliances you run. We calculate exactly what system size you need — free, in 60 seconds.',
+              },
+              {
+                num: '02',
+                title: 'Browse',
+                desc: 'See verified solar builders near you. Real reviews, real prices, real contact details.',
+              },
+              {
+                num: '03',
+                title: 'Go Solar',
+                desc: 'Reach out directly on WhatsApp. No middleman. No commission. Your job, your terms.',
+              },
+            ].map(step => (
+              <div key={step.num}>
+                <div className="font-heading font-extrabold text-[#F59E0B] text-6xl mb-4 leading-none">{step.num}</div>
+                <h3 className="font-heading font-bold text-[#0A0F1E] text-2xl mb-3">{step.title}</h3>
+                <p className="text-[#64748B] text-base leading-relaxed">{step.desc}</p>
+              </div>
             ))}
           </div>
-          <Link
-            href="/calculator"
-            className="inline-flex items-center gap-2 bg-[#F59E0B] text-[#0F172A] px-6 py-4 rounded-lg font-bold text-lg hover:bg-[#D97706] transition-colors w-full justify-center"
-            style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
-          >
-            <Zap className="w-5 h-5" fill="currentColor" />
-            Calculate My System Size →
-          </Link>
         </div>
       </section>
 
-      {/* FEATURED BUILDERS */}
-      <section className="py-12 px-4 bg-[#FAFAF7]">
+      {/* FEATURED BUILDERS — surface bg */}
+      <section className="bg-[#F8FAFC] py-20 md:py-28 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-2xl md:text-3xl font-bold text-[#0F172A]">
-              Verified builders near you
-            </h2>
-            <Link href="/marketplace" className="text-[#F59E0B] font-semibold text-sm hover:underline flex items-center gap-1">
-              Browse all <ArrowRight className="w-4 h-4" />
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <h2 className="font-heading font-extrabold text-[#0A0F1E] text-3xl md:text-4xl mb-2">
+                Verified builders near you
+              </h2>
+              <p className="text-[#64748B]">Hand-checked by the Nexprove team</p>
+            </div>
+            <Link href="/marketplace" className="hidden md:inline-flex items-center gap-1 text-[#F59E0B] font-heading font-semibold text-sm hover:underline underline-offset-4">
+              Browse all builders →
             </Link>
           </div>
-
-          {/* Mobile: horizontal scroll, Desktop: grid */}
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar md:grid md:grid-cols-4 md:overflow-visible pb-2">
-            {featuredBuilders.map((builder) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featuredBuilders.map(builder => (
               <BuilderCard key={builder.id} builder={builder} />
             ))}
           </div>
+          <div className="mt-8 text-center md:hidden">
+            <Link href="/marketplace" className="inline-flex items-center gap-1 text-[#F59E0B] font-heading font-semibold text-sm hover:underline">
+              Browse all builders →
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* DIASPORA CALLOUT */}
-      <section className="py-12 px-4">
-        <div className="max-w-4xl mx-auto bg-[#0F172A] rounded-2xl p-8 md:p-12">
-          <div className="text-4xl mb-4">🌍</div>
-          <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-2xl md:text-3xl font-bold text-white mb-4">
-            Based in London, Toronto, or elsewhere?
-          </h2>
-          <p className="text-[#94A3B8] text-lg leading-relaxed mb-8">
-            Your mum is running a generator 18 hours a day. You&apos;ve been meaning to fix it.
-            Now you can — from wherever you are. Find a verified builder, commission via WhatsApp,
-            stay in the loop at every step.
-          </p>
-          <Link
-            href="/calculator"
-            className="inline-flex items-center gap-2 bg-[#F59E0B] text-[#0F172A] px-6 py-4 rounded-lg font-bold text-lg hover:bg-[#D97706] transition-colors"
-            style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
-          >
-            <Globe className="w-5 h-5" />
-            Power the home you left behind →
-          </Link>
+      {/* ROI CALCULATOR TEASER — amber-light bg */}
+      <section className="bg-[#FEF3C7] py-20 md:py-28 px-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="font-heading font-extrabold text-[#0A0F1E] text-4xl md:text-5xl leading-tight mb-4">
+              Your generator costs ₦40,000/month.
+            </h2>
+            <p className="text-[#64748B] text-xl mb-8">
+              A 3kVA solar system pays for itself in 11 months. Then it&apos;s free power — forever.
+            </p>
+            <Link
+              href="/calculator"
+              className="inline-flex items-center gap-2 bg-[#F59E0B] text-[#0A0F1E] px-7 py-3.5 rounded-full font-heading font-bold text-base hover:bg-[#D97706] transition-colors"
+            >
+              Calculate my solar ROI →
+            </Link>
+          </div>
+
+          {/* CSS-only bar chart */}
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8">
+            <p className="font-heading font-semibold text-[#0A0F1E] text-sm mb-6">Cost comparison over 3 years</p>
+            <div className="flex items-end gap-6 h-40 mb-4">
+              {/* Generator bars */}
+              <div className="flex-1 flex flex-col items-center gap-2">
+                <div className="w-full flex items-end gap-1 h-32">
+                  <div className="flex-1 bg-[#94A3B8] rounded-t-lg" style={{height: '40%'}}></div>
+                  <div className="flex-1 bg-[#64748B] rounded-t-lg" style={{height: '70%'}}></div>
+                  <div className="flex-1 bg-[#475569] rounded-t-lg" style={{height: '100%'}}></div>
+                </div>
+                <span className="text-xs text-[#64748B] font-medium">Generator</span>
+                <span className="text-xs text-[#64748B]">₦480k+</span>
+              </div>
+              {/* Solar bars */}
+              <div className="flex-1 flex flex-col items-center gap-2">
+                <div className="w-full flex items-end gap-1 h-32">
+                  <div className="flex-1 bg-[#FDE68A] rounded-t-lg" style={{height: '100%'}}></div>
+                  <div className="flex-1 bg-[#FCD34D] rounded-t-lg" style={{height: '20%'}}></div>
+                  <div className="flex-1 bg-[#F59E0B] rounded-t-lg" style={{height: '5%'}}></div>
+                </div>
+                <span className="text-xs text-[#0A0F1E] font-semibold">Solar</span>
+                <span className="text-xs text-[#059669] font-semibold">₦0/mo after Y1</span>
+              </div>
+            </div>
+            <div className="flex justify-between text-xs text-[#94A3B8] px-2">
+              <span>Year 1</span>
+              <span>Year 2</span>
+              <span>Year 3</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* DIASPORA SECTION — navy bg */}
+      <section className="bg-[#0A0F1E] py-20 md:py-28 px-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="font-heading font-extrabold text-white text-4xl md:text-5xl leading-tight mb-6">
+              Power the home you left behind.
+            </h2>
+            <p className="text-[#94A3B8] text-xl leading-relaxed mb-8">
+              Install solar for family back home — from anywhere in the world. Our verified builders keep you informed at every step via WhatsApp.
+            </p>
+            <Link
+              href="/marketplace"
+              className="inline-flex items-center gap-2 border-2 border-white text-white px-7 py-3.5 rounded-full font-heading font-semibold text-base hover:bg-white hover:text-[#0A0F1E] transition-colors"
+            >
+              Find a builder →
+            </Link>
+          </div>
+
+          {/* Nigeria map graphic — CSS only */}
+          <div className="hidden md:flex items-center justify-center">
+            <div className="relative w-64 h-64">
+              <div className="absolute inset-0 border-2 border-white/10 rounded-full flex items-center justify-center">
+                <div className="text-white/20 text-8xl">🇳🇬</div>
+              </div>
+              {/* Amber dots for cities */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="relative">
+                  <div className="absolute -top-16 -left-8 flex flex-col items-center gap-1">
+                    <div className="w-3 h-3 bg-[#F59E0B] rounded-full shadow-[0_0_12px_rgba(245,158,11,0.8)]"></div>
+                    <span className="text-[#F59E0B] text-xs font-semibold">Abuja</span>
+                  </div>
+                  <div className="absolute top-4 -left-20 flex flex-col items-center gap-1">
+                    <div className="w-3 h-3 bg-[#F59E0B] rounded-full shadow-[0_0_12px_rgba(245,158,11,0.8)]"></div>
+                    <span className="text-[#F59E0B] text-xs font-semibold">Lagos</span>
+                  </div>
+                  <div className="absolute top-8 left-8 flex flex-col items-center gap-1">
+                    <div className="w-3 h-3 bg-[#F59E0B] rounded-full shadow-[0_0_12px_rgba(245,158,11,0.8)]"></div>
+                    <span className="text-[#F59E0B] text-xs font-semibold">PH</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS — white bg */}
+      <section className="bg-white py-20 md:py-28 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-xl mb-12">
+            <h2 className="font-heading font-extrabold text-[#0A0F1E] text-4xl md:text-5xl mb-4">
+              What Nigerians are saying
+            </h2>
+            <p className="text-[#64748B] text-lg">Real customers. Real results.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <TestimonialCard
+              quote="Best decision I ever made. Installation was clean and professional. My generator has been off since August 2025."
+              name="Tunde A."
+              city="Lagos Island"
+              type="3kVA Home System"
+              rating={5}
+            />
+            <TestimonialCard
+              quote="Commissioned from London for my parents' house. The builder kept me in the loop via WhatsApp throughout. Parents love it."
+              name="Chidinma O."
+              city="Victoria Island, Lagos"
+              type="5kVA Hybrid System"
+              rating={5}
+            />
+            <TestimonialCard
+              quote="Generator bills dropped from ₦180k/month to basically zero. Professional from start to finish. Highly recommend."
+              name="Adaeze M."
+              city="Wuse 2, Abuja"
+              type="15kVA Commercial"
+              rating={5}
+            />
+          </div>
         </div>
       </section>
 
       {/* FOR BUILDERS CTA */}
-      <section className="py-12 px-4 border-t border-[#E2E8F0]">
+      <section className="bg-[#F8FAFC] py-16 px-4 border-t border-[#E2E8F0]">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="text-2xl md:text-3xl font-bold text-[#0F172A] mb-3">
+          <h2 className="font-heading font-extrabold text-[#0A0F1E] text-3xl md:text-4xl mb-4">
             Are you a solar installer?
           </h2>
-          <p className="text-[#64748B] text-lg mb-6">
-            Get matched to customers in your area automatically.<br />
-            First 20 builders get the Verified badge free.
+          <p className="text-[#64748B] text-lg mb-8 max-w-xl mx-auto">
+            Get matched to customers in your area. List free, get verified, grow your business.
           </p>
           <Link
             href="/for-builders"
-            className="inline-flex items-center gap-2 border-2 border-[#F59E0B] text-[#F59E0B] px-6 py-4 rounded-lg font-bold text-lg hover:bg-[#F59E0B] hover:text-[#0F172A] transition-colors"
-            style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
+            className="inline-flex items-center gap-2 bg-[#0A0F1E] text-white px-8 py-4 rounded-full font-heading font-bold text-base hover:bg-[#1E293B] transition-colors"
           >
             List Your Business Free →
           </Link>
