@@ -17,22 +17,36 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SolarBuilders.ng — Nigeria's Verified Solar Marketplace",
+  title: {
+    default: "SolarBuilders.ng — Nigeria's Verified Solar Marketplace",
+    template: "%s | SolarBuilders.ng"
+  },
   description:
-    "Find trusted solar installers in Lagos, Abuja, and across Nigeria. Compare systems, calculate your exact needs, and connect directly on WhatsApp. Free solar calculator.",
+    "Find trusted solar installers in Nigeria. Use our free calculator to size your system, compare verified builders, and go solar with confidence.",
   keywords: [
-    "solar Nigeria", "solar installer Nigeria", "solar calculator Nigeria",
-    "solar Lagos", "solar Abuja", "solar Port Harcourt",
-    "buy solar panels Nigeria", "solar installation cost Nigeria",
-    "verified solar installer", "best solar company Nigeria"
+    "solar installers Nigeria",
+    "solar calculator Nigeria",
+    "solar panels Lagos",
+    "buy solar Nigeria",
+    "verified solar builders",
+    "solar energy Nigeria 2026",
   ],
   openGraph: {
     title: "SolarBuilders.ng — Nigeria's Verified Solar Marketplace",
-    description: "Calculate what you need. Find who you can trust. Nigeria's #1 solar marketplace.",
+    description: "Find trusted solar installers across Nigeria. Free calculator, verified builders.",
     url: "https://solarbuilders.ng",
     siteName: "SolarBuilders.ng",
     locale: "en_NG",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SolarBuilders.ng — Nigeria's Verified Solar Marketplace",
+    description: "Find trusted solar installers across Nigeria. Free calculator, verified builders.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   alternates: {
     canonical: "https://solarbuilders.ng",
@@ -65,7 +79,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className="font-body antialiased">
+      <body className={`${inter.variable} antialiased`} style={{ fontFamily: 'var(--font-body), sans-serif' }}>
         {children}
         <FloatingWhatsApp />
       </body>

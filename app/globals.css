@@ -3,39 +3,33 @@
 @theme {
   --font-heading: 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Inter', sans-serif;
-  --color-navy: #0A0F1E;
-  --color-amber: #F59E0B;
-  --color-amber-light: #FEF3C7;
-  --color-surface: #F8FAFC;
-  --color-border: #E2E8F0;
-  --color-whatsapp: #25D366;
-  --color-verified: #059669;
 }
 
 :root {
-  --navy: #0A0F1E;
+  --navy: #0F172A;
+  --navy-light: #1E293B;
   --amber: #F59E0B;
-  --amber-light: #FEF3C7;
+  --amber-dark: #D97706;
   --white: #FFFFFF;
-  --surface: #F8FAFC;
-  --border: #E2E8F0;
-  --text-primary: #0A0F1E;
-  --text-secondary: #64748B;
-  --text-muted: #94A3B8;
+  --off-white: #FAFAFA;
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-300: #CBD5E1;
+  --slate-500: #64748B;
+  --slate-700: #334155;
+  --verified-green: #10B981;
   --whatsapp: #25D366;
-  --verified: #059669;
 }
 
 body {
   background: #FFFFFF;
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  color: #0F172A;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-heading), sans-serif;
 }
 
 * {
@@ -47,11 +41,11 @@ html {
 }
 
 .font-heading {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-heading), sans-serif;
 }
 
 .font-body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body), sans-serif;
 }
 
 /* Social proof ticker animation */
@@ -69,16 +63,6 @@ html {
 .ticker-item:nth-child(1) { animation-delay: 0s; }
 .ticker-item:nth-child(2) { animation-delay: 3s; }
 .ticker-item:nth-child(3) { animation-delay: 6s; }
-
-/* Bar chart animation */
-@keyframes growUp {
-  from { height: 0; }
-  to { height: var(--target-height); }
-}
-
-.bar-animate {
-  animation: growUp 1s ease-out forwards;
-}
 
 .hide-scrollbar {
   -ms-overflow-style: none;

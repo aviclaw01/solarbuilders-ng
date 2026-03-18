@@ -13,46 +13,46 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const navLinks = [
+    { href: '/calculator', label: 'Calculator' },
+    { href: '/marketplace', label: 'Marketplace' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/about', label: 'About' },
+    { href: '/for-builders', label: 'For Builders' },
+  ];
+
   return (
     <>
       <nav className={`sticky top-0 z-50 transition-all duration-200 ${
         scrolled
-          ? 'backdrop-blur-md bg-white/90 border-b border-[#E2E8F0] shadow-sm'
-          : 'bg-white border-b border-[#E2E8F0]'
+          ? 'backdrop-blur-sm bg-white/90 border-b border-slate-100'
+          : 'bg-white border-b border-slate-100'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-1.5">
-              <span className="text-[#F59E0B] text-xl">⚡</span>
-              <span className="font-heading font-bold text-lg text-[#0A0F1E]">
-                SolarBuilders<span className="text-[#F59E0B]">.ng</span>
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-amber-400 rounded-md flex items-center justify-center">
+                <span className="text-slate-900 text-sm font-bold">⚡</span>
+              </div>
+              <span className="font-heading font-bold text-base text-slate-900">
+                SolarBuilders<span className="text-amber-400">.</span>ng
               </span>
             </Link>
 
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-7">
-              <Link href="/calculator" className="text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors font-medium hover:underline underline-offset-4">
-                Calculator
-              </Link>
-              <Link href="/marketplace" className="text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors font-medium hover:underline underline-offset-4">
-                Marketplace
-              </Link>
-              <Link href="/blog" className="text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors font-medium hover:underline underline-offset-4">
-                Blog
-              </Link>
-              <Link href="/about" className="text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors font-medium hover:underline underline-offset-4">
-                About
-              </Link>
-              <Link href="/for-builders" className="text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors font-medium hover:underline underline-offset-4">
-                For Builders
-              </Link>
+              {navLinks.map(({ href, label }) => (
+                <Link key={href} href={href} className="text-slate-600 text-sm hover:text-slate-900 transition-colors font-medium">
+                  {label}
+                </Link>
+              ))}
             </div>
 
             <div className="hidden md:flex items-center gap-3">
               <Link
                 href="/for-builders"
-                className="bg-[#F59E0B] text-[#0A0F1E] px-5 py-2.5 rounded-full text-sm font-heading font-bold hover:bg-[#D97706] transition-colors"
+                className="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2 rounded-full text-sm font-semibold transition-all"
               >
                 List Free →
               </Link>
@@ -61,7 +61,7 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <button
               onClick={() => setOpen(true)}
-              className="md:hidden text-[#0A0F1E] p-2"
+              className="md:hidden text-slate-900 p-2"
               aria-label="Open menu"
             >
               <Menu className="w-6 h-6" />
@@ -74,30 +74,26 @@ export default function Navbar() {
       {open && (
         <div className="fixed inset-0 bg-white z-[200] flex flex-col p-6">
           <div className="flex justify-between items-center mb-12">
-            <Link href="/" className="flex items-center gap-1.5" onClick={() => setOpen(false)}>
-              <span className="text-[#F59E0B] text-xl">⚡</span>
-              <span className="font-heading font-bold text-lg text-[#0A0F1E]">
-                SolarBuilders<span className="text-[#F59E0B]">.ng</span>
+            <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
+              <div className="w-7 h-7 bg-amber-400 rounded-md flex items-center justify-center">
+                <span className="text-slate-900 text-sm font-bold">⚡</span>
+              </div>
+              <span className="font-heading font-bold text-base text-slate-900">
+                SolarBuilders<span className="text-amber-400">.</span>ng
               </span>
             </Link>
-            <button onClick={() => setOpen(false)} className="text-[#0A0F1E] p-2" aria-label="Close menu">
+            <button onClick={() => setOpen(false)} className="text-slate-900 p-2" aria-label="Close menu">
               <X className="w-6 h-6" />
             </button>
           </div>
 
           <div className="flex flex-col gap-6">
-            {[
-              { href: '/calculator', label: '⚡ Calculator' },
-              { href: '/marketplace', label: '🔍 Marketplace' },
-              { href: '/blog', label: '📖 Blog' },
-              { href: '/about', label: 'ℹ️ About' },
-              { href: '/for-builders', label: '🏗️ For Builders' },
-            ].map(({ href, label }) => (
+            {navLinks.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className="font-heading text-[#0A0F1E] font-semibold text-xl border-b border-[#E2E8F0] pb-4"
+                className="font-heading text-slate-900 font-semibold text-xl border-b border-slate-100 pb-4"
               >
                 {label}
               </Link>
@@ -108,7 +104,7 @@ export default function Navbar() {
             <Link
               href="/for-builders"
               onClick={() => setOpen(false)}
-              className="block w-full bg-[#F59E0B] text-[#0A0F1E] py-4 rounded-full text-center font-heading font-bold text-lg"
+              className="block w-full bg-amber-400 hover:bg-amber-500 text-slate-900 py-4 rounded-full text-center font-heading font-bold text-lg transition-all"
             >
               List Your Business Free →
             </Link>
