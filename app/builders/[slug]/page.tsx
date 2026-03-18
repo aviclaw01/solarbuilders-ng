@@ -3,18 +3,19 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import { BUILDERS, getBuilderBySlug, formatNairaFull } from '@/lib/mock-data';
-import { CheckCircle, Star, MapPin, ArrowLeft, MessageCircle, Phone } from 'lucide-react';
+import { CheckCircle, Star, MapPin, ArrowLeft, MessageCircle } from 'lucide-react';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export function generateStaticParams() {
   return BUILDERS.map(b => ({ slug: b.slug }));
 }
 
-export default function BuilderProfilePage({ params }: Props) {
-  const builder = getBuilderBySlug(params.slug);
+export default async function BuilderProfilePage({ params }: Props) {
+  const { slug } = await params;
+  const builder = getBuilderBySlug(slug);
   if (!builder) return notFound();
 
   const waLink = `https://wa.me/${builder.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I found you on SolarBuilders.ng. I'm interested in a solar installation. Can you help?`)}`;
@@ -96,17 +97,8 @@ export default function BuilderProfilePage({ params }: Props) {
               </span>
             ))}
           </div>
-          <div>
-            <p className="text-sm text-[#64748B] mb-1">Specialties</p>
-            <div className="flex flex-wrap gap-1.5">
-              {builder.specialties.map(spec => (
-                <span key={spec} className="text-[#F59E0B] text-sm font-semibold">
-                  {spec} ·
-                </span>
-              )).reduce((prev: React.ReactNode[], curr, i) => 
-                i === 0 ? [curr] : [...prev, curr], [])}
-            </div>
-          </div>
+          <p className="text-sm text-[#64748B] mb-2">Specialties</p>
+          <p className="text-[#F59E0B] font-semibold text-sm">{builder.specialties.join(' · ')}</p>
         </div>
 
         {/* Packages */}
@@ -176,25 +168,29 @@ export default function BuilderProfilePage({ params }: Props) {
         {/* Contact block */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-4">
           <h2 style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}} className="font-bold text-[#0F172A] text-xl mb-4">Contact</h2>
-          <div className="space-y-3">
-            <a href={waLink} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 text-[#64748B] text-sm hover:text-[#25D366] transition-colors">
-              <MessageCircle className="w-4 h-4" />
-              WhatsApp: {builder.whatsapp}
-            </a>
-          </div>
+          <a href={waLink} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2 text-[#64748B] text-sm hover:text-[#25D366] transition-colors">
+            <MessageCircle className="w-4 h-4" />
+            WhatsApp: {builder.whatsapp}
+          </a>
+        </div>
+
+        {/* Desktop WhatsApp CTA */}
+        <div className="hidden md:block">
+          <a href={waLink} target="_blank" rel="noopener noreferrer"
+            className="w-full bg-[#25D366] text-white py-5 rounded-xl font-bold text-xl text-center flex items-center justify-center gap-2 hover:bg-[#22c55e] transition-colors"
+            style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+            <MessageCircle className="w-6 h-6" />
+            Chat with {builder.name.split(' ')[0]} on WhatsApp →
+          </a>
         </div>
       </div>
 
       {/* Sticky WhatsApp CTA — Mobile */}
       <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 p-4 bg-white/95 backdrop-blur-sm border-t border-[#E2E8F0]">
-        <a
-          href={waLink}
-          target="_blank"
-          rel="noopener noreferrer"
+        <a href={waLink} target="_blank" rel="noopener noreferrer"
           className="w-full bg-[#25D366] text-white py-4 rounded-xl font-bold text-lg text-center flex items-center justify-center gap-2 hover:bg-[#22c55e] transition-colors"
-          style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}
-        >
+          style={{fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
           <MessageCircle className="w-5 h-5" />
           Chat with {builder.name.split(' ')[0]} on WhatsApp
         </a>
