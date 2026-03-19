@@ -69,7 +69,10 @@ const PRICING_TIERS = [
 
 interface FormData {
   businessName: string;
+  contactEmail: string;
+  password: string;
   whatsapp: string;
+  city: string;
   state: string;
   yearsInBusiness: string;
   services: string[];
@@ -77,10 +80,15 @@ interface FormData {
   startingPrice: string;
   bio: string;
   instagram: string;
+  logo: File | null;
   ref1Name: string;
   ref1Phone: string;
   ref2Name: string;
   ref2Phone: string;
+}
+
+function toSlug(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 }
 
 export default function ForBuildersPage() {
@@ -89,7 +97,10 @@ export default function ForBuildersPage() {
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     businessName: '',
+    contactEmail: '',
+    password: '',
     whatsapp: '',
+    city: '',
     state: '',
     yearsInBusiness: '',
     services: [],
@@ -97,13 +108,14 @@ export default function ForBuildersPage() {
     startingPrice: '',
     bio: '',
     instagram: '',
+    logo: null,
     ref1Name: '',
     ref1Phone: '',
     ref2Name: '',
     ref2Phone: '',
   });
 
-  const updateForm = (key: keyof FormData, value: string | string[]) => {
+  const updateForm = (key: keyof FormData, value: string | string[] | File | null) => {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
 
@@ -125,7 +137,7 @@ export default function ForBuildersPage() {
     }));
   };
 
-  const step1Valid = formData.businessName && formData.whatsapp && formData.state && formData.yearsInBusiness;
+  const step1Valid = formData.businessName && formData.contactEmail && formData.password.length >= 8 && formData.whatsapp && formData.city && formData.state && formData.yearsInBusiness;
   const step2Valid = formData.services.length > 0 && formData.systemSizes.length > 0;
   const step3Valid = formData.ref1Name && formData.ref1Phone && formData.ref2Name && formData.ref2Phone;
 
@@ -204,7 +216,7 @@ export default function ForBuildersPage() {
           {step === 1 && (
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">Business name *</label>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">Company name *</label>
                 <input
                   type="text"
                   value={formData.businessName}
@@ -212,6 +224,38 @@ export default function ForBuildersPage() {
                   placeholder="SunPower Installations"
                   className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
                 />
+                {formData.businessName && (
+                  <div className="mt-2 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3">
+                    <p className="text-slate-500 text-xs mb-1">Your profile URL will be:</p>
+                    <p className="font-mono text-sm text-amber-600">solarbuilders.ng/company/{toSlug(formData.businessName)}</p>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">Contact email *</label>
+                <input
+                  type="email"
+                  value={formData.contactEmail}
+                  onChange={e => updateForm('contactEmail', e.target.value)}
+                  placeholder="info@sunpower.ng"
+                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">Password *</label>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={e => updateForm('password', e.target.value)}
+                  placeholder="Min 8 characters"
+                  minLength={8}
+                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                />
+                {formData.password.length > 0 && formData.password.length < 8 && (
+                  <p className="text-red-400 text-xs mt-1">{8 - formData.password.length} more characters needed</p>
+                )}
               </div>
 
               <div>
@@ -225,16 +269,38 @@ export default function ForBuildersPage() {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-[#0A0F1E] mb-2">City *</label>
+                  <input
+                    type="text"
+                    value={formData.city}
+                    onChange={e => updateForm('city', e.target.value)}
+                    placeholder="Lekki"
+                    className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#0A0F1E] mb-2">State *</label>
+                  <select
+                    value={formData.state}
+                    onChange={e => updateForm('state', e.target.value)}
+                    className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                  >
+                    <option value="">Select state</option>
+                    {NIGERIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
+
               <div>
-                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">State *</label>
-                <select
-                  value={formData.state}
-                  onChange={e => updateForm('state', e.target.value)}
-                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] focus:outline-none focus:border-[#F59E0B] transition-colors"
-                >
-                  <option value="">Select your state</option>
-                  {NIGERIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <label className="block text-sm font-medium text-[#0A0F1E] mb-2">Company logo</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => updateForm('logo', e.target.files?.[0] || null)}
+                  className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100"
+                />
               </div>
 
               <div>

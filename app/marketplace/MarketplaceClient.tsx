@@ -146,10 +146,10 @@ export default function MarketplaceClient() {
                       )}
                     </div>
                     <div className="p-5">
-                      <div className="flex flex-wrap gap-1.5 mb-3">
+                      <div className="flex flex-wrap gap-1.5 mb-2">
                         {builder.packages.map(pkg => (
-                          <span key={pkg.kva} className="bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                            {pkg.kva}kVA
+                          <span key={pkg.kva} className="inline-flex items-center gap-1 bg-slate-900 text-amber-400 text-sm font-heading font-extrabold px-3 py-1.5 rounded-lg">
+                            ⚡ {pkg.kva}kVA System
                           </span>
                         ))}
                       </div>
@@ -177,7 +177,7 @@ export default function MarketplaceClient() {
                         From {formatNaira(builder.startingPrice)}
                       </p>
                       <div className="flex gap-2">
-                        <Link href={`/builders/${builder.slug}`}
+                        <Link href={`/company/${builder.slug}`}
                           className="flex-1 border-2 border-[#0A0F1E] text-[#0A0F1E] text-sm font-heading font-semibold py-2.5 rounded-full text-center hover:bg-[#0A0F1E] hover:text-white transition-colors">
                           View Profile
                         </Link>

@@ -45,10 +45,10 @@ function BuilderCard({ builder }: { builder: typeof BUILDERS[0] }) {
         )}
       </div>
       <div className="p-5">
-        <div className="flex flex-wrap gap-1.5 mb-3">
+        <div className="flex flex-wrap gap-1.5 mb-2">
           {builder.packages.map(pkg => (
-            <span key={pkg.kva} className="bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
-              {pkg.kva}kVA
+            <span key={pkg.kva} className="inline-flex items-center gap-1 bg-slate-900 text-amber-400 text-sm font-heading font-extrabold px-3 py-1.5 rounded-lg">
+              ⚡ {pkg.kva}kVA System
             </span>
           ))}
         </div>
@@ -70,7 +70,7 @@ function BuilderCard({ builder }: { builder: typeof BUILDERS[0] }) {
           From {formatNaira(builder.startingPrice)}
         </p>
         <div className="flex gap-2">
-          <Link href={`/builders/${builder.slug}`}
+          <Link href={`/company/${builder.slug}`}
             className="flex-1 border border-slate-200 hover:border-slate-400 text-slate-700 text-sm font-semibold py-2.5 rounded-full text-center transition-colors">
             View Profile
           </Link>
@@ -117,7 +117,7 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-6">
               Nigeria&apos;s #1 Solar Marketplace ⚡
             </div>
-            <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6">
+            <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6 min-h-[1.2em]">
               Find. <RotatingText /><br />Go Solar.
             </h1>
             <p className="text-slate-500 text-xl leading-relaxed mb-8 max-w-xl">

@@ -14,10 +14,10 @@ export default function RotatingText() {
   }, []);
 
   return (
-    <span className="inline-block relative">
+    <span className="inline-block min-w-[280px] md:min-w-[420px] overflow-hidden leading-[1.1] align-bottom">
       <span
         key={index}
-        className="inline-block animate-[fadeSlideIn_0.5s_ease-out]"
+        className="inline-block text-3xl md:text-5xl lg:text-6xl text-amber-500 animate-[fadeSlideIn_0.5s_ease-out]"
       >
         {WORDS[index]}
       </span>
