@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown } from 'lucide-react';
+import ResultsCarousel from '@/components/ui/ResultsCarousel';
 
 interface ApplianceItem {
   id: string;
@@ -199,6 +200,8 @@ export default function CalculatorPage() {
     3: 'Light Appliances',
   };
 
+  const [appliancesOpen, setAppliancesOpen] = useState(false);
+
   if (showResults) {
     const result = calculateSystem(selectedAppliances);
 
@@ -210,6 +213,7 @@ export default function CalculatorPage() {
             <ArrowLeft className="w-4 h-4" /> Recalculate
           </button>
 
+          {/* 1. Summary bar */}
           <div className="bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-2xl p-5 mb-8 flex items-start gap-3">
             <span className="text-3xl">⚡</span>
             <div>
@@ -218,104 +222,42 @@ export default function CalculatorPage() {
             </div>
           </div>
 
-          <div className="space-y-4 mb-8">
-            {/* Budget */}
-            <div className="bg-white rounded-2xl border border-[#E2E8F0] p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">💰</span>
-                  <h3 className="font-heading font-bold text-[#0A0F1E] text-lg">Budget System</h3>
-                </div>
-                <span className="text-xs bg-[#F8FAFC] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0]">~{result.budget.coverage}% coverage</span>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                {[
-                  { label: 'Inverter', value: `${result.budget.kva}kVA` },
-                  { label: 'Battery Bank', value: `${result.budget.batteries}× 200Ah` },
-                  { label: 'Solar Panels', value: `${result.budget.panels}× ${result.budget.panelWatts}W` },
-                  { label: 'Est. Cost', value: `${formatNaira(result.budget.minCost)}–${formatNaira(result.budget.maxCost)}` },
-                ].map(item => (
-                  <div key={item.label}>
-                    <p className="text-xs text-[#94A3B8] mb-0.5">{item.label}</p>
-                    <p className="font-heading font-bold text-[#0A0F1E]">{item.value}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="text-[#64748B] text-sm">⚠️ {result.budget.note}</p>
-            </div>
-
-            {/* Standard — Recommended */}
-            <div className="bg-white rounded-2xl border-2 border-[#F59E0B] p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">⚡</span>
-                  <h3 className="font-heading font-bold text-[#0A0F1E] text-xl">Standard System</h3>
-                </div>
-                <span className="bg-[#F59E0B] text-[#0A0F1E] text-xs font-heading font-bold px-3 py-1 rounded-full">★ Recommended</span>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                {[
-                  { label: 'Inverter', value: `${result.standard.kva}kVA` },
-                  { label: 'Battery Bank', value: `${result.standard.batteries}× 200Ah` },
-                  { label: 'Solar Panels', value: `${result.standard.panels}× ${result.standard.panelWatts}W` },
-                  { label: 'Est. Cost', value: `${formatNaira(result.standard.minCost)}–${formatNaira(result.standard.maxCost)}` },
-                ].map(item => (
-                  <div key={item.label}>
-                    <p className="text-xs text-[#94A3B8] mb-0.5">{item.label}</p>
-                    <p className="font-heading font-bold text-[#0A0F1E] text-lg">{item.value}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="text-[#059669] text-sm font-medium">✅ {result.standard.note}</p>
-            </div>
-
-            {/* Premium */}
-            <div className="bg-white rounded-2xl border border-[#E2E8F0] p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">👑</span>
-                  <h3 className="font-heading font-bold text-[#0A0F1E] text-lg">Premium System</h3>
-                </div>
-                <span className="text-xs bg-[#F8FAFC] text-[#64748B] px-3 py-1 rounded-full border border-[#E2E8F0]">Max headroom</span>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                {[
-                  { label: 'Inverter', value: `${result.premium.kva}kVA` },
-                  { label: 'Battery Bank', value: `${result.premium.batteries}× 200Ah` },
-                  { label: 'Solar Panels', value: `${result.premium.panels}× ${result.premium.panelWatts}W` },
-                  { label: 'Est. Cost', value: `${formatNaira(result.premium.minCost)}–${formatNaira(result.premium.maxCost)}` },
-                ].map(item => (
-                  <div key={item.label}>
-                    <p className="text-xs text-[#94A3B8] mb-0.5">{item.label}</p>
-                    <p className="font-heading font-bold text-[#0A0F1E]">{item.value}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="text-[#059669] text-sm font-medium">✅ {result.premium.note}</p>
-            </div>
+          {/* 2. Results Carousel */}
+          <div className="mb-8">
+            <ResultsCarousel result={result} selectedAppliances={selectedAppliances} />
           </div>
 
+          {/* 3. Collapsible appliance list */}
           {selectedAppliances.length > 0 && (
-            <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] p-6 mb-6">
-              <h3 className="font-heading font-semibold text-[#64748B] text-xs uppercase tracking-widest mb-4">Your appliances</h3>
-              <div className="space-y-2">
-                {selectedAppliances.map(appliance => (
-                  <div key={appliance.id} className="flex items-center justify-between py-2 border-b border-[#E2E8F0] last:border-0">
-                    <span className="text-[#0A0F1E] text-sm">{appliance.qty}× {appliance.name}</span>
-                    <button onClick={() => setQty(appliance.id, 0)} className="text-[#94A3B8] hover:text-red-500 transition-colors p-1">
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+            <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] mb-6">
+              <button
+                onClick={() => setAppliancesOpen(!appliancesOpen)}
+                className="w-full flex items-center justify-between p-5"
+              >
+                <h3 className="font-heading font-semibold text-[#64748B] text-xs uppercase tracking-widest">Your selected appliances ({selectedAppliances.length})</h3>
+                <ChevronDown className={`w-4 h-4 text-[#94A3B8] transition-transform ${appliancesOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {appliancesOpen && (
+                <div className="px-5 pb-5 space-y-2">
+                  {selectedAppliances.map(appliance => (
+                    <div key={appliance.id} className="flex items-center justify-between py-2 border-b border-[#E2E8F0] last:border-0">
+                      <span className="text-[#0A0F1E] text-sm">{appliance.qty}× {appliance.name}</span>
+                      <button onClick={() => setQty(appliance.id, 0)} className="text-[#94A3B8] hover:text-red-500 transition-colors p-1">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
+          {/* 4. Big CTA */}
           <Link
             href="/marketplace"
             className="w-full bg-[#F59E0B] text-[#0A0F1E] py-5 rounded-full font-heading font-bold text-xl text-center flex items-center justify-center gap-2 hover:bg-[#D97706] transition-colors"
           >
-            Ready to get quotes? Browse matched builders →
+            Browse matched builders →
           </Link>
         </div>
         <Footer />
