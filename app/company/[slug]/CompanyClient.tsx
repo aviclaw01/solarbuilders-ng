@@ -9,6 +9,13 @@ import ReviewForm from '@/components/ui/ReviewForm';
 const TABS = ['Products', 'About', 'Gallery', 'Reviews'] as const;
 type Tab = typeof TABS[number];
 
+function getOutcome(kva: number): string {
+  if (kva <= 3.5) return "Powers lights, fans, fridge, TV — no AC";
+  if (kva <= 5) return "Powers everything including 1 standard AC unit";
+  if (kva <= 7.5) return "Powers full home — multiple ACs, all appliances";
+  return "Full commercial or large home — unlimited capacity";
+}
+
 const SERVICE_MAP: Record<string, { icon: string; desc: string }> = {
   'Full Installation': { icon: '🔧', desc: 'End-to-end design, supply, and installation' },
   'System Design': { icon: '📐', desc: 'Custom load analysis and system sizing' },
@@ -64,6 +71,7 @@ export default function CompanyClient({ builder }: { builder: Builder }) {
                   ⚡ {pkg.kva}kVA
                 </div>
                 <h3 className="font-heading font-bold text-slate-900 text-lg mb-2">{pkg.name}</h3>
+                <p className="text-emerald-700 font-semibold text-sm mb-2">{getOutcome(pkg.kva)}</p>
                 <p className="text-slate-500 text-sm mb-4 leading-relaxed">{pkg.description}</p>
                 <p className="font-heading font-extrabold text-amber-500 text-xl mb-4">{formatNairaFull(pkg.price)}</p>
                 <a

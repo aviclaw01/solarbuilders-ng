@@ -6,6 +6,13 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import { BUILDERS, getBuilderBySlug, formatNairaFull } from '@/lib/mock-data';
 import { CheckCircle, Star, MapPin, ArrowLeft, Clock, Calendar, Briefcase } from 'lucide-react';
+
+function getOutcome(kva: number): string {
+  if (kva <= 3.5) return "Powers lights, fans, fridge, TV — no AC";
+  if (kva <= 5) return "Powers everything including 1 standard AC unit";
+  if (kva <= 7.5) return "Powers full home — multiple ACs, all appliances";
+  return "Full commercial or large home — unlimited capacity";
+}
 import ReviewForm from '@/components/ui/ReviewForm';
 
 interface Props {
@@ -193,6 +200,7 @@ export default async function BuilderProfilePage({ params }: Props) {
                     {i === 0 && <span className="inline-block bg-[#F59E0B] text-[#0A0F1E] text-xs font-heading font-bold px-3 py-1 rounded-full mb-3">Recommended</span>}
                     <div className="inline-flex items-center gap-1 bg-amber-400 text-slate-900 text-xs font-extrabold px-3 py-1 rounded-full mb-3">⚡ {pkg.kva}kVA</div>
                     <h3 className="font-heading font-bold text-[#0A0F1E] text-lg mb-2">{pkg.name}</h3>
+                    <p className="text-emerald-700 font-semibold text-sm mb-2">{getOutcome(pkg.kva)}</p>
                     <p className="text-[#64748B] text-sm mb-4 leading-relaxed">{pkg.description}</p>
                     <p className="font-heading font-extrabold text-[#F59E0B] text-xl">{formatNairaFull(pkg.price)}</p>
                   </div>
