@@ -398,7 +398,17 @@ export default function ForBuildersPage() {
               </button>
             ) : (
               <button
-                onClick={() => step3Valid && setSubmitted(true)}
+                onClick={async () => {
+                  if (!step3Valid) return;
+                  try {
+                    await fetch('/api/builder-signup', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(formData),
+                    });
+                  } catch {}
+                  setSubmitted(true);
+                }}
                 disabled={!step3Valid}
                 className={`flex-1 py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-2 transition-colors ${
                   step3Valid

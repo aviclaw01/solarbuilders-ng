@@ -9,6 +9,7 @@ import HomepageClient from '@/components/ui/HomepageClient';
 import UseCaseCarousel from '@/components/ui/UseCaseCarousel';
 import CountdownCTA from '@/components/ui/CountdownCTA';
 import RotatingText from '@/components/ui/RotatingText';
+import LeadCaptureModal from '@/components/ui/LeadCaptureModal';
 
 export const metadata: Metadata = {
   title: "Nigeria's Verified Solar Marketplace — Free Calculator | SolarBuilders.ng",
@@ -499,6 +500,7 @@ export default function HomePage() {
       {/* ──────────────── COUNTDOWN CTA ──────────────── */}
       <CountdownCTA />
 
+      <LeadCaptureModal />
       <Footer />
     </div>
   );

@@ -6,6 +6,7 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import { BUILDERS, getBuilderBySlug, formatNairaFull } from '@/lib/mock-data';
 import { CheckCircle, Star, MapPin, ArrowLeft, Clock, Calendar, Briefcase } from 'lucide-react';
+import ReviewForm from '@/components/ui/ReviewForm';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -201,6 +202,8 @@ export default async function BuilderProfilePage({ params }: Props) {
                   </div>
                 ))}
               </div>
+
+              <ReviewForm builderSlug={builder.slug} builderName={builder.name} />
             </div>
 
             {/* Calculator CTA */}
