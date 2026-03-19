@@ -128,6 +128,16 @@ export default async function BuilderProfilePage({ params }: Props) {
         </div>
       </div>
 
+      {/* Metrics bar */}
+      <div className="bg-amber-50 border-b border-amber-100 px-4 py-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div><div className="font-heading font-extrabold text-slate-900 text-2xl">{builder.jobsCompleted}+</div><div className="text-slate-500 text-sm">Jobs Completed</div></div>
+          <div><div className="font-heading font-extrabold text-slate-900 text-2xl">{builder.rating}</div><div className="text-slate-500 text-sm">Average Rating</div></div>
+          <div><div className="font-heading font-extrabold text-slate-900 text-2xl">{builder.responseTime}</div><div className="text-slate-500 text-sm">Response Time</div></div>
+          <div><div className="font-heading font-extrabold text-slate-900 text-2xl">Since {builder.yearFounded}</div><div className="text-slate-500 text-sm">In Business</div></div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 py-10 pb-32 md:pb-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Main content — col-span-2 */}
@@ -141,10 +151,26 @@ export default async function BuilderProfilePage({ params }: Props) {
             {/* Services */}
             <div>
               <h2 className="font-heading font-bold text-[#0A0F1E] text-2xl mb-4">Services</h2>
-              <div className="flex flex-wrap gap-2">
-                {builder.services.map(s => (
-                  <span key={s} className="px-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] text-[#0A0F1E] text-sm rounded-full font-medium">{s}</span>
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {builder.services.map(s => {
+                  const map: Record<string, {icon:string;desc:string}> = {
+                    "Full Installation": {icon:"🔧", desc:"End-to-end design, supply, and installation"},
+                    "System Design": {icon:"📐", desc:"Custom load analysis and system sizing"},
+                    "Residential": {icon:"🏠", desc:"Home systems from 1.5kVA to 15kVA"},
+                    "Commercial": {icon:"🏢", desc:"Office and retail solutions, 10kVA+"},
+                    "Off-grid": {icon:"🔋", desc:"Complete battery-backed, no PHCN needed"},
+                    "Hybrid": {icon:"⚡", desc:"Grid-tied + battery backup systems"},
+                    "Repair": {icon:"🛠️", desc:"Fault diagnosis and component replacement"},
+                    "Maintenance": {icon:"🔍", desc:"Periodic checks and performance optimization"},
+                  };
+                  const d = map[s] || {icon:"✅", desc:""};
+                  return (
+                    <div key={s} className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                      <span className="text-xl">{d.icon}</span>
+                      <div><div className="font-heading font-semibold text-slate-900 text-sm">{s}</div><div className="text-slate-500 text-xs">{d.desc}</div></div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -165,6 +191,7 @@ export default async function BuilderProfilePage({ params }: Props) {
                 {builder.packages.map((pkg, i) => (
                   <div key={pkg.name} className={`rounded-2xl border-2 p-6 ${i === 0 ? 'border-[#F59E0B]' : 'border-[#E2E8F0]'}`}>
                     {i === 0 && <span className="inline-block bg-[#F59E0B] text-[#0A0F1E] text-xs font-heading font-bold px-3 py-1 rounded-full mb-3">Recommended</span>}
+                    <div className="inline-flex items-center gap-1 bg-amber-400 text-slate-900 text-xs font-extrabold px-3 py-1 rounded-full mb-3">⚡ {pkg.kva}kVA</div>
                     <h3 className="font-heading font-bold text-[#0A0F1E] text-lg mb-2">{pkg.name}</h3>
                     <p className="text-[#64748B] text-sm mb-4 leading-relaxed">{pkg.description}</p>
                     <p className="font-heading font-extrabold text-[#F59E0B] text-xl">{formatNairaFull(pkg.price)}</p>

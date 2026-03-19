@@ -12,33 +12,34 @@ interface ApplianceItem {
   emoji: string;
   watts: number;
   qty: number;
+  hoursPerDay: number;
 }
 
 const STEP1_APPLIANCES: Omit<ApplianceItem, 'qty'>[] = [
-  { id: 'ac_1_5hp', name: 'Air Con (1.5HP)', emoji: '🌬️', watts: 1200 },
-  { id: 'deep_freezer', name: 'Deep Freezer', emoji: '❄️', watts: 250 },
-  { id: 'refrigerator', name: 'Refrigerator', emoji: '🧊', watts: 200 },
-  { id: 'water_pump', name: 'Water Pump', emoji: '🚿', watts: 750 },
-  { id: 'washing_machine', name: 'Washing Machine', emoji: '🧺', watts: 500 },
-  { id: 'water_heater', name: 'Water Heater', emoji: '♨️', watts: 2000 },
+  { id: 'ac_1_5hp', name: 'Air Con (1.5HP)', emoji: '🌬️', watts: 1200, hoursPerDay: 4 },
+  { id: 'deep_freezer', name: 'Deep Freezer', emoji: '❄️', watts: 250, hoursPerDay: 8 },
+  { id: 'refrigerator', name: 'Refrigerator', emoji: '🧊', watts: 200, hoursPerDay: 8 },
+  { id: 'water_pump', name: 'Water Pump', emoji: '🚿', watts: 750, hoursPerDay: 2 },
+  { id: 'washing_machine', name: 'Washing Machine', emoji: '🧺', watts: 500, hoursPerDay: 1 },
+  { id: 'water_heater', name: 'Water Heater', emoji: '♨️', watts: 2000, hoursPerDay: 1 },
 ];
 
 const STEP2_APPLIANCES: Omit<ApplianceItem, 'qty'>[] = [
-  { id: 'tv_32', name: 'TV (32")', emoji: '📺', watts: 60 },
-  { id: 'tv_55', name: 'TV (55"+)', emoji: '🖥️', watts: 150 },
-  { id: 'laptop', name: 'Laptop', emoji: '💻', watts: 65 },
-  { id: 'desktop_pc', name: 'Desktop PC', emoji: '🖨️', watts: 200 },
-  { id: 'microwave', name: 'Microwave', emoji: '📦', watts: 1000 },
-  { id: 'standing_fan', name: 'Standing Fan', emoji: '🌀', watts: 75 },
-  { id: 'decoder', name: 'DSTV/Decoder', emoji: '📡', watts: 25 },
+  { id: 'tv_32', name: 'TV (32")', emoji: '📺', watts: 60, hoursPerDay: 6 },
+  { id: 'tv_55', name: 'TV (55"+)', emoji: '🖥️', watts: 150, hoursPerDay: 6 },
+  { id: 'laptop', name: 'Laptop', emoji: '💻', watts: 65, hoursPerDay: 8 },
+  { id: 'desktop_pc', name: 'Desktop PC', emoji: '🖨️', watts: 200, hoursPerDay: 8 },
+  { id: 'microwave', name: 'Microwave', emoji: '📦', watts: 1000, hoursPerDay: 0.5 },
+  { id: 'standing_fan', name: 'Standing Fan', emoji: '🌀', watts: 75, hoursPerDay: 8 },
+  { id: 'decoder', name: 'DSTV/Decoder', emoji: '📡', watts: 25, hoursPerDay: 6 },
 ];
 
 const STEP3_APPLIANCES: Omit<ApplianceItem, 'qty'>[] = [
-  { id: 'led_bulb', name: 'LED Bulb', emoji: '💡', watts: 10 },
-  { id: 'phone_charger', name: 'Phone Charger', emoji: '📱', watts: 15 },
-  { id: 'wifi_router', name: 'WiFi Router', emoji: '📻', watts: 15 },
-  { id: 'ceiling_fan', name: 'Ceiling Fan', emoji: '🌬️', watts: 70 },
-  { id: 'security_light', name: 'Security Light', emoji: '💡', watts: 30 },
+  { id: 'led_bulb', name: 'LED Bulb', emoji: '💡', watts: 10, hoursPerDay: 8 },
+  { id: 'phone_charger', name: 'Phone Charger', emoji: '📱', watts: 15, hoursPerDay: 4 },
+  { id: 'wifi_router', name: 'WiFi Router', emoji: '📻', watts: 15, hoursPerDay: 24 },
+  { id: 'ceiling_fan', name: 'Ceiling Fan', emoji: '🌬️', watts: 70, hoursPerDay: 8 },
+  { id: 'security_light', name: 'Security Light', emoji: '💡', watts: 30, hoursPerDay: 12 },
 ];
 
 const TYPICAL_HOME_PRESET = [
@@ -62,8 +63,8 @@ function roundUpKva(watts: number): number {
 
 function calculateSystem(appliances: ApplianceItem[]) {
   const totalWatts = appliances.filter(a => a.qty > 0).reduce((sum, a) => sum + a.watts * a.qty, 0);
-  const dailyKwh = (totalWatts * 6) / 1000;
-  
+  const dailyKwh = appliances.filter(a => a.qty > 0).reduce((sum, a) => sum + (a.watts * a.qty * a.hoursPerDay) / 1000, 0);
+
   const budgetWatts = totalWatts * 0.6;
   const budgetKva = roundUpKva(budgetWatts);
   const budgetBatteries = Math.max(2, Math.ceil((budgetWatts * 4) / (24 * 0.5 * 0.8 * 200)));
@@ -120,6 +121,12 @@ export default function CalculatorPage() {
   const [step, setStep] = useState(1);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
+  const [hours, setHours] = useState<Record<string, number>>({});
+  const [customAppliances, setCustomAppliances] = useState<ApplianceItem[]>([]);
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customName, setCustomName] = useState('');
+  const [customWatts, setCustomWatts] = useState('');
+  const [customHours, setCustomHours] = useState('4');
 
   useEffect(() => {
     try {
@@ -127,18 +134,46 @@ export default function CalculatorPage() {
       if (saved) {
         const data = JSON.parse(saved);
         setQuantities(data.quantities || {});
+        setHours(data.hours || {});
+        setCustomAppliances(data.customAppliances || []);
       }
     } catch {}
   }, []);
 
   useEffect(() => {
     try {
-      localStorage.setItem('sb_calculator', JSON.stringify({ quantities }));
+      localStorage.setItem('sb_calculator', JSON.stringify({ quantities, hours, customAppliances }));
     } catch {}
-  }, [quantities]);
+  }, [quantities, hours, customAppliances]);
 
   const setQty = (id: string, qty: number) => {
     setQuantities(prev => ({ ...prev, [id]: Math.max(0, qty) }));
+  };
+
+  const getHours = (id: string, defaultHours: number) => hours[id] ?? defaultHours;
+  const setItemHours = (id: string, h: number) => {
+    setHours(prev => ({ ...prev, [id]: Math.max(1, Math.min(24, h)) }));
+  };
+
+  const addCustomAppliance = () => {
+    if (!customName.trim() || !customWatts) return;
+    const newItem: ApplianceItem = {
+      id: `custom_${Date.now()}`,
+      name: customName.trim(),
+      emoji: '⚙️',
+      watts: Number(customWatts),
+      qty: 1,
+      hoursPerDay: Number(customHours) || 4,
+    };
+    setCustomAppliances(prev => [...prev, newItem]);
+    setCustomName('');
+    setCustomWatts('');
+    setCustomHours('4');
+    setShowCustomForm(false);
+  };
+
+  const removeCustomAppliance = (id: string) => {
+    setCustomAppliances(prev => prev.filter(a => a.id !== id));
   };
 
   const applyTypicalHome = () => {
@@ -148,9 +183,10 @@ export default function CalculatorPage() {
   };
 
   const allAppliances: ApplianceItem[] = [
-    ...STEP1_APPLIANCES.map(a => ({ ...a, qty: quantities[a.id] || 0 })),
-    ...STEP2_APPLIANCES.map(a => ({ ...a, qty: quantities[a.id] || 0 })),
-    ...STEP3_APPLIANCES.map(a => ({ ...a, qty: quantities[a.id] || 0 })),
+    ...STEP1_APPLIANCES.map(a => ({ ...a, qty: quantities[a.id] || 0, hoursPerDay: getHours(a.id, a.hoursPerDay) })),
+    ...STEP2_APPLIANCES.map(a => ({ ...a, qty: quantities[a.id] || 0, hoursPerDay: getHours(a.id, a.hoursPerDay) })),
+    ...STEP3_APPLIANCES.map(a => ({ ...a, qty: quantities[a.id] || 0, hoursPerDay: getHours(a.id, a.hoursPerDay) })),
+    ...customAppliances,
   ];
 
   const selectedAppliances = allAppliances.filter(a => a.qty > 0);
@@ -341,10 +377,98 @@ export default function CalculatorPage() {
                   onDecrement={() => setQty(appliance.id, qty - 1)}
                   onIncrement={() => setQty(appliance.id, qty + 1)}
                 />
+                {qty > 0 && (
+                  <div className="flex items-center justify-center gap-1.5 mt-2">
+                    <button
+                      onClick={() => setItemHours(appliance.id, getHours(appliance.id, appliance.hoursPerDay) - 1)}
+                      className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold hover:bg-amber-200 transition-colors"
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <span className="text-amber-600 text-xs font-semibold min-w-[52px] text-center">
+                      ⏱ {getHours(appliance.id, appliance.hoursPerDay)}h/day
+                    </span>
+                    <button
+                      onClick={() => setItemHours(appliance.id, getHours(appliance.id, appliance.hoursPerDay) + 1)}
+                      className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold hover:bg-amber-200 transition-colors"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
+
+        {step === 3 && (
+          <div className="mb-8">
+            <h3 className="font-heading font-semibold text-[#0A0F1E] text-sm mb-3">Custom Appliances</h3>
+            {customAppliances.length > 0 && (
+              <div className="space-y-2 mb-3">
+                {customAppliances.map(ca => (
+                  <div key={ca.id} className="flex items-center justify-between bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-xl px-4 py-3">
+                    <div>
+                      <span className="text-sm font-medium text-[#0A0F1E]">⚙️ {ca.name}</span>
+                      <span className="text-xs text-[#64748B] ml-2">{ca.watts}W · {ca.hoursPerDay}h/day</span>
+                    </div>
+                    <button onClick={() => removeCustomAppliance(ca.id)} className="text-[#94A3B8] hover:text-red-500 transition-colors p-1">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {showCustomForm ? (
+              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4 space-y-3">
+                <input
+                  type="text"
+                  placeholder="Appliance name"
+                  value={customName}
+                  onChange={e => setCustomName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:border-[#F59E0B]"
+                />
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Watts"
+                    value={customWatts}
+                    onChange={e => setCustomWatts(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:border-[#F59E0B]"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Hours/day"
+                    value={customHours}
+                    onChange={e => setCustomHours(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:border-[#F59E0B]"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={addCustomAppliance}
+                    className="flex-1 bg-[#F59E0B] text-[#0A0F1E] py-2 rounded-full font-heading font-semibold text-sm hover:bg-[#D97706] transition-colors"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={() => setShowCustomForm(false)}
+                    className="px-4 py-2 text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowCustomForm(true)}
+                className="text-sm font-semibold text-[#F59E0B] hover:text-[#D97706] transition-colors"
+              >
+                ＋ Add custom appliance
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Live load summary */}
         {totalWatts > 0 && (

@@ -45,6 +45,13 @@ function BuilderCard({ builder }: { builder: typeof BUILDERS[0] }) {
         )}
       </div>
       <div className="p-5">
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {builder.packages.map(pkg => (
+            <span key={pkg.kva} className="bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
+              {pkg.kva}kVA
+            </span>
+          ))}
+        </div>
         <h3 className="font-heading font-bold text-slate-900 text-lg mb-1">{builder.name}</h3>
         <div className="flex items-center gap-1 text-slate-500 text-sm mb-2">
           <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
