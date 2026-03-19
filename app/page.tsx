@@ -6,6 +6,9 @@ import Footer from '@/components/ui/Footer';
 import { BUILDERS, formatNaira } from '@/lib/mock-data';
 import { Star, MapPin, CheckCircle } from 'lucide-react';
 import HomepageClient from '@/components/ui/HomepageClient';
+import UseCaseCarousel from '@/components/ui/UseCaseCarousel';
+import CountdownCTA from '@/components/ui/CountdownCTA';
+import RotatingText from '@/components/ui/RotatingText';
 
 export const metadata: Metadata = {
   title: "Nigeria's Verified Solar Marketplace — Free Calculator | SolarBuilders.ng",
@@ -99,16 +102,15 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* HERO */}
+      {/* ──────────────── HERO ──────────────── */}
       <section className="bg-gradient-to-br from-white via-amber-50/30 to-white px-6 py-20 md:py-28">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
-            {/* Pill tag */}
             <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-6">
               Nigeria&apos;s #1 Solar Marketplace ⚡
             </div>
             <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6">
-              Find. Compare.<br />Go Solar.
+              Find. <RotatingText /><br />Go Solar.
             </h1>
             <p className="text-slate-500 text-xl leading-relaxed mb-8 max-w-xl">
               Size your system with our free calculator, then connect with verified builders near you.
@@ -127,8 +129,9 @@ export default function HomePage() {
                 Browse Builders
               </Link>
             </div>
+            {/* Trust row */}
             <p className="text-slate-400 text-sm font-medium">
-              200+ Verified Builders · 28 States · ₦0 to use
+              ★★★★★ 4.8 on Google · 200+ Verified Builders · ₦0 to use · 5-min setup
             </p>
           </div>
 
@@ -154,6 +157,12 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
+              {/* Result preview */}
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+                <p className="text-amber-700 font-heading font-bold text-sm text-center">
+                  Your system: 3.5kVA → ₦480k–₦750k
+                </p>
+              </div>
               <div className="bg-slate-50 rounded-xl p-4 mb-4">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-slate-500 text-xs">Estimated system size</span>
@@ -175,63 +184,129 @@ export default function HomePage() {
       {/* SOCIAL PROOF TICKER */}
       <HomepageClient />
 
-      {/* STATS BAR — navy */}
-      <section className="bg-slate-900 py-10 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {[
-              { number: '200+', label: 'Verified Builders' },
-              { number: '28', label: 'States Covered' },
-              { number: '₦0', label: 'To Use' },
-              { number: '5min', label: 'Calculator' },
-            ].map(stat => (
-              <div key={stat.label}>
-                <div className="font-heading font-extrabold text-white text-3xl md:text-4xl mb-1">{stat.number}</div>
-                <div className="text-slate-400 text-sm">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ──────────────── USE CASE CAROUSEL ──────────────── */}
+      <UseCaseCarousel />
 
-      {/* HOW IT WORKS */}
+      {/* ──────────────── FEATURE CARDS (replaces "How it works") ──────────────── */}
       <section className="bg-white py-20 md:py-28 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-4">
-            <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">Simple Process</span>
+            <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">How It Works</span>
           </div>
-          <h2 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl leading-tight mb-16">
-            Go solar in 3 steps
+          <h2 className="font-heading font-extrabold text-slate-900 text-3xl md:text-5xl leading-tight mb-16">
+            Everything you need to go solar
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-            {[
-              {
-                num: '01',
-                title: 'Calculate',
-                desc: 'Tell us what appliances you run. We calculate exactly what system size you need — free, in 60 seconds.',
-              },
-              {
-                num: '02',
-                title: 'Compare',
-                desc: 'See verified solar builders near you. Real reviews, real prices, real contact details.',
-              },
-              {
-                num: '03',
-                title: 'Go Solar',
-                desc: 'Reach out directly on WhatsApp. No middleman. No commission. Your job, your terms.',
-              },
-            ].map(step => (
-              <div key={step.num} className="relative">
-                <div className="font-heading font-extrabold text-amber-400 text-7xl mb-4 leading-none">{step.num}</div>
-                <h3 className="font-heading font-bold text-slate-900 text-2xl mb-3">{step.title}</h3>
-                <p className="text-slate-500 text-base leading-relaxed">{step.desc}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Card 1 — Calculator */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-6">
+              <div className="bg-slate-50 rounded-xl p-4 mb-5">
+                <div className="space-y-2">
+                  {['AC', 'Fridge', 'Lights'].map((item, i) => (
+                    <div key={item} className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${i < 2 ? 'border-amber-400 bg-amber-400' : 'border-slate-300'}`}>
+                        {i < 2 && <span className="text-white text-[10px]">✓</span>}
+                      </div>
+                      <span className="text-xs text-slate-600">{item}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 bg-amber-400 rounded-lg h-2 w-3/4" />
               </div>
-            ))}
+              <h3 className="font-heading font-bold text-slate-900 text-lg mb-1">Free Calculator</h3>
+              <p className="text-slate-500 text-sm">Size your system in 60 seconds. Know what you need before you talk to anyone.</p>
+            </div>
+
+            {/* Card 2 — Verified Builders */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-6">
+              <div className="bg-slate-50 rounded-xl p-4 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-slate-200 rounded-full" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-semibold text-slate-700">SunTech Installs</span>
+                      <span className="inline-flex items-center gap-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+                        <CheckCircle className="w-2.5 h-2.5" /> Verified
+                      </span>
+                    </div>
+                    <div className="flex gap-0.5">
+                      {[1,2,3,4,5].map(s => (
+                        <Star key={s} className="w-2.5 h-2.5 text-amber-400 fill-current" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h3 className="font-heading font-bold text-slate-900 text-lg mb-1">Verified Builders</h3>
+              <p className="text-slate-500 text-sm">Every builder is Nexprove-verified. Real reviews, real credentials, real work.</p>
+            </div>
+
+            {/* Card 3 — WhatsApp Direct */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-6">
+              <div className="bg-[#075E54] rounded-xl p-4 mb-5">
+                <div className="bg-white/10 rounded-lg px-3 py-2">
+                  <p className="text-white text-xs leading-relaxed">
+                    Hi, I found you on SolarBuilders.ng. Interested in a quote.
+                  </p>
+                </div>
+              </div>
+              <h3 className="font-heading font-bold text-slate-900 text-lg mb-1">WhatsApp Direct</h3>
+              <p className="text-slate-500 text-sm">Message builders directly on WhatsApp. No forms, no middleman.</p>
+            </div>
+
+            {/* Card 4 — Track Savings */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-6">
+              <div className="bg-slate-50 rounded-xl p-4 mb-5 text-center">
+                <p className="font-heading font-extrabold text-slate-900 text-2xl mb-0.5">₦180,000</p>
+                <p className="text-slate-500 text-[10px] font-medium">saved this month</p>
+              </div>
+              <h3 className="font-heading font-bold text-slate-900 text-lg mb-1">Track Savings</h3>
+              <p className="text-slate-500 text-sm">See exactly how much you save vs. generator every month.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* FEATURED BUILDERS */}
+      {/* ──────────────── STATS + INTERLEAVED QUOTES ──────────────── */}
+      <section className="bg-slate-900 py-16 md:py-20 px-6">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {[
+            {
+              stat: '350+',
+              statLabel: 'Families Powered',
+              quote: 'My generator has been off since August 2025.',
+              name: 'Tunde A.',
+              city: 'Lagos',
+            },
+            {
+              stat: '28',
+              statLabel: 'States Covered',
+              quote: 'The builder kept me in the loop via WhatsApp throughout. Parents love it.',
+              name: 'Chidinma O.',
+              city: 'London → Lagos',
+            },
+            {
+              stat: '₦180k',
+              statLabel: 'Avg/mo Saved',
+              quote: 'Generator bills dropped from ₦180k/month to basically zero.',
+              name: 'Adaeze M.',
+              city: 'Abuja',
+            },
+          ].map((item, i) => (
+            <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+              <div className="text-center md:text-left">
+                <p className="font-heading font-extrabold text-white text-4xl md:text-5xl">{item.stat}</p>
+                <p className="text-slate-400 text-sm mt-1">{item.statLabel}</p>
+              </div>
+              <div className="md:col-span-2 bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
+                <p className="text-slate-300 text-base italic mb-2">&ldquo;{item.quote}&rdquo;</p>
+                <p className="text-amber-400 text-sm font-semibold">{item.name} · {item.city}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ──────────────── FEATURED BUILDERS ──────────────── */}
       <section className="bg-slate-50 py-20 md:py-28 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-end justify-between mb-12">
@@ -258,7 +333,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* WHY SOLARBUILDERS.NG — trust section */}
+      {/* ──────────────── WHY SOLARBUILDERS + TRUST ──────────────── */}
       <section className="bg-white py-20 md:py-28 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <div>
@@ -278,7 +353,7 @@ export default function HomePage() {
               },
               {
                 title: 'Free System Calculator',
-                desc: 'Size your system before you talk to anyone. Know exactly what you need — so you can&apos;t be upsold something you don&apos;t.',
+                desc: 'Size your system before you talk to anyone. Know exactly what you need — so you can\'t be upsold something you don\'t.',
               },
             ].map(feature => (
               <div key={feature.title} className="flex gap-4">
@@ -297,7 +372,58 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* DIASPORA SECTION */}
+      {/* ──────────────── STOP THE CHAOS ──────────────── */}
+      <section className="bg-white py-20 md:py-28 px-6">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="font-heading font-extrabold text-slate-900 text-3xl md:text-5xl leading-tight text-center mb-4">
+            Stop managing 5 contractor WhatsApps
+          </h2>
+          <p className="text-slate-500 text-lg text-center mb-12 max-w-2xl mx-auto">
+            Going solar in Nigeria shouldn&apos;t feel like a part-time job.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Before */}
+            <div className="bg-red-50 border border-red-100 rounded-2xl p-6">
+              <p className="font-heading font-bold text-red-800 text-sm uppercase tracking-wide mb-5">Before SolarBuilders</p>
+              <ul className="space-y-3.5">
+                {[
+                  'Unknown contractor credentials',
+                  'Price hidden until last minute',
+                  'No updates during install',
+                  'Warranty? Good luck.',
+                  '5 WhatsApp threads going',
+                ].map(item => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="text-red-400 flex-shrink-0 mt-0.5">❌</span>
+                    <span className="text-red-900 text-sm">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* After */}
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
+              <p className="font-heading font-bold text-emerald-800 text-sm uppercase tracking-wide mb-5">With SolarBuilders</p>
+              <ul className="space-y-3.5">
+                {[
+                  'Nexprove-verified & reviewed',
+                  'Transparent pricing upfront',
+                  'WhatsApp progress updates',
+                  'Builder accountability guaranteed',
+                  'One platform, one conversation',
+                ].map(item => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="text-emerald-500 flex-shrink-0 mt-0.5">✅</span>
+                    <span className="text-emerald-900 text-sm">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ──────────────── DIASPORA SECTION ──────────────── */}
       <section className="bg-slate-900 py-20 md:py-28 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
@@ -335,7 +461,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
+      {/* ──────────────── TESTIMONIALS ──────────────── */}
       <section className="bg-white py-20 md:py-28 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
@@ -370,23 +496,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FINAL CTA — amber */}
-      <section className="bg-amber-400 py-20 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl mb-4">
-            Ready to stop paying for generator?
-          </h2>
-          <p className="text-slate-800 text-lg mb-8 max-w-xl mx-auto">
-            Use our free calculator. Takes 5 minutes. No signup required.
-          </p>
-          <Link
-            href="/calculator"
-            className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-full px-8 py-4 transition-all text-lg"
-          >
-            Calculate My System →
-          </Link>
-        </div>
-      </section>
+      {/* ──────────────── COUNTDOWN CTA ──────────────── */}
+      <CountdownCTA />
 
       <Footer />
     </div>
