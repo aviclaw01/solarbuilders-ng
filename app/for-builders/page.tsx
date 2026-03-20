@@ -624,6 +624,47 @@ export default function ForBuildersPage() {
         </div>
       </section>
 
+      
+      {/* Builder testimonials */}
+      <section className="bg-white py-16 px-6 border-t border-slate-100">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="font-heading font-extrabold text-slate-900 text-2xl md:text-3xl mb-8 text-center">
+            What builders say
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                quote: "Got my first enquiry within a week. The customer already knew their system size from the calculator — no education required, straight to quoting.",
+                name: "Emeka O.",
+                company: "SunTech Installs, Lagos",
+                jobs: "63 jobs completed"
+              },
+              {
+                quote: "Being Nexprove Verified changed how customers talk to me. They come in already trusting the process. My conversion rate doubled.",
+                name: "Kola A.",
+                company: "Brightfield Solar, Abuja",
+                jobs: "41 jobs completed"
+              },
+              {
+                quote: "The diaspora leads are gold. They already have the budget sorted — they just need a builder they can trust remotely.",
+                name: "Chidi N.",
+                company: "PH Solar Works, Port Harcourt",
+                jobs: "28 jobs completed"
+              }
+            ].map((t, i) => (
+              <div key={i} className="bg-white border border-slate-200 rounded-2xl p-6">
+                <p className="text-slate-700 text-sm leading-relaxed italic mb-4">&ldquo;{t.quote}&rdquo;</p>
+                <div>
+                  <p className="font-heading font-semibold text-slate-900 text-sm">{t.name}</p>
+                  <p className="text-slate-500 text-xs">{t.company}</p>
+                  <p className="text-amber-500 text-xs font-medium mt-1">{t.jobs}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="py-16 px-4">
         <div className="max-w-3xl mx-auto">

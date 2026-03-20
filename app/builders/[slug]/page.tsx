@@ -155,6 +155,22 @@ export default async function BuilderProfilePage({ params }: Props) {
               <p className="text-[#64748B] text-base leading-relaxed">{builder.bio}</p>
             </div>
 
+            {/* Mid-page WhatsApp CTA */}
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex items-center justify-between gap-4">
+              <div>
+                <p className="font-heading font-bold text-slate-900 text-base">Ready to get a quote?</p>
+                <p className="text-slate-500 text-sm">Contact {builder.name} directly — no commission, no middleman.</p>
+              </div>
+              <a
+                href={waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 bg-[#25D366] text-white font-heading font-bold px-5 py-3 rounded-full text-sm hover:bg-[#22c55e] transition-colors whitespace-nowrap"
+              >
+                💬 WhatsApp
+              </a>
+            </div>
+
             {/* Services */}
             <div>
               <h2 className="font-heading font-bold text-[#0A0F1E] text-2xl mb-4">Services</h2>

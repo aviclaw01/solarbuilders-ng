@@ -10,16 +10,23 @@ import { Star, MapPin, CheckCircle } from 'lucide-react';
 
 const LOCATIONS = ['All Nigeria', 'Lagos', 'Abuja', 'Port Harcourt', 'Kano', 'Enugu'];
 const SERVICE_TYPES = ['Full Installation', 'Commercial', 'Residential', 'Off-grid', 'Hybrid', 'Repair'];
+const BUDGET_OPTIONS = ['Any Budget', 'Under ₦500k', '₦500k–₦1M', 'Above ₦1M'];
 
 export default function MarketplaceClient() {
   const [locationFilter, setLocationFilter] = useState('All Nigeria');
   const [serviceFilter, setServiceFilter] = useState<string[]>([]);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [budgetFilter, setBudgetFilter] = useState('Any Budget');
+  const [notifyEmail, setNotifyEmail] = useState('');
+  const [notifySent, setNotifySent] = useState(false);
 
   const filtered = BUILDERS.filter(b => {
     if (locationFilter !== 'All Nigeria' && b.state !== locationFilter) return false;
     if (verifiedOnly && !b.verified) return false;
     if (serviceFilter.length > 0 && !serviceFilter.some(s => b.services.includes(s))) return false;
+    if (budgetFilter === 'Under ₦500k' && !b.packages.some(p => p.price < 500000)) return false;
+    if (budgetFilter === '₦500k–₦1M' && !b.packages.some(p => p.price >= 500000 && p.price <= 1000000)) return false;
+    if (budgetFilter === 'Above ₦1M' && !b.packages.some(p => p.price > 1000000)) return false;
     return true;
   });
 
@@ -35,7 +42,12 @@ export default function MarketplaceClient() {
     );
   };
 
-  const uniqueStates = new Set(BUILDERS.map(b => b.state)).size;
+  const clearFilters = () => {
+    setLocationFilter('All Nigeria');
+    setServiceFilter([]);
+    setVerifiedOnly(false);
+    setBudgetFilter('Any Budget');
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -47,34 +59,29 @@ export default function MarketplaceClient() {
           <h1 className="font-heading font-extrabold text-[#0A0F1E] text-4xl md:text-5xl mb-3">
             Find Solar Installers in Nigeria
           </h1>
-          <p className="text-[#64748B] text-lg">
-            Browse {BUILDERS.length} verified solar builders across {uniqueStates} states
-          </p>
+          <p className="text-[#64748B] text-lg">Verified builders · Direct WhatsApp contact · No commission</p>
         </div>
       </div>
 
       {/* Filter bar */}
       <div className="bg-[#F8FAFC] border-b border-[#E2E8F0] px-4 py-4 sticky top-16 z-30">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto space-y-2">
+          {/* Row 1: location + verified */}
           <div className="flex flex-wrap gap-2 items-center">
-            {/* Location pills */}
-            <div className="flex flex-wrap gap-2">
-              {LOCATIONS.map(loc => (
-                <button
-                  key={loc}
-                  onClick={() => setLocationFilter(loc)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    locationFilter === loc
-                      ? 'bg-[#0A0F1E] text-white'
-                      : 'bg-white border border-[#E2E8F0] text-[#64748B] hover:border-[#0A0F1E] hover:text-[#0A0F1E]'
-                  }`}
-                >
-                  {loc}
-                </button>
-              ))}
-            </div>
-            <div className="h-6 w-px bg-[#E2E8F0] hidden md:block mx-1"></div>
-            {/* Verified toggle */}
+            {LOCATIONS.map(loc => (
+              <button
+                key={loc}
+                onClick={() => setLocationFilter(loc)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  locationFilter === loc
+                    ? 'bg-[#0A0F1E] text-white'
+                    : 'bg-white border border-[#E2E8F0] text-[#64748B] hover:border-[#0A0F1E] hover:text-[#0A0F1E]'
+                }`}
+              >
+                {loc}
+              </button>
+            ))}
+            <div className="h-6 w-px bg-[#E2E8F0] hidden md:block mx-1" />
             <button
               onClick={() => setVerifiedOnly(!verifiedOnly)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
@@ -87,8 +94,8 @@ export default function MarketplaceClient() {
               Verified Only
             </button>
           </div>
-          {/* Service filters */}
-          <div className="flex flex-wrap gap-2 mt-2">
+          {/* Row 2: service types */}
+          <div className="flex flex-wrap gap-2">
             {SERVICE_TYPES.map(s => (
               <button
                 key={s}
@@ -103,29 +110,74 @@ export default function MarketplaceClient() {
               </button>
             ))}
           </div>
+          {/* Row 3: budget */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs text-[#94A3B8] font-medium">Budget:</span>
+            {BUDGET_OPTIONS.map(b => (
+              <button
+                key={b}
+                onClick={() => setBudgetFilter(b)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  budgetFilter === b
+                    ? 'bg-slate-900 text-amber-400'
+                    : 'bg-white border border-[#E2E8F0] text-[#64748B] hover:border-slate-900'
+                }`}
+              >
+                {b}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Results */}
       <div className="max-w-7xl mx-auto px-4 py-10">
         {sorted.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-20 max-w-md mx-auto">
             <div className="text-6xl mb-4">🔍</div>
-            <h3 className="font-heading font-bold text-[#0A0F1E] text-2xl mb-2">No builders found</h3>
-            <p className="text-[#64748B] mb-6">Try adjusting your filters</p>
-            <button
-              onClick={() => { setLocationFilter('All Nigeria'); setServiceFilter([]); setVerifiedOnly(false); }}
-              className="bg-[#F59E0B] text-[#0A0F1E] px-6 py-3 rounded-full font-heading font-semibold hover:bg-[#D97706] transition-colors"
-            >
-              Clear all filters
+            <h3 className="font-heading font-bold text-[#0A0F1E] text-2xl mb-2">
+              No verified builders in {locationFilter === 'All Nigeria' ? 'this category' : locationFilter} yet
+            </h3>
+            <p className="text-[#64748B] mb-6">We are expanding fast. Get notified when a builder joins your area.</p>
+            {notifySent ? (
+              <p className="text-emerald-600 font-semibold mb-4">Got it! We will notify you.</p>
+            ) : (
+              <div className="flex gap-2 mb-6">
+                <input
+                  type="email"
+                  value={notifyEmail}
+                  onChange={e => setNotifyEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="flex-1 border border-[#E2E8F0] rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-[#F59E0B]"
+                />
+                <button
+                  onClick={async () => {
+                    if (!notifyEmail) return;
+                    await fetch('/api/notify-me', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: notifyEmail, location: locationFilter, budget: budgetFilter }),
+                    });
+                    setNotifySent(true);
+                  }}
+                  className="bg-[#F59E0B] text-[#0A0F1E] px-5 py-2.5 rounded-full font-heading font-semibold text-sm hover:bg-[#D97706] transition-colors whitespace-nowrap"
+                >
+                  Notify Me
+                </button>
+              </div>
+            )}
+            <button onClick={clearFilters} className="text-[#64748B] text-sm underline hover:text-[#0A0F1E]">
+              Browse all builders
             </button>
           </div>
         ) : (
           <>
-            <p className="text-[#64748B] text-sm mb-6">{sorted.length} builder{sorted.length !== 1 ? 's' : ''} found</p>
+            <p className="text-[#64748B] text-sm mb-6">
+              {sorted.length} verified builder{sorted.length !== 1 ? 's' : ''} · Sorted by rating
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {sorted.map(builder => {
-                const waLink = `https://wa.me/${builder.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent('Hi, I found you on SolarBuilders.ng. I\'m interested in a solar installation.')}`;
+                const waLink = `https://wa.me/${builder.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi ${builder.name}, I found you on SolarBuilders.ng. I am interested in a solar installation.`)}`;
                 return (
                   <div key={builder.id} className="bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden hover:border-[#F59E0B] hover:shadow-lg transition-all duration-200">
                     <div className="aspect-video overflow-hidden bg-[#F8FAFC] relative">
@@ -146,10 +198,10 @@ export default function MarketplaceClient() {
                       )}
                     </div>
                     <div className="p-5">
-                      <div className="flex flex-wrap gap-1.5 mb-2">
+                      <div className="flex flex-wrap gap-1.5 mb-3">
                         {builder.packages.map(pkg => (
-                          <span key={pkg.kva} className="inline-flex items-center gap-1 bg-slate-900 text-amber-400 text-sm font-heading font-extrabold px-3 py-1.5 rounded-lg">
-                            ⚡ {pkg.kva}kVA System
+                          <span key={pkg.kva} className="inline-flex items-center gap-1 bg-slate-900 text-amber-400 text-xs font-heading font-extrabold px-2.5 py-1.5 rounded-lg">
+                            ⚡ {pkg.kva}kVA
                           </span>
                         ))}
                       </div>
@@ -165,9 +217,9 @@ export default function MarketplaceClient() {
                           ))}
                         </div>
                         <span className="font-semibold text-sm text-[#0A0F1E]">{builder.rating}</span>
-                        <span className="text-[#94A3B8] text-sm">({builder.reviewCount})</span>
+                        <span className="text-[#94A3B8] text-sm">({builder.reviewCount} verified reviews)</span>
                       </div>
-                      <div className="border-t border-[#E2E8F0] my-3"></div>
+                      <div className="border-t border-[#E2E8F0] my-3" />
                       <div className="flex flex-wrap gap-1.5 mb-3">
                         {builder.services.slice(0, 3).map(s => (
                           <span key={s} className="text-xs px-2 py-1 bg-[#F8FAFC] border border-[#E2E8F0] text-[#64748B] rounded-full">{s}</span>
@@ -177,12 +229,18 @@ export default function MarketplaceClient() {
                         From {formatNaira(builder.startingPrice)}
                       </p>
                       <div className="flex gap-2">
-                        <Link href={`/company/${builder.slug}`}
-                          className="flex-1 border-2 border-[#0A0F1E] text-[#0A0F1E] text-sm font-heading font-semibold py-2.5 rounded-full text-center hover:bg-[#0A0F1E] hover:text-white transition-colors">
+                        <Link
+                          href={`/company/${builder.slug}`}
+                          className="flex-1 border-2 border-[#0A0F1E] text-[#0A0F1E] text-sm font-heading font-semibold py-2.5 rounded-full text-center hover:bg-[#0A0F1E] hover:text-white transition-colors"
+                        >
                           View Profile
                         </Link>
-                        <a href={waLink} target="_blank" rel="noopener noreferrer"
-                          className="flex-1 bg-[#25D366] text-white text-sm font-heading font-semibold py-2.5 rounded-full text-center hover:bg-[#22c55e] transition-colors">
+                        <a
+                          href={waLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 bg-[#25D366] text-white text-sm font-heading font-semibold py-2.5 rounded-full text-center hover:bg-[#22c55e] transition-colors"
+                        >
                           💬 WhatsApp
                         </a>
                       </div>

@@ -54,7 +54,7 @@ export default function Navbar() {
                 href="/for-builders"
                 className="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2 rounded-full text-sm font-semibold transition-all"
               >
-                List Free →
+                For Builders →
               </Link>
             </div>
 
