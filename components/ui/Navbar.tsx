@@ -15,11 +15,10 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { href: '/calculator', label: 'Calculator' },
-    { href: '/marketplace', label: 'Marketplace' },
-    { href: '/blog', label: 'Blog' },
-    { href: '/about', label: 'About' },
-    { href: '/for-builders', label: 'For Builders' },
+    { href: '/calculator', label: 'Size My System' },
+    { href: '/marketplace', label: 'Find Builders' },
+    { href: '/blog', label: 'Solar Guides' },
+    { href: '/for-builders', label: 'List Your Company' },
   ];
 
   return (
@@ -50,7 +49,7 @@ export default function Navbar() {
                 href="/for-builders"
                 className="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2 rounded-full text-sm font-semibold transition-all"
               >
-                For Builders →
+                Get Listed Free
               </Link>
             </div>
 
@@ -97,7 +96,7 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="block w-full bg-amber-400 hover:bg-amber-500 text-slate-900 py-4 rounded-full text-center font-heading font-bold text-lg transition-all"
             >
-              List Your Business Free →
+              Get Listed Free →
             </Link>
           </div>
         </div>
