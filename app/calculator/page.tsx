@@ -270,17 +270,40 @@ export default function CalculatorPage() {
       <Navbar />
 
       <div className="max-w-2xl mx-auto px-4 py-10">
-        {/* Step indicator */}
+        {/* Step progress indicator */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-heading font-bold text-[#0A0F1E] text-sm">
-              Step {step} of 3 — {stepTitles[step]}
-            </span>
-            <span className="text-[#94A3B8] text-sm">{Math.round((step / 3) * 100)}%</span>
+          {/* Visual step pills */}
+          <div className="flex items-center gap-0 mb-5">
+            {[
+              { n: 1, label: 'Heavy Appliances', emoji: '⚡' },
+              { n: 2, label: 'Medium Appliances', emoji: '📺' },
+              { n: 3, label: 'Light Appliances', emoji: '💡' },
+            ].map((s, i) => (
+              <div key={s.n} className="flex items-center flex-1">
+                <div className={`flex items-center gap-2 flex-1 transition-all duration-300 ${step >= s.n ? 'opacity-100' : 'opacity-40'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-heading font-bold flex-shrink-0 transition-all duration-300 ${
+                    step > s.n ? 'bg-[#10B981] text-white' :
+                    step === s.n ? 'bg-[#F59E0B] text-[#0F172A] shadow-md' :
+                    'bg-[#E2E8F0] text-[#64748B]'
+                  }`}>
+                    {step > s.n ? '✓' : s.n}
+                  </div>
+                  <div className="hidden sm:block">
+                    <p className={`text-xs font-heading font-semibold leading-tight ${step === s.n ? 'text-[#0F172A]' : 'text-[#94A3B8]'}`}>
+                      {s.emoji} {s.label}
+                    </p>
+                  </div>
+                </div>
+                {i < 2 && (
+                  <div className={`h-0.5 w-4 flex-shrink-0 mx-1 transition-all duration-500 ${step > s.n ? 'bg-[#10B981]' : 'bg-[#E2E8F0]'}`} />
+                )}
+              </div>
+            ))}
           </div>
-          <div className="h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
+          {/* Progress bar */}
+          <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#F59E0B] rounded-full transition-all duration-300"
+              className="h-full bg-[#F59E0B] rounded-full transition-all duration-500 ease-out"
               style={{ width: `${(step / 3) * 100}%` }}
             />
           </div>
