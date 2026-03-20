@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 100" width="580" height="100">
+  <!-- Icon -->
+  <circle cx="50" cy="50" r="46" fill="#F59E0B"/>
+  <polygon points="50.0,9.0 59.9,40.1 91.0,50.0 59.9,59.9 50.0,91.0 40.1,59.9 9.0,50.0 40.1,40.1" fill="#0F172A"/>
+  <polygon points="50,43 57,50 50,57 43,50" fill="#F59E0B"/>
+  
+  <!-- Wordmark -->
+  <text x="112" y="58"
+    font-family="'Plus Jakarta Sans', 'Inter', Arial, sans-serif"
+    font-weight="700" font-size="38" letter-spacing="0.5" fill="#0F172A">SolarBuilders</text>
+  <text x="112" y="82"
+    font-family="'Plus Jakarta Sans', 'Inter', Arial, sans-serif"
+    font-weight="600" font-size="22" fill="#64748B">.ng</text>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 100" width="520" height="100">
+  <!-- Dark background version -->
+  <!-- Icon circle on dark: Navy outline, amber fill -->
+  <circle cx="50" cy="50" r="46" fill="#F59E0B"/>
+  <path d="M50,50 L38,12 L50,6 L62,12 Z" fill="#0F172A"/>
+  <path d="M50,50 L88,38 L94,50 L88,62 Z" fill="#0F172A"/>
+  <path d="M50,50 L62,88 L50,94 L38,88 Z" fill="#0F172A"/>
+  <path d="M50,50 L12,62 L6,50 L12,38 Z" fill="#0F172A"/>
+  <rect x="44" y="44" width="12" height="12" fill="#F59E0B" transform="rotate(45 50 50)"/>
+  
+  <!-- Wordmark: white for dark backgrounds -->
+  <text x="112" y="62"
+    font-family="'Plus Jakarta Sans', 'Inter', Arial, sans-serif"
+    font-weight="700"
+    font-size="40"
+    letter-spacing="0.8"
+    fill="#FAFAF7">SolarBuilders</text>
+  
+  <!-- .ng suffix: slate lightened -->
+  <text x="497" y="62"
+    font-family="'Plus Jakarta Sans', 'Inter', Arial, sans-serif"
+    font-weight="600"
+    font-size="26"
+    fill="#94A3B8">.ng</text>
+</svg>

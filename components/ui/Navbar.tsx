@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { X, Menu } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -31,13 +32,8 @@ export default function Navbar() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-amber-400 rounded-md flex items-center justify-center">
-                <span className="text-slate-900 text-sm font-bold">⚡</span>
-              </div>
-              <span className="font-heading font-bold text-base text-slate-900">
-                SolarBuilders<span className="text-amber-400">.</span>ng
-              </span>
+            <Link href="/" className="flex items-center">
+              <Logo variant="horizontal" size="md" colorMode="light" />
             </Link>
 
             {/* Desktop nav */}
@@ -74,13 +70,8 @@ export default function Navbar() {
       {open && (
         <div className="fixed inset-0 bg-white z-[200] flex flex-col p-6">
           <div className="flex justify-between items-center mb-12">
-            <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-              <div className="w-7 h-7 bg-amber-400 rounded-md flex items-center justify-center">
-                <span className="text-slate-900 text-sm font-bold">⚡</span>
-              </div>
-              <span className="font-heading font-bold text-base text-slate-900">
-                SolarBuilders<span className="text-amber-400">.</span>ng
-              </span>
+            <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
+              <Logo variant="horizontal" size="md" colorMode="light" />
             </Link>
             <button onClick={() => setOpen(false)} className="text-slate-900 p-2" aria-label="Close menu">
               <X className="w-6 h-6" />

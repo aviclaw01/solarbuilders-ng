@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 200" width="260" height="200">
+  <circle cx="130" cy="64" r="52" fill="#F59E0B"/>
+  <polygon points="130.0,18.0 141.31,52.69 176.0,64.0 141.31,75.31 130.0,110.0 118.69,75.31 84.0,64.0 118.69,52.69" fill="#0F172A"/>
+  <polygon points="130,56 138,64 130,72 122,64" fill="#F59E0B"/>
+  <text x="130" y="154" text-anchor="middle"
+    font-family="'Plus Jakarta Sans', 'Inter', Arial, sans-serif"
+    font-weight="700" font-size="28" letter-spacing="0.5" fill="#0F172A">SolarBuilders</text>
+  <text x="130" y="182" text-anchor="middle"
+    font-family="'Plus Jakarta Sans', 'Inter', Arial, sans-serif"
+    font-weight="600" font-size="20" fill="#64748B">.ng</text>
+</svg>

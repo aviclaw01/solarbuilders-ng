@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Logo from '@/components/ui/Logo';
 
 export default function Footer() {
   return (
@@ -8,12 +9,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 bg-amber-400 rounded-md flex items-center justify-center">
-                <span className="text-slate-900 text-sm font-bold">⚡</span>
-              </div>
-              <span className="font-heading font-bold text-base text-white">
-                SolarBuilders<span className="text-amber-400">.</span>ng
-              </span>
+              <Logo variant="horizontal" size="md" colorMode="dark" />
             </div>
             <p className="text-sm text-slate-500 leading-relaxed mb-4">Nigeria&apos;s verified solar marketplace. Find who you can trust.</p>
           </div>
