@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Solar Panel Maintenance: What Nigerian Homeowners Need to Know',
     description: 'Complete guide to maintaining your solar system in Nigeria.',
-    url: 'https://solarbuilders.ng/blog/solar-maintenance-nigeria',
+    url: 'https://solarbuildersng.com/blog/solar-maintenance-nigeria',
     type: 'article',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/blog/solar-maintenance-nigeria' },
+  alternates: { canonical: 'https://solarbuildersng.com/blog/solar-maintenance-nigeria' },
 };
 
 export default function SolarMaintenancePage() {

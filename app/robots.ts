@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/api/',
     },
-    sitemap: 'https://solarbuilders.ng/sitemap.xml',
+    sitemap: 'https://solarbuildersng.com/sitemap.xml',
   };
 }

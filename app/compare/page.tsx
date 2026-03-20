@@ -11,10 +11,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Solar System Comparison — Budget vs Standard vs Premium | SolarBuilders.ng',
     description: 'Compare solar system tiers for Nigerian homes and choose the right one for your budget.',
-    url: 'https://solarbuilders.ng/compare',
+    url: 'https://solarbuildersng.com/compare',
     type: 'website',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/compare' },
+  alternates: { canonical: 'https://solarbuildersng.com/compare' },
 };
 
 const TIERS = [

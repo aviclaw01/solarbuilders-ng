@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'What Size Inverter Do I Need? A Nigerian Guide',
     description: 'Step-by-step guide to choosing the right inverter size for your Nigerian home.',
-    url: 'https://solarbuilders.ng/blog/inverter-size-guide',
+    url: 'https://solarbuildersng.com/blog/inverter-size-guide',
     type: 'article',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/blog/inverter-size-guide' },
+  alternates: { canonical: 'https://solarbuildersng.com/blog/inverter-size-guide' },
 };
 
 const articleSchema = {
@@ -24,7 +24,7 @@ const articleSchema = {
   "author": { "@type": "Organization", "name": "SolarBuilders.ng" },
   "publisher": { "@type": "Organization", "name": "SolarBuilders.ng" },
   "datePublished": "2026-02-15",
-  "url": "https://solarbuilders.ng/blog/inverter-size-guide",
+  "url": "https://solarbuildersng.com/blog/inverter-size-guide",
 };
 
 export default function InverterSizeGuidePage() {

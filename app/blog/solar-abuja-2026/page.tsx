@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Solar in Abuja: Best Installers and Prices 2026 — SolarBuilders.ng',
   description: 'Complete guide to solar energy in Abuja, Nigeria. Best solar installers, 2026 prices, and everything you need to know about going solar in the FCT.',
   keywords: ['solar Abuja 2026', 'solar installer Abuja', 'solar panels Abuja price', 'best solar company Abuja Nigeria'],
-  alternates: { canonical: 'https://solarbuilders.ng/blog/solar-abuja-2026' },
+  alternates: { canonical: 'https://solarbuildersng.com/blog/solar-abuja-2026' },
 };
 
 export default function SolarAbujaPage() {

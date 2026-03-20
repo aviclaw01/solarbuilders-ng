@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Best Solar Loans in Nigeria 2026 — Carbon, FairMoney & More',
     description: 'Compare solar financing options in Nigeria to fund your solar installation.',
-    url: 'https://solarbuilders.ng/blog/solar-loans-nigeria',
+    url: 'https://solarbuildersng.com/blog/solar-loans-nigeria',
     type: 'article',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/blog/solar-loans-nigeria' },
+  alternates: { canonical: 'https://solarbuildersng.com/blog/solar-loans-nigeria' },
 };
 
 export default function SolarLoansPage() {

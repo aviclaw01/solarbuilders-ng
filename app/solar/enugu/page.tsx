@@ -13,10 +13,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Solar Installers in Enugu — Nexprove Verified',
     description: 'Find trusted solar installation companies across Enugu State, Nigeria.',
-    url: 'https://solarbuilders.ng/solar/enugu',
+    url: 'https://solarbuildersng.com/solar/enugu',
     type: 'website',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/solar/enugu' },
+  alternates: { canonical: 'https://solarbuildersng.com/solar/enugu' },
 };
 
 const faqSchema = {

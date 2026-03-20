@@ -24,10 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${builder.name} — Solar Installer in ${builder.state}`,
       description: builder.bio,
-      url: `https://solarbuilders.ng/company/${builder.slug}`,
+      url: `https://solarbuildersng.com/company/${builder.slug}`,
       type: 'website',
     },
-    alternates: { canonical: `https://solarbuilders.ng/company/${builder.slug}` },
+    alternates: { canonical: `https://solarbuildersng.com/company/${builder.slug}` },
   };
 }
 

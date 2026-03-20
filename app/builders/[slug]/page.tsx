@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "ratingValue": builder.rating.toString(),
       "reviewCount": builder.reviewCount.toString()
     },
-    "url": `https://solarbuilders.ng/builders/${builder.slug}`,
+    "url": `https://solarbuildersng.com/builders/${builder.slug}`,
     "description": builder.bio,
   };
 
@@ -53,10 +53,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${builder.name} — Solar Installer in ${builder.state}`,
       description: builder.bio,
-      url: `https://solarbuilders.ng/builders/${builder.slug}`,
+      url: `https://solarbuildersng.com/builders/${builder.slug}`,
       type: 'website',
     },
-    alternates: { canonical: `https://solarbuilders.ng/builders/${builder.slug}` },
+    alternates: { canonical: `https://solarbuildersng.com/builders/${builder.slug}` },
     other: {
       'application/ld+json': JSON.stringify(schema),
     },
@@ -85,7 +85,7 @@ export default async function BuilderProfilePage({ params }: Props) {
       "ratingValue": builder.rating.toString(),
       "reviewCount": builder.reviewCount.toString()
     },
-    "url": `https://solarbuilders.ng/builders/${builder.slug}`,
+    "url": `https://solarbuildersng.com/builders/${builder.slug}`,
   };
 
   return (

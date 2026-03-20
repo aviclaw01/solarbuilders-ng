@@ -6,7 +6,7 @@ import ContactClient from './ContactClient';
 export const metadata: Metadata = {
   title: 'Contact Us & FAQ — SolarBuilders.ng',
   description: 'Get answers to common questions about SolarBuilders.ng or reach out to our team directly.',
-  alternates: { canonical: 'https://solarbuilders.ng/contact' },
+  alternates: { canonical: 'https://solarbuildersng.com/contact' },
 };
 
 export default function ContactPage() {

@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'How to Choose a Solar Installer in Lagos',
     description: 'What to look for, red flags to avoid, and questions to ask.',
-    url: 'https://solarbuilders.ng/blog/choose-solar-installer-lagos',
+    url: 'https://solarbuildersng.com/blog/choose-solar-installer-lagos',
     type: 'article',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/blog/choose-solar-installer-lagos' },
+  alternates: { canonical: 'https://solarbuildersng.com/blog/choose-solar-installer-lagos' },
 };
 
 export default function ChooseSolarInstallerLagosPage() {

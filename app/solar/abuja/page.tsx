@@ -13,10 +13,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Solar Installers in Abuja — Nexprove Verified',
     description: 'Find trusted solar installation companies across Abuja, Nigeria.',
-    url: 'https://solarbuilders.ng/solar/abuja',
+    url: 'https://solarbuildersng.com/solar/abuja',
     type: 'website',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/solar/abuja' },
+  alternates: { canonical: 'https://solarbuildersng.com/solar/abuja' },
 };
 
 export default function SolarAbujaPage() {

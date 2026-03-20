@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'How Much Does Solar Cost in Nigeria? (2026 Guide)',
     description: 'Complete breakdown of solar prices in Nigeria — from budget to premium.',
-    url: 'https://solarbuilders.ng/blog/solar-cost-nigeria-2026',
+    url: 'https://solarbuildersng.com/blog/solar-cost-nigeria-2026',
     type: 'article',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/blog/solar-cost-nigeria-2026' },
+  alternates: { canonical: 'https://solarbuildersng.com/blog/solar-cost-nigeria-2026' },
 };
 
 export default function SolarCostNigeriaPage() {

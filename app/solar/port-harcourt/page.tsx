@@ -13,10 +13,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Solar Installers in Port Harcourt — Nexprove Verified',
     description: 'Find trusted solar installation companies across Port Harcourt, Nigeria.',
-    url: 'https://solarbuilders.ng/solar/port-harcourt',
+    url: 'https://solarbuildersng.com/solar/port-harcourt',
     type: 'website',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/solar/port-harcourt' },
+  alternates: { canonical: 'https://solarbuildersng.com/solar/port-harcourt' },
 };
 
 export default function SolarPortHarcourtPage() {

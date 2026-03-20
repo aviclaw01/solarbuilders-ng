@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { BUILDERS } from '@/lib/mock-data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://solarbuilders.ng';
+  const baseUrl = 'https://solarbuildersng.com';
   
   const staticPages = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 1.0 },

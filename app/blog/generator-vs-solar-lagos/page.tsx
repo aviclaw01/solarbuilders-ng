@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'The True Cost of Generator vs Solar in Lagos',
     description: 'Real money comparison of generator vs solar in Lagos, Nigeria.',
-    url: 'https://solarbuilders.ng/blog/generator-vs-solar-lagos',
+    url: 'https://solarbuildersng.com/blog/generator-vs-solar-lagos',
     type: 'article',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/blog/generator-vs-solar-lagos' },
+  alternates: { canonical: 'https://solarbuildersng.com/blog/generator-vs-solar-lagos' },
 };
 
 const articleSchema = {
@@ -23,7 +23,7 @@ const articleSchema = {
   "description": "A real money comparison of generator vs solar costs in Lagos, Nigeria.",
   "author": { "@type": "Organization", "name": "SolarBuilders.ng" },
   "datePublished": "2026-03-01",
-  "url": "https://solarbuilders.ng/blog/generator-vs-solar-lagos",
+  "url": "https://solarbuildersng.com/blog/generator-vs-solar-lagos",
 };
 
 export default function GeneratorVsSolarPage() {

@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Solar Energy Blog — SolarBuilders.ng',
     description: 'Expert guides and resources on solar energy in Nigeria.',
-    url: 'https://solarbuilders.ng/blog',
+    url: 'https://solarbuildersng.com/blog',
     type: 'website',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/blog' },
+  alternates: { canonical: 'https://solarbuildersng.com/blog' },
 };
 
 const ARTICLES = [

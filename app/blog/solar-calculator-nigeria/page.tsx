@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Solar Calculator Nigeria: What Size System Do I Need? — SolarBuilders.ng',
   description: 'Learn how to calculate the right solar system size for your Nigerian home. Understand watts, kVA, batteries and panels in plain language. Free calculator included.',
   keywords: ['solar calculator Nigeria', 'solar system size Nigeria', 'how many solar panels Nigeria', 'kVA solar Nigeria'],
-  alternates: { canonical: 'https://solarbuilders.ng/blog/solar-calculator-nigeria' },
+  alternates: { canonical: 'https://solarbuildersng.com/blog/solar-calculator-nigeria' },
 };
 
 export default function SolarCalculatorNigeriaPage() {

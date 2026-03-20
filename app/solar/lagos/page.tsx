@@ -13,10 +13,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Solar Installers in Lagos — Nexprove Verified',
     description: 'Find trusted solar installation companies across Lagos State.',
-    url: 'https://solarbuilders.ng/solar/lagos',
+    url: 'https://solarbuildersng.com/solar/lagos',
     type: 'website',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/solar/lagos' },
+  alternates: { canonical: 'https://solarbuildersng.com/solar/lagos' },
 };
 
 export default function SolarLagosPage() {

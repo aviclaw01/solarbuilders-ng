@@ -171,7 +171,7 @@ export default function ForBuildersPage() {
             </div>
           </div>
           <a
-            href={`https://wa.me/?text=${encodeURIComponent('I just listed my solar business on SolarBuilders.ng! Check out Nigeria\'s verified solar marketplace: https://solarbuilders.ng')}`}
+            href={`https://wa.me/?text=${encodeURIComponent('I just listed my solar business on SolarBuilders.ng! Check out Nigeria\'s verified solar marketplace: https://solarbuildersng.com')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="font-heading w-full bg-[#25D366] text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#22c55e] transition-colors"
@@ -227,7 +227,7 @@ export default function ForBuildersPage() {
                 {formData.businessName && (
                   <div className="mt-2 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3">
                     <p className="text-slate-500 text-xs mb-1">Your profile URL will be:</p>
-                    <p className="font-mono text-sm text-amber-600">solarbuilders.ng/company/{toSlug(formData.businessName)}</p>
+                    <p className="font-mono text-sm text-amber-600">solarbuildersng.com/company/{toSlug(formData.businessName)}</p>
                   </div>
                 )}
               </div>

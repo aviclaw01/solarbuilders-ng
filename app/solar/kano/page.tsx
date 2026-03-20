@@ -13,10 +13,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Solar Installers in Kano — Nexprove Verified',
     description: 'Find trusted solar installation companies across Kano State, Nigeria.',
-    url: 'https://solarbuilders.ng/solar/kano',
+    url: 'https://solarbuildersng.com/solar/kano',
     type: 'website',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/solar/kano' },
+  alternates: { canonical: 'https://solarbuildersng.com/solar/kano' },
 };
 
 const faqSchema = {

@@ -14,7 +14,7 @@ import LeadCaptureModal from '@/components/ui/LeadCaptureModal';
 export const metadata: Metadata = {
   title: "Nigeria's Verified Solar Marketplace — Free Calculator | SolarBuilders.ng",
   description: "Find trusted solar installers in Lagos, Abuja, Port Harcourt and across Nigeria. Use our free calculator to size your system, compare verified builders, and go solar with confidence.",
-  alternates: { canonical: 'https://solarbuilders.ng' },
+  alternates: { canonical: 'https://solarbuildersng.com' },
 };
 
 function VerifiedBadge() {

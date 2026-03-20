@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Find Solar Installers in Nigeria — SolarBuilders.ng',
     description: 'Browse 200+ verified solar builders across 28 Nigerian states.',
-    url: 'https://solarbuilders.ng/marketplace',
+    url: 'https://solarbuildersng.com/marketplace',
     type: 'website',
   },
-  alternates: { canonical: 'https://solarbuilders.ng/marketplace' },
+  alternates: { canonical: 'https://solarbuildersng.com/marketplace' },
 };
 
 export default function MarketplacePage() {
