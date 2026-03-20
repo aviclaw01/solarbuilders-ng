@@ -83,3 +83,87 @@ html {
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* === Global Micro-interaction System === */
+
+/* Buttons */
+.btn-primary {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+}
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Cards with hover lift */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+/* Nav link underline animation */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #F59E0B;
+  transition: width 0.2s ease;
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Scroll-triggered sections */
+.section-animate {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.section-animate.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays */
+.delay-75 { transition-delay: 75ms; }
+.delay-150 { transition-delay: 150ms; }
+.delay-225 { transition-delay: 225ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-450 { transition-delay: 450ms; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary,
+  .btn-primary:hover,
+  .btn-primary:active {
+    transform: none;
+    box-shadow: none;
+    transition: background-color 0.15s ease;
+  }
+  .card-hover,
+  .card-hover:hover {
+    transform: none;
+  }
+  .nav-link::after {
+    transition: none;
+  }
+  .section-animate {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
