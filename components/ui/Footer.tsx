@@ -11,18 +11,19 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <Logo variant="horizontal" size="md" colorMode="dark" />
             </div>
-            <p className="text-sm text-slate-500 leading-relaxed mb-4">Nigeria&apos;s verified solar marketplace. Find who you can trust.</p>
+            <p className="text-sm text-slate-500 leading-relaxed mb-4">
+              Nigeria&apos;s verified solar marketplace. Find who you can trust.
+            </p>
           </div>
 
-          {/* Product */}
+          {/* For Buyers */}
           <div>
-            <h4 className="font-heading text-white font-semibold mb-4 text-sm">Product</h4>
+            <h4 className="font-heading text-white font-semibold mb-4 text-sm">For Buyers</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/calculator" className="hover:text-white transition-colors">Calculator</Link></li>
-              <li><Link href="/marketplace" className="hover:text-white transition-colors">Marketplace</Link></li>
-              <li><Link href="/compare" className="hover:text-white transition-colors">Compare Systems</Link></li>
-              <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-              <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
+              <li><Link href="/calculator" className="hover:text-white transition-colors">Size My System</Link></li>
+              <li><Link href="/marketplace" className="hover:text-white transition-colors">Find Builders</Link></li>
+              <li><Link href="/how-it-works" className="hover:text-white transition-colors">How It Works</Link></li>
+              <li><Link href="/blog" className="hover:text-white transition-colors">Solar Guides</Link></li>
             </ul>
           </div>
 
@@ -30,26 +31,28 @@ export default function Footer() {
           <div>
             <h4 className="font-heading text-white font-semibold mb-4 text-sm">For Builders</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/for-builders" className="hover:text-white transition-colors">List Free</Link></li>
-              <li><Link href="/for-builders#verified" className="hover:text-white transition-colors">Get Verified</Link></li>
-              <li><Link href="/for-builders#how" className="hover:text-white transition-colors">How it Works</Link></li>
-            </ul>
-            <h4 className="font-heading text-white font-semibold mb-4 text-sm mt-6">Cities</h4>
-            <ul className="space-y-3 text-sm">
-              <li><Link href="/solar/lagos" className="hover:text-white transition-colors">Lagos</Link></li>
-              <li><Link href="/solar/abuja" className="hover:text-white transition-colors">Abuja</Link></li>
-              <li><Link href="/solar/port-harcourt" className="hover:text-white transition-colors">Port Harcourt</Link></li>
-              <li><Link href="/solar/kano" className="hover:text-white transition-colors">Kano</Link></li>
-              <li><Link href="/solar/enugu" className="hover:text-white transition-colors">Enugu</Link></li>
+              <li><Link href="/for-builders" className="hover:text-white transition-colors">List Your Company</Link></li>
+              <li><Link href="/verified" className="hover:text-white transition-colors">Get Verified</Link></li>
+              <li><Link href="/for-builders#how" className="hover:text-white transition-colors">How Verification Works</Link></li>
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Company */}
           <div>
-            <h4 className="font-heading text-white font-semibold mb-4 text-sm">Contact</h4>
+            <h4 className="font-heading text-white font-semibold mb-4 text-sm">Company</h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="https://wa.me/2349168394923" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WhatsApp</a></li>
-              <li><a href="https://www.nexprove.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Nexprove</a></li>
+              <li><Link href="/about" className="hover:text-white transition-colors">Our Story</Link></li>
+              <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+              <li>
+                <a href="https://wa.me/2349168394923" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  WhatsApp
+                </a>
+              </li>
+              <li>
+                <a href="https://www.nexprove.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  Built by Nexprove
+                </a>
+              </li>
             </ul>
           </div>
         </div>
