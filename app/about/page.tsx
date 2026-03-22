@@ -15,6 +15,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-[#FAFAF7]">
       <Navbar />
 
+      <main>
       {/* Hero — dark navy, amber accent */}
       <section className="bg-[#0F172A] px-4 pt-20 pb-24 md:pt-28 md:pb-32">
         <div className="max-w-3xl mx-auto">
@@ -266,6 +267,7 @@ export default function AboutPage() {
         </div>
       </section>
 
+      </main>
       <Footer />
     </div>
   );

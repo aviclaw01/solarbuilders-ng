@@ -43,6 +43,7 @@ export default function HowItWorksPage() {
     <div className="min-h-screen bg-[#FAFAF7]">
       <Navbar />
 
+      <main>
       {/* Hero */}
       <section className="bg-white border-b border-slate-100 py-20 px-6">
         <div className="max-w-3xl mx-auto text-center">
@@ -108,6 +109,7 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
+      </main>
       <Footer />
     </div>
   );

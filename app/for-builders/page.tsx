@@ -498,6 +498,7 @@ export default function ForBuildersPage() {
     <div className="min-h-screen bg-white">
       <Navbar />
 
+      <main>
       {/* Hero */}
       <section className="bg-white border-b border-[#E2E8F0] py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -712,6 +713,7 @@ export default function ForBuildersPage() {
         </div>
       </section>
 
+      </main>
       <Footer />
     </div>
   );
