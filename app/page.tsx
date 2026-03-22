@@ -66,16 +66,16 @@ function BuilderCard({ builder }: { builder: typeof BUILDERS[0] }) {
           <span className="font-semibold text-sm text-slate-900">{builder.rating}</span>
           <span className="text-slate-400 text-sm">({builder.reviewCount})</span>
         </div>
-        <p className="text-amber-500 font-heading font-bold text-base mb-4">
+        <p className="text-amber-700 font-heading font-bold text-base mb-4">
           From {formatNaira(builder.startingPrice)}
         </p>
         <div className="flex gap-2">
           <Link href={`/company/${builder.slug}`}
-            className="flex-1 border border-slate-200 hover:border-slate-400 text-slate-700 text-sm font-semibold py-2.5 rounded-full text-center transition-colors">
+            className="flex-1 border border-slate-200 hover:border-slate-400 text-slate-700 text-sm font-semibold py-2.5 min-h-[44px] rounded-full text-center transition-colors flex items-center justify-center">
             View Profile
           </Link>
           <a href={waLink} target="_blank" rel="noopener noreferrer"
-            className="flex-1 bg-[#25D366] hover:bg-[#22c55e] text-white text-sm font-semibold py-2.5 rounded-full text-center transition-colors">
+            className="flex-1 bg-[#25D366] hover:bg-[#22c55e] text-white text-sm font-semibold py-2.5 min-h-[44px] rounded-full text-center transition-colors flex items-center justify-center">
             WhatsApp
           </a>
         </div>
@@ -109,6 +109,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <main>
 
       {/* ──────────────── HERO ──────────────── */}
       <section className="bg-gradient-to-br from-white via-amber-50/30 to-white px-6 py-20 md:py-28">
@@ -126,13 +127,13 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <Link
                 href="/calculator"
-                className="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold rounded-full px-6 py-3 transition-all text-base"
+                className="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold rounded-full px-6 py-3 min-h-[44px] transition-all text-base"
               >
                 Calculate My System →
               </Link>
               <Link
                 href="/marketplace"
-                className="inline-flex items-center justify-center border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 transition-all text-base font-semibold"
+                className="inline-flex items-center justify-center border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 min-h-[44px] transition-all text-base font-semibold"
               >
                 Browse Builders
               </Link>
@@ -324,7 +325,7 @@ export default function HomePage() {
               </h2>
               <p className="text-slate-500">Hand-checked by the Nexprove team</p>
             </div>
-            <Link href="/marketplace" className="hidden md:inline-flex items-center gap-1 text-amber-500 font-semibold text-sm hover:underline underline-offset-4">
+            <Link href="/marketplace" className="hidden md:inline-flex items-center gap-1 text-amber-600 font-semibold text-sm hover:underline underline-offset-4">
               Browse all builders →
             </Link>
           </div>
@@ -508,6 +509,7 @@ export default function HomePage() {
       <CountdownCTA />
 
       <LeadCaptureModal />
+      </main>
       <Footer />
     </div>
   );
