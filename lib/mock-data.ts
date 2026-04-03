@@ -36,6 +36,9 @@ export interface Review {
   verified: boolean;
 }
 
+// NOTE: Prices updated April 2026 to reflect real 2025 Lagos market rates.
+// Previous prices were placeholder/underestimated by 3-5x.
+// Sources: Jiji listings, Kasot Power, Phoz Energy, computervillagemart.com.ng
 export const BUILDERS: Builder[] = [
   {
     id: '1',
@@ -45,7 +48,7 @@ export const BUILDERS: Builder[] = [
     state: 'Lagos',
     rating: 4.9,
     reviewCount: 41,
-    startingPrice: 480000,
+    startingPrice: 1800000,
     services: ['Full Installation', 'System Design', 'Residential', 'Off-grid', 'Hybrid'],
     whatsapp: '+2348012345678',
     verified: true,
@@ -59,20 +62,20 @@ export const BUILDERS: Builder[] = [
       {
         name: '3kVA Starter Package',
         kva: 3,
-        description: 'Perfect for small homes. 3kVA inverter + 2× 200Ah batteries + 4× 330W panels + installation',
-        price: 480000,
+        description: '3kVA hybrid inverter + 2× 200Ah lithium batteries + 4× 400W panels + full installation. Powers lights, fans, TV, fridge — no AC.',
+        price: 1800000,
       },
       {
         name: '5kVA Home Package',
         kva: 5,
-        description: '5kVA inverter + 4× 200Ah batteries + 6× 400W panels + installation. Handles AC.',
-        price: 750000,
+        description: '5kVA hybrid inverter + 4× 200Ah lithium batteries + 8× 400W panels + full installation. Handles 1 standard AC unit.',
+        price: 3200000,
       },
       {
         name: '10kVA Premium',
         kva: 10,
-        description: 'Full home solution. 10kVA inverter + 8× 200Ah batteries + 10× 400W panels + installation',
-        price: 1500000,
+        description: 'Full home solution. 10kVA hybrid inverter + 8× 200Ah lithium batteries + 12× 400W panels + full installation. Multiple ACs, all appliances.',
+        price: 5800000,
       },
     ],
     reviews: [
@@ -110,7 +113,7 @@ export const BUILDERS: Builder[] = [
     state: 'Abuja',
     rating: 4.7,
     reviewCount: 28,
-    startingPrice: 520000,
+    startingPrice: 2500000,
     services: ['Full Installation', 'Commercial', 'Hybrid', '3-phase Systems'],
     whatsapp: '+2348023456789',
     verified: true,
@@ -124,14 +127,14 @@ export const BUILDERS: Builder[] = [
       {
         name: '5kVA Business Starter',
         kva: 5,
-        description: 'For small offices. 5kVA inverter + 4× 200Ah batteries + 8× 400W panels + installation',
-        price: 520000,
+        description: 'For small offices. 5kVA hybrid inverter + 4× 200Ah batteries + 8× 400W panels + full installation. Handles AC, computers, CCTV.',
+        price: 2500000,
       },
       {
         name: '15kVA Commercial',
         kva: 15,
-        description: 'For medium businesses. 3-phase 15kVA system + 12 batteries + 20 panels',
-        price: 1800000,
+        description: 'For medium businesses. 3-phase 15kVA hybrid system + 12× 200Ah batteries + 20× 400W panels + full installation.',
+        price: 7500000,
       },
     ],
     reviews: [
@@ -161,7 +164,7 @@ export const BUILDERS: Builder[] = [
     state: 'Port Harcourt',
     rating: 4.6,
     reviewCount: 19,
-    startingPrice: 390000,
+    startingPrice: 1500000,
     services: ['Full Installation', 'Residential', 'Off-grid', 'Repair & Maintenance'],
     whatsapp: '+2348034567890',
     verified: true,
@@ -173,16 +176,16 @@ export const BUILDERS: Builder[] = [
     specialties: ['Residential Solar', 'Off-grid Systems', 'System Repair', 'Budget-friendly'],
     packages: [
       {
-        name: '2kVA Starter',
+        name: '2kVA Essentials',
         kva: 2,
-        description: 'Essential home backup. 2kVA inverter + 2× 200Ah batteries + 4× 250W panels',
-        price: 390000,
+        description: 'Home backup for lights, fans, TV, fridge. 2kVA inverter + 2× 200Ah batteries + 4× 300W panels + full installation.',
+        price: 1500000,
       },
       {
         name: '5kVA Complete',
         kva: 5,
-        description: 'Full home solution including AC support. 5kVA + 4 batteries + 8 panels',
-        price: 680000,
+        description: 'Full home solution including 1 AC unit. 5kVA hybrid inverter + 4× 200Ah batteries + 8× 400W panels + full installation.',
+        price: 3000000,
       },
     ],
     reviews: [
@@ -212,7 +215,7 @@ export const BUILDERS: Builder[] = [
     state: 'Lagos',
     rating: 4.8,
     reviewCount: 33,
-    startingPrice: 450000,
+    startingPrice: 1950000,
     services: ['Full Installation', 'Residential', 'Commercial', 'System Design'],
     whatsapp: '+2348045678901',
     verified: true,
@@ -226,14 +229,14 @@ export const BUILDERS: Builder[] = [
       {
         name: '3.5kVA Standard',
         kva: 3.5,
-        description: 'Most popular package. 3.5kVA inverter + 4× 200Ah batteries + 6× 330W panels',
-        price: 450000,
+        description: 'Most popular Lagos package. 3.5kVA hybrid inverter + 4× 200Ah batteries + 6× 400W panels + full installation.',
+        price: 1950000,
       },
       {
         name: '5kVA Plus',
         kva: 5,
-        description: 'For medium-large homes. 5kVA + 6 batteries + 8 panels + 2-year warranty',
-        price: 720000,
+        description: 'For medium-large homes with AC. 5kVA hybrid inverter + 6× 200Ah batteries + 8× 400W panels + 2-year warranty.',
+        price: 3500000,
       },
     ],
     reviews: [
@@ -263,7 +266,7 @@ export const BUILDERS: Builder[] = [
     state: 'Abuja',
     rating: 4.5,
     reviewCount: 15,
-    startingPrice: 510000,
+    startingPrice: 2200000,
     services: ['Full Installation', 'Off-grid', 'Hybrid', 'System Design'],
     whatsapp: '+2348056789012',
     verified: true,
@@ -277,8 +280,8 @@ export const BUILDERS: Builder[] = [
       {
         name: '5kVA Hybrid',
         kva: 5,
-        description: 'Hybrid system that works with grid when available. Ideal for Abuja. 5kVA + 4 batteries + 8 panels',
-        price: 510000,
+        description: 'Hybrid system that works with grid when available. Ideal for Abuja. 5kVA hybrid inverter + 4× 200Ah lithium batteries + 8× 400W panels + installation.',
+        price: 2200000,
       },
     ],
     reviews: [
@@ -323,6 +326,6 @@ export function formatNairaFull(amount: number): string {
 
 export function getWhatsAppLink(phone: string, builderName: string): string {
   const number = phone.replace(/\D/g, '');
-  const text = encodeURIComponent(`Hi, I found you on SolarBuilders.ng. I'm interested in a solar installation. Can you help?`);
+  const text = encodeURIComponent(`Hi, I found you on SolarBuilders.ng. I'm interested in a solar installation quote. Can you help?`);
   return `https://wa.me/${number}?text=${text}`;
 }
