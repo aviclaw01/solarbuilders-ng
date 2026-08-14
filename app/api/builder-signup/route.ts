@@ -5,7 +5,6 @@ export async function POST(req: Request) {
   const {
     businessName, whatsapp, state, yearsInBusiness,
     services, systemSizes, startingPrice, bio, instagram,
-    ref1Name, ref1Phone, ref2Name, ref2Phone,
   } = body;
 
   const apiKey = process.env.RESEND_API_KEY;
@@ -14,9 +13,9 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: "SolarBuilders.ng <noreply@nexprove.com>",
       to: ["solar@nexprove.com", "nexprove@gmail.com"],
-      subject: `[SolarBuilders] 🏗️ Builder Application — ${businessName}`,
+      subject: `[SolarBuilders] ⚡ New Free Listing — ${businessName}`,
       html: `
-        <h2>New Builder Application</h2>
+        <h2>New Builder Listing</h2>
         <p><b>Business Name:</b> ${businessName}</p>
         <p><b>WhatsApp:</b> ${whatsapp}</p>
         <p><b>State:</b> ${state}</p>
@@ -26,10 +25,6 @@ export async function POST(req: Request) {
         <p><b>Starting Price:</b> ${startingPrice || 'Not provided'}</p>
         <p><b>Bio:</b> ${bio || 'Not provided'}</p>
         <p><b>Instagram:</b> ${instagram || 'Not provided'}</p>
-        <hr/>
-        <h3>References</h3>
-        <p><b>Ref 1:</b> ${ref1Name} — ${ref1Phone}</p>
-        <p><b>Ref 2:</b> ${ref2Name} — ${ref2Phone}</p>
       `,
     });
   }

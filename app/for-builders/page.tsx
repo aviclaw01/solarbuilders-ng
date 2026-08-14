@@ -81,10 +81,6 @@ interface FormData {
   bio: string;
   instagram: string;
   logo: File | null;
-  ref1Name: string;
-  ref1Phone: string;
-  ref2Name: string;
-  ref2Phone: string;
 }
 
 function toSlug(name: string) {
@@ -109,10 +105,6 @@ export default function ForBuildersPage() {
     bio: '',
     instagram: '',
     logo: null,
-    ref1Name: '',
-    ref1Phone: '',
-    ref2Name: '',
-    ref2Phone: '',
   });
 
   const updateForm = (key: keyof FormData, value: string | string[] | File | null) => {
@@ -139,7 +131,6 @@ export default function ForBuildersPage() {
 
   const step1Valid = formData.businessName && formData.contactEmail && formData.password.length >= 8 && formData.whatsapp && formData.city && formData.state && formData.yearsInBusiness;
   const step2Valid = formData.services.length > 0 && formData.systemSizes.length > 0;
-  const step3Valid = formData.ref1Name && formData.ref1Phone && formData.ref2Name && formData.ref2Phone;
 
   if (submitted) {
     return (
@@ -148,13 +139,13 @@ export default function ForBuildersPage() {
         <div className="max-w-lg mx-auto px-4 py-16 text-center">
           <div className="text-6xl mb-6">⚡</div>
           <h1 className="font-heading text-3xl font-extrabold text-[#0A0F1E] mb-4">
-            You&apos;re on your way!
+            You&apos;re live!
           </h1>
           <p className="text-[#64748B] text-lg mb-8 leading-relaxed">
-            Your profile is under review. We&apos;ll call your references and WhatsApp you within 48 hours.
+            Your free listing is now on SolarBuilders.ng. Customers can find and contact you directly on WhatsApp.
           </p>
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 text-left">
-            <h3 className="font-heading font-bold text-[#0A0F1E] mb-3">While you wait:</h3>
+            <h3 className="font-heading font-bold text-[#0A0F1E] mb-3">Next steps:</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-[#64748B] text-sm">
                 <CheckCircle className="w-4 h-4 text-[#10B981]" />
@@ -162,11 +153,11 @@ export default function ForBuildersPage() {
               </div>
               <div className="flex items-center gap-2 text-[#64748B] text-sm">
                 <CheckCircle className="w-4 h-4 text-[#10B981]" />
-                We&apos;ll contact your references in 48h
+                Add photos to get 3× more enquiries
               </div>
               <div className="flex items-center gap-2 text-[#64748B] text-sm">
                 <CheckCircle className="w-4 h-4 text-[#10B981]" />
-                You&apos;ll get a WhatsApp when verified
+                Upgrade to Verified for priority placement
               </div>
             </div>
           </div>
@@ -193,12 +184,12 @@ export default function ForBuildersPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-2">
               <span className="font-heading font-semibold text-[#0A0F1E]">
-                Step {step} of 3: {step === 1 ? 'Your Business' : step === 2 ? 'Your Services' : 'Photos & Verification'}
+                Step {step} of 2: {step === 1 ? 'Your Business' : 'Your Services'}
               </span>
-              <span className="text-[#64748B] text-sm">{Math.round((step / 3) * 100)}%</span>
+              <span className="text-[#64748B] text-sm">{Math.round((step / 2) * 100)}%</span>
             </div>
             <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
-              <div className="h-full bg-[#F59E0B] rounded-full transition-all duration-300" style={{ width: `${(step / 3) * 100}%` }} />
+              <div className="h-full bg-[#F59E0B] rounded-full transition-all duration-300" style={{ width: `${(step / 2) * 100}%` }} />
             </div>
           </div>
 
@@ -206,9 +197,8 @@ export default function ForBuildersPage() {
           <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 flex items-start gap-3">
             <span className="text-2xl">⚡</span>
             <p className="text-[#0A0F1E] text-sm">
-              {step === 1 && "Let's set up your profile. We'll have you live in under 5 minutes."}
+              {step === 1 && "Let's set up your profile. You'll be live in under 5 minutes."}
               {step === 2 && "What do you actually do? Select everything that applies."}
-              {step === 3 && "Photos get you 3× more enquiries. No stock images — real job site photos only."}
             </p>
           </div>
 
@@ -398,46 +388,6 @@ export default function ForBuildersPage() {
             </div>
           )}
 
-          {/* Step 3 */}
-          {step === 3 && (
-            <div className="space-y-6">
-              <div>
-                <p className="text-sm text-[#64748B] mb-4">
-                  We&apos;ll call these customers to confirm your work. This is what makes our Verified badge mean something.
-                </p>
-
-                <div className="space-y-4">
-                  {[
-                    { label: 'Reference 1 *', nameKey: 'ref1Name', phoneKey: 'ref1Phone' },
-                    { label: 'Reference 2 *', nameKey: 'ref2Name', phoneKey: 'ref2Phone' },
-                  ].map((ref) => (
-                    <div key={ref.label} className="bg-white rounded-xl p-4 border border-[#E2E8F0]">
-                      <p className="font-semibold text-[#0A0F1E] mb-3">{ref.label}</p>
-                      <input
-                        type="text"
-                        placeholder="Customer name"
-                        value={formData[ref.nameKey as keyof FormData] as string}
-                        onChange={e => updateForm(ref.nameKey as keyof FormData, e.target.value)}
-                        className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] mb-3 transition-colors"
-                      />
-                      <input
-                        type="tel"
-                        placeholder="+234 803 000 0000"
-                        value={formData[ref.phoneKey as keyof FormData] as string}
-                        onChange={e => updateForm(ref.phoneKey as keyof FormData, e.target.value)}
-                        className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <p className="text-xs text-[#64748B]">
-                By submitting, you agree to our Terms of Service and Builder Code of Conduct.
-              </p>
-            </div>
-          )}
-
           {/* Navigation */}
           <div className="flex gap-3 mt-8">
             {step > 1 && (
@@ -449,23 +399,22 @@ export default function ForBuildersPage() {
               </button>
             )}
 
-            {step < 3 ? (
+            {step < 2 ? (
               <button
                 onClick={() => setStep(step + 1)}
-                disabled={step === 1 ? !step1Valid : !step2Valid}
+                disabled={!step1Valid}
                 className={`flex-1 py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-2 transition-colors ${
-                  (step === 1 ? step1Valid : step2Valid)
+                  step1Valid
                     ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]'
                     : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed opacity-50'
-                }
-              `}
+                }`}
               >
                 Continue <ArrowRight className="w-5 h-5" />
               </button>
             ) : (
               <button
                 onClick={async () => {
-                  if (!step3Valid) return;
+                  if (!step2Valid) return;
                   try {
                     await fetch('/api/builder-signup', {
                       method: 'POST',
@@ -475,15 +424,14 @@ export default function ForBuildersPage() {
                   } catch {}
                   setSubmitted(true);
                 }}
-                disabled={!step3Valid}
+                disabled={!step2Valid}
                 className={`flex-1 py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-2 transition-colors ${
-                  step3Valid
+                  step2Valid
                     ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]'
                     : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed opacity-50'
-                }
-              `}
+                }`}
               >
-                Submit My Profile →
+                List My Business Free →
               </button>
             )}
           </div>
