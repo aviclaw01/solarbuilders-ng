@@ -13,8 +13,8 @@ export async function POST(req: Request) {
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from: "SolarBuilders.ng <noreply@nexprove.com>",
-      to: "sitecheck@nexprove.com",
-      subject: `New Builder Application — ${businessName}`,
+      to: ["solar@nexprove.com", "nexprove@gmail.com"],
+      subject: `[SolarBuilders] 🏗️ Builder Application — ${businessName}`,
       html: `
         <h2>New Builder Application</h2>
         <p><b>Business Name:</b> ${businessName}</p>

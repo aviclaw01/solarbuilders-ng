@@ -9,9 +9,9 @@ export async function POST(req: Request) {
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from: "SolarBuilders.ng <noreply@nexprove.com>",
-      to: "sitecheck@nexprove.com",
-      subject: `New Lead — ${state} — ${systemSize}`,
-      html: `<p><b>WhatsApp:</b> ${whatsapp}<br/><b>State:</b> ${state}<br/><b>System Size:</b> ${systemSize}</p>`,
+      to: ["solar@nexprove.com", "nexprove@gmail.com"],
+      subject: `[SolarBuilders] 🔥 New Lead — ${state} — ${systemSize}`,
+      html: `<h2>New Lead from Calculator</h2><p><b>WhatsApp:</b> ${whatsapp}<br/><b>State:</b> ${state}<br/><b>System Size:</b> ${systemSize}</p>`,
     });
   }
 

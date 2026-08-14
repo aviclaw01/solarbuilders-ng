@@ -9,9 +9,9 @@ export async function POST(req: Request) {
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from: "SolarBuilders.ng <noreply@nexprove.com>",
-      to: "sitecheck@nexprove.com",
-      subject: `SolarBuilders Contact: ${name}`,
-      html: `<p><b>Name:</b> ${name}<br/><b>Email:</b> ${email}<br/><b>Phone:</b> ${phone || 'Not provided'}<br/><b>Message:</b> ${message}</p>`,
+      to: ["solar@nexprove.com", "nexprove@gmail.com"],
+      subject: `[SolarBuilders] Contact: ${name}`,
+      html: `<h2>New Contact Message</h2><p><b>Name:</b> ${name}<br/><b>Email:</b> ${email}<br/><b>Phone:</b> ${phone || 'Not provided'}<br/><b>Message:</b> ${message}</p>`,
     });
   }
 
