@@ -12,8 +12,8 @@ import RotatingText from '@/components/ui/RotatingText';
 import LeadCaptureModal from '@/components/ui/LeadCaptureModal';
 
 export const metadata: Metadata = {
-  title: "Nigeria's Verified Solar Marketplace — Free Calculator | SolarBuilders.ng",
-  description: "Find trusted solar installers in Lagos, Abuja, Port Harcourt and across Nigeria. Use our free calculator to size your system, compare verified builders, and go solar with confidence.",
+  title: "Real Solar Prices & Itemised Quotes for Nigeria | SolarBuilders.ng",
+  description: "Size your solar system in 2 minutes, get an itemised quote at real September 2026 Nigerian prices (Felicity, Deye, Growatt, Jinko), and let us get it built in Lagos, Abuja, Port Harcourt and beyond.",
   alternates: { canonical: 'https://solarbuildersng.com' },
 };
 

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s | SolarBuilders.ng"
   },
   description:
-    "Find trusted solar installers in Nigeria. Use our free calculator to size your system, compare verified builders, and go solar with confidence.",
+    "Size your solar system, get an itemised quote at real September 2026 Nigerian prices, and let us source the equipment and get it installed.",
   keywords: [
     "solar installers Nigeria",
     "solar calculator Nigeria",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "SolarBuilders.ng — Real Solar Prices & Quotes for Nigeria",
-    description: "Find trusted solar installers across Nigeria. Free calculator, verified builders.",
+    description: "Real solar prices for Nigeria. Size it, quote it, we build it.",
     url: "https://solarbuildersng.com",
     siteName: "SolarBuilders.ng",
     locale: "en_NG",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "SolarBuilders.ng — Real Solar Prices & Quotes for Nigeria",
-    description: "Find trusted solar installers across Nigeria. Free calculator, verified builders.",
+    description: "Real solar prices for Nigeria. Size it, quote it, we build it.",
     images: ['/brand/twitter-card.png'],
   },
   robots: {

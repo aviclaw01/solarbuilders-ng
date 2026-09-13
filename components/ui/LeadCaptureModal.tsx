@@ -95,10 +95,10 @@ export default function LeadCaptureModal() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <h2 className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">
-                Get matched with a verified builder
+                Want us to size it for you?
               </h2>
               <p className="text-[#64748B] text-sm">
-                Tell us your location and what you need — we&apos;ll point you to the right builders.
+                Tell us your location and roughly what you need — we&apos;ll reply on WhatsApp with real prices.
               </p>
             </div>
 

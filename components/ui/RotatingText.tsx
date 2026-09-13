@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-const WORDS = ['Verified Builders', 'Your System Size', 'Solar Quotes', 'The Right Installer'];
+const WORDS = ['Real Prices', 'Your System Size', 'Itemised Quotes', 'The Right Installer'];
 
 export default function RotatingText() {
   const [index, setIndex] = useState(0);

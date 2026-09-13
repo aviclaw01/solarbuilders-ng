@@ -217,12 +217,12 @@ export default function ComparePage() {
           </div>
           <div className="bg-white rounded-2xl border border-slate-100 p-8">
             <h3 className="font-heading font-bold text-slate-900 text-xl mb-3">Ready to find a builder?</h3>
-            <p className="text-slate-500 mb-6">Browse verified installers who can deliver all three system tiers.</p>
+            <p className="text-slate-500 mb-6">See what each brand costs before you decide on a tier.</p>
             <Link
               href="/brands"
               className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 transition-all font-semibold"
             >
-              Browse Builders →
+              Brands &amp; Prices →
             </Link>
           </div>
         </div>

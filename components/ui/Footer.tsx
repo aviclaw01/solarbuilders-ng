@@ -47,13 +47,12 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* For Builders */}
+          {/* For Installers & Vendors */}
           <div>
-            <h4 className="font-heading text-white font-semibold mb-4 text-sm">For Builders</h4>
+            <h4 className="font-heading text-white font-semibold mb-4 text-sm">For Installers &amp; Vendors</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/for-builders" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">List Your Company</Link></li>
-              <li><Link href="/verified" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Get Verified</Link></li>
-              <li><Link href="/for-builders#how" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">How Verification Works</Link></li>
+              <li><Link href="/for-builders" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Work With Us</Link></li>
+              <li><Link href="/verified" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">How We Vet</Link></li>
             </ul>
           </div>
 

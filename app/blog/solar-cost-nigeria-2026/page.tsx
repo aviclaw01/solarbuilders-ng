@@ -117,7 +117,7 @@ export default function SolarCostNigeriaPage() {
             The most reliable way to get an accurate quote is to first calculate your load — what appliances you actually run, for how many hours. This tells you (and any installer) exactly what size system you need. Without this, you risk buying a system that&apos;s too small (frustrating) or too large (wasted money).
           </p>
           <p className="text-[#64748B] leading-relaxed">
-            Use our free solar calculator below to get your estimated system size first, then compare quotes from verified builders in your city.
+            Use our free solar calculator to get an itemised quote first, then send us the code and we confirm the price with the vendor before you pay anyone.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Final Advice</h2>

@@ -25,7 +25,7 @@ export default function ContactPage() {
                 Get in touch
               </h1>
               <p className="text-slate-500 text-lg">
-                We respond within 2 hours on WhatsApp. For builder inquiries, use the For Builders form.
+                We respond within 2 hours on WhatsApp. Fastest route: send us your quote code from the calculator.
               </p>
             </AnimatedSection>
           </div>
@@ -144,14 +144,14 @@ export default function ContactPage() {
             <div className="max-w-3xl mx-auto mt-6">
               <div className="bg-[#0F172A] text-white rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
-                  <p className="font-heading font-semibold text-base mb-1">Are you a solar company?</p>
-                  <p className="text-slate-400 text-sm">List your company free and reach thousands of buyers.</p>
+                  <p className="font-heading font-semibold text-base mb-1">Installer or vendor?</p>
+                  <p className="text-slate-400 text-sm">Work with us on customer builds — we bring the quote, the equipment and the client.</p>
                 </div>
                 <Link
                   href="/for-builders"
                   className="flex-shrink-0 bg-[#F59E0B] hover:bg-amber-500 text-[#0F172A] px-6 py-3 rounded-full font-semibold text-sm transition-colors min-h-[44px] flex items-center"
                 >
-                  Go to For Builders →
+                  Work with us →
                 </Link>
               </div>
             </div>

@@ -6,8 +6,8 @@ import { ChevronDown } from 'lucide-react';
 
 const FAQ_ITEMS = [
   {
-    q: 'How do I know a builder is legitimate?',
-    a: 'Every builder on SolarBuilders.ng has been manually reviewed by the Nexprove team. We check their experience, past projects, equipment quality, and customer history before they go live.',
+    q: 'Who actually installs my system?',
+    a: 'An installer we have vetted: CAC registration, three past installations with photos, two customer references we call, and a written workmanship warranty. We manage them until commissioning — see How We Vet.',
   },
   {
     q: 'Is it free to use?',
@@ -15,19 +15,19 @@ const FAQ_ITEMS = [
   },
   {
     q: 'How does the calculator work?',
-    a: 'You select the appliances you want to power and how many hours per day you use them. The calculator computes your total load and recommends the right system size and estimated cost range.',
+    a: 'You pick the appliances you want to power and how many hours a day you use them. It sizes the inverter, lithium battery and panels, then prices every item from live Nigerian listings and gives you a quote code you can download and send to us.',
   },
   {
     q: 'Can I get solar for my business?',
-    a: 'Yes. Filter by Commercial on the marketplace. We have builders who specialise in office, retail, and industrial systems from 10kVA upwards.',
+    a: 'Yes. Run the calculator with your office or shop load (10kVA and up is common) and send us the quote code — we source 3-phase Deye, Solis or Victron systems and installers who do commercial work.',
   },
   {
-    q: 'I want to list my company as a builder.',
+    q: 'I am an installer or vendor. Can I work with you?',
     a: null, // link to /for-builders
   },
   {
-    q: 'What happens after I contact a builder on WhatsApp?',
-    a: 'You speak directly — no middleman. Discuss your needs, get a quote, negotiate terms. SolarBuilders.ng takes no commission.',
+    q: 'What happens after I send my quote code on WhatsApp?',
+    a: 'We confirm current prices with the vendor, adjust for your roof, location and anything you already own, and give you a final number including workmanship. You pay the vendor and installer directly; our sourcing fee is agreed in writing first.',
   },
 ];
 
@@ -82,7 +82,7 @@ export default function ContactClient() {
                 ) : (
                   <p className="text-sm">
                     <Link href="/for-builders" className="text-[#F59E0B] font-semibold hover:underline">
-                      Apply to list your business →
+                      See how we work with installers and vendors →
                     </Link>
                   </p>
                 )}

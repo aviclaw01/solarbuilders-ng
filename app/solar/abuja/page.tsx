@@ -92,10 +92,10 @@ export default function SolarAbujaPage() {
             </Link>
           </div>
           <div className="bg-[#0A0F1E] rounded-2xl p-8">
-            <h3 className="font-heading font-bold text-white text-xl mb-2">Installer in Abuja?</h3>
-            <p className="text-[#94A3B8] mb-4">List your business free and reach more customers.</p>
+            <h3 className="font-heading font-bold text-white text-xl mb-2">Installer or vendor in Abuja?</h3>
+            <p className="text-[#94A3B8] mb-4">Work with us on customer builds — we bring the quote, the equipment and the client.</p>
             <Link href="/for-builders" className="inline-flex items-center border-2 border-white text-white px-6 py-3 rounded-full font-heading font-semibold text-sm hover:bg-white hover:text-[#0A0F1E] transition-colors">
-              List Free →
+              Work with us →
             </Link>
           </div>
         </div>

@@ -18,7 +18,7 @@ export default function Navbar() {
     { href: '/calculator', label: 'Size My System' },
     { href: '/brands', label: 'Brands & Prices' },
     { href: '/blog', label: 'Solar Guides' },
-    { href: '/for-builders', label: 'List Your Company' },
+    { href: '/for-builders', label: 'Work With Us' },
   ];
 
   return (
@@ -55,10 +55,10 @@ export default function Navbar() {
                 <span className="hidden lg:inline">+234 916 839 4923</span>
               </a>
               <Link
-                href="/for-builders"
+                href="/calculator"
                 className="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2.5 rounded-full text-sm font-semibold transition-all min-h-[44px] flex items-center"
               >
-                Get Listed Free
+                Get a Quote
               </Link>
             </div>
 
@@ -119,11 +119,11 @@ export default function Navbar() {
               WhatsApp Us →
             </a>
             <Link
-              href="/for-builders"
+              href="/calculator"
               onClick={() => setOpen(false)}
               className="flex items-center justify-center w-full bg-amber-400 hover:bg-amber-500 text-slate-900 py-4 rounded-full font-heading font-bold text-lg transition-all min-h-[56px]"
             >
-              Get Listed Free →
+              Get a Quote →
             </Link>
           </div>
         </div>

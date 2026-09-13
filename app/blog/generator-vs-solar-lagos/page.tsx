@@ -171,7 +171,7 @@ export default function GeneratorVsSolarPage() {
             The generator is not cheap backup power — it&apos;s the most expensive electricity you can buy. At ₦260,000+ per month, it costs more than most car loans. Solar is the better investment by every measure: cost, convenience, safety, and long-term value.
           </p>
           <p className="text-slate-600 leading-relaxed">
-            The only question is: which verified builder will you hire to install it?
+            The only question is what size you need — the calculator answers that in two minutes.
           </p>
         </div>
 
