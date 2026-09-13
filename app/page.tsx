@@ -140,7 +140,7 @@ export default function HomePage() {
             </div>
             {/* Trust row */}
             <p className="text-slate-400 text-sm font-medium">
-              ★★★★★ 4.8 on Google · 200+ Verified Builders · ₦0 to use · 5-min setup
+              Real September 2026 prices · Itemised quote · ₦0 to use · 2-min setup
             </p>
           </div>
 
@@ -169,17 +169,17 @@ export default function HomePage() {
               {/* Result preview */}
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
                 <p className="text-amber-700 font-heading font-bold text-sm text-center">
-                  Your system: 3.5kVA → ₦480k–₦750k
+                  Your system: 5kVA · 10kWh → ₦3.2M–₦4.8M
                 </p>
               </div>
               <div className="bg-slate-50 rounded-xl p-4 mb-4">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-slate-500 text-xs">Estimated system size</span>
-                  <span className="font-heading font-bold text-slate-900 text-sm">3.5 kVA</span>
+                  <span className="font-heading font-bold text-slate-900 text-sm">5 kVA · 10kWh lithium</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500 text-xs">Estimated cost range</span>
-                  <span className="font-heading font-bold text-amber-500 text-sm">₦450k–₦750k</span>
+                  <span className="font-heading font-bold text-amber-500 text-sm">₦3.2M–₦4.8M</span>
                 </div>
               </div>
               <Link href="/calculator" className="block w-full bg-amber-400 hover:bg-amber-500 text-slate-900 py-3 rounded-full text-center font-semibold text-sm transition-all">

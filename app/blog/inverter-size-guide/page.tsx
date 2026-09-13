@@ -135,16 +135,16 @@ export default function InverterSizeGuidePage() {
                 <tr className="bg-slate-50">
                   <th className="text-left p-4 font-heading font-semibold text-slate-900">Scenario</th>
                   <th className="text-left p-4 font-heading font-semibold text-slate-900">Inverter Size</th>
-                  <th className="text-left p-4 font-heading font-semibold text-slate-900">Typical Cost</th>
+                  <th className="text-left p-4 font-heading font-semibold text-slate-900">Inverter only (Sept 2026)</th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  ['Lights, fans, TV, router only', '1–1.5kVA', '₦80k–₦150k'],
-                  ['Above + fridge + freezer', '2–3kVA', '₦150k–₦280k'],
-                  ['Above + 1 AC (1.5HP)', '3.5–5kVA', '₦280k–₦500k'],
-                  ['Multiple ACs + full home', '7.5–10kVA', '₦500k–₦1.2M'],
-                  ['Commercial / large estate', '15–20kVA', '₦1.2M+'],
+                  ['Lights, fans, TV, router only', '1.5–2.5kVA', '₦120k–₦300k'],
+                  ['Above + fridge + freezer', '2.5–3.5kVA', '₦250k–₦560k'],
+                  ['Above + 1 AC (1.5HP)', '3.5–5kVA', '₦440k–₦1M (Felicity → Growatt)'],
+                  ['Multiple ACs + full home', '8–10kVA', '₦750k–₦2.9M (Felicity → Deye)'],
+                  ['Commercial / large estate', '12–20kVA', '₦1.5M–₦5M'],
                 ].map(([scenario, size, cost]) => (
                   <tr key={scenario} className="border-t border-slate-100">
                     <td className="p-4 text-slate-600">{scenario}</td>

@@ -5,7 +5,7 @@ import Footer from '@/components/ui/Footer';
 
 export const metadata: Metadata = {
   title: 'How Much Does Solar Cost in Nigeria? (2026 Guide) — SolarBuilders.ng',
-  description: 'Complete 2026 guide to solar installation costs in Nigeria. From budget 2kVA systems (₦350k) to full 10kVA solutions (₦1.5M+). Real prices from verified installers.',
+  description: 'Complete 2026 guide to solar installation costs in Nigeria. From 5kWh lithium starter systems (₦1.4M) to full 10kVA homes (₦6M+). Real September 2026 market prices.',
   keywords: ['solar cost Nigeria 2026', 'solar price Nigeria', 'how much solar cost Nigeria', 'solar installation price Lagos'],
   openGraph: {
     title: 'How Much Does Solar Cost in Nigeria? (2026 Guide)',
@@ -64,11 +64,11 @@ export default function SolarCostNigeriaPage() {
               </thead>
               <tbody>
                 {[
-                  ['1–2 kVA', 'Lights, fans, phone charging', '₦150,000 – ₦350,000'],
-                  ['3 kVA', 'Average home (no AC)', '₦380,000 – ₦600,000'],
-                  ['5 kVA', 'Home with 1 AC unit', '₦650,000 – ₦950,000'],
-                  ['7.5–10 kVA', 'Large home or small office', '₦900,000 – ₦1,500,000'],
-                  ['15–20 kVA', 'Commercial / business', '₦1,800,000 – ₦3,500,000'],
+                  ['1.5–2.5 kVA · 5kWh lithium', 'Lights, fans, TV, fridge — no AC', '₦1,400,000 – ₦2,000,000'],
+                  ['3.5 kVA · 5kWh lithium', 'Small home, 1 small AC part-time', '₦1,800,000 – ₦2,600,000'],
+                  ['5 kVA · 10kWh lithium', 'Family home with 1 AC', '₦3,200,000 – ₦4,800,000'],
+                  ['8–10 kVA · 15kWh lithium', 'Large home, 2–3 ACs', '₦6,000,000 – ₦9,500,000'],
+                  ['15–20 kVA · 20–30kWh', 'Office / commercial', '₦11,000,000 – ₦20,000,000'],
                 ].map(([size, use, price], i) => (
                   <tr key={i} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{size}</td>
@@ -106,7 +106,7 @@ export default function SolarCostNigeriaPage() {
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">What About ROI? When Does Solar Pay Back?</h2>
           <p className="text-[#64748B] leading-relaxed">
-            The average Lagos household running a generator spends ₦35,000–₦60,000 per month on fuel. A 3kVA solar system costs around ₦480,000 installed. At ₦40,000/month in generator savings, the system pays back in approximately 12 months. After that, the electricity is essentially free for the next 10–15 years.
+            A typical Lagos household running a small generator 4–6 hours a day spends ₦100,000–₦250,000 per month on fuel and servicing. A 5kVA / 10kWh lithium system costs around ₦3.5M–₦4M installed (September 2026 prices). At ₦150,000/month in generator savings, the system pays back in roughly 2–2.5 years — and lithium batteries last 10+ years, so most of that life is free power.
           </p>
           <p className="text-[#64748B] leading-relaxed">
             Diesel prices have risen sharply since 2023. Every month you wait is another month of generator fuel costs that solar would have eliminated. The ROI on solar in Nigeria is genuinely excellent right now.

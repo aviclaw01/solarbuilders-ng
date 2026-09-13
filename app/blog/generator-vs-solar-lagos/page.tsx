@@ -93,13 +93,13 @@ export default function GeneratorVsSolarPage() {
             That&apos;s assuming moderate use. Heavy users (running AC overnight) can spend ₦400,000–₦600,000 per month on fuel alone. Over 3 years, a generator costs the average Lagos family <strong>₦9–12 million</strong>.
           </p>
 
-          <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Real cost breakdown: Solar (3.5kVA hybrid system)</h2>
+          <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Real cost breakdown: Solar (3.5kVA hybrid + 5kWh lithium)</h2>
           <div className="bg-amber-50 rounded-2xl border border-amber-200 p-6 mb-6">
             <div className="space-y-3 text-sm">
               {[
-                ['System installation (inverter + panels + batteries)', '₦700,000', 'One-time'],
+                ['System installation (inverter + panels + lithium battery, Sept 2026)', '₦2,200,000', 'One-time'],
                 ['Annual maintenance (cleaning, check-up)', '₦30,000', 'Per year'],
-                ['Battery replacement (after 8–10 years)', '₦150,000', 'Eventually'],
+                ['Battery replacement (lithium, after 10+ years)', '₦1,050,000', 'Eventually'],
                 ['Electricity bill from NEPA (when available)', '₦15,000', 'Per month'],
               ].map(([item, cost, period]) => (
                 <div key={item} className="flex justify-between items-start py-2 border-b border-amber-100 last:border-0">
@@ -111,7 +111,7 @@ export default function GeneratorVsSolarPage() {
             </div>
             <div className="border-t border-amber-200 mt-3 pt-4 flex justify-between font-heading font-bold">
               <span className="text-slate-900">Year 1 total</span>
-              <span className="text-emerald-600 text-xl">~₦910,000</span>
+              <span className="text-emerald-600 text-xl">~₦2,410,000</span>
             </div>
           </div>
 
@@ -128,10 +128,10 @@ export default function GeneratorVsSolarPage() {
               </thead>
               <tbody>
                 {[
-                  ['Year 1', '₦3,663,600', '₦910,000', '₦2,753,600'],
+                  ['Year 1', '₦3,663,600', '₦2,410,000', '₦1,253,600'],
                   ['Year 2', '₦3,413,600', '₦210,000', '₦3,203,600'],
                   ['Year 3', '₦3,413,600', '₦210,000', '₦3,203,600'],
-                  ['3-Year Total', '₦10,490,800', '₦1,330,000', '₦9,160,800'],
+                  ['3-Year Total', '₦10,490,800', '₦2,830,000', '₦7,660,800'],
                 ].map(([year, gen, solar, save], i) => (
                   <tr key={year} className={`border-t border-slate-100 ${i === 3 ? 'font-bold' : ''}`}>
                     <td className="p-4 text-slate-900">{year}</td>
@@ -146,12 +146,12 @@ export default function GeneratorVsSolarPage() {
 
           <div className="bg-slate-900 rounded-2xl p-6 mb-8 text-center">
             <p className="text-slate-400 text-sm mb-2">Total 3-year savings by switching to solar</p>
-            <p className="font-heading font-extrabold text-amber-400 text-4xl">₦9,160,800</p>
+            <p className="font-heading font-extrabold text-amber-400 text-4xl">₦7,660,800</p>
           </div>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">The break-even point</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Based on the numbers above, a ₦700,000 solar installation pays for itself in roughly <strong>3 months</strong> — because you stop spending ₦260,000/month on generator fuel.
+            Based on the numbers above, a ₦2,200,000 solar installation pays for itself in roughly <strong>8–9 months</strong> — because you stop spending ₦260,000/month on generator fuel.
           </p>
           <p className="text-slate-600 leading-relaxed mb-6">
             After break-even, it&apos;s essentially free power for 20+ years (the rated lifespan of quality solar panels).

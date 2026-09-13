@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { FROM_EMAIL, LEAD_EMAILS } from '@/lib/site';
 
 export async function POST(req: Request) {
   try {
@@ -8,8 +9,8 @@ export async function POST(req: Request) {
       const { Resend } = await import('resend');
       const resend = new Resend(apiKey);
       await resend.emails.send({
-        from: 'SolarBuilders.ng <noreply@nexprove.com>',
-        to: ['solar@nexprove.com', 'nexprove@gmail.com'],
+        from: FROM_EMAIL,
+        to: LEAD_EMAILS,
         subject: `[SolarBuilders] Notify Me — ${location} / ${budget}`,
         html: `<h2>Notify Me Request</h2><p><b>Email:</b> ${email}<br/><b>Location:</b> ${location}<br/><b>Budget:</b> ${budget}</p>`,
       });

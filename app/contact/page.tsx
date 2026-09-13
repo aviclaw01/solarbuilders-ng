@@ -8,7 +8,7 @@ import { MessageCircle, Mail, ArrowRight, MapPin, Phone } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Get in Touch — SolarBuilders.ng',
   description: 'Contact the SolarBuilders.ng team. We respond within 2 hours on WhatsApp. Visit us at 11 Mogbonjubola St, Gbagada, Lagos.',
-  alternates: { canonical: 'https://solarbuilders-ng.vercel.app/contact' },
+  alternates: { canonical: 'https://solarbuildersng.com/contact' },
 };
 
 export default function ContactPage() {

@@ -10,7 +10,7 @@ import { Star, MapPin, CheckCircle, SlidersHorizontal, X } from 'lucide-react';
 
 const LOCATIONS = ['All Nigeria', 'Lagos', 'Abuja', 'Port Harcourt', 'Kano', 'Enugu'];
 const SERVICE_TYPES = ['Full Installation', 'Commercial', 'Residential', 'Off-grid', 'Hybrid', 'Repair'];
-const BUDGET_OPTIONS = ['Any Budget', 'Under ₦500k', '₦500k–₦1M', 'Above ₦1M'];
+const BUDGET_OPTIONS = ['Any Budget', 'Under ₦2M', '₦2M–₦4M', 'Above ₦4M'];
 
 export default function MarketplaceClient() {
   const [locationFilter, setLocationFilter] = useState('All Nigeria');
@@ -25,9 +25,9 @@ export default function MarketplaceClient() {
     if (locationFilter !== 'All Nigeria' && b.state !== locationFilter) return false;
     if (verifiedOnly && !b.verified) return false;
     if (serviceFilter.length > 0 && !serviceFilter.some(s => b.services.includes(s))) return false;
-    if (budgetFilter === 'Under ₦500k' && !b.packages.some(p => p.price < 500000)) return false;
-    if (budgetFilter === '₦500k–₦1M' && !b.packages.some(p => p.price >= 500000 && p.price <= 1000000)) return false;
-    if (budgetFilter === 'Above ₦1M' && !b.packages.some(p => p.price > 1000000)) return false;
+    if (budgetFilter === 'Under ₦2M' && !b.packages.some(p => p.price < 2000000)) return false;
+    if (budgetFilter === '₦2M–₦4M' && !b.packages.some(p => p.price >= 2000000 && p.price <= 4000000)) return false;
+    if (budgetFilter === 'Above ₦4M' && !b.packages.some(p => p.price > 4000000)) return false;
     return true;
   });
 

@@ -1,0 +1,412 @@
+/**
+ * SolarBuilders.ng — Quote engine
+ *
+ * Takes the appliances a user selected and returns three itemised system
+ * quotes (Budget / Standard / Premium), each with a real bill of materials
+ * priced from lib/prices.ts, plus a short quote code that encodes the input
+ * so we can rebuild the exact quote from the code alone.
+ *
+ * Sizing assumptions (see VL-001 for the bugs this replaces):
+ *  - Inverter: peak load × 1.25 headroom → next standard kVA. All tiers size
+ *    from the FULL peak load (an undersized inverter trips; batteries handle
+ *    the "not everything is on at once" factor, not the inverter).
+ *  - Battery: lithium LiFePO4 48V modules of 5.12 kWh, 90% usable DoD.
+ *    Backup energy = average load (60% of peak) × autonomy hours.
+ *    Budget 4h · Standard 6h · Premium 10h. Nigerian solar is supplemental to
+ *    grid — 6h overnight is what the market actually installs (5kVA/10kWh).
+ *  - Panels: daily kWh ÷ (5.5 peak-sun-hours × 0.78 system efficiency),
+ *    rounded up to 550W panels. Premium adds 25% for cloudy-day recharge.
+ *  - Fridge/freezer daily hours already reflect compressor duty cycle (8h),
+ *    set in the calculator page's appliance list.
+ */
+
+import {
+  BOS_FRACTION,
+  INVERTER_BRANDS,
+  INVERTER_PER_KVA,
+  LABOUR_FLOOR,
+  LABOUR_PER_KVA,
+  LITHIUM_BRANDS,
+  LITHIUM_MODULE_KWH,
+  LITHIUM_PER_KWH,
+  PANEL_BRANDS,
+  PANEL_PER_WP,
+  PANEL_WATTS,
+  PRICES_LAST_UPDATED,
+  type InverterTier,
+  type PriceRange,
+} from "./prices";
+
+// ─────────────────────────────────────────────────────────
+// TYPES
+// ─────────────────────────────────────────────────────────
+
+export interface QuoteAppliance {
+  id: string;
+  name: string;
+  watts: number;
+  qty: number;
+  hoursPerDay: number;
+}
+
+export type TierKey = "budget" | "standard" | "premium";
+
+export interface BomLine {
+  key: string;
+  item: string; // "Hybrid inverter"
+  spec: string; // "5kVA 48V — Growatt / Luxpower / Must"
+  qty: number;
+  unit: string; // "unit", "panel", "kWh", "lot"
+  unitCost: PriceRange; // per unit
+  lineCost: PriceRange; // qty × unit
+}
+
+export interface TierQuote {
+  key: TierKey;
+  label: string;
+  emoji: string;
+  tagline: string;
+  inverterKva: number;
+  inverterTier: InverterTier;
+  inverterBrands: string[];
+  batteryKwh: number; // nominal installed
+  batteryModules: number;
+  batteryBrands: string[];
+  panelCount: number;
+  panelWatts: number;
+  arrayKwp: number;
+  autonomyHours: number;
+  coveragePct: number; // % of the user's appliances this tier is designed to run at once
+  bom: BomLine[];
+  equipment: PriceRange;
+  bos: PriceRange;
+  labour: PriceRange;
+  total: PriceRange;
+  note: string;
+}
+
+export interface Quote {
+  code: string; // "SB-S5K-7F3A2Q"
+  payload: string; // base64url of QuoteInput — put in ?q= to rebuild
+  generatedAt: string; // ISO date
+  pricesAsOf: string;
+  appliances: QuoteAppliance[];
+  peakWatts: number;
+  dailyKwh: number;
+  tiers: Record<TierKey, TierQuote>;
+}
+
+// ─────────────────────────────────────────────────────────
+// CONSTANTS
+// ─────────────────────────────────────────────────────────
+
+const PEAK_SUN_HOURS = 5.5;
+const SYSTEM_EFFICIENCY = 0.78;
+const LITHIUM_USABLE = 0.9;
+const LOAD_FACTOR = 0.6; // average running load vs peak
+const INVERTER_HEADROOM = 1.25;
+const STANDARD_KVA = [1.5, 2.5, 3.5, 5, 6, 8, 10, 12, 16, 20];
+
+const TIER_CONFIG: Record<
+  TierKey,
+  {
+    label: string;
+    emoji: string;
+    tagline: string;
+    inverterTier: InverterTier;
+    autonomyHours: number;
+    coveragePct: number;
+    panelFactor: number;
+    note: string;
+  }
+> = {
+  budget: {
+    label: "Budget",
+    emoji: "💰",
+    tagline: "Essentials, lowest cost",
+    inverterTier: "budget",
+    autonomyHours: 4,
+    coveragePct: 60,
+    panelFactor: 0.7,
+    note: "Runs your essentials (lights, fans, fridge, TV) with ~4h of night backup. Heavy loads like AC only while the sun is up.",
+  },
+  standard: {
+    label: "Standard",
+    emoji: "⚡",
+    tagline: "What most Nigerian homes install",
+    inverterTier: "mid",
+    autonomyHours: 6,
+    coveragePct: 100,
+    panelFactor: 1.0,
+    note: "Runs everything on your list with ~6h of overnight backup. Grid or generator tops up on very cloudy days.",
+  },
+  premium: {
+    label: "Premium",
+    emoji: "👑",
+    tagline: "Deye-class, full independence",
+    inverterTier: "premium",
+    autonomyHours: 10,
+    coveragePct: 120,
+    panelFactor: 1.25,
+    note: "Everything on your list plus headroom to add more, ~10h backup, premium inverter with app monitoring and 5–10yr warranty.",
+  },
+};
+
+// ─────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────
+
+function scale(r: PriceRange, k: number): PriceRange {
+  return { low: Math.round(r.low * k), best: Math.round(r.best * k), high: Math.round(r.high * k) };
+}
+
+function add(...rs: PriceRange[]): PriceRange {
+  return rs.reduce((a, b) => ({ low: a.low + b.low, best: a.best + b.best, high: a.high + b.high }), {
+    low: 0,
+    best: 0,
+    high: 0,
+  });
+}
+
+function pickKva(peakWatts: number): number {
+  const required = (peakWatts * INVERTER_HEADROOM) / 1000;
+  return STANDARD_KVA.find((k) => k >= required) ?? 20;
+}
+
+/** FNV-1a 32-bit → 6 base36 chars. Stable, short, good enough for a human-readable code. */
+function shortHash(s: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(36).toUpperCase().padStart(7, "0").slice(-6);
+}
+
+function toBase64Url(s: string): string {
+  const b64 =
+    typeof window === "undefined"
+      ? Buffer.from(s, "utf8").toString("base64")
+      : btoa(unescape(encodeURIComponent(s)));
+  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function fromBase64Url(s: string): string {
+  const b64 = s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((s.length + 3) % 4);
+  return typeof window === "undefined"
+    ? Buffer.from(b64, "base64").toString("utf8")
+    : decodeURIComponent(escape(atob(b64)));
+}
+
+// ─────────────────────────────────────────────────────────
+// ENGINE
+// ─────────────────────────────────────────────────────────
+
+function buildTier(key: TierKey, peakWatts: number, dailyKwh: number): TierQuote {
+  const cfg = TIER_CONFIG[key];
+
+  // Inverter — always from full peak (VL-001 BUG-3)
+  const inverterKvaRaw = pickKva(peakWatts * (key === "premium" ? 1.2 : 1));
+
+  // Battery — average load × autonomy, then lithium modules
+  const coveredPeak = peakWatts * Math.min(cfg.coveragePct, 100) / 100;
+  const usableKwh = (coveredPeak * LOAD_FACTOR * cfg.autonomyHours) / 1000;
+  const nominalKwh = usableKwh / LITHIUM_USABLE;
+  const batteryModules = Math.max(1, Math.ceil(nominalKwh / LITHIUM_MODULE_KWH));
+  const batteryKwh = Math.round(batteryModules * LITHIUM_MODULE_KWH * 100) / 100;
+
+  // Banks above 2 modules (>10kWh) belong on a 48V system — installers move to
+  // 5kVA/48V rather than paralleling many 24V modules on a small inverter.
+  const inverterKva = batteryModules > 2 ? Math.max(inverterKvaRaw, 5) : inverterKvaRaw;
+
+  // Panels — cover daily consumption
+  const targetKwh = dailyKwh * cfg.panelFactor;
+  const requiredWp = (targetKwh * 1000) / (PEAK_SUN_HOURS * SYSTEM_EFFICIENCY);
+  const panelCount = Math.max(2, Math.ceil(requiredWp / PANEL_WATTS));
+  const arrayKwp = Math.round((panelCount * PANEL_WATTS) / 10) / 100;
+
+  // BOM
+  const invUnit = scale(INVERTER_PER_KVA[cfg.inverterTier], inverterKva);
+  const batUnit = scale(LITHIUM_PER_KWH[cfg.inverterTier], LITHIUM_MODULE_KWH);
+  const panUnit = scale(PANEL_PER_WP, PANEL_WATTS);
+
+  const bom: BomLine[] = [
+    {
+      key: "inverter",
+      item: "Hybrid inverter",
+      spec: `${inverterKva}kVA ${inverterKva >= 5 ? "48V" : "24V"} hybrid — ${INVERTER_BRANDS[cfg.inverterTier].join(" / ")}`,
+      qty: 1,
+      unit: "unit",
+      unitCost: invUnit,
+      lineCost: invUnit,
+    },
+    {
+      key: "battery",
+      item: "Lithium battery (LiFePO4)",
+      spec: `${LITHIUM_MODULE_KWH}kWh ${inverterKva >= 5 ? "48V 100Ah" : "24V 200Ah"} module — ${LITHIUM_BRANDS[cfg.inverterTier].join(" / ")}`,
+      qty: batteryModules,
+      unit: "module",
+      unitCost: batUnit,
+      lineCost: scale(batUnit, batteryModules),
+    },
+    {
+      key: "panels",
+      item: "Solar panels",
+      spec: `${PANEL_WATTS}W mono/bifacial — ${PANEL_BRANDS.slice(0, 3).join(" / ")}`,
+      qty: panelCount,
+      unit: "panel",
+      unitCost: panUnit,
+      lineCost: scale(panUnit, panelCount),
+    },
+  ];
+
+  const equipment = add(...bom.map((l) => l.lineCost));
+  const bos: PriceRange = {
+    low: Math.round(equipment.low * BOS_FRACTION.low),
+    best: Math.round(equipment.best * BOS_FRACTION.best),
+    high: Math.round(equipment.high * BOS_FRACTION.high),
+  };
+  const labour: PriceRange = {
+    low: Math.max(LABOUR_FLOOR * 0.8, LABOUR_PER_KVA.low * inverterKva),
+    best: Math.max(LABOUR_FLOOR, LABOUR_PER_KVA.best * inverterKva),
+    high: Math.max(LABOUR_FLOOR * 1.5, LABOUR_PER_KVA.high * inverterKva),
+  };
+
+  bom.push(
+    {
+      key: "bos",
+      item: "Mounting, cables & protection",
+      spec: "Rails, DC/AC cable, breakers, surge protector, combiner, earthing, changeover",
+      qty: 1,
+      unit: "lot",
+      unitCost: bos,
+      lineCost: bos,
+    },
+    {
+      key: "labour",
+      item: "Installation & commissioning",
+      spec: "Lagos / Abuja / PH roof-mount labour (transport outside city extra)",
+      qty: 1,
+      unit: "lot",
+      unitCost: labour,
+      lineCost: labour,
+    },
+  );
+
+  return {
+    key,
+    label: cfg.label,
+    emoji: cfg.emoji,
+    tagline: cfg.tagline,
+    inverterKva,
+    inverterTier: cfg.inverterTier,
+    inverterBrands: INVERTER_BRANDS[cfg.inverterTier],
+    batteryKwh,
+    batteryModules,
+    batteryBrands: LITHIUM_BRANDS[cfg.inverterTier],
+    panelCount,
+    panelWatts: PANEL_WATTS,
+    arrayKwp,
+    autonomyHours: cfg.autonomyHours,
+    coveragePct: cfg.coveragePct,
+    bom,
+    equipment,
+    bos,
+    labour,
+    total: add(equipment, bos, labour),
+    note: cfg.note,
+  };
+}
+
+/** Compact serialisable input: [id, name, watts, qty, hours][] */
+type QuoteInput = Array<[string, string, number, number, number]>;
+
+export function buildQuote(appliances: QuoteAppliance[]): Quote {
+  // Sort so the same appliances always produce the same code, regardless of
+  // the order the UI hands them over (URL restore vs fresh selection).
+  const selected = appliances
+    .filter((a) => a.qty > 0 && a.watts > 0)
+    .slice()
+    .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  const peakWatts = selected.reduce((s, a) => s + a.watts * a.qty, 0);
+  const dailyKwh = selected.reduce((s, a) => s + (a.watts * a.qty * a.hoursPerDay) / 1000, 0);
+
+  const input: QuoteInput = selected.map((a) => [a.id, a.name, a.watts, a.qty, a.hoursPerDay]);
+  const json = JSON.stringify(input);
+  const payload = toBase64Url(json);
+  const tiers = {
+    budget: buildTier("budget", peakWatts, dailyKwh),
+    standard: buildTier("standard", peakWatts, dailyKwh),
+    premium: buildTier("premium", peakWatts, dailyKwh),
+  };
+  const code = `SB-${tiers.standard.inverterKva}K-${shortHash(json)}`;
+
+  return {
+    code,
+    payload,
+    generatedAt: new Date().toISOString().slice(0, 10),
+    pricesAsOf: PRICES_LAST_UPDATED,
+    appliances: selected,
+    peakWatts,
+    dailyKwh: Math.round(dailyKwh * 10) / 10,
+    tiers,
+  };
+}
+
+/** Rebuild appliances from a ?q= payload. Returns null if it can't be parsed. */
+export function decodeQuotePayload(payload: string): QuoteAppliance[] | null {
+  try {
+    const arr = JSON.parse(fromBase64Url(payload)) as QuoteInput;
+    if (!Array.isArray(arr)) return null;
+    return arr
+      .filter((r) => Array.isArray(r) && r.length === 5)
+      .map(([id, name, watts, qty, hoursPerDay]) => ({
+        id: String(id),
+        name: String(name),
+        watts: Number(watts),
+        qty: Number(qty),
+        hoursPerDay: Number(hoursPerDay),
+      }));
+  } catch {
+    return null;
+  }
+}
+
+export function quoteUrl(quote: Quote, tier: TierKey, base: string): string {
+  return `${base}/calculator?q=${quote.payload}&tier=${tier}`;
+}
+
+// ─────────────────────────────────────────────────────────
+// FORMATTING
+// ─────────────────────────────────────────────────────────
+
+export function formatNaira(amount: number): string {
+  return "₦" + Math.round(amount).toLocaleString("en-NG");
+}
+
+export function formatNairaShort(amount: number): string {
+  if (amount >= 1_000_000) return `₦${(amount / 1_000_000).toFixed(amount >= 10_000_000 ? 1 : 2).replace(/\.?0+$/, "")}M`;
+  return `₦${Math.round(amount / 1000)}k`;
+}
+
+export function formatRange(r: PriceRange): string {
+  return `${formatNairaShort(r.low)} – ${formatNairaShort(r.high)}`;
+}
+
+/** Plain-text version of a tier quote — used for WhatsApp / email / share */
+export function quoteToText(quote: Quote, tier: TierKey, base: string): string {
+  const t = quote.tiers[tier];
+  const lines = [
+    `SolarBuilders.ng quote ${quote.code} (${t.label})`,
+    `Load: ${(quote.peakWatts / 1000).toFixed(1)}kW peak · ${quote.dailyKwh}kWh/day`,
+    ``,
+    ...t.bom.map(
+      (l) => `• ${l.qty > 1 ? `${l.qty}× ` : ""}${l.item} — ${l.spec}: ${formatNaira(l.lineCost.best)}`,
+    ),
+    ``,
+    `Estimated total: ${formatNaira(t.total.best)} (range ${formatRange(t.total)})`,
+    `Prices as of ${quote.pricesAsOf} — may have changed.`,
+    `Rebuild this quote: ${quoteUrl(quote, tier, base)}`,
+  ];
+  return lines.join("\n");
+}

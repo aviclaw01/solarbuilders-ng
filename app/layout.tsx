@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SolarBuilders.ng — Nigeria's Verified Solar Marketplace",
     description: "Find trusted solar installers across Nigeria. Free calculator, verified builders.",
-    url: "https://solarbuilders-ng.vercel.app",
+    url: "https://solarbuildersng.com",
     siteName: "SolarBuilders.ng",
     locale: "en_NG",
     type: "website",
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://solarbuilders-ng.vercel.app",
+    canonical: "https://solarbuildersng.com",
   },
 };
 
@@ -76,11 +76,11 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "SolarBuilders.ng",
-  "url": "https://solarbuilders-ng.vercel.app",
+  "url": "https://solarbuildersng.com",
   "description": "Nigeria's verified solar marketplace — find trusted solar installers and calculate your system size",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://solarbuilders-ng.vercel.app/marketplace?q={search_term_string}",
+    "target": "https://solarbuildersng.com/marketplace?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 };
@@ -90,9 +90,9 @@ const localBusinessSchema = {
   "@type": "LocalBusiness",
   "additionalType": "https://schema.org/SolarEnergyCompany",
   "name": "SolarBuilders.ng",
-  "url": "https://solarbuilders-ng.vercel.app",
+  "url": "https://solarbuildersng.com",
   "telephone": "+2349168394923",
-  "image": "https://solarbuilders-ng.vercel.app/brand/og-image.png",
+  "image": "https://solarbuildersng.com/brand/og-image.png",
   "description": "Nigeria's verified solar marketplace — connect with trusted solar installers across Nigeria.",
   "address": {
     "@type": "PostalAddress",
@@ -126,7 +126,7 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "SolarBuilders.ng",
-  "url": "https://solarbuilders-ng.vercel.app",
+  "url": "https://solarbuildersng.com",
   "telephone": "+2349168394923",
   "address": {
     "@type": "PostalAddress",
@@ -135,7 +135,7 @@ const organizationSchema = {
     "addressRegion": "Lagos",
     "addressCountry": "NG"
   },
-  "logo": "https://solarbuilders-ng.vercel.app/brand/og-image.png",
+  "logo": "https://solarbuildersng.com/brand/og-image.png",
   "contactPoint": {
     "@type": "ContactPoint",
     "telephone": "+2349168394923",

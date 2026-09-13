@@ -23,15 +23,15 @@ const TIERS = [
     tagline: 'Essentials only',
     color: 'slate',
     highlight: false,
-    kva: '1.5–2kVA',
-    panels: '2–4 × 250W',
-    batteries: '2 × 200Ah Lead Acid',
-    backup: '4–6 hours',
-    costRange: '₦350,000 – ₦600,000',
+    kva: '1.5–3.5kVA',
+    panels: '3–4 × 550W',
+    batteries: '5kWh lithium (LiFePO4)',
+    backup: '~4 hours',
+    costRange: '₦1.4M – ₦2.6M',
     bestFor: 'Single occupancy, flats, minimal power needs',
     canRun: ['LED lights (8–10)', 'Ceiling fans (2–3)', 'TV (32")', 'Phone chargers', 'WiFi router', 'Small fridge'],
     cannotRun: ['Air conditioner', 'Water pump', 'Washing machine'],
-    lifespan: '2–4 years (lead-acid batteries)',
+    lifespan: '8–10 years (lithium)',
   },
   {
     name: 'Standard',
@@ -39,25 +39,25 @@ const TIERS = [
     color: 'amber',
     highlight: true,
     kva: '3.5–5kVA',
-    panels: '4–8 × 300W',
-    batteries: '4 × 200Ah Lead Acid or 1 Lithium Pack',
-    backup: '8–12 hours',
-    costRange: '₦650,000 – ₦1,200,000',
+    panels: '5–8 × 550W',
+    batteries: '10kWh lithium (2 × 5kWh)',
+    backup: '~6 hours',
+    costRange: '₦3.2M – ₦4.8M',
     bestFor: 'Family homes (3–4 bedrooms), moderate AC use',
     canRun: ['Everything in Budget', '1 AC (1.5HP)', 'Refrigerator + freezer', 'Washing machine', 'Water pump', 'Multiple TVs'],
     cannotRun: ['Multiple ACs simultaneously', '2HP+ AC units all day'],
-    lifespan: '8–12 years with lithium',
+    lifespan: '10+ years (lithium)',
   },
   {
     name: 'Premium',
     tagline: 'Total energy independence',
     color: 'navy',
     highlight: false,
-    kva: '7.5–15kVA',
-    panels: '8–16 × 400W',
-    batteries: '2–4 Lithium Packs (LiFePO4)',
-    backup: '24+ hours',
-    costRange: '₦1,200,000 – ₦3,000,000+',
+    kva: '8–12kVA (Deye-class)',
+    panels: '8–16 × 550W',
+    batteries: '15–25kWh lithium (3–5 × 5kWh)',
+    backup: '10+ hours',
+    costRange: '₦6M – ₦14M',
     bestFor: 'Large homes, businesses, total off-grid living',
     canRun: ['Multiple ACs', 'Full kitchen appliances', 'Water heater', 'Commercial equipment', 'Swimming pool pump'],
     cannotRun: ['Nothing significant — this system runs everything'],
@@ -80,7 +80,7 @@ export default function ComparePage() {
             Solar System Comparison
           </h1>
           <p className="text-slate-500 text-lg max-w-2xl">
-            Budget, Standard, or Premium — choose the right system tier for your home and your wallet. Side-by-side comparison with real Nigerian pricing.
+            Budget, Standard, or Premium — choose the right system tier for your home and your wallet. Side-by-side comparison with real Nigerian market prices (September 2026, lithium systems).
           </p>
         </div>
       </div>

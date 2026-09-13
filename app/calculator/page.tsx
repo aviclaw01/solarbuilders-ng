@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown } from 'lucide-react';
-import ResultsCarousel from '@/components/ui/ResultsCarousel';
+import QuoteResults from '@/components/ui/QuoteResults';
+import { buildQuote, decodeQuotePayload, type TierKey } from '@/lib/quote';
+import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 
 interface ApplianceItem {
   id: string;
@@ -16,13 +18,18 @@ interface ApplianceItem {
   hoursPerDay: number;
 }
 
+// hoursPerDay = effective running hours. Fridge/freezer compressors cycle ~35%,
+// so 8h ≈ a full day of cooling (VL-001 BUG-4).
 const STEP1_APPLIANCES: Omit<ApplianceItem, 'qty'>[] = [
+  { id: 'ac_1hp', name: 'Air Con (1HP)', emoji: '🌬️', watts: 900, hoursPerDay: 4 },
   { id: 'ac_1_5hp', name: 'Air Con (1.5HP)', emoji: '🌬️', watts: 1200, hoursPerDay: 4 },
+  { id: 'ac_2hp', name: 'Air Con (2HP)', emoji: '🌬️', watts: 1800, hoursPerDay: 4 },
   { id: 'deep_freezer', name: 'Deep Freezer', emoji: '❄️', watts: 250, hoursPerDay: 8 },
   { id: 'refrigerator', name: 'Refrigerator', emoji: '🧊', watts: 200, hoursPerDay: 8 },
   { id: 'water_pump', name: 'Water Pump', emoji: '🚿', watts: 750, hoursPerDay: 2 },
-  { id: 'washing_machine', name: 'Washing Machine', emoji: '🧺', watts: 500, hoursPerDay: 1 },
+  { id: 'washing_machine', name: 'Washing Machine', emoji: '🧺', watts: 600, hoursPerDay: 1 },
   { id: 'water_heater', name: 'Water Heater', emoji: '♨️', watts: 2000, hoursPerDay: 1 },
+  { id: 'electric_iron', name: 'Electric Iron', emoji: '👔', watts: 1200, hoursPerDay: 0.5 },
 ];
 
 const STEP2_APPLIANCES: Omit<ApplianceItem, 'qty'>[] = [
@@ -31,6 +38,7 @@ const STEP2_APPLIANCES: Omit<ApplianceItem, 'qty'>[] = [
   { id: 'laptop', name: 'Laptop', emoji: '💻', watts: 65, hoursPerDay: 8 },
   { id: 'desktop_pc', name: 'Desktop PC', emoji: '🖨️', watts: 200, hoursPerDay: 8 },
   { id: 'microwave', name: 'Microwave', emoji: '📦', watts: 1000, hoursPerDay: 0.5 },
+  { id: 'blender', name: 'Blender', emoji: '🥤', watts: 500, hoursPerDay: 0.3 },
   { id: 'standing_fan', name: 'Standing Fan', emoji: '🌀', watts: 75, hoursPerDay: 8 },
   { id: 'decoder', name: 'DSTV/Decoder', emoji: '📡', watts: 25, hoursPerDay: 6 },
 ];
@@ -41,7 +49,11 @@ const STEP3_APPLIANCES: Omit<ApplianceItem, 'qty'>[] = [
   { id: 'wifi_router', name: 'WiFi Router', emoji: '📻', watts: 15, hoursPerDay: 24 },
   { id: 'ceiling_fan', name: 'Ceiling Fan', emoji: '🌬️', watts: 70, hoursPerDay: 8 },
   { id: 'security_light', name: 'Security Light', emoji: '💡', watts: 30, hoursPerDay: 12 },
+  { id: 'cctv', name: 'CCTV System', emoji: '📷', watts: 50, hoursPerDay: 24 },
 ];
+
+const ALL_PRESETS = [...STEP1_APPLIANCES, ...STEP2_APPLIANCES, ...STEP3_APPLIANCES];
+const PRESET_IDS = new Set(ALL_PRESETS.map((a) => a.id));
 
 const TYPICAL_HOME_PRESET = [
   { id: 'ac_1_5hp', qty: 1 },
@@ -55,54 +67,15 @@ const TYPICAL_HOME_PRESET = [
   { id: 'wifi_router', qty: 1 },
 ];
 
-const STANDARD_KVA = [1, 1.5, 2, 2.5, 3, 3.5, 5, 7.5, 10, 15, 20];
-
-function roundUpKva(watts: number): number {
-  const kva = (watts * 1.25) / 1000;
-  return STANDARD_KVA.find(k => k >= kva) ?? 20;
-}
-
-function calculateSystem(appliances: ApplianceItem[]) {
-  const totalWatts = appliances.filter(a => a.qty > 0).reduce((sum, a) => sum + a.watts * a.qty, 0);
-  const dailyKwh = appliances.filter(a => a.qty > 0).reduce((sum, a) => sum + (a.watts * a.qty * a.hoursPerDay) / 1000, 0);
-
-  const budgetWatts = totalWatts * 0.6;
-  const budgetKva = roundUpKva(budgetWatts);
-  const budgetBatteries = Math.max(2, Math.ceil((budgetWatts * 4) / (24 * 0.5 * 0.8 * 200)));
-  const budgetPanels = Math.max(2, Math.ceil((dailyKwh * 0.6 * 1000) / (6 * 0.8 * 400)));
-
-  const stdKva = roundUpKva(totalWatts * 1.2);
-  const stdBatteries = Math.max(4, Math.ceil((totalWatts * 8) / (24 * 0.5 * 0.8 * 200)));
-  const stdPanels = Math.max(4, Math.ceil((dailyKwh * 1000) / (6 * 0.8 * 400)));
-
-  const premKva = roundUpKva(totalWatts * 1.5);
-  const premBatteries = Math.max(6, Math.ceil((totalWatts * 12) / (24 * 0.8 * 0.8 * 200)));
-  const premPanels = Math.max(6, Math.ceil((dailyKwh * 1.5 * 1000) / (6 * 0.8 * 400)));
-
-  return {
-    totalWatts,
-    dailyKwh,
-    budget: { label: 'Budget', emoji: '💰', kva: budgetKva, batteries: budgetBatteries, panels: budgetPanels, panelWatts: 250, minCost: 350000, maxCost: 600000, coverage: 60, note: 'Covers essentials (lights, fans, fridge). Not suitable for AC.' },
-    standard: { label: 'Standard', emoji: '⚡', kva: stdKva, batteries: stdBatteries, panels: stdPanels, panelWatts: 300, minCost: 600000, maxCost: 1200000, coverage: 100, note: 'Runs everything on your list comfortably.' },
-    premium: { label: 'Premium', emoji: '👑', kva: premKva, batteries: premBatteries, panels: premPanels, panelWatts: 400, minCost: 1200000, maxCost: 2500000, coverage: 120, note: 'Everything + future expansion headroom. Lithium batteries.' },
-  };
-}
-
-function formatNaira(amount: number): string {
-  if (amount >= 1000000) return `₦${(amount / 1000000).toFixed(1)}M`;
-  return `₦${(amount / 1000).toFixed(0)}k`;
-}
-
 function Stepper({ qty, onDecrement, onIncrement }: { qty: number; onDecrement: () => void; onIncrement: () => void }) {
   return (
     <div className="flex items-center justify-center gap-1 mt-3">
       <button
         onClick={onDecrement}
         disabled={qty === 0}
+        aria-label="Remove one"
         className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors font-bold text-lg ${
-          qty === 0
-            ? 'opacity-30 cursor-not-allowed text-[#64748B]'
-            : 'bg-[#0A0F1E] text-white hover:bg-[#1E293B]'
+          qty === 0 ? 'opacity-30 cursor-not-allowed text-[#64748B]' : 'bg-[#0A0F1E] text-white hover:bg-[#1E293B]'
         }`}
       >
         <Minus className="w-4 h-4" />
@@ -110,6 +83,7 @@ function Stepper({ qty, onDecrement, onIncrement }: { qty: number; onDecrement: 
       <span className="font-heading font-bold text-lg text-[#0A0F1E] min-w-[28px] text-center">{qty}</span>
       <button
         onClick={onIncrement}
+        aria-label="Add one"
         className="w-9 h-9 rounded-full flex items-center justify-center bg-[#0A0F1E] text-white hover:bg-[#1E293B] transition-colors"
       >
         <Plus className="w-4 h-4" />
@@ -118,18 +92,48 @@ function Stepper({ qty, onDecrement, onIncrement }: { qty: number; onDecrement: 
   );
 }
 
-export default function CalculatorPage() {
+function CalculatorInner() {
+  const searchParams = useSearchParams();
   const [step, setStep] = useState(1);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
+  const [initialTier, setInitialTier] = useState<TierKey>('standard');
   const [hours, setHours] = useState<Record<string, number>>({});
   const [customAppliances, setCustomAppliances] = useState<ApplianceItem[]>([]);
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customName, setCustomName] = useState('');
   const [customWatts, setCustomWatts] = useState('');
   const [customHours, setCustomHours] = useState('4');
+  const [appliancesOpen, setAppliancesOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
+  // Restore: ?q=<payload> (a shared / saved quote) wins over localStorage.
   useEffect(() => {
+    const q = searchParams.get('q');
+    const tierParam = searchParams.get('tier') as TierKey | null;
+    if (tierParam && ['budget', 'standard', 'premium'].includes(tierParam)) setInitialTier(tierParam);
+
+    const fromUrl = q ? decodeQuotePayload(q) : null;
+    if (fromUrl && fromUrl.length > 0) {
+      const qs: Record<string, number> = {};
+      const hs: Record<string, number> = {};
+      const customs: ApplianceItem[] = [];
+      for (const a of fromUrl) {
+        if (PRESET_IDS.has(a.id)) {
+          qs[a.id] = a.qty;
+          hs[a.id] = a.hoursPerDay;
+        } else {
+          customs.push({ ...a, emoji: '⚙️' });
+        }
+      }
+      setQuantities(qs);
+      setHours(hs);
+      setCustomAppliances(customs);
+      setShowResults(true);
+      setHydrated(true);
+      return;
+    }
+
     try {
       const saved = localStorage.getItem('sb_calculator');
       if (saved) {
@@ -139,126 +143,112 @@ export default function CalculatorPage() {
         setCustomAppliances(data.customAppliances || []);
       }
     } catch {}
-  }, []);
+    setHydrated(true);
+  }, [searchParams]);
 
   useEffect(() => {
+    if (!hydrated) return;
     try {
       localStorage.setItem('sb_calculator', JSON.stringify({ quantities, hours, customAppliances }));
     } catch {}
-  }, [quantities, hours, customAppliances]);
+  }, [quantities, hours, customAppliances, hydrated]);
 
-  const setQty = (id: string, qty: number) => {
-    setQuantities(prev => ({ ...prev, [id]: Math.max(0, qty) }));
-  };
-
+  const setQty = (id: string, qty: number) => setQuantities((prev) => ({ ...prev, [id]: Math.max(0, qty) }));
   const getHours = (id: string, defaultHours: number) => hours[id] ?? defaultHours;
-  const setItemHours = (id: string, h: number) => {
-    setHours(prev => ({ ...prev, [id]: Math.max(1, Math.min(24, h)) }));
-  };
+  const setItemHours = (id: string, h: number) =>
+    setHours((prev) => ({ ...prev, [id]: Math.max(0.5, Math.min(24, Math.round(h * 2) / 2)) }));
 
   const addCustomAppliance = () => {
     if (!customName.trim() || !customWatts) return;
-    const newItem: ApplianceItem = {
-      id: `custom_${Date.now()}`,
-      name: customName.trim(),
-      emoji: '⚙️',
-      watts: Number(customWatts),
-      qty: 1,
-      hoursPerDay: Number(customHours) || 4,
-    };
-    setCustomAppliances(prev => [...prev, newItem]);
+    setCustomAppliances((prev) => [
+      ...prev,
+      {
+        id: `custom_${Date.now()}`,
+        name: customName.trim(),
+        emoji: '⚙️',
+        watts: Number(customWatts),
+        qty: 1,
+        hoursPerDay: Number(customHours) || 4,
+      },
+    ]);
     setCustomName('');
     setCustomWatts('');
     setCustomHours('4');
     setShowCustomForm(false);
   };
 
-  const removeCustomAppliance = (id: string) => {
-    setCustomAppliances(prev => prev.filter(a => a.id !== id));
-  };
+  const removeCustomAppliance = (id: string) => setCustomAppliances((prev) => prev.filter((a) => a.id !== id));
 
   const applyTypicalHome = () => {
     const preset: Record<string, number> = {};
-    TYPICAL_HOME_PRESET.forEach(item => { preset[item.id] = item.qty; });
-    setQuantities(prev => ({ ...prev, ...preset }));
+    TYPICAL_HOME_PRESET.forEach((item) => { preset[item.id] = item.qty; });
+    setQuantities((prev) => ({ ...prev, ...preset }));
   };
 
   const allAppliances: ApplianceItem[] = [
-    ...STEP1_APPLIANCES.map(a => ({ ...a, qty: quantities[a.id] || 0, hoursPerDay: getHours(a.id, a.hoursPerDay) })),
-    ...STEP2_APPLIANCES.map(a => ({ ...a, qty: quantities[a.id] || 0, hoursPerDay: getHours(a.id, a.hoursPerDay) })),
-    ...STEP3_APPLIANCES.map(a => ({ ...a, qty: quantities[a.id] || 0, hoursPerDay: getHours(a.id, a.hoursPerDay) })),
+    ...ALL_PRESETS.map((a) => ({ ...a, qty: quantities[a.id] || 0, hoursPerDay: getHours(a.id, a.hoursPerDay) })),
     ...customAppliances,
   ];
-
-  const selectedAppliances = allAppliances.filter(a => a.qty > 0);
+  const selectedAppliances = allAppliances.filter((a) => a.qty > 0);
   const totalWatts = selectedAppliances.reduce((sum, a) => sum + a.watts * a.qty, 0);
   const currentStepAppliances = step === 1 ? STEP1_APPLIANCES : step === 2 ? STEP2_APPLIANCES : STEP3_APPLIANCES;
 
-  const stepTitles: Record<number, string> = {
-    1: 'Heavy Appliances',
-    2: 'Medium Appliances',
-    3: 'Light Appliances',
-  };
-
-  const [appliancesOpen, setAppliancesOpen] = useState(false);
-
-  if (showResults) {
-    const result = calculateSystem(selectedAppliances);
+  if (showResults && selectedAppliances.length > 0) {
+    const quote = buildQuote(selectedAppliances);
 
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
         <div className="max-w-3xl mx-auto px-4 py-8 pb-16">
-          <button onClick={() => setShowResults(false)} className="text-[#64748B] hover:text-[#0A0F1E] flex items-center gap-1 text-sm mb-6 font-medium">
-            <ArrowLeft className="w-4 h-4" /> Recalculate
+          <button
+            onClick={() => setShowResults(false)}
+            className="text-[#64748B] hover:text-[#0A0F1E] flex items-center gap-1 text-sm mb-6 font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" /> Edit appliances
           </button>
 
-          {/* 1. Summary bar */}
-          <div className="bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-2xl p-5 mb-8 flex items-start gap-3">
+          <div className="bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-2xl p-5 mb-6 flex items-start gap-3">
             <span className="text-3xl">⚡</span>
             <div>
-              <p className="font-heading font-semibold text-[#0A0F1E]">Your system estimate is ready</p>
-              <p className="text-[#64748B] text-sm">{selectedAppliances.length} appliances · {(totalWatts / 1000).toFixed(1)}kW total load · ~{result.dailyKwh.toFixed(1)} kWh/day</p>
+              <p className="font-heading font-semibold text-[#0A0F1E]">Your itemised estimate is ready</p>
+              <p className="text-[#64748B] text-sm">
+                {selectedAppliances.length} appliance types · {(totalWatts / 1000).toFixed(1)}kW peak · ~{quote.dailyKwh} kWh/day ·
+                prices as of {PRICES_LAST_UPDATED_LABEL}
+              </p>
             </div>
           </div>
 
-          {/* 2. Results Carousel */}
-          <div className="mb-8">
-            <ResultsCarousel result={result} selectedAppliances={selectedAppliances} />
+          <QuoteResults key={quote.code} quote={quote} initialTier={initialTier} />
+
+          <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] mt-8">
+            <button onClick={() => setAppliancesOpen(!appliancesOpen)} className="w-full flex items-center justify-between p-5">
+              <h3 className="font-heading font-semibold text-[#64748B] text-xs uppercase tracking-widest">
+                Your selected appliances ({selectedAppliances.length})
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-[#94A3B8] transition-transform ${appliancesOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {appliancesOpen && (
+              <div className="px-5 pb-5 space-y-2">
+                {selectedAppliances.map((appliance) => (
+                  <div key={appliance.id} className="flex items-center justify-between py-2 border-b border-[#E2E8F0] last:border-0">
+                    <span className="text-[#0A0F1E] text-sm">
+                      {appliance.qty}× {appliance.name}{' '}
+                      <span className="text-[#94A3B8] text-xs">· {appliance.watts}W · {appliance.hoursPerDay}h/day</span>
+                    </span>
+                    <button
+                      onClick={() =>
+                        appliance.id.startsWith('custom_') ? removeCustomAppliance(appliance.id) : setQty(appliance.id, 0)
+                      }
+                      className="text-[#94A3B8] hover:text-red-500 transition-colors p-1"
+                      aria-label={`Remove ${appliance.name}`}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-
-          {/* 3. Collapsible appliance list */}
-          {selectedAppliances.length > 0 && (
-            <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] mb-6">
-              <button
-                onClick={() => setAppliancesOpen(!appliancesOpen)}
-                className="w-full flex items-center justify-between p-5"
-              >
-                <h3 className="font-heading font-semibold text-[#64748B] text-xs uppercase tracking-widest">Your selected appliances ({selectedAppliances.length})</h3>
-                <ChevronDown className={`w-4 h-4 text-[#94A3B8] transition-transform ${appliancesOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {appliancesOpen && (
-                <div className="px-5 pb-5 space-y-2">
-                  {selectedAppliances.map(appliance => (
-                    <div key={appliance.id} className="flex items-center justify-between py-2 border-b border-[#E2E8F0] last:border-0">
-                      <span className="text-[#0A0F1E] text-sm">{appliance.qty}× {appliance.name}</span>
-                      <button onClick={() => setQty(appliance.id, 0)} className="text-[#94A3B8] hover:text-red-500 transition-colors p-1">
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 4. Big CTA */}
-          <Link
-            href="/marketplace"
-            className="w-full bg-[#F59E0B] text-[#0A0F1E] py-5 rounded-full font-heading font-bold text-xl text-center flex items-center justify-center gap-2 hover:bg-[#D97706] transition-colors"
-          >
-            Browse matched builders →
-          </Link>
         </div>
         <Footer />
       </div>
@@ -272,7 +262,6 @@ export default function CalculatorPage() {
       <div className="max-w-2xl mx-auto px-4 py-10">
         {/* Step progress indicator */}
         <div className="mb-8">
-          {/* Visual step pills */}
           <div className="flex items-center gap-0 mb-5">
             {[
               { n: 1, label: 'Heavy Appliances', emoji: '⚡' },
@@ -281,11 +270,11 @@ export default function CalculatorPage() {
             ].map((s, i) => (
               <div key={s.n} className="flex items-center flex-1">
                 <div className={`flex items-center gap-2 flex-1 transition-all duration-300 ${step >= s.n ? 'opacity-100' : 'opacity-40'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-heading font-bold flex-shrink-0 transition-all duration-300 ${
-                    step > s.n ? 'bg-[#10B981] text-white' :
-                    step === s.n ? 'bg-[#F59E0B] text-[#0F172A] shadow-md' :
-                    'bg-[#E2E8F0] text-[#64748B]'
-                  }`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-heading font-bold flex-shrink-0 transition-all duration-300 ${
+                      step > s.n ? 'bg-[#10B981] text-white' : step === s.n ? 'bg-[#F59E0B] text-[#0F172A] shadow-md' : 'bg-[#E2E8F0] text-[#64748B]'
+                    }`}
+                  >
                     {step > s.n ? '✓' : s.n}
                   </div>
                   <div className="hidden sm:block">
@@ -294,22 +283,15 @@ export default function CalculatorPage() {
                     </p>
                   </div>
                 </div>
-                {i < 2 && (
-                  <div className={`h-0.5 w-4 flex-shrink-0 mx-1 transition-all duration-500 ${step > s.n ? 'bg-[#10B981]' : 'bg-[#E2E8F0]'}`} />
-                )}
+                {i < 2 && <div className={`h-0.5 w-4 flex-shrink-0 mx-1 transition-all duration-500 ${step > s.n ? 'bg-[#10B981]' : 'bg-[#E2E8F0]'}`} />}
               </div>
             ))}
           </div>
-          {/* Progress bar */}
           <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[#F59E0B] rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${(step / 3) * 100}%` }}
-            />
+            <div className="h-full bg-[#F59E0B] rounded-full transition-all duration-500 ease-out" style={{ width: `${(step / 3) * 100}%` }} />
           </div>
         </div>
 
-        {/* Typical home preset */}
         {step === 1 && (
           <button
             onClick={applyTypicalHome}
@@ -319,33 +301,26 @@ export default function CalculatorPage() {
           </button>
         )}
 
-        {/* Appliance grid */}
-        <div className="grid grid-cols-2 gap-3 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
           {currentStepAppliances.map((appliance) => {
             const qty = quantities[appliance.id] || 0;
             const isSelected = qty > 0;
-
             return (
               <div
                 key={appliance.id}
                 className={`bg-white rounded-2xl p-5 transition-all ${
-                  isSelected
-                    ? 'border-2 border-[#F59E0B] bg-[#FEF3C7]'
-                    : 'border-2 border-[#E2E8F0] hover:border-[#F59E0B]/50'
+                  isSelected ? 'border-2 border-[#F59E0B] bg-[#FEF3C7]' : 'border-2 border-[#E2E8F0] hover:border-[#F59E0B]/50'
                 }`}
               >
                 <div className="text-3xl text-center mb-2">{appliance.emoji}</div>
                 <p className="font-heading font-semibold text-[#0A0F1E] text-sm text-center leading-tight">{appliance.name}</p>
                 <p className="text-[#94A3B8] text-xs text-center mb-1">{appliance.watts}W</p>
-                <Stepper
-                  qty={qty}
-                  onDecrement={() => setQty(appliance.id, qty - 1)}
-                  onIncrement={() => setQty(appliance.id, qty + 1)}
-                />
+                <Stepper qty={qty} onDecrement={() => setQty(appliance.id, qty - 1)} onIncrement={() => setQty(appliance.id, qty + 1)} />
                 {qty > 0 && (
                   <div className="flex items-center justify-center gap-1.5 mt-2">
                     <button
                       onClick={() => setItemHours(appliance.id, getHours(appliance.id, appliance.hoursPerDay) - 1)}
+                      aria-label="Fewer hours"
                       className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold hover:bg-amber-200 transition-colors"
                     >
                       <Minus className="w-3 h-3" />
@@ -355,6 +330,7 @@ export default function CalculatorPage() {
                     </span>
                     <button
                       onClick={() => setItemHours(appliance.id, getHours(appliance.id, appliance.hoursPerDay) + 1)}
+                      aria-label="More hours"
                       className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold hover:bg-amber-200 transition-colors"
                     >
                       <Plus className="w-3 h-3" />
@@ -371,13 +347,13 @@ export default function CalculatorPage() {
             <h3 className="font-heading font-semibold text-[#0A0F1E] text-sm mb-3">Custom Appliances</h3>
             {customAppliances.length > 0 && (
               <div className="space-y-2 mb-3">
-                {customAppliances.map(ca => (
+                {customAppliances.map((ca) => (
                   <div key={ca.id} className="flex items-center justify-between bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-xl px-4 py-3">
                     <div>
                       <span className="text-sm font-medium text-[#0A0F1E]">⚙️ {ca.name}</span>
                       <span className="text-xs text-[#64748B] ml-2">{ca.watts}W · {ca.hoursPerDay}h/day</span>
                     </div>
-                    <button onClick={() => removeCustomAppliance(ca.id)} className="text-[#94A3B8] hover:text-red-500 transition-colors p-1">
+                    <button onClick={() => removeCustomAppliance(ca.id)} className="text-[#94A3B8] hover:text-red-500 transition-colors p-1" aria-label={`Remove ${ca.name}`}>
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -390,7 +366,7 @@ export default function CalculatorPage() {
                   type="text"
                   placeholder="Appliance name"
                   value={customName}
-                  onChange={e => setCustomName(e.target.value)}
+                  onChange={(e) => setCustomName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:border-[#F59E0B]"
                 />
                 <div className="flex gap-2">
@@ -398,66 +374,53 @@ export default function CalculatorPage() {
                     type="number"
                     placeholder="Watts"
                     value={customWatts}
-                    onChange={e => setCustomWatts(e.target.value)}
+                    onChange={(e) => setCustomWatts(e.target.value)}
                     className="flex-1 px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:border-[#F59E0B]"
                   />
                   <input
                     type="number"
                     placeholder="Hours/day"
                     value={customHours}
-                    onChange={e => setCustomHours(e.target.value)}
+                    onChange={(e) => setCustomHours(e.target.value)}
                     className="flex-1 px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:border-[#F59E0B]"
                   />
                 </div>
                 <div className="flex gap-2">
-                  <button
-                    onClick={addCustomAppliance}
-                    className="flex-1 bg-[#F59E0B] text-[#0A0F1E] py-2 rounded-full font-heading font-semibold text-sm hover:bg-[#D97706] transition-colors"
-                  >
+                  <button onClick={addCustomAppliance} className="flex-1 bg-[#F59E0B] text-[#0A0F1E] py-2 rounded-full font-heading font-semibold text-sm hover:bg-[#D97706] transition-colors">
                     Add
                   </button>
-                  <button
-                    onClick={() => setShowCustomForm(false)}
-                    className="px-4 py-2 text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors"
-                  >
+                  <button onClick={() => setShowCustomForm(false)} className="px-4 py-2 text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors">
                     Cancel
                   </button>
                 </div>
               </div>
             ) : (
-              <button
-                onClick={() => setShowCustomForm(true)}
-                className="text-sm font-semibold text-[#F59E0B] hover:text-[#D97706] transition-colors"
-              >
+              <button onClick={() => setShowCustomForm(true)} className="text-sm font-semibold text-[#F59E0B] hover:text-[#D97706] transition-colors">
                 ＋ Add custom appliance
               </button>
             )}
           </div>
         )}
 
-        {/* Live load summary */}
         {totalWatts > 0 && (
           <div className="bg-[#0A0F1E] rounded-2xl p-5 mb-6 flex items-center justify-between">
             <div>
               <p className="text-[#94A3B8] text-xs mb-1">Current load estimate</p>
               <p className="font-heading font-extrabold text-[#F59E0B] text-2xl">{(totalWatts / 1000).toFixed(2)} kW</p>
-              <p className="text-[#64748B] text-xs">{selectedAppliances.length} appliance{selectedAppliances.length !== 1 ? 's' : ''} · Add more to refine</p>
+              <p className="text-[#64748B] text-xs">
+                {selectedAppliances.length} appliance{selectedAppliances.length !== 1 ? 's' : ''} · Add more to refine
+              </p>
             </div>
             <Zap className="w-8 h-8 text-[#F59E0B]" fill="currentColor" />
           </div>
         )}
 
-        {/* Navigation */}
         <div className="flex items-center gap-3">
           {step > 1 && (
-            <button
-              onClick={() => setStep(step - 1)}
-              className="flex items-center gap-2 text-[#64748B] hover:text-[#0A0F1E] font-semibold py-4 px-4 transition-colors"
-            >
+            <button onClick={() => setStep(step - 1)} className="flex items-center gap-2 text-[#64748B] hover:text-[#0A0F1E] font-semibold py-4 px-4 transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
           )}
-
           {step < 3 ? (
             <button
               onClick={() => setStep(step + 1)}
@@ -471,9 +434,7 @@ export default function CalculatorPage() {
               onClick={() => setShowResults(true)}
               disabled={selectedAppliances.length === 0}
               className={`flex-1 py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors ${
-                selectedAppliances.length > 0
-                  ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]'
-                  : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
+                selectedAppliances.length > 0 ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]' : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
               }`}
             >
               <Zap className="w-5 h-5" fill={selectedAppliances.length > 0 ? 'currentColor' : 'none'} />
@@ -482,6 +443,15 @@ export default function CalculatorPage() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
+  );
+}
+
+export default function CalculatorPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white"><Navbar /></div>}>
+      <CalculatorInner />
+    </Suspense>
   );
 }

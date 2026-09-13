@@ -92,7 +92,7 @@ export default function SolarLagosPage() {
             {[
               {
                 q: 'How much does solar installation cost in Lagos?',
-                a: 'Solar installation in Lagos ranges from ₦350,000 for a basic 2kVA system to ₦1,500,000+ for a full 10kVA home solution. A 3kVA system suitable for an average Lagos home (fridge, fans, lights — no AC) typically costs ₦480,000–₦650,000 installed.',
+                a: 'In 2026, solar installation in Lagos ranges from about ₦1.4M for a 5kWh lithium starter system (lights, fans, TV, fridge — no AC) to ₦6M+ for a 10kVA home running several ACs. The most common package — a 5kVA inverter with 10kWh lithium and 6–8 panels — costs ₦3.2M–₦4.8M installed.',
               },
               {
                 q: 'How long does solar installation take in Lagos?',
@@ -100,7 +100,7 @@ export default function SolarLagosPage() {
               },
               {
                 q: 'Is solar worth it in Lagos given the cost of electricity?',
-                a: 'Yes — very much so. The average Lagos generator user spends ₦35,000–₦60,000 per month on fuel. A solar system pays for itself in 10–14 months at those rates, after which electricity is essentially free for the next 10–15 years.',
+                a: 'Yes. A Lagos household running a generator 4–6 hours a day spends ₦100,000–₦250,000 per month on fuel and servicing. A ₦3.5M–₦4M solar system pays for itself in roughly 2–3 years at those rates, and lithium batteries last 10+ years — after that the power is essentially free.',
               },
               {
                 q: 'What warranty should I expect from a Lagos solar installer?',
