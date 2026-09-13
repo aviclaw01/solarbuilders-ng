@@ -6,7 +6,7 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown } from 'lucide-react';
 import QuoteResults from '@/components/ui/QuoteResults';
-import { buildQuote, decodeQuotePayload, type TierKey } from '@/lib/quote';
+import { buildQuote, decodeQuotePayload, parseTierOptions, type QuoteOptions, type TierKey } from '@/lib/quote';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 
 interface ApplianceItem {
@@ -98,6 +98,7 @@ function CalculatorInner() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
   const [initialTier, setInitialTier] = useState<TierKey>('standard');
+  const [initialOptions, setInitialOptions] = useState<QuoteOptions>({});
   const [hours, setHours] = useState<Record<string, number>>({});
   const [customAppliances, setCustomAppliances] = useState<ApplianceItem[]>([]);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -111,7 +112,11 @@ function CalculatorInner() {
   useEffect(() => {
     const q = searchParams.get('q');
     const tierParam = searchParams.get('tier') as TierKey | null;
-    if (tierParam && ['budget', 'standard', 'premium'].includes(tierParam)) setInitialTier(tierParam);
+    if (tierParam && ['budget', 'standard', 'premium'].includes(tierParam)) {
+      setInitialTier(tierParam);
+      const o = parseTierOptions(searchParams.get('inv'), searchParams.get('bat'));
+      if (Object.keys(o).length) setInitialOptions({ [tierParam]: o });
+    }
 
     const fromUrl = q ? decodeQuotePayload(q) : null;
     if (fromUrl && fromUrl.length > 0) {
@@ -218,7 +223,7 @@ function CalculatorInner() {
             </div>
           </div>
 
-          <QuoteResults key={quote.code} quote={quote} initialTier={initialTier} />
+          <QuoteResults key={quote.code} appliances={selectedAppliances} initialTier={initialTier} initialOptions={initialOptions} />
 
           <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] mt-8">
             <button onClick={() => setAppliancesOpen(!appliancesOpen)} className="w-full flex items-center justify-between p-5">

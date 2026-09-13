@@ -1,27 +1,43 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
-import { Download, Image as ImageIcon, Share2, MessageCircle, Info } from 'lucide-react';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
+import { Download, Image as ImageIcon, Share2, MessageCircle, Info, SlidersHorizontal } from 'lucide-react';
 import {
   type Quote,
+  type QuoteOptions,
   type TierKey,
+  type TierOptions,
   type QuoteAppliance,
+  type BatteryType,
+  buildQuote,
   formatNaira,
   formatNairaShort,
   formatRange,
   quoteToText,
   quoteUrl,
 } from '@/lib/quote';
-import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import { INVERTER_BRANDS, PRICES_LAST_UPDATED_LABEL, type InverterTier } from '@/lib/prices';
+import { brandSlugByName } from '@/lib/brands';
 import { SITE_URL } from '@/lib/site';
 import QuoteContactModal from './QuoteContactModal';
 
 interface Props {
-  quote: Quote;
+  appliances: QuoteAppliance[];
   initialTier?: TierKey;
+  initialOptions?: QuoteOptions;
 }
 
 const TIER_ORDER: TierKey[] = ['budget', 'standard', 'premium'];
+const INVERTER_CLASSES: { key: InverterTier; label: string }[] = [
+  { key: 'budget', label: 'Budget' },
+  { key: 'mid', label: 'Mid' },
+  { key: 'premium', label: 'Premium' },
+];
+const BATTERY_TYPES: { key: BatteryType; label: string; hint: string }[] = [
+  { key: 'lithium', label: 'Lithium', hint: '10+ yrs' },
+  { key: 'tubular', label: 'Tubular', hint: '2–4 yrs, cheaper' },
+];
 
 /** What this tier can run at once — budget covers 60% of the load, greedy by size. */
 function whatYouCanRun(tier: TierKey, appliances: QuoteAppliance[], peakWatts: number): string[] {
@@ -42,16 +58,48 @@ function whatYouCanRun(tier: TierKey, appliances: QuoteAppliance[], peakWatts: n
   return lines;
 }
 
-export default function QuoteResults({ quote, initialTier = 'standard' }: Props) {
+/** "5kVA 48V hybrid — Growatt / Luxpower" with brand names linked to /brands/<slug> */
+function SpecWithBrands({ base, brands, fallback }: { base?: string; brands?: string[]; fallback: string }) {
+  if (!base || !brands?.length) return <>{fallback}</>;
+  return (
+    <>
+      {base} —{' '}
+      {brands.map((b, i) => {
+        const slug = brandSlugByName(b);
+        return (
+          <span key={b}>
+            {slug ? (
+              <Link href={`/brands/${slug}`} className="text-amber-600 hover:underline" target="_blank">
+                {b}
+              </Link>
+            ) : (
+              b
+            )}
+            {i < brands.length - 1 ? ' / ' : ''}
+          </span>
+        );
+      })}
+    </>
+  );
+}
+
+export default function QuoteResults({ appliances, initialTier = 'standard', initialOptions = {} }: Props) {
   const [tier, setTier] = useState<TierKey>(initialTier);
+  const [options, setOptions] = useState<QuoteOptions>(initialOptions);
   const [busy, setBusy] = useState<'pdf' | 'png' | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [showContact, setShowContact] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  const quote: Quote = useMemo(() => buildQuote(appliances, options), [appliances, options]);
   const t = quote.tiers[tier];
   const canRun = whatYouCanRun(tier, quote.appliances, quote.peakWatts);
   const fileBase = `SolarBuilders-${quote.code}-${t.label}`;
+  const customised = !!(t.options.inverterTier || t.options.battery);
+
+  const setTierOption = (patch: TierOptions) =>
+    setOptions((prev) => ({ ...prev, [tier]: { ...(prev[tier] ?? {}), ...patch } }));
+  const resetTierOptions = () => setOptions((prev) => ({ ...prev, [tier]: {} }));
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -93,7 +141,6 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
       const img = canvas.toDataURL('image/jpeg', 0.92);
       let y = margin;
       let remaining = imgH;
-      // Slice tall cards across pages
       while (remaining > 0) {
         pdf.addImage(img, 'JPEG', margin, y, imgW, imgH);
         remaining -= pageH - margin * 2;
@@ -158,15 +205,75 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
         })}
       </div>
 
+      {/* Customise picker */}
+      <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4 mb-5">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-heading font-semibold text-[#64748B] uppercase tracking-widest flex items-center gap-1.5">
+            <SlidersHorizontal className="w-3.5 h-3.5" /> Customise {t.label}
+          </p>
+          {customised && (
+            <button onClick={resetTierOptions} className="text-[11px] text-[#94A3B8] hover:text-[#0A0F1E] underline underline-offset-2">
+              Reset to default
+            </button>
+          )}
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div>
+            <p className="text-[11px] text-[#64748B] mb-1.5">Inverter class</p>
+            <div className="flex gap-1.5">
+              {INVERTER_CLASSES.map((c) => {
+                const active = t.inverterTier === c.key;
+                return (
+                  <button
+                    key={c.key}
+                    onClick={() => setTierOption({ inverterTier: c.key })}
+                    title={INVERTER_BRANDS[c.key].join(' / ')}
+                    className={`flex-1 rounded-full px-2 py-2 text-xs font-semibold border transition-colors ${
+                      active ? 'bg-[#0A0F1E] text-white border-[#0A0F1E]' : 'bg-white text-[#0A0F1E] border-[#E2E8F0] hover:border-[#F59E0B]'
+                    }`}
+                  >
+                    {c.label}
+                    <span className={`block text-[10px] font-normal ${active ? 'text-[#94A3B8]' : 'text-[#94A3B8]'}`}>
+                      {INVERTER_BRANDS[c.key].slice(0, 2).join(' / ')}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <p className="text-[11px] text-[#64748B] mb-1.5">Battery</p>
+            <div className="flex gap-1.5">
+              {BATTERY_TYPES.map((b) => {
+                const active = t.batteryType === b.key;
+                return (
+                  <button
+                    key={b.key}
+                    onClick={() => setTierOption({ battery: b.key })}
+                    className={`flex-1 rounded-full px-2 py-2 text-xs font-semibold border transition-colors ${
+                      active ? 'bg-[#0A0F1E] text-white border-[#0A0F1E]' : 'bg-white text-[#0A0F1E] border-[#E2E8F0] hover:border-[#F59E0B]'
+                    }`}
+                  >
+                    {b.label}
+                    <span className="block text-[10px] font-normal text-[#94A3B8]">{b.hint}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* ── Exportable quote card ─────────────────────────── */}
       <div ref={cardRef} className="bg-white rounded-2xl border-2 border-[#F59E0B] p-6 sm:p-8" style={{ fontFamily: 'inherit' }}>
-        {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-5">
           <div>
             <p className="font-heading font-extrabold text-[#0A0F1E] text-lg leading-none">
               Solar<span className="text-[#F59E0B]">Builders</span>.ng
             </p>
-            <p className="text-[#64748B] text-xs mt-1">Solar system estimate · {t.label} tier</p>
+            <p className="text-[#64748B] text-xs mt-1">
+              Solar system estimate · {t.label} tier{customised ? ' · customised' : ''}
+            </p>
           </div>
           <div className="text-right">
             <p className="text-[10px] uppercase tracking-widest text-[#94A3B8] font-semibold">Quote code</p>
@@ -175,7 +282,6 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
           </div>
         </div>
 
-        {/* Headline price */}
         <div className="bg-[#0A0F1E] rounded-2xl p-5 mb-5 text-white">
           <p className="text-[#94A3B8] text-xs mb-1">Estimated total, installed</p>
           <p className="font-heading font-extrabold text-[#F59E0B] text-3xl sm:text-4xl leading-tight">{formatNaira(t.total.best)}</p>
@@ -185,11 +291,11 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
           <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-white/10 text-center">
             <div>
               <p className="font-heading font-bold text-white text-lg leading-tight">{t.inverterKva}kVA</p>
-              <p className="text-[10px] text-[#94A3B8]">Inverter</p>
+              <p className="text-[10px] text-[#94A3B8]">{t.inverterBrands[0]}-class inverter</p>
             </div>
             <div>
               <p className="font-heading font-bold text-white text-lg leading-tight">{t.batteryKwh}kWh</p>
-              <p className="text-[10px] text-[#94A3B8]">Lithium · ~{t.autonomyHours}h backup</p>
+              <p className="text-[10px] text-[#94A3B8]">{t.batteryType === 'tubular' ? 'Tubular' : 'Lithium'} · ~{t.autonomyHours}h backup</p>
             </div>
             <div>
               <p className="font-heading font-bold text-white text-lg leading-tight">{t.panelCount}×{t.panelWatts}W</p>
@@ -198,7 +304,6 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
           </div>
         </div>
 
-        {/* BOM table */}
         <p className="text-xs font-heading font-semibold text-[#64748B] uppercase tracking-widest mb-2">What you need to buy</p>
         <div>
           <table className="w-full text-sm table-fixed">
@@ -219,11 +324,13 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
                 <tr key={l.key} className="border-b border-[#F1F5F9] align-top">
                   <td className="py-2.5 px-1">
                     <p className="font-semibold text-[#0A0F1E]">{l.item}</p>
-                    <p className="text-[11px] text-[#64748B] leading-snug">{l.spec}</p>
+                    <p className="text-[11px] text-[#64748B] leading-snug">
+                      <SpecWithBrands base={l.specBase} brands={l.brands} fallback={l.spec} />
+                    </p>
                   </td>
                   <td className="py-2.5 px-1 text-right text-[#0A0F1E] text-xs sm:text-sm">
                     {l.qty}
-                    <span className="hidden sm:inline"> {l.unit}{l.qty > 1 && l.unit !== 'lot' ? 's' : ''}</span>
+                    <span className="hidden sm:inline"> {l.unit}{l.qty > 1 && l.unit !== 'lot' ? (l.unit === 'battery' ? 'ies' : 's') : ''}</span>
                   </td>
                   <td className="py-2.5 px-1 text-right">
                     <p className="font-semibold text-[#0A0F1E] text-xs sm:text-sm">{formatNaira(l.lineCost.best)}</p>
@@ -241,7 +348,13 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
           </table>
         </div>
 
-        {/* What you can run */}
+        {t.batteryType === 'tubular' && (
+          <p className="mt-3 text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 leading-snug">
+            Tubular batteries cost less today but last 2–4 years and only use 50% of their capacity. Over 10 years you will
+            typically buy 3–5 banks — usually more than one lithium pack. We show it because many homes still start here.
+          </p>
+        )}
+
         <div className="grid sm:grid-cols-2 gap-4 mt-5">
           <div>
             <p className="text-xs font-heading font-semibold text-[#64748B] uppercase tracking-widest mb-2">Runs at once</p>
@@ -262,7 +375,6 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
           </div>
         </div>
 
-        {/* Disclaimer */}
         <div className="mt-5 pt-4 border-t border-[#E2E8F0] flex gap-2">
           <Info className="w-4 h-4 text-[#94A3B8] flex-shrink-0 mt-0.5" />
           <p className="text-[11px] text-[#64748B] leading-snug">
@@ -273,7 +385,7 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
             vetted installer.
           </p>
         </div>
-        <p className="text-[10px] text-[#94A3B8] mt-3 text-center">{SITE_URL}/calculator · Rebuild with code {quote.code}</p>
+        <p className="text-[10px] text-[#94A3B8] mt-3 text-center break-all">{quoteUrl(quote, tier, SITE_URL.replace(/^https?:\/\//, ''))}</p>
       </div>
 
       {/* ── Actions ───────────────────────────────────────── */}
@@ -285,24 +397,13 @@ export default function QuoteResults({ quote, initialTier = 'standard' }: Props)
           <MessageCircle className="w-5 h-5" /> Get this system built
         </button>
         <div className="grid grid-cols-3 gap-2">
-          <button
-            onClick={downloadPdf}
-            disabled={busy !== null}
-            className="flex items-center justify-center gap-1.5 border-2 border-[#E2E8F0] hover:border-[#F59E0B] text-[#0A0F1E] py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50"
-          >
+          <button onClick={downloadPdf} disabled={busy !== null} className="flex items-center justify-center gap-1.5 border-2 border-[#E2E8F0] hover:border-[#F59E0B] text-[#0A0F1E] py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50">
             <Download className="w-4 h-4" /> {busy === 'pdf' ? 'Saving…' : 'PDF'}
           </button>
-          <button
-            onClick={downloadPng}
-            disabled={busy !== null}
-            className="flex items-center justify-center gap-1.5 border-2 border-[#E2E8F0] hover:border-[#F59E0B] text-[#0A0F1E] py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50"
-          >
+          <button onClick={downloadPng} disabled={busy !== null} className="flex items-center justify-center gap-1.5 border-2 border-[#E2E8F0] hover:border-[#F59E0B] text-[#0A0F1E] py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50">
             <ImageIcon className="w-4 h-4" /> {busy === 'png' ? 'Saving…' : 'Image'}
           </button>
-          <button
-            onClick={share}
-            className="flex items-center justify-center gap-1.5 border-2 border-[#E2E8F0] hover:border-[#F59E0B] text-[#0A0F1E] py-3 rounded-full text-sm font-semibold transition-colors"
-          >
+          <button onClick={share} className="flex items-center justify-center gap-1.5 border-2 border-[#E2E8F0] hover:border-[#F59E0B] text-[#0A0F1E] py-3 rounded-full text-sm font-semibold transition-colors">
             <Share2 className="w-4 h-4" /> Share
           </button>
         </div>

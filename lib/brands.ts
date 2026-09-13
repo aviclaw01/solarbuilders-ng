@@ -696,3 +696,9 @@ export function headlineUnitPrice(brand: Brand): string | null {
   if (pkg.length) return `packages from ₦${(min(pkg.map((p) => p.priceLow)) / 1_000_000).toFixed(2).replace(/\.?0+$/, "")}M`;
   return null;
 }
+
+/** Resolve a display name used in the quote BOM ("Felicity", "JA Solar") to a brand slug, if we have a page for it */
+export function brandSlugByName(name: string): string | undefined {
+  const n = name.toLowerCase();
+  return MANUFACTURERS.find((b) => b.name.toLowerCase() === n || b.name.toLowerCase().startsWith(n + " ") || b.slug === n.replace(/\s+/g, "-"))?.slug;
+}

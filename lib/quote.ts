@@ -33,6 +33,7 @@ import {
   PANEL_PER_WP,
   PANEL_WATTS,
   PRICES_LAST_UPDATED,
+  TUBULAR_200AH,
   type InverterTier,
   type PriceRange,
 } from "./prices";
@@ -50,11 +51,27 @@ export interface QuoteAppliance {
 }
 
 export type TierKey = "budget" | "standard" | "premium";
+export type BatteryType = "lithium" | "tubular";
+
+/** Per-tier user overrides from the quote card's picker */
+export interface TierOptions {
+  inverterTier?: InverterTier;
+  battery?: BatteryType;
+}
+export type QuoteOptions = Partial<Record<TierKey, TierOptions>>;
+
+export const INVERTER_TIER_LABEL: Record<InverterTier, string> = {
+  budget: "Budget class",
+  mid: "Mid class",
+  premium: "Premium class",
+};
 
 export interface BomLine {
   key: string;
   item: string; // "Hybrid inverter"
-  spec: string; // "5kVA 48V — Growatt / Luxpower / Must"
+  spec: string; // "5kVA 48V hybrid — Growatt / Luxpower / Must" (plain text, for export)
+  specBase?: string; // "5kVA 48V hybrid" — UI renders specBase + linked brands
+  brands?: string[]; // brand names, resolvable to /brands/<slug>
   qty: number;
   unit: string; // "unit", "panel", "kWh", "lot"
   unitCost: PriceRange; // per unit
@@ -70,8 +87,10 @@ export interface TierQuote {
   inverterTier: InverterTier;
   inverterBrands: string[];
   batteryKwh: number; // nominal installed
-  batteryModules: number;
+  batteryModules: number; // lithium modules or tubular units
+  batteryType: BatteryType;
   batteryBrands: string[];
+  options: TierOptions; // what the user overrode (empty = defaults)
   panelCount: number;
   panelWatts: number;
   arrayKwp: number;
@@ -93,6 +112,7 @@ export interface Quote {
   appliances: QuoteAppliance[];
   peakWatts: number;
   dailyKwh: number;
+  options: QuoteOptions;
   tiers: Record<TierKey, TierQuote>;
 }
 
@@ -103,6 +123,9 @@ export interface Quote {
 const PEAK_SUN_HOURS = 5.5;
 const SYSTEM_EFFICIENCY = 0.78;
 const LITHIUM_USABLE = 0.9;
+const TUBULAR_KWH = 2.4; // 12V × 200Ah
+const TUBULAR_USABLE = 0.5; // lead-acid DoD
+const TUBULAR_BRANDS = ["Luminous", "Quanta", "Felicity"];
 const LOAD_FACTOR = 0.6; // average running load vs peak
 const INVERTER_HEADROOM = 1.25;
 const STANDARD_KVA = [1.5, 2.5, 3.5, 5, 6, 8, 10, 12, 16, 20];
@@ -202,8 +225,10 @@ function fromBase64Url(s: string): string {
 // ENGINE
 // ─────────────────────────────────────────────────────────
 
-function buildTier(key: TierKey, peakWatts: number, dailyKwh: number): TierQuote {
+function buildTier(key: TierKey, peakWatts: number, dailyKwh: number, opts: TierOptions = {}): TierQuote {
   const cfg = TIER_CONFIG[key];
+  const inverterTier = opts.inverterTier ?? cfg.inverterTier;
+  const batteryType: BatteryType = opts.battery ?? "lithium";
 
   // Inverter — always from full peak (VL-001 BUG-3)
   const inverterKvaRaw = pickKva(peakWatts * (key === "premium" ? 1.2 : 1));
@@ -211,30 +236,52 @@ function buildTier(key: TierKey, peakWatts: number, dailyKwh: number): TierQuote
   // Battery — average load × autonomy, then lithium modules
   const coveredPeak = peakWatts * Math.min(cfg.coveragePct, 100) / 100;
   const usableKwh = (coveredPeak * LOAD_FACTOR * cfg.autonomyHours) / 1000;
-  const nominalKwh = usableKwh / LITHIUM_USABLE;
-  const batteryModules = Math.max(1, Math.ceil(nominalKwh / LITHIUM_MODULE_KWH));
-  const batteryKwh = Math.round(batteryModules * LITHIUM_MODULE_KWH * 100) / 100;
+  let batteryModules: number;
+  let batteryKwh: number;
+  let inverterKva: number;
+  if (batteryType === "tubular") {
+    // 12V 200Ah units in series strings: 2 for 24V (<5kVA), 4 for 48V
+    const series = inverterKvaRaw >= 5 ? 4 : 2;
+    const perUnitUsable = TUBULAR_KWH * TUBULAR_USABLE;
+    batteryModules = Math.max(series, Math.ceil(usableKwh / perUnitUsable / series) * series);
+    batteryKwh = Math.round(batteryModules * TUBULAR_KWH * 100) / 100;
+    inverterKva = batteryModules > 8 ? Math.max(inverterKvaRaw, 5) : inverterKvaRaw;
+  } else {
+    const nominalKwh = usableKwh / LITHIUM_USABLE;
+    batteryModules = Math.max(1, Math.ceil(nominalKwh / LITHIUM_MODULE_KWH));
+    batteryKwh = Math.round(batteryModules * LITHIUM_MODULE_KWH * 100) / 100;
+    // Banks above 2 modules (>10kWh) belong on a 48V system — installers move to
+    // 5kVA/48V rather than paralleling many 24V modules on a small inverter.
+    inverterKva = batteryModules > 2 ? Math.max(inverterKvaRaw, 5) : inverterKvaRaw;
+  }
 
-  // Banks above 2 modules (>10kWh) belong on a 48V system — installers move to
-  // 5kVA/48V rather than paralleling many 24V modules on a small inverter.
-  const inverterKva = batteryModules > 2 ? Math.max(inverterKvaRaw, 5) : inverterKvaRaw;
-
-  // Panels — cover daily consumption
-  const targetKwh = dailyKwh * cfg.panelFactor;
+  // Panels — cover daily consumption (lead-acid charges ~15% less efficiently)
+  const targetKwh = dailyKwh * cfg.panelFactor * (batteryType === "tubular" ? 1.15 : 1);
   const requiredWp = (targetKwh * 1000) / (PEAK_SUN_HOURS * SYSTEM_EFFICIENCY);
   const panelCount = Math.max(2, Math.ceil(requiredWp / PANEL_WATTS));
   const arrayKwp = Math.round((panelCount * PANEL_WATTS) / 10) / 100;
 
   // BOM
-  const invUnit = scale(INVERTER_PER_KVA[cfg.inverterTier], inverterKva);
-  const batUnit = scale(LITHIUM_PER_KWH[cfg.inverterTier], LITHIUM_MODULE_KWH);
+  const invUnit = scale(INVERTER_PER_KVA[inverterTier], inverterKva);
+  const batUnit = batteryType === "tubular" ? TUBULAR_200AH : scale(LITHIUM_PER_KWH[inverterTier], LITHIUM_MODULE_KWH);
   const panUnit = scale(PANEL_PER_WP, PANEL_WATTS);
+  const batteryBrands = batteryType === "tubular" ? TUBULAR_BRANDS : LITHIUM_BRANDS[inverterTier];
+  const panelBrands = PANEL_BRANDS.slice(0, 3);
+
+  const invSpec = `${inverterKva}kVA ${inverterKva >= 5 ? "48V" : "24V"} hybrid`;
+  const batSpec =
+    batteryType === "tubular"
+      ? `200Ah 12V tubular deep-cycle · 2–4 yr life`
+      : `${LITHIUM_MODULE_KWH}kWh ${inverterKva >= 5 ? "48V 100Ah" : "24V 200Ah"} module · 10+ yr life`;
+  const panSpec = `${PANEL_WATTS}W mono/bifacial`;
 
   const bom: BomLine[] = [
     {
       key: "inverter",
       item: "Hybrid inverter",
-      spec: `${inverterKva}kVA ${inverterKva >= 5 ? "48V" : "24V"} hybrid — ${INVERTER_BRANDS[cfg.inverterTier].join(" / ")}`,
+      spec: `${invSpec} — ${INVERTER_BRANDS[inverterTier].join(" / ")}`,
+      specBase: invSpec,
+      brands: INVERTER_BRANDS[inverterTier],
       qty: 1,
       unit: "unit",
       unitCost: invUnit,
@@ -242,17 +289,21 @@ function buildTier(key: TierKey, peakWatts: number, dailyKwh: number): TierQuote
     },
     {
       key: "battery",
-      item: "Lithium battery (LiFePO4)",
-      spec: `${LITHIUM_MODULE_KWH}kWh ${inverterKva >= 5 ? "48V 100Ah" : "24V 200Ah"} module — ${LITHIUM_BRANDS[cfg.inverterTier].join(" / ")}`,
+      item: batteryType === "tubular" ? "Tubular battery (lead-acid)" : "Lithium battery (LiFePO4)",
+      spec: `${batSpec} — ${batteryBrands.join(" / ")}`,
+      specBase: batSpec,
+      brands: batteryBrands,
       qty: batteryModules,
-      unit: "module",
+      unit: batteryType === "tubular" ? "battery" : "module",
       unitCost: batUnit,
       lineCost: scale(batUnit, batteryModules),
     },
     {
       key: "panels",
       item: "Solar panels",
-      spec: `${PANEL_WATTS}W mono/bifacial — ${PANEL_BRANDS.slice(0, 3).join(" / ")}`,
+      spec: `${panSpec} — ${panelBrands.join(" / ")}`,
+      specBase: panSpec,
+      brands: panelBrands,
       qty: panelCount,
       unit: "panel",
       unitCost: panUnit,
@@ -299,11 +350,13 @@ function buildTier(key: TierKey, peakWatts: number, dailyKwh: number): TierQuote
     emoji: cfg.emoji,
     tagline: cfg.tagline,
     inverterKva,
-    inverterTier: cfg.inverterTier,
-    inverterBrands: INVERTER_BRANDS[cfg.inverterTier],
+    inverterTier,
+    inverterBrands: INVERTER_BRANDS[inverterTier],
     batteryKwh,
     batteryModules,
-    batteryBrands: LITHIUM_BRANDS[cfg.inverterTier],
+    batteryType,
+    batteryBrands,
+    options: opts,
     panelCount,
     panelWatts: PANEL_WATTS,
     arrayKwp,
@@ -321,7 +374,7 @@ function buildTier(key: TierKey, peakWatts: number, dailyKwh: number): TierQuote
 /** Compact serialisable input: [id, name, watts, qty, hours][] */
 type QuoteInput = Array<[string, string, number, number, number]>;
 
-export function buildQuote(appliances: QuoteAppliance[]): Quote {
+export function buildQuote(appliances: QuoteAppliance[], options: QuoteOptions = {}): Quote {
   // Sort so the same appliances always produce the same code, regardless of
   // the order the UI hands them over (URL restore vs fresh selection).
   const selected = appliances
@@ -335,9 +388,9 @@ export function buildQuote(appliances: QuoteAppliance[]): Quote {
   const json = JSON.stringify(input);
   const payload = toBase64Url(json);
   const tiers = {
-    budget: buildTier("budget", peakWatts, dailyKwh),
-    standard: buildTier("standard", peakWatts, dailyKwh),
-    premium: buildTier("premium", peakWatts, dailyKwh),
+    budget: buildTier("budget", peakWatts, dailyKwh, options.budget),
+    standard: buildTier("standard", peakWatts, dailyKwh, options.standard),
+    premium: buildTier("premium", peakWatts, dailyKwh, options.premium),
   };
   const code = `SB-${tiers.standard.inverterKva}K-${shortHash(json)}`;
 
@@ -349,6 +402,7 @@ export function buildQuote(appliances: QuoteAppliance[]): Quote {
     appliances: selected,
     peakWatts,
     dailyKwh: Math.round(dailyKwh * 10) / 10,
+    options,
     tiers,
   };
 }
@@ -373,7 +427,17 @@ export function decodeQuotePayload(payload: string): QuoteAppliance[] | null {
 }
 
 export function quoteUrl(quote: Quote, tier: TierKey, base: string): string {
-  return `${base}/calculator?q=${quote.payload}&tier=${tier}`;
+  const o = quote.tiers[tier].options;
+  const extra = [o.inverterTier ? `inv=${o.inverterTier}` : "", o.battery ? `bat=${o.battery}` : ""].filter(Boolean).join("&");
+  return `${base}/calculator?q=${quote.payload}&tier=${tier}${extra ? `&${extra}` : ""}`;
+}
+
+/** Parse ?inv= / ?bat= URL params into TierOptions (ignores junk) */
+export function parseTierOptions(inv: string | null, bat: string | null): TierOptions {
+  const o: TierOptions = {};
+  if (inv === "budget" || inv === "mid" || inv === "premium") o.inverterTier = inv;
+  if (bat === "lithium" || bat === "tubular") o.battery = bat;
+  return o;
 }
 
 // ─────────────────────────────────────────────────────────
