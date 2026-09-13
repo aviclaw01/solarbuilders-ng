@@ -6,7 +6,7 @@ import AnimatedSection from '@/components/ui/AnimatedSection';
 
 export const metadata: Metadata = {
   title: 'About SolarBuilders.ng — Nigeria\'s Verified Solar Marketplace',
-  description: 'SolarBuilders.ng is Nigeria\'s first verified solar marketplace. Built by Nexprove to solve the trust problem in Nigeria\'s solar industry.',
+  description: 'SolarBuilders.ng gives Nigerians real solar prices and itemised quotes, then gets the system built. Built by Nexprove to solve the trust problem in Nigeria\'s solar industry.',
   alternates: { canonical: 'https://solarbuildersng.com/about' },
 };
 
@@ -257,7 +257,7 @@ export default function AboutPage() {
                 Apply to List Your Company →
               </Link>
               <Link
-                href="/marketplace"
+                href="/brands"
                 className="inline-flex items-center justify-center border-2 border-[#0F172A] text-[#0F172A] px-8 py-4 rounded-full font-heading font-semibold hover:bg-[#0F172A] hover:text-white transition-all duration-200"
               >
                 Browse Verified Builders

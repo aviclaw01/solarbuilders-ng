@@ -137,8 +137,8 @@ export default function SolarCostNigeriaPage() {
             <Link href="/calculator" className="inline-flex items-center justify-center gap-2 bg-[#F59E0B] text-[#0A0F1E] px-6 py-3 rounded-full font-heading font-bold text-sm hover:bg-[#D97706] transition-colors">
               Calculate My System →
             </Link>
-            <Link href="/marketplace" className="inline-flex items-center justify-center gap-2 border-2 border-[#0A0F1E] text-[#0A0F1E] px-6 py-3 rounded-full font-heading font-semibold text-sm hover:bg-[#0A0F1E] hover:text-white transition-colors">
-              Browse Verified Installers
+            <Link href="/brands" className="inline-flex items-center justify-center gap-2 border-2 border-[#0A0F1E] text-[#0A0F1E] px-6 py-3 rounded-full font-heading font-semibold text-sm hover:bg-[#0A0F1E] hover:text-white transition-colors">
+              Browse Brands & Prices
             </Link>
           </div>
         </div>

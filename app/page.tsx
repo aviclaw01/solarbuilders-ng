@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { BUILDERS, formatNaira } from '@/lib/mock-data';
-import { Star, MapPin, CheckCircle } from 'lucide-react';
+import BrandCard from '@/components/ui/BrandCard';
+import { getBrand } from '@/lib/brands';
+import { Star, CheckCircle } from 'lucide-react';
 import HomepageClient from '@/components/ui/HomepageClient';
 import UseCaseCarousel from '@/components/ui/UseCaseCarousel';
 import CountdownCTA from '@/components/ui/CountdownCTA';
@@ -23,64 +23,6 @@ function VerifiedBadge() {
       <CheckCircle className="w-3 h-3" />
       Verified
     </span>
-  );
-}
-
-function BuilderCard({ builder }: { builder: typeof BUILDERS[0] }) {
-  const waLink = `https://wa.me/${builder.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent('Hi, I found you on SolarBuilders.ng. I\'m interested in a solar installation.')}`;
-  return (
-    <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:border-amber-300 transition-all duration-200">
-      <div className="aspect-video overflow-hidden bg-slate-50 relative">
-        <Image
-          src={builder.coverImage}
-          alt={`${builder.name} solar installation`}
-          width={400}
-          height={225}
-          className="w-full h-full object-cover"
-        />
-        {builder.verified && (
-          <div className="absolute top-3 right-3">
-            <VerifiedBadge />
-          </div>
-        )}
-      </div>
-      <div className="p-5">
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          {builder.packages.map(pkg => (
-            <span key={pkg.kva} className="inline-flex items-center gap-1 bg-slate-900 text-amber-400 text-sm font-heading font-extrabold px-3 py-1.5 rounded-lg">
-              ⚡ {pkg.kva}kVA System
-            </span>
-          ))}
-        </div>
-        <h3 className="font-heading font-bold text-slate-900 text-lg mb-1">{builder.name}</h3>
-        <div className="flex items-center gap-1 text-slate-500 text-sm mb-2">
-          <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>{builder.location}, {builder.state}</span>
-        </div>
-        <div className="flex items-center gap-1.5 mb-3">
-          <div className="flex gap-0.5">
-            {[1,2,3,4,5].map(s => (
-              <Star key={s} className={`w-3.5 h-3.5 ${s <= Math.round(builder.rating) ? 'text-amber-400 fill-current' : 'text-slate-200'}`} />
-            ))}
-          </div>
-          <span className="font-semibold text-sm text-slate-900">{builder.rating}</span>
-          <span className="text-slate-400 text-sm">({builder.reviewCount})</span>
-        </div>
-        <p className="text-amber-700 font-heading font-bold text-base mb-4">
-          From {formatNaira(builder.startingPrice)}
-        </p>
-        <div className="flex gap-2">
-          <Link href={`/company/${builder.slug}`}
-            className="flex-1 border border-slate-200 hover:border-slate-400 text-slate-700 text-sm font-semibold py-2.5 min-h-[44px] rounded-full text-center transition-colors flex items-center justify-center">
-            View Profile
-          </Link>
-          <a href={waLink} target="_blank" rel="noopener noreferrer"
-            className="flex-1 bg-[#25D366] hover:bg-[#22c55e] text-white text-sm font-semibold py-2.5 min-h-[44px] rounded-full text-center transition-colors flex items-center justify-center">
-            WhatsApp
-          </a>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -104,7 +46,7 @@ function TestimonialCard({ quote, name, city, type, rating }: {
 }
 
 export default function HomePage() {
-  const featuredBuilders = BUILDERS.slice(0, 3);
+  const featuredBrands = ['felicity', 'deye', 'growatt'].map(getBrand).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-white">
@@ -122,7 +64,7 @@ export default function HomePage() {
               Find. <RotatingText /><br />Go Solar.
             </h1>
             <p className="text-slate-500 text-xl leading-relaxed mb-8 max-w-xl">
-              Size your system with our free calculator, then connect with verified builders near you.
+              Size your system with our free calculator, then we source the equipment and get it installed for you.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <Link
@@ -132,10 +74,10 @@ export default function HomePage() {
                 Calculate My System →
               </Link>
               <Link
-                href="/marketplace"
+                href="/brands"
                 className="inline-flex items-center justify-center border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 min-h-[44px] transition-all text-base font-semibold"
               >
-                Browse Builders
+                Brands &amp; Prices
               </Link>
             </div>
             {/* Trust row */}
@@ -225,28 +167,22 @@ export default function HomePage() {
               <p className="text-slate-500 text-sm">Size your system in 60 seconds. Know what you need before you talk to anyone.</p>
             </div>
 
-            {/* Card 2 — Verified Builders */}
+            {/* Card 2 — Real prices by brand */}
             <div className="bg-white rounded-2xl border border-slate-100 p-6">
-              <div className="bg-slate-50 rounded-xl p-4 mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-200 rounded-full" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-semibold text-slate-700">SunTech Installs</span>
-                      <span className="inline-flex items-center gap-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
-                        <CheckCircle className="w-2.5 h-2.5" /> Verified
-                      </span>
-                    </div>
-                    <div className="flex gap-0.5">
-                      {[1,2,3,4,5].map(s => (
-                        <Star key={s} className="w-2.5 h-2.5 text-amber-400 fill-current" />
-                      ))}
-                    </div>
+              <div className="bg-slate-50 rounded-xl p-4 mb-5 space-y-2">
+                {[
+                  ['Felicity 5kVA hybrid', '₦440k–₦986k'],
+                  ['Deye 5.12kWh lithium', '₦995k–₦1.06M'],
+                  ['Jinko 600W panel', '₦110k–₦120k'],
+                ].map(([item, price]) => (
+                  <div key={item} className="flex items-center justify-between text-xs">
+                    <span className="text-slate-600">{item}</span>
+                    <span className="font-semibold text-slate-900">{price}</span>
                   </div>
-                </div>
+                ))}
               </div>
-              <h3 className="font-heading font-bold text-slate-900 text-lg mb-1">Verified Builders</h3>
-              <p className="text-slate-500 text-sm">Every builder is Nexprove-verified. Real reviews, real credentials, real work.</p>
+              <h3 className="font-heading font-bold text-slate-900 text-lg mb-1">Real Prices by Brand</h3>
+              <p className="text-slate-500 text-sm">Every price is a live Nigerian listing with a source and date. No guesswork, no inflated quotes.</p>
             </div>
 
             {/* Card 3 — WhatsApp Direct */}
@@ -315,28 +251,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ──────────────── FEATURED BUILDERS ──────────────── */}
+      {/* ──────────────── BRANDS & PRICES ──────────────── */}
       <section className="bg-slate-50 py-20 md:py-28 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-end justify-between mb-12">
             <div>
               <h2 className="font-heading font-extrabold text-slate-900 text-3xl md:text-4xl mb-2">
-                Verified builders near you
+                Real prices, by brand
               </h2>
-              <p className="text-slate-500">Hand-checked by the Nexprove team</p>
+              <p className="text-slate-500">Felicity to Deye — what each actually costs at Nigerian vendors this month</p>
             </div>
-            <Link href="/marketplace" className="hidden md:inline-flex items-center gap-1 text-amber-600 font-semibold text-sm hover:underline underline-offset-4">
-              Browse all builders →
+            <Link href="/brands" className="hidden md:inline-flex items-center gap-1 text-amber-600 font-semibold text-sm hover:underline underline-offset-4">
+              All brands &amp; vendors →
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredBuilders.map(builder => (
-              <BuilderCard key={builder.id} builder={builder} />
+            {featuredBrands.map(brand => (
+              <BrandCard key={brand!.slug} brand={brand!} />
             ))}
           </div>
           <div className="mt-8 text-center md:hidden">
-            <Link href="/marketplace" className="inline-flex items-center gap-1 text-amber-500 font-semibold text-sm hover:underline">
-              Browse all builders →
+            <Link href="/brands" className="inline-flex items-center gap-1 text-amber-500 font-semibold text-sm hover:underline">
+              All brands &amp; vendors →
             </Link>
           </div>
         </div>
@@ -347,18 +283,18 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <div>
             <h2 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl leading-tight">
-              The only solar marketplace that verifies every builder.
+              The only solar site in Nigeria that shows real prices — then gets it built for you.
             </h2>
           </div>
           <div className="space-y-8">
             {[
               {
-                title: 'Nexprove Verified Builders',
-                desc: 'Every builder on our platform has been reviewed by our team. We check experience, equipment, and customer history before they go live.',
+                title: 'Real Prices, Sourced',
+                desc: 'Inverters, batteries and panels priced from live Nigerian listings — Felicity to Deye — with the vendor and date for every figure.',
               },
               {
                 title: 'WhatsApp-Native Contact',
-                desc: 'No forms, no lead brokers. Talk directly to builders on WhatsApp — the platform every Nigerian already uses for business.',
+                desc: 'Send us your quote code on WhatsApp. We confirm prices, source the equipment and manage a vetted installer until commissioning.',
               },
               {
                 title: 'Free System Calculator',
@@ -440,13 +376,13 @@ export default function HomePage() {
               Power the home you left behind.
             </h2>
             <p className="text-slate-400 text-xl leading-relaxed mb-8">
-              Install solar for family back home — from anywhere in the world. Nigerians in the UK, Canada, and US are funding solar installations for parents and siblings. Our verified builders keep you informed at every step via WhatsApp.
+              Install solar for family back home — from anywhere in the world. Nigerians in the UK, Canada, and US are funding solar installations for parents and siblings. We keep you informed at every step via WhatsApp, with photos from site.
             </p>
             <Link
-              href="/marketplace"
+              href="/calculator"
               className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold rounded-full px-6 py-3 transition-all"
             >
-              Find a Verified Builder →
+              Get an itemised quote →
             </Link>
           </div>
           <div className="hidden md:flex items-center justify-center">

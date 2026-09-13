@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { BUILDERS, formatNaira } from '@/lib/mock-data';
-import { Star, MapPin, CheckCircle } from 'lucide-react';
+import BrandCard from '@/components/ui/BrandCard';
+import { getBrand, vendors } from '@/lib/brands';
+import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Solar Installers in Kano — Verified & Reviewed | SolarBuilders.ng',
-  description: 'Find trusted solar installation companies in Kano, Nigeria. Browse Nexprove Verified builders across Kano Municipal, Nassarawa, Fagge, and all of Kano State.',
+  title: 'Solar in Kano — 2026 Prices, Brands & Quotes | SolarBuilders.ng',
+  description: 'Real 2026 solar prices for Kano — inverters, lithium batteries and panels by brand — plus an itemised quote calculator and a team that gets your system installed.',
   keywords: ['solar installer Kano', 'solar company Kano Nigeria', 'solar installation Kano State', 'solar panels Kano price', 'best solar Kano 2026'],
   openGraph: {
-    title: 'Solar Installers in Kano — Nexprove Verified',
-    description: 'Find trusted solar installation companies across Kano State, Nigeria.',
+    title: 'Solar in Kano — 2026 Prices, Brands & Quotes',
+    description: 'Real 2026 solar prices and itemised quotes for Kano State, Nigeria.',
     url: 'https://solarbuildersng.com/solar/kano',
     type: 'website',
   },
@@ -28,7 +28,7 @@ const faqSchema = {
       "name": "How much does solar cost in Kano?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Solar installation costs in Kano range from ₦400,000 for a basic 2kVA system to ₦2,500,000+ for large hybrid systems. With Kano's excellent solar irradiance (one of the highest in Nigeria), you get better ROI per panel than in southern cities."
+        "text": "In 2026 a solar installation in Kano costs from about ₦1.4M for a 5kWh lithium starter system to ₦6M+ for a 10kVA home with several ACs; a typical 5kVA / 10kWh system is ₦3.2M–₦4.8M installed. Kano has one of the highest solar irradiances in Nigeria, so you need fewer panels per kWh than in southern cities."
       }
     },
     {
@@ -44,15 +44,15 @@ const faqSchema = {
       "name": "Are solar installers in Kano insured?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Nexprove Verified builders on SolarBuilders.ng carry appropriate insurance and have verifiable track records. Always request proof of business registration and insurance before proceeding."
+        "text": "Every installer we send to a job is checked for business registration, past installations and customer references, and we stay involved until commissioning. Always ask for a written warranty on both equipment and workmanship."
       }
     }
   ]
 };
 
 export default function SolarKanoPage() {
-  const kanoBuilders = BUILDERS.filter(b => b.state === 'Kano' || b.state === 'Kano State');
-  const displayBuilders = kanoBuilders.length > 0 ? kanoBuilders : BUILDERS.slice(0, 3);
+  const localVendors = vendors().filter(v => v.origin.includes('Kano'));
+  const featuredBrands = ['felicity', 'deye', 'growatt', 'jinko'].map(getBrand).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-white">
@@ -64,63 +64,30 @@ export default function SolarKanoPage() {
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
             <Link href="/" className="hover:text-slate-900">Home</Link>
             <span>/</span>
-            <Link href="/marketplace" className="hover:text-slate-900">Marketplace</Link>
+            <Link href="/brands" className="hover:text-slate-900">Brands &amp; Prices</Link>
             <span>/</span>
             <span className="text-slate-900">Kano</span>
           </div>
           <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl mb-4">
-            Solar Installers in Kano — Find Verified Builders
+            Solar in Kano — Real Prices & Brands
           </h1>
           <p className="text-slate-500 text-lg max-w-2xl leading-relaxed">
-            Kano has some of the best solar conditions in Nigeria — high irradiance, minimal cloud cover, and a growing market of professional installers. Whether you&apos;re in Kano Municipal, Nassarawa, Fagge, or Sabon Gari, our verified builders serve the entire state.
+            Kano has some of the best solar conditions in Nigeria — high irradiance and minimal cloud cover — so you need fewer panels per kWh than in the south. Below are real 2026 prices by brand. Size your system, get an itemised quote, and we handle sourcing (from Lagos or Kano suppliers) and installation.
           </p>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-12">
-        {kanoBuilders.length === 0 && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8">
-            <p className="text-amber-800 font-semibold">We&apos;re actively onboarding verified builders in Kano. Meanwhile, these builders serve clients across Nigeria including Kano State.</p>
+        {/* Brands & vendors */}
+        <div className="mb-16">
+          <h2 className="font-heading font-extrabold text-slate-900 text-2xl md:text-3xl mb-2">Solar equipment prices for Kano</h2>
+          <p className="text-slate-500 mb-6 max-w-2xl">Real 2026 listings by brand, and the vendors that serve Kano. Size your system, get an itemised quote, and we handle sourcing and installation.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...localVendors, ...featuredBrands].slice(0, 6).map(b => <BrandCard key={b!.slug} brand={b!} />)}
           </div>
-        )}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {displayBuilders.map(builder => {
-            const waLink = `https://wa.me/${builder.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent('Hi, I found you on SolarBuilders.ng. I\'m interested in solar installation in Kano.')}`;
-            return (
-              <div key={builder.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:border-amber-300 transition-all duration-200">
-                <div className="aspect-video overflow-hidden bg-slate-50 relative">
-                  <Image src={builder.coverImage} alt={`${builder.name} solar Kano`} width={400} height={225} className="w-full h-full object-cover" />
-                  {builder.verified && (
-                    <div className="absolute top-3 right-3">
-                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold px-2.5 py-1 rounded-full">
-                        <CheckCircle className="w-3 h-3" />Verified
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="p-5">
-                  <h2 className="font-heading font-bold text-slate-900 text-lg mb-1">{builder.name}</h2>
-                  <div className="flex items-center gap-1 text-slate-500 text-sm mb-2">
-                    <MapPin className="w-3.5 h-3.5" /><span>{builder.location}, {builder.state}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 mb-3">
-                    <div className="flex gap-0.5">
-                      {[1,2,3,4,5].map(s => (
-                        <Star key={s} className={`w-3.5 h-3.5 ${s <= Math.round(builder.rating) ? 'text-amber-400 fill-current' : 'text-slate-200'}`} />
-                      ))}
-                    </div>
-                    <span className="font-semibold text-sm">{builder.rating}</span>
-                    <span className="text-slate-400 text-sm">({builder.reviewCount})</span>
-                  </div>
-                  <p className="text-amber-500 font-heading font-bold text-base mb-4">From {formatNaira(builder.startingPrice)}</p>
-                  <div className="flex gap-2">
-                    <Link href={`/builders/${builder.slug}`} className="flex-1 border border-slate-200 hover:border-slate-400 text-slate-700 text-sm font-semibold py-2.5 rounded-full text-center transition-colors">View Profile</Link>
-                    <a href={waLink} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#25D366] hover:bg-[#22c55e] text-white text-sm font-semibold py-2.5 rounded-full text-center transition-colors">WhatsApp</a>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          <div className="mt-6">
+            <Link href="/brands" className="text-amber-600 font-semibold text-sm hover:underline underline-offset-4">All brands &amp; vendors →</Link>
+          </div>
         </div>
 
         {/* FAQ */}
@@ -130,7 +97,7 @@ export default function SolarKanoPage() {
             {[
               {
                 q: 'How much does solar cost in Kano?',
-                a: 'Solar installation costs in Kano range from ₦400,000 for a basic 2kVA system to ₦2,500,000+ for large hybrid systems. With Kano\'s excellent solar irradiance — one of the highest in Nigeria — you get better ROI per panel than in southern cities.',
+                a: 'In 2026 a solar installation in Kano costs from about ₦1.4M for a 5kWh lithium starter system to ₦6M+ for a 10kVA home with several ACs; a typical 5kVA / 10kWh system is ₦3.2M–₦4.8M installed. Kano has one of the highest solar irradiances in Nigeria, so you need fewer panels per kWh than in southern cities.',
               },
               {
                 q: 'How long does solar installation take in Kano?',
@@ -138,7 +105,7 @@ export default function SolarKanoPage() {
               },
               {
                 q: 'Are solar installers in Kano insured?',
-                a: 'Nexprove Verified builders on SolarBuilders.ng carry appropriate insurance and have verifiable track records. Always request proof of business registration and insurance before proceeding with any installer.',
+                a: 'Every installer we send to a job is checked for business registration, past installations and customer references, and we stay involved until commissioning. Always ask for a written warranty on both equipment and workmanship.',
               },
             ].map(({ q, a }) => (
               <div key={q} className="bg-white border border-slate-100 rounded-2xl p-6">

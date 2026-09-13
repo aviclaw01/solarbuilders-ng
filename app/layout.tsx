@@ -20,7 +20,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "SolarBuilders.ng — Nigeria's Verified Solar Marketplace",
+    default: "SolarBuilders.ng — Real Solar Prices & Quotes for Nigeria",
     template: "%s | SolarBuilders.ng"
   },
   description:
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     apple: '/brand/apple-touch-icon.png',
   },
   openGraph: {
-    title: "SolarBuilders.ng — Nigeria's Verified Solar Marketplace",
+    title: "SolarBuilders.ng — Real Solar Prices & Quotes for Nigeria",
     description: "Find trusted solar installers across Nigeria. Free calculator, verified builders.",
     url: "https://solarbuildersng.com",
     siteName: "SolarBuilders.ng",
@@ -53,13 +53,13 @@ export const metadata: Metadata = {
         url: '/brand/og-image.png',
         width: 1200,
         height: 630,
-        alt: "SolarBuilders.ng — Nigeria's Verified Solar Marketplace",
+        alt: "SolarBuilders.ng — Real Solar Prices & Quotes for Nigeria",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SolarBuilders.ng — Nigeria's Verified Solar Marketplace",
+    title: "SolarBuilders.ng — Real Solar Prices & Quotes for Nigeria",
     description: "Find trusted solar installers across Nigeria. Free calculator, verified builders.",
     images: ['/brand/twitter-card.png'],
   },
@@ -77,10 +77,10 @@ const websiteSchema = {
   "@type": "WebSite",
   "name": "SolarBuilders.ng",
   "url": "https://solarbuildersng.com",
-  "description": "Nigeria's verified solar marketplace — find trusted solar installers and calculate your system size",
+  "description": "Size your solar system, get an itemised quote at real Nigerian prices, and let us get it built",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://solarbuildersng.com/marketplace?q={search_term_string}",
+    "target": "https://solarbuildersng.com/brands?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 };
@@ -93,7 +93,7 @@ const localBusinessSchema = {
   "url": "https://solarbuildersng.com",
   "telephone": "+2349168394923",
   "image": "https://solarbuildersng.com/brand/og-image.png",
-  "description": "Nigeria's verified solar marketplace — connect with trusted solar installers across Nigeria.",
+  "description": "Real solar equipment prices for Nigeria, an itemised quote calculator, and a team that gets your system built.",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "11 Mogbonjubola St",

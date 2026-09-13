@@ -16,7 +16,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/calculator', label: 'Size My System' },
-    { href: '/marketplace', label: 'Find Builders' },
+    { href: '/brands', label: 'Brands & Prices' },
     { href: '/blog', label: 'Solar Guides' },
     { href: '/for-builders', label: 'List Your Company' },
   ];

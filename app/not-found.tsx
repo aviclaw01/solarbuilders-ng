@@ -16,8 +16,8 @@ export default function NotFound() {
             It may have moved or the link may be incorrect.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/marketplace" className="bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold px-6 py-3 rounded-full transition-colors">
-              Find a Builder →
+            <Link href="/brands" className="bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold px-6 py-3 rounded-full transition-colors">
+              Brands & Prices →
             </Link>
             <Link href="/calculator" className="border border-slate-200 hover:border-slate-400 text-slate-700 font-semibold px-6 py-3 rounded-full transition-colors">
               Try the Calculator →

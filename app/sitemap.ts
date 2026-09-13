@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { BUILDERS } from '@/lib/mock-data';
+import { BRANDS } from '@/lib/brands';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://solarbuildersng.com';
@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 1.0 },
     { url: `${baseUrl}/calculator`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
-    { url: `${baseUrl}/marketplace`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.9 },
+    { url: `${baseUrl}/brands`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
     { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/for-builders`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.7 },
@@ -29,12 +29,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/blog/solar-abuja-2026`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
   ];
 
-  const builderPages = BUILDERS.map(builder => ({
-    url: `${baseUrl}/builders/${builder.slug}`,
+  const brandPages = BRANDS.map(brand => ({
+    url: `${baseUrl}/brands/${brand.slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
-    priority: 0.7,
+    priority: 0.75,
   }));
 
-  return [...staticPages, ...builderPages];
+  return [...staticPages, ...brandPages];
 }

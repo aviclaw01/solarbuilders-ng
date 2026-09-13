@@ -84,7 +84,7 @@ export default function CountdownCTA() {
             Calculate My System →
           </Link>
           <Link
-            href="/marketplace"
+            href="/brands"
             className="inline-flex items-center justify-center border-2 border-slate-900 text-slate-900 hover:bg-slate-900/10 font-semibold rounded-full px-8 py-4 transition-all text-lg"
           >
             Browse Verified Builders

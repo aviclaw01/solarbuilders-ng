@@ -11,11 +11,9 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      {
-        source: "/builders/:slug",
-        destination: "/company/:slug",
-        permanent: true,
-      },
+      { source: "/marketplace", destination: "/brands", permanent: true },
+      { source: "/builders/:slug", destination: "/brands", permanent: true },
+      { source: "/company/:slug", destination: "/brands", permanent: true },
     ];
   },
 };

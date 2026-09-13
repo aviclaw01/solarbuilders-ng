@@ -13,7 +13,7 @@ export default function Footer() {
               <Logo variant="horizontal" size="md" colorMode="dark" />
             </div>
             <p className="text-sm text-slate-500 leading-relaxed mb-4">
-              Nigeria&apos;s verified solar marketplace. Find who you can trust.
+              Real solar prices for Nigeria. Size it, quote it, we build it.
             </p>
             {/* Physical address */}
             <address className="not-italic text-sm text-slate-500 leading-relaxed mb-3">
@@ -41,7 +41,7 @@ export default function Footer() {
             <h4 className="font-heading text-white font-semibold mb-4 text-sm">For Buyers</h4>
             <ul className="space-y-3 text-sm">
               <li><Link href="/calculator" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Size My System</Link></li>
-              <li><Link href="/marketplace" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Find Builders</Link></li>
+              <li><Link href="/brands" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Brands &amp; Prices</Link></li>
               <li><Link href="/how-it-works" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">How It Works</Link></li>
               <li><Link href="/blog" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Solar Guides</Link></li>
             </ul>
@@ -84,7 +84,7 @@ export default function Footer() {
               Nexprove
             </a>
           </p>
-          <p className="text-sm text-slate-600">Nigeria&apos;s Verified Solar Marketplace</p>
+          <p className="text-sm text-slate-600">Real solar prices &amp; quotes for Nigeria</p>
         </div>
       </div>
     </footer>

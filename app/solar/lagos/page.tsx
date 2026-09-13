@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { BUILDERS, formatNaira } from '@/lib/mock-data';
-import { Star, MapPin, CheckCircle } from 'lucide-react';
+import BrandCard from '@/components/ui/BrandCard';
+import { getBrand, vendors } from '@/lib/brands';
+import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Solar Installers in Lagos — Nexprove Verified | SolarBuilders.ng',
-  description: 'Find trusted solar installation companies in Lagos, Nigeria. Browse Nexprove Verified builders across Lagos Island, Ikeja, Lekki, Victoria Island and all of Lagos State.',
+  title: 'Solar in Lagos — 2026 Prices, Brands & Quotes | SolarBuilders.ng',
+  description: 'Real 2026 solar prices for Lagos — inverters, lithium batteries and panels by brand — plus an itemised quote calculator and a team that gets your system installed.',
   keywords: ['solar installer Lagos', 'solar company Lagos Nigeria', 'solar installation Lagos', 'best solar Lagos 2026', 'solar panels Lagos price'],
   openGraph: {
-    title: 'Solar Installers in Lagos — Nexprove Verified',
-    description: 'Find trusted solar installation companies across Lagos State.',
+    title: 'Solar in Lagos — 2026 Prices, Brands & Quotes',
+    description: 'Real 2026 solar prices and itemised quotes for Lagos State.',
     url: 'https://solarbuildersng.com/solar/lagos',
     type: 'website',
   },
@@ -20,7 +20,8 @@ export const metadata: Metadata = {
 };
 
 export default function SolarLagosPage() {
-  const lagosBuilders = BUILDERS.filter(b => b.state === 'Lagos');
+  const localVendors = vendors().filter(v => v.origin.includes('Lagos'));
+  const featuredBrands = ['felicity', 'deye', 'growatt', 'jinko'].map(getBrand).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-white">
@@ -31,58 +32,30 @@ export default function SolarLagosPage() {
           <div className="flex items-center gap-2 text-sm text-[#64748B] mb-6">
             <Link href="/" className="hover:text-[#0A0F1E]">Home</Link>
             <span>/</span>
-            <Link href="/marketplace" className="hover:text-[#0A0F1E]">Marketplace</Link>
+            <Link href="/brands" className="hover:text-[#0A0F1E]">Brands &amp; Prices</Link>
             <span>/</span>
             <span className="text-[#0A0F1E]">Lagos</span>
           </div>
           <h1 className="font-heading font-extrabold text-[#0A0F1E] text-4xl md:text-5xl mb-4">
-            Solar Installers in Lagos — Nexprove Verified
+            Solar in Lagos — 2026 Prices, Brands & Quotes
           </h1>
           <p className="text-[#64748B] text-lg max-w-2xl leading-relaxed">
-            Lagos is Nigeria&apos;s biggest solar market — and also its most competitive. With high electricity costs, erratic NEPA supply, and expensive generator fuel, Lagosians are going solar faster than anywhere else in the country. We&apos;ve verified the best installers across Lagos Island, Mainland, Lekki, Ikeja, and beyond, so you don&apos;t have to gamble.
+            Lagos is Nigeria&apos;s biggest solar market — and its most competitive, which is why prices vary so much from Alaba to Lekki. Below are real 2026 prices by brand and the Lagos vendors we source from. Size your system, get an itemised quote, and we handle the buying and installation anywhere from Ikeja to Ajah.
           </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {lagosBuilders.map(builder => {
-            const waLink = `https://wa.me/${builder.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent('Hi, I found you on SolarBuilders.ng. I\'m interested in solar installation in Lagos.')}`;
-            return (
-              <div key={builder.id} className="bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden hover:border-[#F59E0B] hover:shadow-lg transition-all duration-200">
-                <div className="aspect-video overflow-hidden bg-[#F8FAFC] relative">
-                  <Image src={builder.coverImage} alt={`${builder.name} Lagos`} width={400} height={225} className="w-full h-full object-cover" />
-                  {builder.verified && (
-                    <div className="absolute top-3 right-3">
-                      <span className="inline-flex items-center gap-1 bg-[#059669] text-white text-xs font-heading font-semibold px-2.5 py-1 rounded-full">
-                        <CheckCircle className="w-3 h-3" />Verified
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="p-5">
-                  <h2 className="font-heading font-bold text-[#0A0F1E] text-lg mb-1">{builder.name}</h2>
-                  <div className="flex items-center gap-1 text-[#64748B] text-sm mb-2">
-                    <MapPin className="w-3.5 h-3.5" /><span>{builder.location}, Lagos</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 mb-3">
-                    <div className="flex gap-0.5">
-                      {[1,2,3,4,5].map(s => (
-                        <Star key={s} className={`w-3.5 h-3.5 ${s <= Math.round(builder.rating) ? 'text-[#F59E0B] fill-current' : 'text-[#E2E8F0]'}`} />
-                      ))}
-                    </div>
-                    <span className="font-semibold text-sm">{builder.rating}</span>
-                    <span className="text-[#94A3B8] text-sm">({builder.reviewCount})</span>
-                  </div>
-                  <p className="text-[#F59E0B] font-heading font-bold text-base mb-4">From {formatNaira(builder.startingPrice)}</p>
-                  <div className="flex gap-2">
-                    <Link href={`/builders/${builder.slug}`} className="flex-1 border-2 border-[#0A0F1E] text-[#0A0F1E] text-sm font-heading font-semibold py-2.5 rounded-full text-center hover:bg-[#0A0F1E] hover:text-white transition-colors">View Profile</Link>
-                    <a href={waLink} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#25D366] text-white text-sm font-heading font-semibold py-2.5 rounded-full text-center hover:bg-[#22c55e] transition-colors">💬 WhatsApp</a>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        {/* Brands & vendors */}
+        <div className="mb-16">
+          <h2 className="font-heading font-extrabold text-slate-900 text-2xl md:text-3xl mb-2">Solar equipment prices for Lagos</h2>
+          <p className="text-slate-500 mb-6 max-w-2xl">Real 2026 listings by brand, and the vendors that serve Lagos. Size your system, get an itemised quote, and we handle sourcing and installation.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...localVendors, ...featuredBrands].slice(0, 6).map(b => <BrandCard key={b!.slug} brand={b!} />)}
+          </div>
+          <div className="mt-6">
+            <Link href="/brands" className="text-amber-600 font-semibold text-sm hover:underline underline-offset-4">All brands &amp; vendors →</Link>
+          </div>
         </div>
 
         {/* FAQ */}
