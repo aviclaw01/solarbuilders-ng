@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import "./globals.css";
-import FloatingWhatsApp from '@/components/ui/FloatingWhatsApp';
+import PublicChrome from '@/components/ui/PublicChrome';
 import GoogleAnalytics from '@/components/ui/GoogleAnalytics';
-import CookieConsent from '@/components/ui/CookieConsent';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -172,8 +171,7 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`} style={{ fontFamily: 'var(--font-body), sans-serif' }}>
         <GoogleAnalytics />
         {children}
-        <FloatingWhatsApp />
-        <CookieConsent />
+        <PublicChrome />
       </body>
     </html>
   );

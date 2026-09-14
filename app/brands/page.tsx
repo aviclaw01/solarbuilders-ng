@@ -5,7 +5,8 @@ import Footer from '@/components/ui/Footer';
 import BrandCard from '@/components/ui/BrandCard';
 import { manufacturers, vendors, type ProductCategory } from '@/lib/brands';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
-import { whatsappLink } from '@/lib/site';
+
+import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import { Zap, MessageCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -50,9 +51,9 @@ export default function BrandsPage() {
             <Link href="/calculator" className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-6 py-3 font-semibold text-sm transition-colors">
               <Zap className="w-4 h-4" fill="currentColor" /> Size my system first
             </Link>
-            <a href={whatsappLink('Hi SolarBuilders, I was looking at the brands page and want help choosing equipment.')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 font-semibold text-sm transition-colors">
+            <WhatsAppLink text={'Hi SolarBuilders, I was looking at the brands page and want help choosing equipment.'} placement="brands_index" className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 font-semibold text-sm transition-colors">
               <MessageCircle className="w-4 h-4" /> Ask us which brand
-            </a>
+            </WhatsAppLink>
           </div>
         </div>
       </div>

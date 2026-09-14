@@ -20,7 +20,9 @@ import {
 import { INVERTER_BRANDS, PRICES_LAST_UPDATED_LABEL, type InverterTier } from '@/lib/prices';
 import { brandSlugByName } from '@/lib/brands';
 import { SITE_URL } from '@/lib/site';
+import { track } from '@/lib/track';
 import QuoteContactModal from './QuoteContactModal';
+import FinanceOptions from './FinanceOptions';
 
 interface Props {
   appliances: QuoteAppliance[];
@@ -120,13 +122,14 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
       a.href = canvas.toDataURL('image/png');
       a.download = `${fileBase}.png`;
       a.click();
+      track('quote_download', { quoteCode: quote.code, tier: t.label, amount: t.total.best, format: 'png' });
       showToast('Image saved');
     } catch {
       showToast("Couldn't create image — try the PDF");
     } finally {
       setBusy(null);
     }
-  }, [renderCanvas, fileBase]);
+  }, [renderCanvas, fileBase, quote.code, t.label, t.total.best]);
 
   const downloadPdf = useCallback(async () => {
     setBusy('pdf');
@@ -150,15 +153,17 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
         }
       }
       pdf.save(`${fileBase}.pdf`);
+      track('quote_download', { quoteCode: quote.code, tier: t.label, amount: t.total.best, format: 'pdf' });
       showToast('PDF saved');
     } catch {
       showToast("Couldn't create PDF — try the image");
     } finally {
       setBusy(null);
     }
-  }, [renderCanvas, fileBase]);
+  }, [renderCanvas, fileBase, quote.code, t.label, t.total.best]);
 
   const share = useCallback(async () => {
+    track('quote_share', { quoteCode: quote.code, tier: quote.tiers[tier].label });
     const text = quoteToText(quote, tier, SITE_URL);
     const url = quoteUrl(quote, tier, SITE_URL);
     if (typeof navigator !== 'undefined' && navigator.share) {
@@ -385,13 +390,18 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
             vetted installer.
           </p>
         </div>
-        <p className="text-[10px] text-[#94A3B8] mt-3 text-center break-all">{quoteUrl(quote, tier, SITE_URL.replace(/^https?:\/\//, ''))}</p>
+        <p className="text-[10px] text-[#94A3B8] mt-3 text-center">
+          {SITE_URL.replace(/^https?:\/\//, '')}/calculator · quote <span className="font-mono">{quote.code}</span>
+        </p>
       </div>
 
       {/* ── Actions ───────────────────────────────────────── */}
       <div className="mt-5 space-y-3">
         <button
-          onClick={() => setShowContact(true)}
+          onClick={() => {
+            track('quote_form_open', { quoteCode: quote.code, tier: t.label, amount: t.total.best });
+            setShowContact(true);
+          }}
           className="w-full bg-[#25D366] hover:bg-[#22c55e] text-white py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition-colors"
         >
           <MessageCircle className="w-5 h-5" /> Get this system built
@@ -408,6 +418,8 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
           </button>
         </div>
       </div>
+
+      <FinanceOptions amount={t.total.best} quoteCode={quote.code} tier={t.label} />
 
       {showContact && <QuoteContactModal quote={quote} tier={tier} onClose={() => setShowContact(false)} />}
 

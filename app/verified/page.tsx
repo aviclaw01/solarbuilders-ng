@@ -4,7 +4,8 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import AnimatedSection from '@/components/ui/AnimatedSection';
 import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
-import { whatsappLink } from '@/lib/site';
+
+import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import {
   ShieldCheck, FileCheck, Camera, Users, FileText, Phone, MapPin, ClipboardCheck,
   ArrowRight, CheckCircle, XCircle, MessageCircle, Store,
@@ -263,14 +264,11 @@ export default function VerifiedPage() {
                   >
                     Get an itemised quote <ArrowRight className="w-5 h-5" />
                   </Link>
-                  <a
-                    href={whatsappLink('Hi SolarBuilders, I read how you vet installers and want to discuss a build.')}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <WhatsAppLink text={'Hi SolarBuilders, I read how you vet installers and want to discuss a build.'} placement="verified"
                     className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#22c55e] text-white rounded-full px-8 py-4 font-heading font-bold transition-colors min-h-[56px]"
                   >
                     <MessageCircle className="w-5 h-5" /> WhatsApp us
-                  </a>
+                  </WhatsAppLink>
                 </div>
               </div>
             </AnimatedSection>

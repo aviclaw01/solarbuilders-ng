@@ -5,7 +5,8 @@ import Footer from '@/components/ui/Footer';
 import AnimatedSection from '@/components/ui/AnimatedSection';
 import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNairaShort } from '@/lib/quote';
-import { whatsappLink } from '@/lib/site';
+
+import WhatsAppLink from '@/components/ui/WhatsAppLink';
 
 export const metadata: Metadata = {
   title: 'About SolarBuilders.ng — Real Solar Prices for Nigeria, Built by Nexprove',
@@ -279,14 +280,11 @@ export default function AboutPage() {
               >
                 Get my itemised quote →
               </Link>
-              <a
-                href={whatsappLink('Hi SolarBuilders, I read your About page and want to talk about a solar system.')}
-                target="_blank"
-                rel="noopener noreferrer"
+              <WhatsAppLink text={'Hi SolarBuilders, I read your About page and want to talk about a solar system.'} placement="about"
                 className="inline-flex items-center justify-center border-2 border-[#0F172A] text-[#0F172A] px-8 py-4 rounded-full font-heading font-semibold hover:bg-[#0F172A] hover:text-white transition-all duration-200"
               >
                 Chat with us on WhatsApp
-              </a>
+              </WhatsAppLink>
             </div>
           </AnimatedSection>
         </div>

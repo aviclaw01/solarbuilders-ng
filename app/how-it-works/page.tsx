@@ -5,7 +5,8 @@ import Footer from '@/components/ui/Footer';
 import AnimatedSection from '@/components/ui/AnimatedSection';
 import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNairaShort } from '@/lib/quote';
-import { whatsappLink } from '@/lib/site';
+
+import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import { Calculator, FileText, MessageCircle, ClipboardCheck, Wrench, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -229,14 +230,11 @@ export default function HowItWorksPage() {
                 >
                   Get my itemised quote <ArrowRight className="w-5 h-5" />
                 </Link>
-                <a
-                  href={whatsappLink('Hi SolarBuilders, I read how it works and have a question before I run the calculator.')}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <WhatsAppLink text={'Hi SolarBuilders, I read how it works and have a question before I run the calculator.'} placement="how_it_works"
                   className="inline-flex items-center justify-center gap-2 border border-white/20 hover:border-white/50 text-white px-8 py-4 rounded-full font-heading font-semibold text-lg transition-colors"
                 >
                   <MessageCircle className="w-5 h-5" /> Ask us first
-                </a>
+                </WhatsAppLink>
               </div>
             </div>
           </AnimatedSection>

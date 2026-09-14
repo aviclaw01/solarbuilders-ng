@@ -49,6 +49,8 @@ export interface Brand {
   whatsapp?: string; // digits only, from the vendor's own site
   /** vendor only: manufacturer slugs they stock */
   carries?: string[];
+  /** Optional licensed logo at /public/brands/<slug>.svg — see BrandMark. Absent = monogram. */
+  logo?: string;
   pricesPublic: boolean;
   products: Product[];
 }

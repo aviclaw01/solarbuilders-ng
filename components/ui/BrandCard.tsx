@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { MapPin, ArrowRight } from 'lucide-react';
 import { type Brand, CATEGORY_LABEL, TIER_LABEL, headlineUnitPrice } from '@/lib/brands';
+import BrandMark from './BrandMark';
 
 const TIER_STYLE: Record<string, string> = {
   budget: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -16,9 +17,12 @@ export default function BrandCard({ brand }: { brand: Brand }) {
       className="group bg-white rounded-2xl border border-slate-100 hover:border-amber-400 p-5 flex flex-col transition-colors"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="font-heading font-extrabold text-slate-900 text-lg leading-tight group-hover:text-amber-600 transition-colors">
-          {brand.name}
-        </h3>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <BrandMark brand={brand} size={36} />
+          <h3 className="font-heading font-extrabold text-slate-900 text-lg leading-tight group-hover:text-amber-600 transition-colors">
+            {brand.name}
+          </h3>
+        </div>
         {brand.kind === 'manufacturer' && brand.tier ? (
           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border whitespace-nowrap ${TIER_STYLE[brand.tier]}`}>
             {TIER_LABEL[brand.tier]}

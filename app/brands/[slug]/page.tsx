@@ -15,7 +15,9 @@ import {
 } from '@/lib/brands';
 import { formatNaira } from '@/lib/quote';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
-import { SITE_URL, whatsappLink } from '@/lib/site';
+import { SITE_URL } from '@/lib/site';
+import WhatsAppLink from '@/components/ui/WhatsAppLink';
+import BrandMark from '@/components/ui/BrandMark';
 import { ArrowLeft, ExternalLink, Globe, Phone, MessageCircle, Zap, Info, MapPin } from 'lucide-react';
 
 interface Props {
@@ -112,12 +114,15 @@ export default async function BrandPage({ params }: Props) {
             )}
             <span className="text-slate-400 text-xs flex items-center gap-1"><MapPin className="w-3 h-3" /> {brand.origin}</span>
           </div>
-          <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl mb-3">{brand.name}</h1>
+          <div className="flex items-center gap-4 mb-3">
+            <BrandMark brand={brand} size={56} />
+            <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl">{brand.name}</h1>
+          </div>
           <p className="text-slate-600 text-lg max-w-2xl mb-6">{brand.tagline}</p>
           <div className="flex flex-wrap gap-3">
-            <a href={whatsappLink(waText)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#22c55e] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors">
+            <WhatsAppLink text={waText} placement={`brand:${brand.slug}`} className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#22c55e] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors">
               <MessageCircle className="w-4 h-4" /> Get a system built with {isMaker ? brand.name : 'us'}
-            </a>
+            </WhatsAppLink>
             <Link href="/calculator" className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 font-semibold text-sm transition-colors">
               <Zap className="w-4 h-4" /> Size my system
             </Link>

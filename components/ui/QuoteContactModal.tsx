@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { X, MessageCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { type Quote, type TierKey, formatNaira, formatRange, quoteToText, quoteUrl } from '@/lib/quote';
 import { SITE_URL, whatsappLink } from '@/lib/site';
+import { track, withCampaign } from '@/lib/track';
 
 const NIGERIAN_STATES = [
   'Lagos', 'FCT (Abuja)', 'Rivers', 'Ogun', 'Oyo', 'Kano', 'Enugu', 'Delta', 'Edo', 'Anambra', 'Kaduna',
@@ -33,6 +34,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
 
   const location = [area.trim(), state].filter(Boolean).join(', ');
   const url = quoteUrl(quote, tier, SITE_URL);
+  const waUrl = withCampaign(url, 'quote_handoff');
   const canSubmit = name.trim() && phone.trim().replace(/\D/g, '').length >= 10 && state && status !== 'submitting';
 
   const waMessage =
@@ -40,7 +42,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
     `I generated quote ${quote.code} on your website (${t.label} — est. ${formatNaira(t.total.best)}).\n` +
     `Please help me get this system built.` +
     (note.trim() ? `\n\nNote: ${note.trim()}` : '') +
-    `\n\n${url}`;
+    `\n\n${waUrl}`;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -68,6 +70,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || 'Request failed');
       setDelivery({ emailed: !!data.emailed, stored: !!data.stored });
+      track('quote_form_submit', { quoteCode: quote.code, tier: t.label, amount: t.total.best });
       setStatus('done');
     } catch {
       // Even if our server is down, WhatsApp still works — let them continue.
@@ -109,6 +112,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
               href={whatsappLink(waMessage)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => track('whatsapp_click', { placement: 'quote_handoff', quoteCode: quote.code, tier: t.label })}
               className="w-full bg-[#25D366] hover:bg-[#22c55e] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
             >
               <MessageCircle className="w-5 h-5" /> Continue on WhatsApp
