@@ -73,6 +73,7 @@ export default function ComparePage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <main>
 
       {/* Header */}
       <div className="bg-white border-b border-slate-100 px-6 py-16 md:py-20">
@@ -276,6 +277,7 @@ export default function ComparePage() {
         </div>
       </div>
 
+      </main>
       <Footer />
     </div>
   );

@@ -179,7 +179,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
-      <body className={`${inter.variable} antialiased`} style={{ fontFamily: 'var(--font-body), sans-serif' }}>
+      <body className={`${inter.variable} antialiased`} style={{ fontFamily: "'NairaBody', var(--font-body), sans-serif" }}>
         <GoogleAnalytics />
         {children}
         <PublicChrome />

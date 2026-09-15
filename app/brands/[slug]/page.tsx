@@ -103,6 +103,7 @@ export default async function BrandPage({ params }: Props) {
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
+      <main>
 
       <div className="bg-white border-b border-slate-100 px-6 py-10 md:py-14">
         <div className="max-w-6xl mx-auto">
@@ -255,6 +256,7 @@ export default async function BrandPage({ params }: Props) {
           </section>
         </aside>
       </div>
+      </main>
       <Footer />
     </div>
   );

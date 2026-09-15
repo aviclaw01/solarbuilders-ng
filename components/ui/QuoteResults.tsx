@@ -18,7 +18,7 @@ import {
   quoteUrl,
 } from '@/lib/quote';
 import { INVERTER_BRANDS, PRICES_LAST_UPDATED_LABEL, type InverterTier } from '@/lib/prices';
-import { brandSlugByName } from '@/lib/brands';
+import { BRAND_SLUG_BY_NAME } from '@/lib/brand-slugs';
 import { SITE_URL } from '@/lib/site';
 import { track } from '@/lib/track';
 import QuoteContactModal from './QuoteContactModal';
@@ -67,7 +67,7 @@ function SpecWithBrands({ base, brands, fallback }: { base?: string; brands?: st
     <>
       {base} —{' '}
       {brands.map((b, i) => {
-        const slug = brandSlugByName(b);
+        const slug = BRAND_SLUG_BY_NAME[b.toLowerCase()];
         return (
           <span key={b}>
             {slug ? (

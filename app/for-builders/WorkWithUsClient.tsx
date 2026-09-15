@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/ui/Navbar';
-import Footer from '@/components/ui/Footer';
 import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { whatsappLink } from '@/lib/site';
 import { CheckCircle, ArrowRight, ArrowLeft, Wrench, Store, Factory, MessageCircle, ShieldCheck, Zap } from 'lucide-react';
@@ -132,7 +130,13 @@ function fmtMillions(n: number) {
   return `₦${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
 }
 
-export default function WorkWithUsClient() {
+/**
+ * `navbar` and `footer` arrive as rendered elements from the server page rather
+ * than being imported here. Both derive their copy from the price/brand/sizing
+ * tables; importing them into this client file pulled all of those tables into
+ * the browser bundle for a page that never uses them.
+ */
+export default function WorkWithUsClient({ navbar, footer }: { navbar: React.ReactNode; footer: React.ReactNode }) {
   const [activeSection, setActiveSection] = useState<'landing' | 'signup'>('landing');
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
@@ -204,7 +208,7 @@ export default function WorkWithUsClient() {
     ];
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
+        {navbar}
         <main className="max-w-lg mx-auto px-6 py-16 text-center">
           <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <ShieldCheck className="w-7 h-7 text-amber-600" />
@@ -235,7 +239,7 @@ export default function WorkWithUsClient() {
             See the brands and vendors we already list <ArrowRight className="w-4 h-4" />
           </Link>
         </main>
-        <Footer />
+        {footer}
       </div>
     );
   }
@@ -243,7 +247,7 @@ export default function WorkWithUsClient() {
   if (activeSection === 'signup') {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
+        {navbar}
         <main className="max-w-xl mx-auto px-6 py-8">
           <div className="mb-8">
             <div className="flex items-center justify-between mb-2">
@@ -520,14 +524,14 @@ export default function WorkWithUsClient() {
             )}
           </div>
         </main>
-        <Footer />
+        {footer}
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      {navbar}
 
       <main>
         {/* Hero */}
@@ -775,7 +779,7 @@ export default function WorkWithUsClient() {
         </section>
       </main>
 
-      <Footer />
+      {footer}
     </div>
   );
 }

@@ -1,9 +1,8 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNairaShort } from '@/lib/quote';
-import { comparisonPairs } from '@/lib/brands';
 
 const STARTER = HEADLINE_PACKAGES[1];   // 3.5kVA · 5kWh
 const FAMILY = HEADLINE_PACKAGES[2];    // 5kVA · 10kWh
@@ -11,7 +10,21 @@ const COMMERCIAL = HEADLINE_PACKAGES[4]; // 15–20kVA
 
 const range = (p: { low: number; high: number }) => `${formatNairaShort(p.low)} – ${formatNairaShort(p.high)}`;
 
-const USE_CASES = [
+/**
+ * The "Compare brands" card is the only part of this carousel that needs the
+ * product catalogue. Importing lib/brands here would ship all ~90 products to
+ * every homepage visitor for a count and four labels, so the server page
+ * resolves them and passes them down instead.
+ */
+export interface ComparisonSummary {
+  /** total number of brand-vs-brand pages we publish */
+  count: number;
+  /** first few pairs, already shortened to "Deye vs Felicity" */
+  labels: string[];
+}
+
+function buildUseCases(comparisons: ComparisonSummary) {
+  return [
   {
     tab: 'Residential Home',
     headline: 'Size your home solar system',
@@ -77,15 +90,16 @@ const USE_CASES = [
     card: {
       type: 'project',
       title: 'Head to head',
-      badge: `${comparisonPairs().length} comparisons`,
-      rows: comparisonPairs()
-        .slice(0, 4)
-        .map((pair) => ({ label: `${pair.a.name.split(' ')[0]} vs ${pair.b.name.split(' ')[0]}`, value: 'compare →' })),
+      badge: `${comparisons.count} comparisons`,
+      rows: comparisons.labels.map((label) => ({ label, value: 'compare →' })),
     },
   },
-];
+  ] as const;
+}
 
-function MockCard({ useCase }: { useCase: typeof USE_CASES[0] }) {
+type UseCase = ReturnType<typeof buildUseCases>[number];
+
+function MockCard({ useCase }: { useCase: UseCase }) {
   const card = useCase.card;
 
   if (card.type === 'whatsapp') {
@@ -150,13 +164,16 @@ function MockCard({ useCase }: { useCase: typeof USE_CASES[0] }) {
   );
 }
 
-export default function UseCaseCarousel() {
+export default function UseCaseCarousel({ comparisons }: { comparisons: ComparisonSummary }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
 
+  const useCases = useMemo(() => buildUseCases(comparisons), [comparisons]);
+  const count = useCases.length;
+
   const next = useCallback(() => {
-    setActive(i => (i + 1) % USE_CASES.length);
-  }, []);
+    setActive(i => (i + 1) % count);
+  }, [count]);
 
   useEffect(() => {
     if (paused) return;
@@ -164,7 +181,7 @@ export default function UseCaseCarousel() {
     return () => clearInterval(interval);
   }, [paused, next]);
 
-  const current = USE_CASES[active];
+  const current = useCases[active];
 
   return (
     <section className="bg-slate-50 py-20 md:py-28 px-6">
@@ -182,7 +199,7 @@ export default function UseCaseCarousel() {
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
-          {USE_CASES.map((uc, i) => (
+          {useCases.map((uc, i) => (
             <button
               key={uc.tab}
               onClick={() => setActive(i)}
@@ -199,7 +216,7 @@ export default function UseCaseCarousel() {
 
         {/* Active tab indicator bar */}
         <div className="flex gap-1 mb-10">
-          {USE_CASES.map((_, i) => (
+          {useCases.map((_, i) => (
             <div
               key={i}
               className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${

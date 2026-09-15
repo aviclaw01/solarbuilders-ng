@@ -36,6 +36,7 @@ export default function BrandsPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <main>
 
       <div className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
         <div className="max-w-6xl mx-auto">
@@ -97,6 +98,7 @@ export default function BrandsPage() {
           </Link>
         </section>
       </div>
+      </main>
       <Footer />
     </div>
   );

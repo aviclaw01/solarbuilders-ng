@@ -230,6 +230,7 @@ export default async function SizingScenarioPage({ params }: Props) {
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Navbar />
+      <main>
 
       {/* Hero — the answer is in the first sentence */}
       <header className="bg-white border-b border-slate-100 px-6 py-12 md:py-16">
@@ -638,6 +639,7 @@ export default async function SizingScenarioPage({ params }: Props) {
         </section>
       </div>
 
+      </main>
       <Footer />
     </div>
   );

@@ -86,6 +86,7 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-[#FAFAF7]">
       <Navbar />
+      <main>
 
       {/* Header */}
       <div className="bg-[#0F172A] px-6 py-16 md:py-20">
@@ -179,6 +180,7 @@ export default function BlogPage() {
         </div>
       </div>
 
+      </main>
       <Footer />
     </div>
   );

@@ -95,6 +95,7 @@ return (
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageJsonLd(SHOP_FAQS)) }} />
       <Navbar />
+      <main>
 
       <div className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
         <div className="max-w-6xl mx-auto">
@@ -183,6 +184,7 @@ return (
         </div>
       </section>
 
+      </main>
       <Footer />
     </div>
   );

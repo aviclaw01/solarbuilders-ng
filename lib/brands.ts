@@ -14,6 +14,8 @@
  * Contact details are only what the vendor publishes on its own website.
  */
 
+import { BRAND_SLUG_BY_NAME } from "./brand-slugs";
+
 export type BrandKind = "manufacturer" | "vendor";
 export type BrandTier = "budget" | "mid" | "premium";
 export type ProductCategory = "inverter" | "battery" | "panel" | "controller" | "package";
@@ -849,7 +851,24 @@ export function headlineUnitPrice(brand: Brand): string | null {
   return null;
 }
 
-/** Resolve a display name used in the quote BOM ("Felicity", "JA Solar") to a brand slug, if we have a page for it */
+/**
+ * Fail loudly if lib/brand-slugs.ts drifts from the real catalogue.
+ *
+ * That file is a hand-maintained literal so client bundles do not have to
+ * import this one. This check runs at module load on the server, so a renamed
+ * or added manufacturer breaks the build instead of shipping a dead link.
+ */
+if (process.env.NODE_ENV !== "production" || typeof window === "undefined") {
+  const expected = MANUFACTURERS.map((b) => `${b.name.toLowerCase()}=${b.slug}`).sort().join(",");
+  const actual = Object.entries(BRAND_SLUG_BY_NAME).map(([n, s]) => `${n}=${s}`).sort().join(",");
+  if (expected !== actual) {
+    throw new Error(
+      "lib/brand-slugs.ts is out of sync with the manufacturer catalogue. " +
+        "Update BRAND_SLUG_BY_NAME to match lib/brands.ts.",
+    );
+  }
+}
+
 export function brandSlugByName(name: string): string | undefined {
   const n = name.toLowerCase();
   return MANUFACTURERS.find((b) => b.name.toLowerCase() === n || b.name.toLowerCase().startsWith(n + " ") || b.slug === n.replace(/\s+/g, "-"))?.slug;

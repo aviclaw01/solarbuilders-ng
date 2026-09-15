@@ -18,14 +18,10 @@ import {
   type ProductCategory,
 } from "./brands";
 import type { TierQuote } from "./quote";
+import type { CartLine } from "./cartStorage";
 
-export const CART_STORAGE_KEY = "sb_cart_v1";
-
-export interface CartLine {
-  brandSlug: string;
-  model: string;
-  qty: number;
-}
+export { CART_STORAGE_KEY, readCart, writeCart, addLine, setQty } from "./cartStorage";
+export type { CartLine } from "./cartStorage";
 
 export interface ResolvedLine extends CartLine {
   brand: Brand;
@@ -108,48 +104,6 @@ export function cartTotals(resolved: ResolvedLine[]): CartTotals {
     }),
     { low: 0, best: 0, high: 0, items: 0 },
   );
-}
-
-// ─────────────────────────────────────────────────────────
-// STORAGE (per-browser, no account needed)
-// ─────────────────────────────────────────────────────────
-
-export function readCart(): CartLine[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter((l) => l && typeof l.brandSlug === "string" && typeof l.model === "string")
-      .map((l) => ({ brandSlug: l.brandSlug, model: l.model, qty: Math.max(1, Math.min(99, Number(l.qty) || 1)) }));
-  } catch {
-    return [];
-  }
-}
-
-export function writeCart(lines: CartLine[]): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(lines));
-    window.dispatchEvent(new CustomEvent("sb-cart-change"));
-  } catch {
-    /* private mode / storage disabled — the cart just won't persist */
-  }
-}
-
-export function addLine(lines: CartLine[], brandSlug: string, model: string, qty = 1): CartLine[] {
-  const i = lines.findIndex((l) => l.brandSlug === brandSlug && l.model === model);
-  if (i === -1) return [...lines, { brandSlug, model, qty }];
-  const next = [...lines];
-  next[i] = { ...next[i], qty: Math.min(99, next[i].qty + qty) };
-  return next;
-}
-
-export function setQty(lines: CartLine[], brandSlug: string, model: string, qty: number): CartLine[] {
-  if (qty < 1) return lines.filter((l) => !(l.brandSlug === brandSlug && l.model === model));
-  return lines.map((l) => (l.brandSlug === brandSlug && l.model === model ? { ...l, qty: Math.min(99, qty) } : l));
 }
 
 // ─────────────────────────────────────────────────────────

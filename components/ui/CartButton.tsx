@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
-import { readCart } from '@/lib/cart';
+import { readCart } from '@/lib/cartStorage';
 
 /**
  * Cart-count badge for the navbar.

@@ -43,6 +43,7 @@ export default function SizingHubPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <main>
 
       <header className="bg-white border-b border-slate-100 px-6 py-12 md:py-16">
         <div className="max-w-6xl mx-auto">
@@ -143,6 +144,7 @@ export default function SizingHubPage() {
         </section>
       </div>
 
+      </main>
       <Footer />
     </div>
   );

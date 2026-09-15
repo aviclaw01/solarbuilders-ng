@@ -26,6 +26,7 @@ export default function SolarLagosPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <main>
 
       <div className="bg-white border-b border-[#E2E8F0] px-4 py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
@@ -107,6 +108,7 @@ export default function SolarLagosPage() {
         </div>
       </div>
 
+      </main>
       <Footer />
     </div>
   );

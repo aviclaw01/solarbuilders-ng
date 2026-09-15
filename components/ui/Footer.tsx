@@ -38,7 +38,7 @@ const linkCls =
 function Column({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h4 className="font-heading text-white font-semibold mb-3 text-sm">{title}</h4>
+      <h2 className="font-heading text-white font-semibold mb-3 text-sm">{title}</h2>
       <ul className="space-y-0.5 text-sm">{children}</ul>
     </div>
   );
@@ -52,11 +52,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] gap-10 mb-12">
           <div>
             <Logo variant="horizontal" size="md" colorMode="dark" />
-            <p className="text-sm text-slate-500 leading-relaxed mt-4 mb-5">
+            <p className="text-sm text-slate-400 leading-relaxed mt-4 mb-5">
               We publish what solar actually costs in Nigeria, then buy it for you at that price and put a vetted
               installer on the job.
             </p>
-            <address className="not-italic text-sm text-slate-500 leading-relaxed mb-3">
+            <address className="not-italic text-sm text-slate-400 leading-relaxed mb-3">
               <span className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
                 <span>
@@ -98,6 +98,7 @@ export default function Footer() {
               <li key={entry.slug}>
                 <Link
                   href={`/sizing/${entry.slug}`}
+                 
                   className={linkCls}
                   title={getScenario(entry.slug)?.question}
                 >
@@ -134,18 +135,18 @@ export default function Footer() {
 
         {/* Honesty strip — the two things people most need to know */}
         <div className="border-t border-white/10 pt-6 grid gap-3 sm:grid-cols-2 mb-6">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-400">
             <span className="text-slate-300 font-medium">Prices checked {PRICES_LAST_UPDATED_LABEL}.</span>{' '}
             Every figure is a real Nigerian listing with the date we saw it. We re-confirm before you pay anyone.
           </p>
-          <p className="text-sm text-slate-500 sm:text-right">
+          <p className="text-sm text-slate-400 sm:text-right">
             <span className="text-slate-300 font-medium">No card payments on this site.</span>{' '}
             You pay the market price; our margin comes from our trade terms, not a mark-up on you.
           </p>
         </div>
 
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-2">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-400">
             © {new Date().getFullYear()} SolarBuilders.ng · Built by{' '}
             <a
               href="https://www.nexprove.com"
@@ -156,7 +157,7 @@ export default function Footer() {
               Nexprove
             </a>
           </p>
-          <p className="text-sm text-slate-600">Real solar prices &amp; quotes for Nigeria</p>
+          <p className="text-sm text-slate-400">Real solar prices &amp; quotes for Nigeria</p>
         </div>
       </div>
     </footer>

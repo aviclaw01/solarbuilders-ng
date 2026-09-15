@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import WorkWithUsClient from './WorkWithUsClient';
+import Navbar from '@/components/ui/Navbar';
+import Footer from '@/components/ui/Footer';
 
 export const metadata: Metadata = {
   title: 'Work With Us — Solar Installers, Vendors & Manufacturers | SolarBuilders.ng',
@@ -16,5 +18,5 @@ export const metadata: Metadata = {
 };
 
 export default function ForBuildersPage() {
-  return <WorkWithUsClient />;
+  return <WorkWithUsClient navbar={<Navbar />} footer={<Footer />} />;
 }

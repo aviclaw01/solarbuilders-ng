@@ -6,6 +6,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
+      <main>
       <div className="flex-1 flex items-center justify-center px-6 py-20">
         <div className="text-center max-w-md">
           <p className="text-amber-400 font-heading font-bold text-7xl mb-4">404</p>
@@ -25,6 +26,7 @@ export default function NotFound() {
           </div>
         </div>
       </div>
+      </main>
       <Footer />
     </div>
   );

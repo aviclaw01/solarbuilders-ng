@@ -5,6 +5,32 @@
   --font-body: 'Inter', sans-serif;
 }
 
+/*
+ * ₦-only subsets, declared FIRST in every font stack.
+ *
+ * U+20A6 sits in Google Fonts' latin-ext range, and it is the only latin-ext
+ * codepoint on the whole site — so rendering a single price pulled an 85KB
+ * Inter file and a 22KB Plus Jakarta file on nearly every page. These subsets
+ * are cut from those exact files (both OFL, subsetting permitted), so the
+ * glyph is identical, and because they come first in the stack the browser
+ * resolves ₦ here and never requests latin-ext at all.
+ *
+ * 107KB -> 2.2KB. Regenerate with scripts/build-naira-subset.sh if the fonts change.
+ */
+@font-face {
+  font-family: 'NairaBody';
+  src: url('/fonts/naira-inter.woff2') format('woff2');
+  unicode-range: U+20A6;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NairaHeading';
+  src: url('/fonts/naira-jakarta.woff2') format('woff2');
+  unicode-range: U+20A6;
+  font-display: swap;
+}
+
 :root {
   --navy: #0F172A;
   --navy-light: #1E293B;
@@ -29,7 +55,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), sans-serif;
+  font-family: 'NairaHeading', var(--font-heading), sans-serif;
 }
 
 * {
@@ -41,47 +67,11 @@ html {
 }
 
 .font-heading {
-  font-family: var(--font-heading), sans-serif;
+  font-family: 'NairaHeading', var(--font-heading), sans-serif;
 }
 
 .font-body {
-  font-family: var(--font-body), sans-serif;
-}
-
-/* Social proof ticker animation */
-@keyframes ticker {
-  0% { opacity: 0; transform: translateY(8px); }
-  10% { opacity: 1; transform: translateY(0); }
-  80% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-8px); }
-}
-
-.ticker-item {
-  animation: ticker 3s ease-in-out infinite;
-}
-
-.ticker-item:nth-child(1) { animation-delay: 0s; }
-.ticker-item:nth-child(2) { animation-delay: 3s; }
-.ticker-item:nth-child(3) { animation-delay: 6s; }
-
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200px 0; }
-  100% { background-position: calc(200px + 100%) 0; }
-}
-
-.skeleton {
-  background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
-  background-size: 200px 100%;
-  animation: shimmer 1.5s infinite;
+  font-family: 'NairaBody', var(--font-body), sans-serif;
 }
 
 /* === Global Micro-interaction System === */
@@ -106,24 +96,6 @@ html {
 .card-hover:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
-}
-
-/* Nav link underline animation */
-.nav-link {
-  position: relative;
-}
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: #F59E0B;
-  transition: width 0.2s ease;
-}
-.nav-link:hover::after {
-  width: 100%;
 }
 
 /* Scroll-triggered sections */
@@ -158,6 +130,9 @@ html {
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   .btn-primary,
   .btn-primary:hover,
   .btn-primary:active {
@@ -168,9 +143,6 @@ html {
   .card-hover,
   .card-hover:hover {
     transform: none;
-  }
-  .nav-link::after {
-    transition: none;
   }
   .js .section-animate,
   .section-animate {

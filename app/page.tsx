@@ -40,6 +40,18 @@ const PRICE_SAMPLES: { brand: string; model: string; label: string }[] = [
   { brand: 'jinko', model: '600W bifacial', label: 'Jinko 600W panel' },
 ];
 
+/**
+ * Resolved here rather than inside the carousel: it is a client component, and
+ * importing lib/brands there would ship the whole product catalogue to every
+ * homepage visitor for a count and four labels.
+ */
+const HOMEPAGE_COMPARISONS = {
+  count: comparisonPairs().length,
+  labels: comparisonPairs()
+    .slice(0, 4)
+    .map((pair) => `${pair.a.name.split(' ')[0]} vs ${pair.b.name.split(' ')[0]}`),
+};
+
 export default function HomePage() {
   const featuredBrands = ['felicity', 'deye', 'growatt'].map(getBrand).filter(Boolean);
   const familyHome = HEADLINE_PACKAGES[2];
@@ -193,7 +205,7 @@ export default function HomePage() {
       </section>
 
       {/* ──────────────── USE CASE CAROUSEL ──────────────── */}
-      <UseCaseCarousel />
+      <UseCaseCarousel comparisons={HOMEPAGE_COMPARISONS} />
 
       {/* ──────────────── FEATURE CARDS (replaces "How it works") ──────────────── */}
       <section className="bg-white py-20 md:py-28 px-6">

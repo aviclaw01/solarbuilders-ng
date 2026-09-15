@@ -13,12 +13,13 @@ import {
   Users,
 } from "lucide-react";
 import { formatNaira } from "@/lib/quote";
+import AdminNav from "@/components/ui/AdminNav";
 
 /**
  * Internal leads dashboard — every "Get this system built" submission from
  * the calculator, newest first.
  *
- * Auth: HTTP Basic, enforced in middleware.ts for /admin/* (ADMIN_USER /
+ * Auth: HTTP Basic, enforced in proxy.ts for /admin/* (ADMIN_USER /
  * ADMIN_PASSWORD). There is no auth logic in this file — if you can render
  * it, the middleware already let you through.
  *
@@ -467,7 +468,10 @@ function Shell({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
       </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">{children}</main>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        <AdminNav active="leads" />
+        {children}
+      </main>
     </div>
   );
 }

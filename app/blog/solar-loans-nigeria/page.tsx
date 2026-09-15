@@ -25,6 +25,7 @@ export default function SolarLoansPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <main>
       <article className="max-w-3xl mx-auto px-6 py-16">
         <div className="flex items-center gap-2 text-sm text-slate-500 mb-8">
           <Link href="/" className="hover:text-slate-900">Home</Link>
@@ -233,6 +234,7 @@ export default function SolarLoansPage() {
           </Link>
         </div>
       </article>
+      </main>
       <Footer />
     </div>
   );

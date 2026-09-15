@@ -16,6 +16,7 @@ export default function SolarAbujaPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <main>
 
       <article className="max-w-3xl mx-auto px-4 py-16">
         <div className="flex items-center gap-2 text-sm text-[#64748B] mb-8">
@@ -117,6 +118,7 @@ export default function SolarAbujaPage() {
         </div>
       </article>
 
+      </main>
       <Footer />
     </div>
   );

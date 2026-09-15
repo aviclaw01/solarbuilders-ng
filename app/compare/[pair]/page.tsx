@@ -228,6 +228,7 @@ export default async function ComparePairPage({ params }: Props) {
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Navbar />
+      <main>
 
       {/* Hero */}
       <header className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
@@ -531,6 +532,7 @@ export default async function ComparePairPage({ params }: Props) {
         </section>
       </div>
 
+      </main>
       <Footer />
     </div>
   );

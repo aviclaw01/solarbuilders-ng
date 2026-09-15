@@ -20,6 +20,7 @@ export default function SolarCostNigeriaPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <main>
 
       <article className="max-w-3xl mx-auto px-4 py-16">
         {/* Breadcrumb */}
@@ -144,6 +145,7 @@ export default function SolarCostNigeriaPage() {
         </div>
       </article>
 
+      </main>
       <Footer />
     </div>
   );

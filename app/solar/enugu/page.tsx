@@ -58,6 +58,7 @@ export default function SolarEnuguPage() {
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Navbar />
+      <main>
 
       <div className="bg-white border-b border-slate-100 px-6 py-16 md:py-20">
         <div className="max-w-6xl mx-auto">
@@ -127,6 +128,7 @@ export default function SolarEnuguPage() {
         </div>
       </div>
 
+      </main>
       <Footer />
     </div>
   );
