@@ -8,6 +8,7 @@ import { catalogue, midPrice, productSize } from '@/lib/cart';
 import type { ProductCategory } from '@/lib/brands';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import ShopClient, { type ShopItem, type SizeUnit } from './ShopClient';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Solar Equipment Prices in Nigeria — Inverters, Batteries, Panels',
@@ -56,6 +57,7 @@ function shopItems(): ShopItem[] {
       category: product.category,
       model: product.model,
       spec: product.spec,
+      image: product.image,
       size,
       unit,
       priceLow: product.priceLow,
@@ -72,8 +74,24 @@ function shopItems(): ShopItem[] {
 export default function ShopPage() {
   const items = shopItems();
 
-  return (
+    // ItemList of the catalogue. Individual Product/Offer markup lives on the
+  // brand pages (one canonical place per product); here we describe the list.
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Solar equipment prices in Nigeria',
+    numberOfItems: items.length,
+    itemListElement: items.slice(0, 50).map((it, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: `${it.brandName} ${it.model}`,
+      url: `${SITE_URL}/brands/${it.brandSlug}`,
+    })),
+  };
+
+return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
       <Navbar />
 
       <div className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">

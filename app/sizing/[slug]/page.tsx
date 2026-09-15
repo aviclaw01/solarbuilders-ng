@@ -33,6 +33,7 @@ import {
 import { LITHIUM_MODULE_KWH, PANEL_WATTS, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { SITE_URL } from '@/lib/site';
 import { comparisonPairs, type ProductCategory } from '@/lib/brands';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -233,6 +234,7 @@ export default async function SizingScenarioPage({ params }: Props) {
       {/* Hero — the answer is in the first sentence */}
       <header className="bg-white border-b border-slate-100 px-6 py-12 md:py-16">
         <div className="max-w-6xl mx-auto">
+          <Breadcrumbs trail={[{ href: '/sizing', label: 'Sizing guides' }, { label: scenario.question }]} className="mb-6" />
           <nav className="text-sm text-slate-400 mb-6">
             <Link href="/sizing" className="hover:text-slate-700">Sizing</Link>
             <span className="mx-2">/</span>

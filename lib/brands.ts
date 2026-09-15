@@ -34,6 +34,13 @@ export interface Product {
   seenOn: string; // ISO date
   note?: string;
   /**
+   * Licensed product artwork. We do not hotlink vendor photos — see
+   * components/ui/ProductImage.tsx. Set this only for images we have the right
+   * to use (supplied by a distributor, or our own photography), and add the
+   * host to `next.config.ts` remotePatterns if it is remote.
+   */
+  image?: string;
+  /**
    * Why this row must never be auto-selected into a customer's order, even
    * though it is fine to publish. Use for lower-spec variants that share a
    * family name, or anything we would not put in a build ourselves.

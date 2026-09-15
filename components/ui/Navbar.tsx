@@ -7,6 +7,10 @@ import { X, Menu, Phone, ChevronDown, MessageCircle } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import CartButton from '@/components/ui/CartButton';
 import { CONTACT_WHATSAPP, whatsappLink } from '@/lib/site';
+import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import { comparisonPairs } from '@/lib/brands';
+import { SIZING_SCENARIOS } from '@/lib/sizing';
+import { formatNairaShort } from '@/lib/quote';
 
 /**
  * Three top-level items, each a small menu, plus one primary action.
@@ -23,10 +27,23 @@ interface MenuItem {
   hint?: string;
 }
 
+interface Featured {
+  href: string;
+  eyebrow: string;
+  title: string;
+  body: string;
+  /** big number or price shown on the card */
+  stat?: string;
+}
+
 interface MenuGroup {
   label: string;
   items: MenuItem[];
+  featured: Featured;
 }
+
+const FAMILY = HEADLINE_PACKAGES[2];
+const TOP_COMPARISON = comparisonPairs()[0];
 
 const MENUS: MenuGroup[] = [
   {
@@ -37,24 +54,49 @@ const MENUS: MenuGroup[] = [
       { href: '/shop?cat=battery', label: 'Batteries' },
       { href: '/shop?cat=panel', label: 'Solar panels' },
       { href: '/shop?cat=package', label: 'Complete packages' },
+      { href: '/cart', label: 'Your order' },
     ],
+    featured: {
+      href: '/calculator',
+      eyebrow: 'Not sure what fits?',
+      title: 'Size your system first',
+      body: `Tick your appliances and get an itemised list in two minutes. A family home with one AC runs about ${formatNairaShort(FAMILY.low)}–${formatNairaShort(FAMILY.high)} installed.`,
+      stat: `${formatNairaShort(FAMILY.low)}–${formatNairaShort(FAMILY.high)}`,
+    },
   },
   {
     label: 'Prices',
     items: [
       { href: '/brands', label: 'Prices by brand', hint: 'Felicity, Deye, Growatt, Jinko…' },
-      { href: '/compare', label: 'Compare brands', hint: 'Deye vs Felicity, and more' },
+      { href: '/compare', label: 'Compare brands', hint: `${comparisonPairs().length} head-to-head pages` },
       { href: '/blog/solar-cost-nigeria-2026', label: 'What a full system costs' },
+      { href: '/blog/inverter-size-guide', label: 'Inverter size guide' },
     ],
+    featured: TOP_COMPARISON
+      ? {
+          href: `/compare/${TOP_COMPARISON.slug}`,
+          eyebrow: 'Most compared',
+          title: `${TOP_COMPARISON.a.name.split(' ')[0]} vs ${TOP_COMPARISON.b.name.split(' ')[0]}`,
+          body: 'Per kVA, per kWh, model by model, with what each is actually good for.',
+          stat: 'Head to head',
+        }
+      : { href: '/compare', eyebrow: 'Compare', title: 'Brand comparisons', body: 'See what each brand costs.' },
   },
   {
     label: 'Learn',
     items: [
-      { href: '/sizing', label: 'Sizing guides', hint: 'What size do I need?' },
+      { href: '/sizing', label: 'Sizing guides', hint: `${SIZING_SCENARIOS.length} common questions answered` },
       { href: '/how-it-works', label: 'How it works' },
       { href: '/blog', label: 'Solar guides' },
       { href: '/verified', label: 'How we vet installers' },
     ],
+    featured: {
+      href: '/sizing',
+      eyebrow: 'Most asked',
+      title: 'What size do I need?',
+      body: `Worked answers for ACs, flats, shops and offices — every figure computed, not guessed. Prices from ${PRICES_LAST_UPDATED_LABEL}.`,
+      stat: `${SIZING_SCENARIOS.length} guides`,
+    },
   },
 ];
 
@@ -121,8 +163,9 @@ export default function Navbar() {
 
             {/* Desktop: three grouped menus */}
             <div className="hidden md:flex items-center gap-1">
-              {MENUS.map((group) => {
+              {MENUS.map((group, gi) => {
                 const expanded = openMenu === group.label;
+                const alignRight = gi === MENUS.length - 1;
                 return (
                   <div key={group.label} className="relative" onMouseLeave={() => setOpenMenu(null)}>
                     <button
@@ -139,18 +182,42 @@ export default function Navbar() {
                     </button>
 
                     {expanded && (
-                      <div className="absolute left-0 top-full pt-2 w-64 z-50">
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/50 p-2">
-                          {group.items.map((item) => (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              className="block px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors"
-                            >
-                              <span className="block text-sm font-semibold text-slate-900">{item.label}</span>
-                              {item.hint && <span className="block text-xs text-slate-500 mt-0.5">{item.hint}</span>}
-                            </Link>
-                          ))}
+                      <div className={`absolute top-full pt-2 w-[580px] max-w-[calc(100vw-3rem)] z-50 ${alignRight ? 'right-0' : 'left-0'}`}>
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-300/40 p-3 grid grid-cols-[1fr_1fr] gap-2">
+                          <div>
+                            {group.items.map((item) => (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                className="block px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors"
+                              >
+                                <span className="block text-sm font-semibold text-slate-900">{item.label}</span>
+                                {item.hint && <span className="block text-xs text-slate-500 mt-0.5">{item.hint}</span>}
+                              </Link>
+                            ))}
+                          </div>
+                          <Link
+                            href={group.featured.href}
+                            className="group/card rounded-xl bg-gradient-to-br from-amber-50 to-white border border-amber-100 p-4 flex flex-col hover:border-amber-300 transition-colors"
+                          >
+                            <span className="text-[11px] font-semibold uppercase tracking-wide text-amber-600">
+                              {group.featured.eyebrow}
+                            </span>
+                            <span className="font-heading font-bold text-slate-900 text-base mt-1">
+                              {group.featured.title}
+                            </span>
+                            {group.featured.stat && (
+                              <span className="font-heading font-extrabold text-amber-500 text-lg mt-1.5">
+                                {group.featured.stat}
+                              </span>
+                            )}
+                            <span className="text-xs text-slate-500 leading-relaxed mt-1.5 flex-1">
+                              {group.featured.body}
+                            </span>
+                            <span className="text-xs font-semibold text-slate-900 mt-3 group-hover/card:text-amber-600 transition-colors">
+                              Open →
+                            </span>
+                          </Link>
                         </div>
                       </div>
                     )}
@@ -162,12 +229,13 @@ export default function Navbar() {
             {/* Desktop actions */}
             <div className="hidden md:flex items-center gap-2">
               <a
-                href={`tel:+${CONTACT_WHATSAPP}`}
-                className="hidden xl:flex items-center gap-1.5 text-slate-600 text-sm font-medium hover:text-amber-600 transition-colors h-11 px-2"
-                aria-label="Call SolarBuilders.ng"
+                href={whatsappLink('Hi SolarBuilders, I have a question about going solar.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden lg:flex items-center gap-1.5 text-slate-600 text-sm font-medium hover:text-slate-900 transition-colors h-11 px-3"
               >
-                <Phone className="w-4 h-4" />
-                +234 916 839 4923
+                <MessageCircle className="w-4 h-4" />
+                Talk to us
               </a>
               <CartButton />
               <Link

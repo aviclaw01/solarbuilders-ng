@@ -1,4 +1,5 @@
 import { SIZING_SCENARIOS } from '@/lib/sizing';
+import { PRICES_LAST_UPDATED } from '@/lib/prices';
 
 export interface SizingSitemapEntry {
   url: string;
@@ -14,10 +15,10 @@ export interface SizingSitemapEntry {
 export function sizingSitemapEntries(baseUrl: string): SizingSitemapEntry[] {
   const base = baseUrl.replace(/\/$/, '');
   return [
-    { url: `${base}/sizing`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${base}/sizing`, lastModified: new Date(PRICES_LAST_UPDATED), changeFrequency: 'monthly', priority: 0.8 },
     ...SIZING_SCENARIOS.map((s) => ({
       url: `${base}/sizing/${s.slug}`,
-      lastModified: new Date(),
+      lastModified: new Date(PRICES_LAST_UPDATED),
       changeFrequency: 'monthly' as const,
       priority: 0.75,
     })),

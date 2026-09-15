@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import BrandMark from '@/components/ui/BrandMark';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import {
   CATEGORY_LABEL,
@@ -232,7 +233,7 @@ export default async function ComparePairPage({ params }: Props) {
       <header className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
         <div className="max-w-6xl mx-auto">
           <nav className="text-sm text-slate-400 mb-6">
-            <Link href="/compare" className="hover:text-slate-700">Compare</Link>
+            <Breadcrumbs trail={[{ href: '/compare', label: 'Compare' }, { label: `${pair.a.name} vs ${pair.b.name}` }]} className="mb-6" />
             <span className="mx-2">/</span>
             <span className="text-slate-600">{a.name} vs {b.name}</span>
           </nav>

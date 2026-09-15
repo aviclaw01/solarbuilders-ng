@@ -17,7 +17,8 @@ import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { SITE_URL } from '@/lib/site';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import BrandMark from '@/components/ui/BrandMark';
-import { ArrowLeft, CheckCircle2, MessageCircle, Zap, Info, MapPin } from 'lucide-react';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import { CheckCircle2, MessageCircle, Zap, Info, MapPin } from 'lucide-react';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -105,9 +106,10 @@ export default async function BrandPage({ params }: Props) {
 
       <div className="bg-white border-b border-slate-100 px-6 py-10 md:py-14">
         <div className="max-w-6xl mx-auto">
-          <Link href="/brands" className="text-slate-500 hover:text-slate-900 text-sm flex items-center gap-1 mb-6">
-            <ArrowLeft className="w-4 h-4" /> All brands &amp; vendors
-          </Link>
+          <Breadcrumbs
+            trail={[{ href: '/brands', label: 'Brands & prices' }, { label: brand.name }]}
+            className="mb-6"
+          />
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-sky-50 text-sky-700 border-sky-200">
               {isMaker ? 'Manufacturer' : 'Nigerian vendor'}

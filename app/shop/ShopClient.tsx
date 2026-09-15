@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, Info, Minus, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
 import BrandMark from '@/components/ui/BrandMark';
+import ProductImage from '@/components/ui/ProductImage';
 import { CATEGORY_LABEL, TIER_LABEL, type BrandTier, type ProductCategory } from '@/lib/brands';
 import { addLine, readCart, writeCart } from '@/lib/cart';
 import { track } from '@/lib/track';
@@ -35,6 +36,7 @@ export interface ShopItem {
   category: ProductCategory;
   model: string;
   spec: string;
+  image?: string;
   /** kVA / kWh / W, in the unit below */
   size?: number;
   unit?: SizeUnit;
@@ -140,6 +142,10 @@ function ProductCard({ item }: { item: ShopItem }) {
 
   return (
     <div className="bg-white border border-slate-100 rounded-2xl p-5 flex flex-col hover:border-slate-200 transition-colors">
+      <ProductImage
+        product={{ category: item.category, model: item.model, spec: item.spec, image: item.image }}
+        className="h-32 w-full mb-4"
+      />
       <div className="flex items-start gap-3">
         <BrandMark brand={{ slug: item.brandSlug, name: item.brandName, logo: item.brandLogo }} size={36} />
         <div className="min-w-0 flex-1">
