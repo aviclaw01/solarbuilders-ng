@@ -34,12 +34,20 @@ export interface Product {
   seenOn: string; // ISO date
   note?: string;
   /**
-   * Licensed product artwork. We do not hotlink vendor photos — see
-   * components/ui/ProductImage.tsx. Set this only for images we have the right
-   * to use (supplied by a distributor, or our own photography), and add the
-   * host to `next.config.ts` remotePatterns if it is remote.
+   * Product photo, self-hosted under /public/products. We never hotlink vendor
+   * images — see components/ui/ProductImage.tsx. These are written by
+   * `node scripts/fetch-product-images.ts`, which fetches the manufacturer or
+   * vendor photo from `sourceUrl`, converts it to WebP and records provenance
+   * in public/products/manifest.json. Local paths need no remotePatterns.
+   *
+   * Do not hand-pick a value here: an image nobody can trace is worse than the
+   * category illustration ProductImage falls back to.
    */
   image?: string;
+  /** Vendor/manufacturer page the photo came from (for credit and takedowns). */
+  imageSource?: string;
+  /** ISO date the photo was fetched. */
+  imageFetchedOn?: string;
   /**
    * Why this row must never be auto-selected into a customer's order, even
    * though it is fine to publish. Use for lower-spec variants that share a
@@ -119,26 +127,26 @@ const MANUFACTURERS: Brand[] = [
     },
     pricesPublic: true,
     products: [
-      { category: "inverter", model: "IVEM 3kVA 24V", spec: "3kVA 24V hybrid", kva: 3, priceLow: 379_000, priceHigh: 379_000, seenAt: ["solar-village"], sourceUrl: "https://solarvillage.africa/felicity-ivps-5kva-48v-solar-power-inverter.html", seenOn: D },
-      { category: "inverter", model: "IVEM3048-LV", spec: "3kVA 48V hybrid", kva: 3, priceLow: 494_000, priceHigh: 494_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D },
-      { category: "inverter", model: "3.5kVA 24V hybrid", spec: "3.5kVA 24V pure sine hybrid", kva: 3.5, priceLow: 435_000, priceHigh: 778_586, seenAt: ["solar-village", "stellarmart", "zit"], sourceUrl: "https://zit.ng/products/felicity-solar-3-5kva-24volt-hybrid-inverter-pure-sine-wave/", seenOn: D },
-      { category: "inverter", model: "5048 off-grid 5kVA", spec: "5kVA 48V off-grid with MPPT", kva: 5, priceLow: 440_000, priceHigh: 440_000, seenAt: ["stellarmart"], sourceUrl: "https://www.stellarmart.ng/product/5000va-48v-4000w-5kva-230v-48v-dc-to-ac-hybrid-off-grid-inverter/", seenOn: D },
-      { category: "inverter", model: "IVEM5048 / IVPS 5kVA", spec: "5kVA 48V hybrid, 100A MPPT", kva: 5, priceLow: 585_900, priceHigh: 986_000, seenAt: ["solar-village", "nature-solar", "zit"], sourceUrl: "https://zit.ng/products/felicity-solar-5kva-48volt-hybrid-inverter-pure-sine-wave/", seenOn: D },
-      { category: "inverter", model: "IVEM6048", spec: "6kVA 48V hybrid", kva: 6, priceLow: 637_000, priceHigh: 637_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D },
-      { category: "inverter", model: "IVPM7548", spec: "7.5kVA 48V hybrid, 120A MPPT", kva: 7.5, priceLow: 1_020_000, priceHigh: 1_097_600, seenAt: ["zit", "felicity-solar-ng"], sourceUrl: "https://zit.ng/products/felicity-solar-7-5kva-48volt-hybrid-inverter-with-120ah-charge-controller/", seenOn: D },
-      { category: "inverter", model: "IVEM8048", spec: "8kVA 48V hybrid", kva: 8, priceLow: 1_225_000, priceHigh: 1_225_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D },
-      { category: "inverter", model: "IVGM 8KLP2G1", spec: "8kW low-voltage hybrid (new gen)", kva: 8, priceLow: 1_472_500, priceHigh: 1_472_500, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D },
-      { category: "inverter", model: "IVPS10048", spec: "10kVA 48V hybrid", kva: 10, priceLow: 850_000, priceHigh: 1_300_000, seenAt: ["Jumia", "felicity-solar-ng", "nature-solar"], sourceUrl: "https://www.jumia.com.ng/10kva-48v-pure-sine-wave-inverter-felicity-solar-mpg3790739.html", seenOn: D },
-      { category: "inverter", model: "IVEM 12kW", spec: "12kW 48V hybrid", kva: 12, priceLow: 1_290_100, priceHigh: 1_290_100, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D },
-      { category: "battery", model: "FL-LPBF48100", spec: "5kWh 48V 100Ah LiFePO4, 5yr warranty", kwh: 5, priceLow: 999_120, priceHigh: 1_350_000, seenAt: ["energymall", "felicity-solar-ng"], sourceUrl: "https://energymall.ng/shop/batteries/felicity-5kwh-48v-lithium-battery-five-years-warranty-fl-lpbf48100/", seenOn: D },
-      { category: "battery", model: "FLH-48100UG1", spec: "5.12kWh 51.2V 100Ah", kwh: 5.12, priceLow: 1_296_540, priceHigh: 1_296_540, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D },
-      { category: "battery", model: "LPBF24200-M", spec: "5kWh 24V 200Ah (for 3.5kVA systems)", kwh: 5, priceLow: 1_078_000, priceHigh: 1_360_000, seenAt: ["felicity-solar-ng", "zit"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D },
-      { category: "battery", model: "LPBF48150", spec: "7.2kWh 48V 150Ah wall-mount", kwh: 7.2, priceLow: 1_520_000, priceHigh: 1_520_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D },
+      { category: "inverter", model: "IVEM 3kVA 24V", spec: "3kVA 24V hybrid", kva: 3, priceLow: 379_000, priceHigh: 379_000, seenAt: ["solar-village"], sourceUrl: "https://solarvillage.africa/felicity-ivps-5kva-48v-solar-power-inverter.html", seenOn: D, image: "/products/felicity--ivem-3kva-24v.webp", imageSource: "https://solarvillage.africa/felicity-ivps-5kva-48v-solar-power-inverter.html", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "IVEM3048-LV", spec: "3kVA 48V hybrid", kva: 3, priceLow: 494_000, priceHigh: 494_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D, image: "/products/felicity--ivem3048-lv.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-inverter", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "3.5kVA 24V hybrid", spec: "3.5kVA 24V pure sine hybrid", kva: 3.5, priceLow: 435_000, priceHigh: 778_586, seenAt: ["solar-village", "stellarmart", "zit"], sourceUrl: "https://zit.ng/products/felicity-solar-3-5kva-24volt-hybrid-inverter-pure-sine-wave/", seenOn: D, image: "/products/felicity--3-5kva-24v-hybrid.webp", imageSource: "https://zit.ng/products/felicity-solar-3-5kva-24volt-hybrid-inverter-pure-sine-wave/", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "5048 off-grid 5kVA", spec: "5kVA 48V off-grid with MPPT", kva: 5, priceLow: 440_000, priceHigh: 440_000, seenAt: ["stellarmart"], sourceUrl: "https://www.stellarmart.ng/product/5000va-48v-4000w-5kva-230v-48v-dc-to-ac-hybrid-off-grid-inverter/", seenOn: D, image: "/products/felicity--5048-off-grid-5kva.webp", imageSource: "https://www.stellarmart.ng/product/5000va-48v-4000w-5kva-230v-48v-dc-to-ac-hybrid-off-grid-inverter/", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "IVEM5048 / IVPS 5kVA", spec: "5kVA 48V hybrid, 100A MPPT", kva: 5, priceLow: 585_900, priceHigh: 986_000, seenAt: ["solar-village", "nature-solar", "zit"], sourceUrl: "https://zit.ng/products/felicity-solar-5kva-48volt-hybrid-inverter-pure-sine-wave/", seenOn: D, image: "/products/felicity--ivem5048-ivps-5kva.webp", imageSource: "https://zit.ng/products/felicity-solar-5kva-48volt-hybrid-inverter-pure-sine-wave/", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "IVEM6048", spec: "6kVA 48V hybrid", kva: 6, priceLow: 637_000, priceHigh: 637_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D, image: "/products/felicity--ivem6048.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-inverter", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "IVPM7548", spec: "7.5kVA 48V hybrid, 120A MPPT", kva: 7.5, priceLow: 1_020_000, priceHigh: 1_097_600, seenAt: ["zit", "felicity-solar-ng"], sourceUrl: "https://zit.ng/products/felicity-solar-7-5kva-48volt-hybrid-inverter-with-120ah-charge-controller/", seenOn: D, image: "/products/felicity--ivpm7548.webp", imageSource: "https://zit.ng/products/felicity-solar-7-5kva-48volt-hybrid-inverter-with-120ah-charge-controller/", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "IVEM8048", spec: "8kVA 48V hybrid", kva: 8, priceLow: 1_225_000, priceHigh: 1_225_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D, image: "/products/felicity--ivem8048.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-inverter", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "IVGM 8KLP2G1", spec: "8kW low-voltage hybrid (new gen)", kva: 8, priceLow: 1_472_500, priceHigh: 1_472_500, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D, image: "/products/felicity--ivgm-8klp2g1.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-inverter", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "IVPS10048", spec: "10kVA 48V hybrid", kva: 10, priceLow: 850_000, priceHigh: 1_300_000, seenAt: ["Jumia", "felicity-solar-ng", "nature-solar"], sourceUrl: "https://www.jumia.com.ng/10kva-48v-pure-sine-wave-inverter-felicity-solar-mpg3790739.html", seenOn: D, image: "/products/felicity--ivps10048.webp", imageSource: "https://www.jumia.com.ng/10kva-48v-pure-sine-wave-inverter-felicity-solar-mpg3790739.html", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "IVEM 12kW", spec: "12kW 48V hybrid", kva: 12, priceLow: 1_290_100, priceHigh: 1_290_100, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-inverter", seenOn: D, image: "/products/felicity--ivem-12kw.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-inverter", imageFetchedOn: "2026-09-15" },
+      { category: "battery", model: "FL-LPBF48100", spec: "5kWh 48V 100Ah LiFePO4, 5yr warranty", kwh: 5, priceLow: 999_120, priceHigh: 1_350_000, seenAt: ["energymall", "felicity-solar-ng"], sourceUrl: "https://energymall.ng/shop/batteries/felicity-5kwh-48v-lithium-battery-five-years-warranty-fl-lpbf48100/", seenOn: D, image: "/products/felicity--fl-lpbf48100.webp", imageSource: "https://energymall.ng/shop/batteries/felicity-5kwh-48v-lithium-battery-five-years-warranty-fl-lpbf48100/", imageFetchedOn: "2026-09-15" },
+      { category: "battery", model: "FLH-48100UG1", spec: "5.12kWh 51.2V 100Ah", kwh: 5.12, priceLow: 1_296_540, priceHigh: 1_296_540, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D, image: "/products/felicity--flh-48100ug1.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-batteries", imageFetchedOn: "2026-09-15" },
+      { category: "battery", model: "LPBF24200-M", spec: "5kWh 24V 200Ah (for 3.5kVA systems)", kwh: 5, priceLow: 1_078_000, priceHigh: 1_360_000, seenAt: ["felicity-solar-ng", "zit"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D, image: "/products/felicity--lpbf24200-m.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-batteries", imageFetchedOn: "2026-09-15" },
+      { category: "battery", model: "LPBF48150", spec: "7.2kWh 48V 150Ah wall-mount", kwh: 7.2, priceLow: 1_520_000, priceHigh: 1_520_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D, image: "/products/felicity--lpbf48150.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-batteries", imageFetchedOn: "2026-09-15" },
       { category: "battery", model: "LPBF48200", spec: "10kWh 48V 200Ah", kwh: 10, priceLow: 2_000_000, priceHigh: 2_650_000, seenAt: ["Alaba market", "zit"], sourceUrl: "https://zit.ng/products/felicity-10kwh-48v-100ah-lithium-phosphate-solar-batteries-pack-with-bms-lpbf-48100/", seenOn: D },
-      { category: "battery", model: "LPBF48300-II / FLA48300", spec: "15kWh 48V 300Ah", kwh: 15, priceLow: 2_107_500, priceHigh: 3_286_080, seenAt: ["solar-village", "felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D },
-      { category: "battery", model: "17.5kWh 51.2V", spec: "17.5kWh 51.2V", kwh: 17.5, priceLow: 3_980_000, priceHigh: 3_980_000, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/felicity-10kwh-48v-100ah-lithium-phosphate-solar-batteries-pack-with-bms-lpbf-48100/", seenOn: D },
-      { category: "battery", model: "FLA48500", spec: "25kWh 48V 500Ah", kwh: 25, priceLow: 5_415_000, priceHigh: 5_415_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D },
-      { category: "controller", model: "100A MPPT", spec: "100A MPPT 12/24/48V charge controller", priceLow: 215_000, priceHigh: 280_000, seenAt: ["Jumia", "Zel"], sourceUrl: "https://www.jumia.com.ng/felicity-solar-100a-mppt-solar-charge-controller-12v24v48v-306124265.html", seenOn: D },
+      { category: "battery", model: "LPBF48300-II / FLA48300", spec: "15kWh 48V 300Ah", kwh: 15, priceLow: 2_107_500, priceHigh: 3_286_080, seenAt: ["solar-village", "felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D, image: "/products/felicity--lpbf48300-ii-fla48300.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-batteries", imageFetchedOn: "2026-09-15" },
+      { category: "battery", model: "17.5kWh 51.2V", spec: "17.5kWh 51.2V", kwh: 17.5, priceLow: 3_980_000, priceHigh: 3_980_000, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/felicity-10kwh-48v-100ah-lithium-phosphate-solar-batteries-pack-with-bms-lpbf-48100/", seenOn: D, image: "/products/felicity--17-5kwh-51-2v.webp", imageSource: "https://zit.ng/products/felicity-10kwh-48v-100ah-lithium-phosphate-solar-batteries-pack-with-bms-lpbf-48100/", imageFetchedOn: "2026-09-15" },
+      { category: "battery", model: "FLA48500", spec: "25kWh 48V 500Ah", kwh: 25, priceLow: 5_415_000, priceHigh: 5_415_000, seenAt: ["felicity-solar-ng"], sourceUrl: "https://www.felicitysolar.ng/products/felicity-solar-batteries", seenOn: D, image: "/products/felicity--fla48500.webp", imageSource: "https://www.felicitysolar.ng/products/felicity-solar-batteries", imageFetchedOn: "2026-09-15" },
+      { category: "controller", model: "100A MPPT", spec: "100A MPPT 12/24/48V charge controller", priceLow: 215_000, priceHigh: 280_000, seenAt: ["Jumia", "Zel"], sourceUrl: "https://www.jumia.com.ng/felicity-solar-100a-mppt-solar-charge-controller-12v24v48v-306124265.html", seenOn: D, image: "/products/felicity--100a-mppt.webp", imageSource: "https://www.jumia.com.ng/felicity-solar-100a-mppt-solar-charge-controller-12v24v48v-306124265.html", imageFetchedOn: "2026-09-15" },
     ],
   },
   {
@@ -162,11 +170,11 @@ const MANUFACTURERS: Brand[] = [
     },
     pricesPublic: true,
     products: [
-      { category: "inverter", model: "SUN-5K-SG 1-phase", spec: "5kW 48V hybrid, single phase", kva: 5, priceLow: 1_500_000, priceHigh: 1_750_000, seenAt: ["nature-solar", "Jiji (Alaba)", "abuja-solar"], sourceUrl: "https://abujasolar.com/product-category/deye-inverter/", seenOn: D },
-      { category: "inverter", model: "SUN-6K OG01LP1", spec: "6kW off-grid hybrid (lower-spec OG line)", kva: 6, excludeFromAutoMatch: "Lower-spec OG off-grid line, not the SUN-SG hybrid people mean by \"Deye\"", priceLow: 680_000, priceHigh: 800_000, seenAt: ["abuja-solar", "Jumia"], sourceUrl: "https://www.jumia.com.ng/deye-6kw-single-phase-off-grid-hybrid-inverter-system-418281170.html", seenOn: D },
-      { category: "inverter", model: "SUN-8K-SG01LP1", spec: "8kW 48V hybrid, single phase, WiFi", kva: 8, priceLow: 3_190_000, priceHigh: 3_190_000, seenAt: ["me3-energy"], sourceUrl: "https://me3energy.ng/deye-8kw-pure-sine-wave-hybrid-solar-inverter-with-wifi", seenOn: D },
-      { category: "inverter", model: "SUN-8K-SG04LP3-EU", spec: "8kW 48V hybrid, 3-phase", kva: 8, priceLow: 2_627_750, priceHigh: 2_814_599, seenAt: ["zit", "Jiji (Maitama)"], sourceUrl: "https://zit.ng/products/deye-8kw-hybrid-solar-inverter-8k-sg04lp3-eu/", seenOn: D },
-      { category: "inverter", model: "SUN-10K 1-phase", spec: "10kW 48V hybrid, single phase", kva: 10, priceLow: 2_600_000, priceHigh: 2_900_000, seenAt: ["nature-solar", "abuja-solar"], sourceUrl: "https://abujasolar.com/product-category/deye-inverter/", seenOn: D },
+      { category: "inverter", model: "SUN-5K-SG 1-phase", spec: "5kW 48V hybrid, single phase", kva: 5, priceLow: 1_500_000, priceHigh: 1_750_000, seenAt: ["nature-solar", "Jiji (Alaba)", "abuja-solar"], sourceUrl: "https://abujasolar.com/product-category/deye-inverter/", seenOn: D, image: "/products/deye--sun-5k-sg-1-phase.webp", imageSource: "https://abujasolar.com/product-category/deye-inverter/", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "SUN-6K OG01LP1", spec: "6kW off-grid hybrid (lower-spec OG line)", kva: 6, excludeFromAutoMatch: "Lower-spec OG off-grid line, not the SUN-SG hybrid people mean by \"Deye\"", priceLow: 680_000, priceHigh: 800_000, seenAt: ["abuja-solar", "Jumia"], sourceUrl: "https://www.jumia.com.ng/deye-6kw-single-phase-off-grid-hybrid-inverter-system-418281170.html", seenOn: D, image: "/products/deye--sun-6k-og01lp1.webp", imageSource: "https://www.jumia.com.ng/deye-6kw-single-phase-off-grid-hybrid-inverter-system-418281170.html", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "SUN-8K-SG01LP1", spec: "8kW 48V hybrid, single phase, WiFi", kva: 8, priceLow: 3_190_000, priceHigh: 3_190_000, seenAt: ["me3-energy"], sourceUrl: "https://me3energy.ng/deye-8kw-pure-sine-wave-hybrid-solar-inverter-with-wifi", seenOn: D, image: "/products/deye--sun-8k-sg01lp1.webp", imageSource: "https://me3energy.ng/deye-8kw-pure-sine-wave-hybrid-solar-inverter-with-wifi", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "SUN-8K-SG04LP3-EU", spec: "8kW 48V hybrid, 3-phase", kva: 8, priceLow: 2_627_750, priceHigh: 2_814_599, seenAt: ["zit", "Jiji (Maitama)"], sourceUrl: "https://zit.ng/products/deye-8kw-hybrid-solar-inverter-8k-sg04lp3-eu/", seenOn: D, image: "/products/deye--sun-8k-sg04lp3-eu.webp", imageSource: "https://zit.ng/products/deye-8kw-hybrid-solar-inverter-8k-sg04lp3-eu/", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "SUN-10K 1-phase", spec: "10kW 48V hybrid, single phase", kva: 10, priceLow: 2_600_000, priceHigh: 2_900_000, seenAt: ["nature-solar", "abuja-solar"], sourceUrl: "https://abujasolar.com/product-category/deye-inverter/", seenOn: D, image: "/products/deye--sun-10k-1-phase.webp", imageSource: "https://abujasolar.com/product-category/deye-inverter/", imageFetchedOn: "2026-09-15" },
       { category: "inverter", model: "SUN-12K-SG04LP3", spec: "12kW 48V hybrid, 3-phase", kva: 12, priceLow: 2_800_000, priceHigh: 3_020_000, seenAt: ["abuja-solar", "zit"], sourceUrl: "https://zit.ng/products/deye-8kw-hybrid-solar-inverter-8k-sg04lp3-eu/", seenOn: D },
       { category: "inverter", model: "SUN-16K-SG01LP1-EU", spec: "16kW 48V hybrid, single phase", kva: 16, priceLow: 3_800_000, priceHigh: 5_199_000, seenAt: ["abuja-solar", "me3-energy"], sourceUrl: "https://me3energy.ng/16kw-deye-hybrid-inverter", seenOn: D },
       { category: "battery", model: "BOS-SE-G5.1 LV", spec: "5.12kWh 51.2V 100Ah LiFePO4", kwh: 5.12, priceLow: 995_000, priceHigh: 1_062_500, seenAt: ["solar-depot-ng", "zit"], sourceUrl: "https://zit.ng/products/deye-512kw-low-voltage-lithium-ion-solar-battery-bos-se-g51-lv/", seenOn: D },
@@ -193,8 +201,8 @@ const MANUFACTURERS: Brand[] = [
     },
     pricesPublic: true,
     products: [
-      { category: "inverter", model: "SPF 3000TL HVM-48", spec: "3kW 48V off-grid hybrid", kva: 3, priceLow: 448_500, priceHigh: 448_500, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/growatt-5kva-48v-hybrid-solar-inverter-spf-5000es/", seenOn: D },
-      { category: "inverter", model: "SPF 5000 ES", spec: "5kVA 48V off-grid hybrid", kva: 5, priceLow: 530_000, priceHigh: 622_500, seenAt: ["stellarmart", "zit", "gosolarmart"], sourceUrl: "https://gosolarmart.com/product/growatt-spf-5000-es-off-grid-inverter/", seenOn: D },
+      { category: "inverter", model: "SPF 3000TL HVM-48", spec: "3kW 48V off-grid hybrid", kva: 3, priceLow: 448_500, priceHigh: 448_500, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/growatt-5kva-48v-hybrid-solar-inverter-spf-5000es/", seenOn: D, image: "/products/growatt--spf-3000tl-hvm-48.webp", imageSource: "https://zit.ng/products/growatt-5kva-48v-hybrid-solar-inverter-spf-5000es/", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "SPF 5000 ES", spec: "5kVA 48V off-grid hybrid", kva: 5, priceLow: 530_000, priceHigh: 622_500, seenAt: ["stellarmart", "zit", "gosolarmart"], sourceUrl: "https://gosolarmart.com/product/growatt-spf-5000-es-off-grid-inverter/", seenOn: D, image: "/products/growatt--spf-5000-es.webp", imageSource: "https://gosolarmart.com/product/growatt-spf-5000-es-off-grid-inverter/", imageFetchedOn: "2026-09-15" },
       { category: "inverter", model: "SPF 6000 ES", spec: "6kVA 48V off-grid hybrid", kva: 6, priceLow: 650_000, priceHigh: 650_000, seenAt: ["stellarmart"], sourceUrl: "https://www.stellarmart.ng/product/5000va-48v-4000w-5kva-230v-48v-dc-to-ac-hybrid-off-grid-inverter/", seenOn: D },
       { category: "inverter", model: "12kW hybrid", spec: "12kW hybrid", kva: 12, priceLow: 1_215_000, priceHigh: 1_215_000, seenAt: ["gennex"], sourceUrl: "https://shop.gennextechnologies.com/", seenOn: D },
       { category: "battery", model: "ARK / HOPE 5.12kWh", spec: "5.12kWh 51.2V LiFePO4 (guide price — no live listing)", kwh: 5.12, priceLow: 843_500, priceHigh: 1_400_000, seenAt: ["Fouani (price hidden)"], sourceUrl: "https://fouanistore.com/shop?category_id=105&category_name=growatt", seenOn: "2026-08-09", note: "Guide range only" },
@@ -221,7 +229,7 @@ const MANUFACTURERS: Brand[] = [
     pricesPublic: true,
     products: [
       { category: "inverter", model: "2.5kW hybrid", spec: "2.5kW hybrid", kva: 2.5, priceLow: 290_000, priceHigh: 290_000, seenAt: ["solarbuy"], sourceUrl: "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/", seenOn: D },
-      { category: "inverter", model: "3.6kW hybrid", spec: "3.6kW hybrid, dual MPPT", kva: 3.6, priceLow: 325_000, priceHigh: 325_000, seenAt: ["solarbuy"], sourceUrl: "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/", seenOn: D },
+      { category: "inverter", model: "3.6kW hybrid", spec: "3.6kW hybrid, dual MPPT", kva: 3.6, priceLow: 325_000, priceHigh: 325_000, seenAt: ["solarbuy"], sourceUrl: "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/", seenOn: D, image: "/products/luxpower--3-6kw-hybrid.webp", imageSource: "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/", imageFetchedOn: "2026-09-15" },
       { category: "inverter", model: "5kW hybrid", spec: "5kW 48V hybrid", kva: 5, priceLow: 590_000, priceHigh: 590_000, seenAt: ["solarbuy"], sourceUrl: "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/", seenOn: D },
     ],
   },
@@ -320,7 +328,7 @@ const MANUFACTURERS: Brand[] = [
     },
     pricesPublic: true,
     products: [
-      { category: "inverter", model: "6.2kVA hybrid 48V", spec: "6.2kVA 48V hybrid", kva: 6.2, priceLow: 390_000, priceHigh: 420_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/sako-6-2kva-hybrid-inverter/", seenOn: D, note: "₦420k is the Luxsun-branded twin" },
+      { category: "inverter", model: "6.2kVA hybrid 48V", spec: "6.2kVA 48V hybrid", kva: 6.2, priceLow: 390_000, priceHigh: 420_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/sako-6-2kva-hybrid-inverter/", seenOn: D, note: "₦420k is the Luxsun-branded twin", image: "/products/sako--6-2kva-hybrid-48v.webp", imageSource: "https://naturesolar.ng/product/sako-6-2kva-hybrid-inverter/", imageFetchedOn: "2026-09-15" },
     ],
   },
   {
@@ -341,9 +349,9 @@ const MANUFACTURERS: Brand[] = [
     },
     pricesPublic: true,
     products: [
-      { category: "inverter", model: "I-Cruze 5kVA", spec: "5kVA 48V hybrid", kva: 5, priceLow: 980_000, priceHigh: 980_000, seenAt: ["Swiftermall"], sourceUrl: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", seenOn: D },
-      { category: "inverter", model: "I-Cruze 7.5kVA", spec: "7.5kVA 120V hybrid", kva: 7.5, priceLow: 1_020_000, priceHigh: 1_020_000, seenAt: ["Swiftermall"], sourceUrl: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", seenOn: D },
-      { category: "inverter", model: "I-Cruze 10kVA", spec: "10kVA 180V hybrid", kva: 10, priceLow: 1_728_000, priceHigh: 1_728_000, seenAt: ["Swiftermall"], sourceUrl: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", seenOn: D },
+      { category: "inverter", model: "I-Cruze 5kVA", spec: "5kVA 48V hybrid", kva: 5, priceLow: 980_000, priceHigh: 980_000, seenAt: ["Swiftermall"], sourceUrl: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", seenOn: D, image: "/products/luminous--i-cruze-5kva.webp", imageSource: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "I-Cruze 7.5kVA", spec: "7.5kVA 120V hybrid", kva: 7.5, priceLow: 1_020_000, priceHigh: 1_020_000, seenAt: ["Swiftermall"], sourceUrl: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", seenOn: D, image: "/products/luminous--i-cruze-7-5kva.webp", imageSource: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", imageFetchedOn: "2026-09-15" },
+      { category: "inverter", model: "I-Cruze 10kVA", spec: "10kVA 180V hybrid", kva: 10, priceLow: 1_728_000, priceHigh: 1_728_000, seenAt: ["Swiftermall"], sourceUrl: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", seenOn: D, image: "/products/luminous--i-cruze-10kva.webp", imageSource: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", imageFetchedOn: "2026-09-15" },
     ],
   },
   {
@@ -365,8 +373,8 @@ const MANUFACTURERS: Brand[] = [
     pricesPublic: true,
     products: [
       { category: "battery", model: "UF5000", spec: "5.12kWh 48V rack LiFePO4", kwh: 5.12, priceLow: 1_668_000, priceHigh: 1_668_000, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/deye-512kw-low-voltage-lithium-ion-solar-battery-bos-se-g51-lv/", seenOn: D },
-      { category: "battery", model: "US2000C", spec: "2.4kWh 48V rack LiFePO4", kwh: 2.4, priceLow: 1_397_000, priceHigh: 1_397_000, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/deye-512kw-low-voltage-lithium-ion-solar-battery-bos-se-g51-lv/", seenOn: D },
-      { category: "battery", model: "UP5000", spec: "4.8kWh 48V rack LiFePO4", kwh: 4.8, priceLow: 2_956_052, priceHigh: 2_956_052, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/pylontech-4-8kwh-lithium-ion-solar-battery-up5000/", seenOn: D },
+      { category: "battery", model: "US2000C", spec: "2.4kWh 48V rack LiFePO4", kwh: 2.4, priceLow: 1_397_000, priceHigh: 1_397_000, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/deye-512kw-low-voltage-lithium-ion-solar-battery-bos-se-g51-lv/", seenOn: D, image: "/products/pylontech--us2000c.webp", imageSource: "https://zit.ng/products/deye-512kw-low-voltage-lithium-ion-solar-battery-bos-se-g51-lv/", imageFetchedOn: "2026-09-15" },
+      { category: "battery", model: "UP5000", spec: "4.8kWh 48V rack LiFePO4", kwh: 4.8, priceLow: 2_956_052, priceHigh: 2_956_052, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/pylontech-4-8kwh-lithium-ion-solar-battery-up5000/", seenOn: D, image: "/products/pylontech--up5000.webp", imageSource: "https://zit.ng/products/pylontech-4-8kwh-lithium-ion-solar-battery-up5000/", imageFetchedOn: "2026-09-15" },
     ],
   },
   {
@@ -448,7 +456,7 @@ const MANUFACTURERS: Brand[] = [
     pricesPublic: true,
     products: [
       { category: "panel", model: "450W mono", spec: "450W monocrystalline", watts: 450, priceLow: 82_969, priceHigh: 82_969, seenAt: ["Jumia"], sourceUrl: "https://www.jumia.com.ng/solar-panels/jinko/", seenOn: D },
-      { category: "panel", model: "600W bifacial", spec: "600W N-type bifacial", watts: 600, priceLow: 110_000, priceHigh: 120_000, seenAt: ["nature-solar", "Jiji (PH)"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D },
+      { category: "panel", model: "600W bifacial", spec: "600W N-type bifacial", watts: 600, priceLow: 110_000, priceHigh: 120_000, seenAt: ["nature-solar", "Jiji (PH)"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D, image: "/products/jinko--600w-bifacial.webp", imageSource: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", imageFetchedOn: "2026-09-15" },
       { category: "panel", model: "620W bifacial", spec: "620W bifacial", watts: 620, priceLow: 190_000, priceHigh: 190_000, seenAt: ["Jumia"], sourceUrl: "https://www.jumia.com.ng/solar-panels/jinko/", seenOn: D },
       { category: "panel", model: "650–700W bifacial", spec: "650W / 700W bifacial", watts: 700, priceLow: 120_000, priceHigh: 120_000, seenAt: ["Jiji"], sourceUrl: "https://jiji.ng/272-solar-panels", seenOn: D },
     ],
@@ -492,9 +500,9 @@ const MANUFACTURERS: Brand[] = [
     },
     pricesPublic: true,
     products: [
-      { category: "panel", model: "450W all-black", spec: "450W all-black mono", watts: 450, priceLow: 115_000, priceHigh: 115_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D },
-      { category: "panel", model: "550W black frame", spec: "550W black-frame mono", watts: 550, priceLow: 95_000, priceHigh: 95_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D },
-      { category: "panel", model: "600W all-black 144-cell", spec: "600W all-black mono, 144 cells", watts: 600, priceLow: 110_000, priceHigh: 110_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D },
+      { category: "panel", model: "450W all-black", spec: "450W all-black mono", watts: 450, priceLow: 115_000, priceHigh: 115_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D, image: "/products/longi--450w-all-black.webp", imageSource: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", imageFetchedOn: "2026-09-15" },
+      { category: "panel", model: "550W black frame", spec: "550W black-frame mono", watts: 550, priceLow: 95_000, priceHigh: 95_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D, imageFetchedOn: "2026-09-15" },
+      { category: "panel", model: "600W all-black 144-cell", spec: "600W all-black mono, 144 cells", watts: 600, priceLow: 110_000, priceHigh: 110_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D, image: "/products/longi--600w-all-black-144-cell.webp", imageSource: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", imageFetchedOn: "2026-09-15" },
     ],
   },
   {
@@ -536,7 +544,7 @@ const MANUFACTURERS: Brand[] = [
     },
     pricesPublic: true,
     products: [
-      { category: "panel", model: "Vertex 600W", spec: "600W mono", watts: 600, priceLow: 90_000, priceHigh: 136_500, seenAt: ["nature-solar", "me3-energy"], sourceUrl: "https://me3energy.ng/600w-trina-solar-panel-high-efficiency-industrial-solar-solution-for-reliable-power-diesel-cost-reduction-in-nigeria", seenOn: D },
+      { category: "panel", model: "Vertex 600W", spec: "600W mono", watts: 600, priceLow: 90_000, priceHigh: 136_500, seenAt: ["nature-solar", "me3-energy"], sourceUrl: "https://me3energy.ng/600w-trina-solar-panel-high-efficiency-industrial-solar-solution-for-reliable-power-diesel-cost-reduction-in-nigeria", seenOn: D, imageFetchedOn: "2026-09-15" },
     ],
   },
   {

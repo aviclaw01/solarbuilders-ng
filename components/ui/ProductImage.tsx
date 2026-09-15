@@ -1,18 +1,38 @@
 import Image from 'next/image';
 import type { Product, ProductCategory } from '@/lib/brands';
+import attribution from '@/public/products/attribution.json';
 
 /**
  * Visual for a catalogue product.
  *
  * We do NOT hotlink vendor product photos. They are copyrighted, they are
  * served from sites with bot protection (Zit already 403s a plain request), and
- * a shop whose images break at random is worse than one with none. When a
- * distributor gives us artwork we can use, set `image` on the Product and it
- * renders instead — everything else stays the same.
+ * a shop whose images break at random is worse than one with none. So we fetch
+ * once, convert to WebP and serve the result from our own domain:
+ * `node scripts/fetch-product-images.ts` writes /public/products/*.webp and
+ * records where every file came from in public/products/manifest.json.
  *
- * Until then each category gets a drawn illustration, so every card has a
- * consistent visual that loads instantly and costs nothing.
+ * Those are plain static files under /public, so next/image needs no
+ * `remotePatterns` entry for them — remotePatterns is only for images loaded
+ * from another origin, and we deliberately have none.
+ *
+ * Products we could not source a photo for keep the drawn category
+ * illustration, which loads instantly and costs nothing.
  */
+
+/** path → the site we took the photo from, written by the fetch script. */
+const SOURCE_HOST: Record<string, string> = attribution;
+
+function sourceHost(image?: string, imageSource?: string): string | undefined {
+  if (!image) return undefined;
+  if (SOURCE_HOST[image]) return SOURCE_HOST[image];
+  if (!imageSource) return undefined;
+  try {
+    return new URL(imageSource).host.replace(/^www\./, '');
+  } catch {
+    return undefined;
+  }
+}
 
 const TINT: Record<ProductCategory, { bg: string; ink: string; accent: string }> = {
   inverter: { bg: '#F1F5F9', ink: '#334155', accent: '#F59E0B' },
@@ -108,7 +128,11 @@ function Illustration({ category }: { category: ProductCategory }) {
 }
 
 /** Only the fields the visual needs, so callers can pass a lean shop item. */
-export type ProductImageInput = Pick<Product, 'category' | 'model' | 'spec'> & { image?: string };
+export type ProductImageInput = Pick<Product, 'category' | 'model' | 'spec'> & {
+  image?: string;
+  /** optional — the host is otherwise looked up from the fetch manifest */
+  imageSource?: string;
+};
 
 interface Props {
   product: ProductImageInput;
@@ -117,6 +141,7 @@ interface Props {
 
 export default function ProductImage({ product, className = '' }: Props) {
   const tint = TINT[product.category] ?? TINT.inverter;
+  const host = sourceHost(product.image, product.imageSource);
 
   return (
     <div
@@ -124,13 +149,19 @@ export default function ProductImage({ product, className = '' }: Props) {
       style={{ backgroundColor: tint.bg }}
     >
       {product.image ? (
-        <Image
-          src={product.image}
-          alt={`${product.model} — ${product.spec}`}
-          fill
-          sizes="(max-width: 640px) 100vw, 320px"
-          className="object-contain p-3"
-        />
+        <>
+          <Image
+            src={product.image}
+            alt={`${product.model} — ${product.spec}`}
+            fill
+            sizes="(max-width: 640px) 100vw, 320px"
+            className="object-contain p-3"
+            // Manufacturer / vendor product shot. Credited on hover rather than
+            // in a caption — a card is for reading the price, not the credits.
+            title={host ? `${product.model} — manufacturer/vendor photo via ${host}` : undefined}
+          />
+          {host && <span className="sr-only">Product photo via {host}</span>}
+        </>
       ) : (
         <div className="w-full h-full p-3">
           <Illustration category={product.category} />
