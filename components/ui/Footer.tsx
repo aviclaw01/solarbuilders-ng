@@ -40,8 +40,11 @@ export default function Footer() {
           <div>
             <h4 className="font-heading text-white font-semibold mb-4 text-sm">For Buyers</h4>
             <ul className="space-y-3 text-sm">
+              <li><Link href="/shop" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Shop Equipment</Link></li>
               <li><Link href="/calculator" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Size My System</Link></li>
+              <li><Link href="/sizing" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Sizing Guides</Link></li>
               <li><Link href="/brands" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Brands &amp; Prices</Link></li>
+              <li><Link href="/compare" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Compare Brands</Link></li>
               <li><Link href="/how-it-works" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">How It Works</Link></li>
               <li><Link href="/blog" className="hover:text-white transition-colors underline-offset-4 hover:underline min-h-[44px] flex items-center">Solar Guides</Link></li>
             </ul>

@@ -13,7 +13,6 @@ const PRICED_PRODUCTS = BRANDS.reduce((n, b) => n + b.products.length, 0);
 import HomepageClient from '@/components/ui/HomepageClient';
 import UseCaseCarousel from '@/components/ui/UseCaseCarousel';
 import CountdownCTA from '@/components/ui/CountdownCTA';
-import RotatingText from '@/components/ui/RotatingText';
 import LeadCaptureModal from '@/components/ui/LeadCaptureModal';
 
 export const metadata: Metadata = {
@@ -63,31 +62,32 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-6">
               Real Nigerian prices · {PRICES_LAST_UPDATED_LABEL} ⚡
             </div>
-            <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6 min-h-[1.2em]">
-              See <RotatingText /><br />We do the buying.
+            <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6">
+              What solar really costs in Nigeria.<br />
+              <span className="text-amber-500">And we buy it for you.</span>
             </h1>
             <p className="text-slate-500 text-xl leading-relaxed mb-8 max-w-xl">
-              We track what solar actually costs in Nigeria: inverters, lithium batteries, panels, every figure taken from
-              a real Nigerian listing with the date on it. Size your system free, then we buy it at that price and put a
-              vetted installer on the job.
+              Work out the system your home needs, see the real price of every part, then hand it to us. We order the
+              equipment at that same price and put a vetted installer on the job. Free to use, and you pay the market
+              price — our margin comes from our trade terms, not a mark-up on you.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <Link
                 href="/calculator"
                 className="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold rounded-full px-6 py-3 min-h-[44px] transition-all text-base"
               >
-                Calculate My System →
+                Size my system →
               </Link>
               <Link
-                href="/brands"
+                href="/shop"
                 className="inline-flex items-center justify-center border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 min-h-[44px] transition-all text-base font-semibold"
               >
-                Brands &amp; Prices
+                Shop equipment
               </Link>
             </div>
             {/* Trust row */}
             <p className="text-slate-400 text-sm font-medium">
-              Real {PRICES_LAST_UPDATED_LABEL} prices · Itemised quote · ₦0 to use · You pay the market price
+              {PRICED_PRODUCTS} prices checked in {PRICES_LAST_UPDATED_LABEL} · Free to use · No mark-up on equipment
             </p>
           </div>
 
@@ -139,6 +139,60 @@ export default function HomePage() {
 
       {/* SOCIAL PROOF TICKER */}
       <HomepageClient />
+
+      {/* ──────────────── THREE WAYS TO START ──────────────── */}
+      <section className="bg-white border-y border-slate-100 px-6 py-12 md:py-16">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="font-heading font-extrabold text-slate-900 text-2xl md:text-3xl mb-2">
+            Three ways to use this site
+          </h2>
+          <p className="text-slate-500 mb-8 max-w-2xl">
+            Start wherever you are: not sure what you need, know what you need, or just checking what things cost.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                step: 'If you don\u2019t know what you need',
+                title: 'Size my system',
+                body: 'Tick the appliances you run. You get the inverter, battery and panel count your home needs, itemised and priced, with a quote code.',
+                href: '/calculator',
+                cta: 'Open the calculator',
+              },
+              {
+                step: 'If you know what you want',
+                title: 'Shop the equipment',
+                body: `Browse ${PRICED_PRODUCTS} real Nigerian prices across inverters, batteries and panels. Filter by brand, size and budget, then send us the list.`,
+                href: '/shop',
+                cta: 'Browse equipment',
+              },
+              {
+                step: 'If you\u2019re comparing',
+                title: 'Check the prices',
+                body: `See what each brand actually costs per kVA, kWh and watt, and read ${comparisonPairs().length} head-to-head comparisons before you commit.`,
+                href: '/brands',
+                cta: 'See prices by brand',
+              },
+            ].map((card) => (
+              <Link
+                key={card.title}
+                href={card.href}
+                className="group bg-white rounded-2xl border border-slate-100 hover:border-amber-400 p-6 flex flex-col transition-colors"
+              >
+                <p className="text-amber-600 text-xs font-semibold uppercase tracking-wide mb-2">{card.step}</p>
+                <h3 className="font-heading font-bold text-slate-900 text-xl mb-2">{card.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed flex-1">{card.body}</p>
+                <span className="mt-4 text-sm font-semibold text-slate-900 group-hover:text-amber-600 transition-colors">
+                  {card.cta} →
+                </span>
+              </Link>
+            ))}
+          </div>
+          <p className="text-slate-400 text-sm mt-6">
+            Whichever route you take, it ends the same way: you send us the list, we confirm today&apos;s price with the
+            distributor, and only then does anyone pay.
+          </p>
+        </div>
+      </section>
 
       {/* ──────────────── USE CASE CAROUSEL ──────────────── */}
       <UseCaseCarousel />

@@ -15,6 +15,9 @@ const EVENTS = new Set([
   "quote_form_submit",
   "finance_open",
   "finance_click",
+  "cart_add",
+  "order_form_open",
+  "order_submit",
 ]);
 
 function str(v: unknown, max: number): string | null {
@@ -53,6 +56,7 @@ export async function POST(req: Request) {
         amount: int(body.amount),
         lender: str(body.lender, 40),
         placement: str(body.placement, 60),
+        item: str(body.item, 120),
         format: str(body.format, 20),
         utm_source: str(body.utm_source, 64),
         utm_medium: str(body.utm_medium, 64),

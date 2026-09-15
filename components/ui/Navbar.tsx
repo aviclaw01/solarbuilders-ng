@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { X, Menu, Phone } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
+import CartButton from '@/components/ui/CartButton';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -15,9 +16,11 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
+    { href: '/shop', label: 'Shop' },
     { href: '/calculator', label: 'Size My System' },
-    { href: '/brands', label: 'Brands & Prices' },
-    { href: '/blog', label: 'Solar Guides' },
+    { href: '/brands', label: 'Prices' },
+    { href: '/compare', label: 'Compare' },
+    { href: '/blog', label: 'Guides' },
     { href: '/for-builders', label: 'Work With Us' },
   ];
 
@@ -54,12 +57,18 @@ export default function Navbar() {
                 <Phone className="w-4 h-4" />
                 <span className="hidden lg:inline">+234 916 839 4923</span>
               </a>
+              <CartButton />
               <Link
                 href="/calculator"
                 className="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2.5 rounded-full text-sm font-semibold transition-all min-h-[44px] flex items-center"
               >
                 Get a Quote
               </Link>
+            </div>
+
+            {/* Mobile: cart stays reachable without opening the menu */}
+            <div className="md:hidden flex items-center">
+              <CartButton />
             </div>
 
             {/* Mobile menu button */}

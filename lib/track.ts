@@ -19,10 +19,15 @@ export type TrackEvent =
   | "quote_form_open" // "Get this system built" modal opened
   | "quote_form_submit" // form submitted (the row also lands in quote_requests)
   | "finance_open"
-  | "finance_click";
+  | "finance_click"
+  | "cart_add" // shop → "Add to order"
+  | "order_form_open"
+  | "order_submit";
 
 export interface TrackPayload {
   quoteCode?: string;
+  /** catalogue line, e.g. "deye::SUN-5K-SG 1-phase" */
+  item?: string;
   tier?: string;
   amount?: number;
   lender?: string;

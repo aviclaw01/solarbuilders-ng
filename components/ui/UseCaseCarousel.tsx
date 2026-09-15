@@ -1,80 +1,86 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import { formatNairaShort } from '@/lib/quote';
+import { comparisonPairs } from '@/lib/brands';
+
+const STARTER = HEADLINE_PACKAGES[1];   // 3.5kVA · 5kWh
+const FAMILY = HEADLINE_PACKAGES[2];    // 5kVA · 10kWh
+const COMMERCIAL = HEADLINE_PACKAGES[4]; // 15–20kVA
+
+const range = (p: { low: number; high: number }) => `${formatNairaShort(p.low)} – ${formatNairaShort(p.high)}`;
 
 const USE_CASES = [
   {
     tab: 'Residential Home',
     headline: 'Size your home solar system',
-    subtext: 'From 1.5kVA to 10kVA — know exactly what you need before you talk to a builder.',
+    subtext: `From 1.5kVA to 10kVA — know exactly what you need, and what every part of it costs.`,
     card: {
       type: 'calculator',
       title: 'System Estimate',
       rows: [
-        { label: 'Recommended size', value: '3.5 kVA' },
-        { label: 'Battery backup', value: '5kWh Lithium' },
-        { label: 'Estimated cost', value: '₦480k – ₦750k', highlight: true },
+        { label: 'Recommended size', value: STARTER.label.split(' · ')[0] },
+        { label: 'Battery backup', value: STARTER.label.split(' · ')[1] },
+        { label: 'Installed cost', value: range(STARTER), highlight: true },
       ],
     },
   },
   {
     tab: 'SME / Office',
-    headline: 'Power your business 24/7',
-    subtext: 'Commercial systems from 10kVA+. Stop losing revenue to power cuts.',
+    headline: 'Power your business without the generator',
+    subtext: 'Commercial systems from 10kVA up. Priced line by line, not as one lump sum.',
     card: {
       type: 'quotes',
-      title: 'Quote Comparison',
-      badge: 'You received 3 quotes',
+      title: 'What it costs',
+      badge: `Real prices, ${PRICES_LAST_UPDATED_LABEL}`,
       rows: [
-        { label: 'SunTech Installs', value: '₦2.8M' },
-        { label: 'GreenPower NG', value: '₦3.1M' },
-        { label: 'SolarCity Lagos', value: '₦2.6M', highlight: true },
+        { label: FAMILY.label, value: range(FAMILY) },
+        { label: HEADLINE_PACKAGES[3].label, value: range(HEADLINE_PACKAGES[3]) },
+        { label: COMMERCIAL.label, value: range(COMMERCIAL), highlight: true },
       ],
     },
   },
   {
     tab: 'Diaspora Install',
     headline: 'Power the home you left behind',
-    subtext: 'Coordinate installations for family from the UK, US, or Canada via WhatsApp.',
+    subtext: 'Fund and follow an installation for family from the UK, US or Canada, over WhatsApp.',
     card: {
       type: 'whatsapp',
       messages: [
         { from: 'you', text: 'Hi, how is the installation going?' },
-        { from: 'builder', text: 'Installation 60% complete ✅' },
-        { from: 'builder', text: 'Panels mounted, wiring tomorrow. Will send photos.' },
+        { from: 'builder', text: 'Inverter and batteries mounted today ✅' },
+        { from: 'builder', text: 'Panels going up tomorrow. Sending photos from site.' },
       ],
     },
   },
   {
-    tab: 'Hybrid + Battery',
-    headline: 'Store energy, sell back excess',
-    subtext: 'Hybrid systems with lithium battery backup. Maximize your investment.',
+    tab: 'Lithium vs Tubular',
+    headline: 'See what the battery really costs',
+    subtext: 'Tubular is cheaper today and dearer over ten years. The calculator prices both.',
     card: {
       type: 'savings',
-      title: 'Monthly Savings',
-      stat: '₦0',
-      statLabel: 'spent on generator this month',
+      title: 'Battery over 10 years',
+      stat: '1 vs 3–5',
+      statLabel: 'packs bought over a decade',
       rows: [
-        { label: 'Solar generated', value: '420 kWh' },
-        { label: 'Grid exported', value: '85 kWh' },
-        { label: 'Generator runtime', value: '0 hrs' },
+        { label: 'Lithium life', value: '10+ years' },
+        { label: 'Tubular life', value: '2–4 years' },
+        { label: 'Usable capacity', value: '90% vs 50%' },
       ],
     },
   },
   {
-    tab: 'C&I / Solar Farm',
-    headline: 'Scale to megawatts',
-    subtext: 'Large commercial, estate, and industrial installations with Nexprove oversight.',
+    tab: 'Compare brands',
+    headline: 'Deye, Felicity, Growatt, Jinko',
+    subtext: 'What each brand actually costs per kVA, kWh and watt, from live Nigerian listings.',
     card: {
       type: 'project',
-      title: 'Project Scoped',
-      badge: 'Nexprove Managed',
-      rows: [
-        { label: 'Capacity', value: '500 kWp' },
-        { label: 'Panels', value: '1,000 × 500W' },
-        { label: 'ROI estimate', value: '3.2 years' },
-        { label: 'CO₂ offset', value: '380 tonnes/yr' },
-      ],
+      title: 'Head to head',
+      badge: `${comparisonPairs().length} comparisons`,
+      rows: comparisonPairs()
+        .slice(0, 4)
+        .map((pair) => ({ label: `${pair.a.name.split(' ')[0]} vs ${pair.b.name.split(' ')[0]}`, value: 'compare →' })),
     },
   },
 ];

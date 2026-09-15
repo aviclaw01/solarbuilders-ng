@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { BRANDS, comparisonPairs } from '@/lib/brands';
+import { sizingSitemapEntries } from './sizing/sitemap-entries';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://solarbuildersng.com';
@@ -12,6 +13,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/for-builders`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${baseUrl}/compare`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/shop`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.95 },
+    { url: `${baseUrl}/how-it-works`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/verified`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
     // Location pages
     { url: `${baseUrl}/solar/lagos`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.85 },
     { url: `${baseUrl}/solar/abuja`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.85 },
@@ -43,5 +48,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...brandPages, ...comparisonPages];
+  return [...staticPages, ...brandPages, ...comparisonPages, ...sizingSitemapEntries(baseUrl)];
 }

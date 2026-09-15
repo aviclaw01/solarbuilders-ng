@@ -2,10 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
+import { formatNairaShort } from '@/lib/quote';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import BrandMark from '@/components/ui/BrandMark';
 import { CATEGORY_LABEL, comparisonPairs, type ProductCategory } from '@/lib/brands';
-import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import { PRICES_LAST_UPDATED_LABEL, HEADLINE_PACKAGES } from '@/lib/prices';
 
 export const metadata: Metadata = {
   title: 'Solar System Comparison Nigeria — Budget vs Standard vs Premium',
@@ -30,7 +31,7 @@ const TIERS = [
     panels: '3–4 × 550W',
     batteries: '5kWh lithium (LiFePO4)',
     backup: '~4 hours',
-    costRange: '₦1.4M – ₦2.6M',
+    costRange: `${formatNairaShort(HEADLINE_PACKAGES[0].low)} – ${formatNairaShort(HEADLINE_PACKAGES[1].high)}`,
     bestFor: 'Single occupancy, flats, minimal power needs',
     canRun: ['LED lights (8–10)', 'Ceiling fans (2–3)', 'TV (32")', 'Phone chargers', 'WiFi router', 'Small fridge'],
     cannotRun: ['Air conditioner', 'Water pump', 'Washing machine'],
@@ -45,7 +46,7 @@ const TIERS = [
     panels: '5–8 × 550W',
     batteries: '10kWh lithium (2 × 5kWh)',
     backup: '~6 hours',
-    costRange: '₦3.2M – ₦4.8M',
+    costRange: `${formatNairaShort(HEADLINE_PACKAGES[2].low)} – ${formatNairaShort(HEADLINE_PACKAGES[2].high)}`,
     bestFor: 'Family homes (3–4 bedrooms), moderate AC use',
     canRun: ['Everything in Budget', '1 AC (1.5HP)', 'Refrigerator + freezer', 'Washing machine', 'Water pump', 'Multiple TVs'],
     cannotRun: ['Multiple ACs simultaneously', '2HP+ AC units all day'],
@@ -60,7 +61,7 @@ const TIERS = [
     panels: '8–16 × 550W',
     batteries: '15–25kWh lithium (3–5 × 5kWh)',
     backup: '10+ hours',
-    costRange: '₦6M – ₦14M',
+    costRange: `${formatNairaShort(HEADLINE_PACKAGES[3].low)} – ${formatNairaShort(HEADLINE_PACKAGES[4].high)}`,
     bestFor: 'Large homes, businesses, total off-grid living',
     canRun: ['Multiple ACs', 'Full kitchen appliances', 'Water heater', 'Commercial equipment', 'Swimming pool pump'],
     cannotRun: ['Nothing significant — this system runs everything'],

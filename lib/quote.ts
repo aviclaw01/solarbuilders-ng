@@ -128,6 +128,42 @@ const TUBULAR_USABLE = 0.5; // lead-acid DoD
 const TUBULAR_BRANDS = ["Luminous", "Quanta", "Felicity"];
 const LOAD_FACTOR = 0.6; // average running load vs peak
 const INVERTER_HEADROOM = 1.25;
+
+/**
+ * Motor startup surge.
+ *
+ * Compressors and pumps draw several times their running watts for the first
+ * second or two. Sizing on running watts alone is how people end up with an
+ * inverter that trips every time the AC kicks in — a 1.2kW AC on a "1.5kVA"
+ * inverter is the classic Nigerian complaint.
+ *
+ * We assume only the largest motor starts under load at any moment (starting
+ * two compressors on the same half-second is bad luck, not a design case), and
+ * that a hybrid inverter can carry roughly 2× its continuous rating for the
+ * duration of a start.
+ */
+const MOTOR_SURGE: Record<string, number> = {
+  ac_1hp: 3,
+  ac_1_5hp: 3,
+  ac_2hp: 3,
+  water_pump: 3.5,
+  refrigerator: 3,
+  deep_freezer: 3,
+  chest_freezer: 3,
+  washing_machine: 2,
+};
+const INVERTER_SURGE_CAPABILITY = 2;
+
+/** Extra watts the biggest motor adds at the instant it starts. */
+function startingSurgeWatts(appliances: QuoteAppliance[]): number {
+  let worst = 0;
+  for (const a of appliances) {
+    const factor = MOTOR_SURGE[a.id];
+    if (!factor || a.qty < 1) continue;
+    worst = Math.max(worst, a.watts * (factor - 1));
+  }
+  return worst;
+}
 const STANDARD_KVA = [1.5, 2.5, 3.5, 5, 6, 8, 10, 12, 16, 20];
 
 const TIER_CONFIG: Record<
@@ -191,8 +227,11 @@ function add(...rs: PriceRange[]): PriceRange {
   });
 }
 
-function pickKva(peakWatts: number): number {
-  const required = (peakWatts * INVERTER_HEADROOM) / 1000;
+function pickKva(peakWatts: number, surgeWatts = 0): number {
+  // Continuous requirement, and the requirement implied by the worst start.
+  const continuous = peakWatts * INVERTER_HEADROOM;
+  const forStart = (peakWatts + surgeWatts) / INVERTER_SURGE_CAPABILITY;
+  const required = Math.max(continuous, forStart) / 1000;
   return STANDARD_KVA.find((k) => k >= required) ?? 20;
 }
 
@@ -225,13 +264,13 @@ function fromBase64Url(s: string): string {
 // ENGINE
 // ─────────────────────────────────────────────────────────
 
-function buildTier(key: TierKey, peakWatts: number, dailyKwh: number, opts: TierOptions = {}): TierQuote {
+function buildTier(key: TierKey, peakWatts: number, dailyKwh: number, surgeWatts: number, opts: TierOptions = {}): TierQuote {
   const cfg = TIER_CONFIG[key];
   const inverterTier = opts.inverterTier ?? cfg.inverterTier;
   const batteryType: BatteryType = opts.battery ?? "lithium";
 
   // Inverter — always from full peak (VL-001 BUG-3)
-  const inverterKvaRaw = pickKva(peakWatts * (key === "premium" ? 1.2 : 1));
+  const inverterKvaRaw = pickKva(peakWatts * (key === "premium" ? 1.2 : 1), surgeWatts);
 
   // Battery — average load × autonomy, then lithium modules
   const coveredPeak = peakWatts * Math.min(cfg.coveragePct, 100) / 100;
@@ -387,10 +426,11 @@ export function buildQuote(appliances: QuoteAppliance[], options: QuoteOptions =
   const input: QuoteInput = selected.map((a) => [a.id, a.name, a.watts, a.qty, a.hoursPerDay]);
   const json = JSON.stringify(input);
   const payload = toBase64Url(json);
+  const surgeWatts = startingSurgeWatts(selected);
   const tiers = {
-    budget: buildTier("budget", peakWatts, dailyKwh, options.budget),
-    standard: buildTier("standard", peakWatts, dailyKwh, options.standard),
-    premium: buildTier("premium", peakWatts, dailyKwh, options.premium),
+    budget: buildTier("budget", peakWatts, dailyKwh, surgeWatts, options.budget),
+    standard: buildTier("standard", peakWatts, dailyKwh, surgeWatts, options.standard),
+    premium: buildTier("premium", peakWatts, dailyKwh, surgeWatts, options.premium),
   };
   const code = `SB-${tiers.standard.inverterKva}K-${shortHash(json)}`;
 

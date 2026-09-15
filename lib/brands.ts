@@ -33,6 +33,12 @@ export interface Product {
   sourceUrl: string;
   seenOn: string; // ISO date
   note?: string;
+  /**
+   * Why this row must never be auto-selected into a customer's order, even
+   * though it is fine to publish. Use for lower-spec variants that share a
+   * family name, or anything we would not put in a build ourselves.
+   */
+  excludeFromAutoMatch?: string;
 }
 
 /**
@@ -150,7 +156,7 @@ const MANUFACTURERS: Brand[] = [
     pricesPublic: true,
     products: [
       { category: "inverter", model: "SUN-5K-SG 1-phase", spec: "5kW 48V hybrid, single phase", kva: 5, priceLow: 1_500_000, priceHigh: 1_750_000, seenAt: ["nature-solar", "Jiji (Alaba)", "abuja-solar"], sourceUrl: "https://abujasolar.com/product-category/deye-inverter/", seenOn: D },
-      { category: "inverter", model: "SUN-6K OG01LP1", spec: "6kW off-grid hybrid (lower-spec OG line)", kva: 6, priceLow: 680_000, priceHigh: 800_000, seenAt: ["abuja-solar", "Jumia"], sourceUrl: "https://www.jumia.com.ng/deye-6kw-single-phase-off-grid-hybrid-inverter-system-418281170.html", seenOn: D },
+      { category: "inverter", model: "SUN-6K OG01LP1", spec: "6kW off-grid hybrid (lower-spec OG line)", kva: 6, excludeFromAutoMatch: "Lower-spec OG off-grid line, not the SUN-SG hybrid people mean by \"Deye\"", priceLow: 680_000, priceHigh: 800_000, seenAt: ["abuja-solar", "Jumia"], sourceUrl: "https://www.jumia.com.ng/deye-6kw-single-phase-off-grid-hybrid-inverter-system-418281170.html", seenOn: D },
       { category: "inverter", model: "SUN-8K-SG01LP1", spec: "8kW 48V hybrid, single phase, WiFi", kva: 8, priceLow: 3_190_000, priceHigh: 3_190_000, seenAt: ["me3-energy"], sourceUrl: "https://me3energy.ng/deye-8kw-pure-sine-wave-hybrid-solar-inverter-with-wifi", seenOn: D },
       { category: "inverter", model: "SUN-8K-SG04LP3-EU", spec: "8kW 48V hybrid, 3-phase", kva: 8, priceLow: 2_627_750, priceHigh: 2_814_599, seenAt: ["zit", "Jiji (Maitama)"], sourceUrl: "https://zit.ng/products/deye-8kw-hybrid-solar-inverter-8k-sg04lp3-eu/", seenOn: D },
       { category: "inverter", model: "SUN-10K 1-phase", spec: "10kW 48V hybrid, single phase", kva: 10, priceLow: 2_600_000, priceHigh: 2_900_000, seenAt: ["nature-solar", "abuja-solar"], sourceUrl: "https://abujasolar.com/product-category/deye-inverter/", seenOn: D },
@@ -232,11 +238,11 @@ const MANUFACTURERS: Brand[] = [
     },
     pricesPublic: true,
     products: [
-      { category: "inverter", model: "MultiPlus-II GX 48/5000", spec: "5kVA 48V inverter/charger with GX", kva: 5, priceLow: 1_548_970, priceHigh: 1_548_970, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
-      { category: "inverter", model: "MultiPlus-II 48/10000", spec: "10kVA 48V inverter/charger", kva: 10, priceLow: 3_287_870, priceHigh: 3_287_870, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
-      { category: "inverter", model: "Quattro 48/8000", spec: "8kVA 48V, dual AC input", kva: 8, priceLow: 4_645_000, priceHigh: 4_645_000, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
-      { category: "inverter", model: "Quattro 48/10000", spec: "10kVA 48V, dual AC input", kva: 10, priceLow: 4_262_932, priceHigh: 4_262_932, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
-      { category: "inverter", model: "Quattro 48/15000", spec: "15kVA 48V, dual AC input", kva: 15, priceLow: 5_989_417, priceHigh: 5_989_417, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
+      { category: "inverter", excludeFromAutoMatch: "Inverter/charger — needs a separate MPPT controller and GX device, so it is not a like-for-like swap for an all-in-one hybrid", model: "MultiPlus-II GX 48/5000", spec: "5kVA 48V inverter/charger with GX", kva: 5, priceLow: 1_548_970, priceHigh: 1_548_970, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
+      { category: "inverter", excludeFromAutoMatch: "Inverter/charger — needs a separate MPPT controller and GX device, so it is not a like-for-like swap for an all-in-one hybrid", model: "MultiPlus-II 48/10000", spec: "10kVA 48V inverter/charger", kva: 10, priceLow: 3_287_870, priceHigh: 3_287_870, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
+      { category: "inverter", excludeFromAutoMatch: "Inverter/charger — needs a separate MPPT controller and GX device, so it is not a like-for-like swap for an all-in-one hybrid", model: "Quattro 48/8000", spec: "8kVA 48V, dual AC input", kva: 8, priceLow: 4_645_000, priceHigh: 4_645_000, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
+      { category: "inverter", excludeFromAutoMatch: "Inverter/charger — needs a separate MPPT controller and GX device, so it is not a like-for-like swap for an all-in-one hybrid", model: "Quattro 48/10000", spec: "10kVA 48V, dual AC input", kva: 10, priceLow: 4_262_932, priceHigh: 4_262_932, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
+      { category: "inverter", excludeFromAutoMatch: "Inverter/charger — needs a separate MPPT controller and GX device, so it is not a like-for-like swap for an all-in-one hybrid", model: "Quattro 48/15000", spec: "15kVA 48V, dual AC input", kva: 15, priceLow: 5_989_417, priceHigh: 5_989_417, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
     ],
   },
   {
