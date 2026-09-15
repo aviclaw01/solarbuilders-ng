@@ -18,6 +18,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  // Without this, relative OG/Twitter image paths don't resolve to absolute
+  // URLs and social crawlers drop the preview image.
+  metadataBase: new URL('https://solarbuildersng.com'),
   title: {
     default: "SolarBuilders.ng — Real Solar Prices & Quotes for Nigeria",
     template: "%s | SolarBuilders.ng"
@@ -25,12 +28,13 @@ export const metadata: Metadata = {
   description:
     "Size your solar system, get an itemised quote at real September 2026 Nigerian prices, and let us source the equipment and get it installed.",
   keywords: [
-    "solar installers Nigeria",
+    "solar price Nigeria",
+    "inverter price Nigeria",
+    "solar panel price Nigeria",
+    "lithium battery price Nigeria",
     "solar calculator Nigeria",
-    "solar panels Lagos",
+    "what size inverter do I need",
     "buy solar Nigeria",
-    "verified solar builders",
-    "solar energy Nigeria 2026",
   ],
   icons: {
     icon: [

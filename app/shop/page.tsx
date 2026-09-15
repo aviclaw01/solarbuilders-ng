@@ -3,10 +3,11 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
-import { Calculator, MessageCircle, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Calculator, MessageCircle, ShieldCheck } from 'lucide-react';
 import { catalogue, midPrice, productSize } from '@/lib/cart';
 import type { ProductCategory } from '@/lib/brands';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import { SHOP_FAQS, faqPageJsonLd } from '@/lib/faq';
 import ShopClient, { type ShopItem, type SizeUnit } from './ShopClient';
 import { SITE_URL } from '@/lib/site';
 
@@ -92,6 +93,7 @@ export default function ShopPage() {
 return (
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageJsonLd(SHOP_FAQS)) }} />
       <Navbar />
 
       <div className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
@@ -138,6 +140,48 @@ return (
       <div className="max-w-6xl mx-auto px-6 py-10">
         <ShopClient items={items} />
       </div>
+
+      {/* Buying questions — the same items render on /faq, from lib/faq.ts */}
+      <section className="border-t border-slate-100 bg-[#FAFAF7] px-6 py-14">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="font-heading font-extrabold text-[#0A0F1E] text-2xl md:text-3xl mb-2">
+            Before you send an order request
+          </h2>
+          <p className="text-slate-500 mb-6">
+            What these prices are, what they are not, and what happens after you tick something.
+          </p>
+          <div className="space-y-3">
+            {SHOP_FAQS.map((f) => (
+              <details key={f.q} className="group bg-white rounded-2xl border border-slate-100 shadow-sm p-5 md:p-6">
+                <summary className="cursor-pointer list-none flex items-start justify-between gap-4 font-heading font-bold text-[#0A0F1E] text-base md:text-lg">
+                  <h3 className="font-heading font-bold">{f.q}</h3>
+                  <span
+                    className="text-amber-500 text-2xl leading-none transition-transform group-open:rotate-45 flex-shrink-0"
+                    aria-hidden="true"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className="text-slate-600 leading-relaxed mt-4">{f.a}</p>
+                {f.link && (
+                  <Link
+                    href={f.link.href}
+                    className="inline-flex items-center gap-1 text-amber-600 text-sm font-semibold mt-3 hover:underline underline-offset-4"
+                  >
+                    {f.link.label} <ArrowRight className="w-4 h-4" />
+                  </Link>
+                )}
+              </details>
+            ))}
+          </div>
+          <Link
+            href="/faq"
+            className="inline-flex items-center gap-1 text-[#0A0F1E] font-semibold text-sm mt-6 hover:underline underline-offset-4 min-h-[44px]"
+          >
+            All solar FAQs — costs, sizing, installation <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
 
       <Footer />
     </div>

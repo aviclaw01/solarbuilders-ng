@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { BRANDS, comparisonPairs } from '@/lib/brands';
 import { PRICES_LAST_UPDATED } from '@/lib/prices';
 import { sizingSitemapEntries } from './sizing/sitemap-entries';
+import { faqSitemapEntry } from './faq/sitemap-entry';
 import { SITE_URL } from '@/lib/site';
 
 /**
@@ -64,5 +65,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...BRANDS.map((brand) => page(`/brands/${brand.slug}`, 0.75, 'monthly', PRICED)),
     ...comparisonPairs().map((pair) => page(`/compare/${pair.slug}`, 0.8, 'monthly', PRICED)),
     ...sizingSitemapEntries(SITE_URL),
+    faqSitemapEntry(SITE_URL),
   ];
 }

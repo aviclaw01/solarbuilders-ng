@@ -45,6 +45,9 @@ interface MenuGroup {
 const FAMILY = HEADLINE_PACKAGES[2];
 const TOP_COMPARISON = comparisonPairs()[0];
 
+/** Sits beside the menus as a plain link — no dropdown, like Beam's "Our Customers". */
+const PLAIN_LINK = { href: '/for-builders', label: 'Work with us' };
+
 const MENUS: MenuGroup[] = [
   {
     label: 'Shop',
@@ -83,12 +86,14 @@ const MENUS: MenuGroup[] = [
       : { href: '/compare', eyebrow: 'Compare', title: 'Brand comparisons', body: 'See what each brand costs.' },
   },
   {
-    label: 'Learn',
+    label: 'Resources',
     items: [
-      { href: '/sizing', label: 'Sizing guides', hint: `${SIZING_SCENARIOS.length} common questions answered` },
+      { href: '/sizing', label: 'Sizing guides', hint: `${SIZING_SCENARIOS.length} worked answers` },
+      { href: '/blog', label: 'Solar guides', hint: 'Costs, maintenance, financing' },
+      { href: '/faq', label: 'FAQs', hint: 'Straight answers, no sales pitch' },
       { href: '/how-it-works', label: 'How it works' },
-      { href: '/blog', label: 'Solar guides' },
       { href: '/verified', label: 'How we vet installers' },
+      { href: '/blog/solar-loans-nigeria', label: 'Paying for it' },
     ],
     featured: {
       href: '/sizing',
@@ -224,6 +229,14 @@ export default function Navbar() {
                   </div>
                 );
               })}
+              <Link
+                href={PLAIN_LINK.href}
+                className={`flex items-center px-3 h-11 rounded-full text-sm font-medium transition-colors ${
+                  pathname === PLAIN_LINK.href ? 'text-slate-900 bg-slate-50' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {PLAIN_LINK.label}
+              </Link>
             </div>
 
             {/* Desktop actions */}
@@ -304,11 +317,11 @@ export default function Navbar() {
 
             <div className="pt-2 border-t border-slate-100">
               <Link
-                href="/for-builders"
+                href={PLAIN_LINK.href}
                 onClick={() => setOpen(false)}
                 className="block py-3 font-heading font-semibold text-slate-900 text-lg min-h-[48px]"
               >
-                Work with us
+                {PLAIN_LINK.label}
                 <span className="block text-sm text-slate-500 font-normal">Installers, vendors and distributors</span>
               </Link>
             </div>

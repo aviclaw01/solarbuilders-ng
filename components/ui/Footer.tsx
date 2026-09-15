@@ -13,16 +13,20 @@ import { getScenario } from '@/lib/sizing';
  *
  * Popular links are resolved from data, so a renamed or removed page drops out
  * of the footer instead of becoming a dead link.
+ *
+ * This matters for crawling: the header's mega-menus only render their links
+ * once opened, so those links are NOT in the static HTML. Every nav destination
+ * must therefore also appear here, or search engines will never find it.
  */
 
-const POPULAR_SIZING = [
-  'what-size-inverter-for-1-5hp-ac',
-  'how-many-solar-panels-for-2-bedroom-flat',
-  'what-can-a-5kva-inverter-run',
-  'solar-for-a-shop-in-nigeria',
-]
-  .map((slug) => getScenario(slug))
-  .filter((s): s is NonNullable<typeof s> => Boolean(s));
+const POPULAR_SIZING: { slug: string; label: string }[] = [
+  { slug: 'what-size-inverter-for-1-5hp-ac', label: 'For a 1.5HP AC' },
+  { slug: 'what-size-inverter-for-2hp-ac', label: 'For a 2HP AC' },
+  { slug: 'how-many-solar-panels-for-2-bedroom-flat', label: 'For a 2-bedroom flat' },
+  { slug: 'how-many-solar-panels-for-3-bedroom-flat', label: 'For a 3-bedroom flat' },
+  { slug: 'what-can-a-5kva-inverter-run', label: 'What 5kVA runs' },
+  { slug: 'solar-for-a-shop-in-nigeria', label: 'For a shop' },
+].filter((entry) => getScenario(entry.slug));
 
 const POPULAR_COMPARISONS = ['deye-vs-felicity', 'felicity-vs-growatt', 'jinko-vs-longi']
   .map((slug) => comparisonPairs().find((p) => p.slug === slug))
@@ -90,10 +94,14 @@ export default function Footer() {
 
           <Column title="What size do I need?">
             <li><Link href="/calculator" className={linkCls}>Size my system</Link></li>
-            {POPULAR_SIZING.map((s) => (
-              <li key={s.slug}>
-                <Link href={`/sizing/${s.slug}`} className={linkCls}>
-                  {s.question}
+            {POPULAR_SIZING.map((entry) => (
+              <li key={entry.slug}>
+                <Link
+                  href={`/sizing/${entry.slug}`}
+                  className={linkCls}
+                  title={getScenario(entry.slug)?.question}
+                >
+                  {entry.label}
                 </Link>
               </li>
             ))}
@@ -115,6 +123,7 @@ export default function Footer() {
 
           <Column title="Company">
             <li><Link href="/how-it-works" className={linkCls}>How it works</Link></li>
+            <li><Link href="/faq" className={linkCls}>FAQs</Link></li>
             <li><Link href="/verified" className={linkCls}>How we vet installers</Link></li>
             <li><Link href="/blog" className={linkCls}>Solar guides</Link></li>
             <li><Link href="/about" className={linkCls}>Our story</Link></li>
