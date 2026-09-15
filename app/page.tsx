@@ -10,7 +10,6 @@ import { Star, CheckCircle } from 'lucide-react';
 
 /** Verifiable facts about our own research — no invented totals. */
 const PRICED_PRODUCTS = BRANDS.reduce((n, b) => n + b.products.length, 0);
-import HomepageClient from '@/components/ui/HomepageClient';
 import UseCaseCarousel from '@/components/ui/UseCaseCarousel';
 import CountdownCTA from '@/components/ui/CountdownCTA';
 import LeadCaptureModal from '@/components/ui/LeadCaptureModal';
@@ -138,7 +137,6 @@ export default function HomePage() {
       </section>
 
       {/* SOCIAL PROOF TICKER */}
-      <HomepageClient />
 
       {/* ──────────────── THREE WAYS TO START ──────────────── */}
       <section className="bg-white border-y border-slate-100 px-6 py-12 md:py-16">
