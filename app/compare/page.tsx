@@ -2,15 +2,18 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, ArrowRight } from 'lucide-react';
+import BrandMark from '@/components/ui/BrandMark';
+import { CATEGORY_LABEL, comparisonPairs, type ProductCategory } from '@/lib/brands';
+import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 
 export const metadata: Metadata = {
   title: 'Solar System Comparison Nigeria — Budget vs Standard vs Premium',
-  description: 'Compare solar system tiers for Nigerian homes. Budget, Standard, and Premium side-by-side — costs, specs, what you can run, and who each is best for.',
-  keywords: ['solar system comparison Nigeria', 'solar tiers Nigeria', 'budget vs premium solar Nigeria', 'solar system price comparison Nigeria'],
+  description: 'Compare solar system tiers for Nigerian homes — Budget, Standard and Premium side-by-side — then compare the brands themselves head to head: Deye vs Felicity, Growatt vs Luxpower, Jinko vs Longi and more, on real Nigerian prices.',
+  keywords: ['solar system comparison Nigeria', 'solar tiers Nigeria', 'budget vs premium solar Nigeria', 'solar system price comparison Nigeria', 'solar brand comparison Nigeria', 'Deye vs Felicity', 'Growatt vs Luxpower', 'Jinko vs Longi'],
   openGraph: {
     title: 'Solar System Comparison — Budget vs Standard vs Premium | SolarBuilders.ng',
-    description: 'Compare solar system tiers for Nigerian homes and choose the right one for your budget.',
+    description: 'Compare solar system tiers for Nigerian homes, and compare brands head to head on real Nigerian prices.',
     url: 'https://solarbuildersng.com/compare',
     type: 'website',
   },
@@ -202,6 +205,50 @@ export default function ComparePage() {
             ))}
           </div>
         </div>
+
+        {/* Brand head-to-head comparisons */}
+        <section className="mb-12">
+          <h2 className="font-heading font-extrabold text-slate-900 text-2xl md:text-3xl mb-2">
+            Compare brands head to head
+          </h2>
+          <p className="text-slate-500 mb-8 max-w-2xl">
+            Tier tells you how big a system to buy. These pages tell you which brand to put in it — real Nigerian prices
+            per kVA, kWh and watt, last checked {PRICES_LAST_UPDATED_LABEL}.
+          </p>
+
+          <div className="space-y-10">
+            {(['inverter', 'battery', 'panel'] as ProductCategory[]).map(category => {
+              const pairs = comparisonPairs().filter(p => p.categories.includes(category));
+              if (pairs.length === 0) return null;
+              return (
+                <div key={category}>
+                  <h3 className="font-heading font-bold text-slate-900 text-lg mb-4">{CATEGORY_LABEL[category]}</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {pairs.map(pair => (
+                      <Link
+                        key={pair.slug}
+                        href={`/compare/${pair.slug}`}
+                        className="group rounded-2xl border border-slate-100 hover:border-slate-300 p-4 transition-colors"
+                      >
+                        <span className="flex items-center gap-2 mb-2">
+                          <BrandMark brand={pair.a} size={28} />
+                          <BrandMark brand={pair.b} size={28} />
+                          <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-amber-500 ml-auto flex-shrink-0" />
+                        </span>
+                        <span className="block font-semibold text-slate-900 text-sm">
+                          {pair.a.name} vs {pair.b.name}
+                        </span>
+                        <span className="block text-slate-400 text-xs mt-1">
+                          {pair.categories.map(c => CATEGORY_LABEL[c]).join(' · ')}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Recommendation */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

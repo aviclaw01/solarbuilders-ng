@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import BrandCard from '@/components/ui/BrandCard';
 import {
   BRANDS,
   CATEGORY_LABEL,
@@ -18,7 +17,7 @@ import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { SITE_URL } from '@/lib/site';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import BrandMark from '@/components/ui/BrandMark';
-import { ArrowLeft, ExternalLink, Globe, Phone, MessageCircle, Zap, Info, MapPin } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MessageCircle, Zap, Info, MapPin } from 'lucide-react';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -54,22 +53,6 @@ function unitPrice(p: Product): string | null {
   return null;
 }
 
-function SeenAt({ names }: { names: string[] }) {
-  return (
-    <>
-      {names.map((n, i) => {
-        const v = getBrand(n);
-        return (
-          <span key={n}>
-            {v ? <Link href={`/brands/${v.slug}`} className="text-amber-600 hover:underline">{v.name}</Link> : n}
-            {i < names.length - 1 ? ', ' : ''}
-          </span>
-        );
-      })}
-    </>
-  );
-}
-
 export default async function BrandPage({ params }: Props) {
   const { slug } = await params;
   const brand = getBrand(slug);
@@ -84,13 +67,35 @@ export default async function BrandPage({ params }: Props) {
 
   const waText = `Hi SolarBuilders, I'm interested in ${brand.name}${isMaker ? ' equipment' : ''}. Can you help me get a system built with it? ${SITE_URL}/brands/${brand.slug}`;
 
+  // Brand + one Product/Offer per priced model. The Offer price is what puts a
+  // \u20a6 figure straight into the Google result for "<brand> price nigeria".
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': isMaker ? 'Brand' : 'LocalBusiness',
-    name: brand.name,
-    description: brand.tagline,
-    url: brand.website,
-    ...(isMaker ? {} : { address: { '@type': 'PostalAddress', addressLocality: brand.origin, addressCountry: 'NG' }, telephone: brand.phones?.[0] }),
+    '@graph': [
+      {
+        '@type': 'Brand',
+        '@id': `${SITE_URL}/brands/${brand.slug}#brand`,
+        name: brand.name,
+        description: brand.tagline,
+      },
+      ...brand.products.map((p) => ({
+        '@type': 'Product',
+        name: `${brand.name} ${p.model}`,
+        description: p.spec,
+        brand: { '@id': `${SITE_URL}/brands/${brand.slug}#brand` },
+        category: CATEGORY_LABEL[p.category],
+        offers: {
+          '@type': 'AggregateOffer',
+          priceCurrency: 'NGN',
+          lowPrice: p.priceLow,
+          highPrice: p.priceHigh,
+          offerCount: p.seenAt.length,
+          availability: 'https://schema.org/InStock',
+          url: `${SITE_URL}/brands/${brand.slug}`,
+          seller: { '@type': 'Organization', name: 'SolarBuilders.ng' },
+        },
+      })),
+    ],
   };
 
   return (
@@ -148,7 +153,7 @@ export default async function BrandPage({ params }: Props) {
                     <tr className="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-400">
                       <th className="text-left font-semibold p-3">Model</th>
                       <th className="text-right font-semibold p-3">Price (₦)</th>
-                      <th className="text-right font-semibold p-3">Source</th>
+                      <th className="text-right font-semibold p-3">Checked</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -164,12 +169,14 @@ export default async function BrandPage({ params }: Props) {
                           <td className="p-3 text-right">
                             <p className="font-semibold text-slate-900 text-xs sm:text-sm">{priceCell(p)}</p>
                             {unit && <p className="text-[11px] text-slate-400">{unit}</p>}
-                            <p className="text-[11px] text-slate-500 mt-0.5">at <SeenAt names={p.seenAt} /></p>
+                            <p className="text-[11px] text-slate-500 mt-0.5">
+                              across {p.seenAt.length} {p.seenAt.length === 1 ? 'seller' : 'sellers'}
+                            </p>
                           </td>
                           <td className="p-3 text-right">
-                            <a href={p.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-center gap-1 text-xs text-amber-600 hover:underline">
-                              <ExternalLink className="w-3 h-3" /> {p.seenOn.slice(5).replace('-', '/')}
-                            </a>
+                            <span className="inline-flex items-center gap-1 text-xs text-slate-400" title={`Price checked ${p.seenOn}`}>
+                              <CheckCircle2 className="w-3 h-3 text-emerald-500" /> {p.seenOn.slice(5).replace('-', '/')}
+                            </span>
                           </td>
                         </tr>
                       );
@@ -191,37 +198,38 @@ export default async function BrandPage({ params }: Props) {
           <div className="flex gap-2 text-[11px] text-slate-500 border-t border-slate-100 pt-4">
             <Info className="w-4 h-4 flex-shrink-0 text-slate-400" />
             <p>
-              Prices are listings we observed on the dates shown and may have changed. Ranges span the vendors named. We don&apos;t
-              sell equipment directly — send us your quote code and we confirm current prices with the vendor before you pay anyone.
+              Every price here is a real Nigerian listing we checked on the date shown, and ranges span the sellers we
+              compared. Prices move, so we re-confirm before you pay anything. We buy on your behalf at the market price
+              and handle the warranty paperwork — you don&apos;t have to work out who is cheapest.
             </p>
           </div>
         </div>
 
         <aside className="space-y-8">
-          {(brand.website || brand.phones?.length || brand.whatsapp) && (
-            <section className="bg-slate-50 rounded-2xl border border-slate-100 p-5">
-              <h3 className="font-heading font-bold text-slate-900 text-sm uppercase tracking-widest mb-3">Contact</h3>
-              <ul className="space-y-2 text-sm">
-                {brand.website && (
-                  <li><a href={brand.website} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-2 text-slate-700 hover:text-amber-600"><Globe className="w-4 h-4 text-slate-400" /> {brand.website.replace(/^https?:\/\//, '')}</a></li>
-                )}
-                {brand.phones?.map((ph) => (
-                  <li key={ph} className="flex items-center gap-2 text-slate-700"><Phone className="w-4 h-4 text-slate-400" /> {ph}</li>
-                ))}
-                {brand.whatsapp && (
-                  <li><a href={`https://wa.me/${brand.whatsapp}`} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-2 text-slate-700 hover:text-amber-600"><MessageCircle className="w-4 h-4 text-slate-400" /> WhatsApp</a></li>
-                )}
-              </ul>
-              {!isMaker && <p className="text-[11px] text-slate-400 mt-3">As published on the vendor&apos;s website. We&apos;re not affiliated.</p>}
-            </section>
-          )}
-
-          {stockists.length > 0 && (
-            <section>
-              <h3 className="font-heading font-bold text-slate-900 text-sm uppercase tracking-widest mb-3">Where to buy in Nigeria</h3>
-              <div className="space-y-3">{stockists.map((v) => <BrandCard key={v.slug} brand={v} />)}</div>
-            </section>
-          )}
+          <section className="bg-slate-50 rounded-2xl border border-slate-100 p-5">
+            <h3 className="font-heading font-bold text-slate-900 text-sm uppercase tracking-widest mb-3">
+              How you buy this
+            </h3>
+            <ol className="space-y-3 text-sm text-slate-600">
+              {[
+                'Size your system in the calculator and get an itemised quote with a code.',
+                'Send us the code. We confirm today\u2019s price and stock before anything is paid.',
+                `We order the ${isMaker ? brand.name : ''} equipment at the market price and arrange delivery.`,
+                'A vetted installer fits and commissions it, with the warranty paperwork in your name.',
+              ].map((step, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-bold flex items-center justify-center mt-0.5">
+                    {i + 1}
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="text-[11px] text-slate-400 mt-4">
+              We compared {stockists.length > 0 ? `${stockists.length} Nigerian sellers` : 'the Nigerian market'} for this
+              brand. You pay the market price; our margin comes from the trade terms we hold, not from a mark-up on you.
+            </p>
+          </section>
 
           {carried.length > 0 && (
             <section>

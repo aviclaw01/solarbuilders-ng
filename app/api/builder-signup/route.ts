@@ -5,6 +5,7 @@ const BUSINESS_TYPE_LABEL: Record<string, string> = {
   installer: "Installer",
   vendor: "Vendor / distributor",
   both: "Installer and vendor",
+  manufacturer: "Manufacturer / distributor",
 };
 
 export async function POST(req: Request) {

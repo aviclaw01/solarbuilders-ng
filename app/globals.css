@@ -127,13 +127,24 @@ html {
 }
 
 /* Scroll-triggered sections */
+/*
+ * Scroll reveal. The hidden state is scoped to html.js, which is set by an
+ * inline script in layout.tsx before first paint. Without JS — or if
+ * IntersectionObserver never fires — content stays visible rather than
+ * invisible. That matters for crawlers as much as for people.
+ */
 .section-animate {
+  opacity: 1;
+  transform: none;
+}
+
+.js .section-animate {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
-.section-animate.in-view {
+.js .section-animate.in-view {
   opacity: 1;
   transform: translateY(0);
 }
@@ -161,6 +172,7 @@ html {
   .nav-link::after {
     transition: none;
   }
+  .js .section-animate,
   .section-animate {
     opacity: 1;
     transform: none;

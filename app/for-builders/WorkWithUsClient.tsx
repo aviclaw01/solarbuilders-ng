@@ -6,7 +6,7 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { whatsappLink } from '@/lib/site';
-import { CheckCircle, ArrowRight, ArrowLeft, Wrench, Store, MessageCircle, ShieldCheck, Zap } from 'lucide-react';
+import { CheckCircle, ArrowRight, ArrowLeft, Wrench, Store, Factory, MessageCircle, ShieldCheck, Zap } from 'lucide-react';
 
 const NIGERIAN_STATES = [
   'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno',
@@ -19,7 +19,8 @@ const NIGERIAN_STATES = [
 const BUSINESS_TYPES = [
   { id: 'installer', label: 'Installer' },
   { id: 'vendor', label: 'Vendor / distributor' },
-  { id: 'both', label: 'Both' },
+  { id: 'manufacturer', label: 'Manufacturer / distributor' },
+  { id: 'both', label: 'Both installer and vendor' },
 ] as const;
 type BusinessType = (typeof BUSINESS_TYPES)[number]['id'] | '';
 
@@ -44,6 +45,14 @@ const VENDOR_CHECKS = [
   'CAC registration',
   'A phone number that gets answered',
   'A heads-up when your prices move',
+];
+
+const SUPPLIER_CHECKS = [
+  'A trade or distributor price list, per SKU',
+  'Warranty and RMA terms in writing',
+  'Lead time from order to delivery in Lagos or Abuja',
+  'Who handles a failed unit, and how long a swap takes',
+  'Minimum order quantity, if you have one',
 ];
 
 const JOB_FLOW = [
@@ -88,11 +97,15 @@ const FAQ = [
   },
   {
     q: 'Can I be both an installer and a vendor?',
-    a: 'Yes. Plenty of Nigerian solar businesses are. Pick "Both" on the form.',
+    a: 'Yes. Plenty of Nigerian solar businesses are. Pick "Both installer and vendor" on the form.',
+  },
+  {
+    q: 'I manufacture or import equipment. Can I supply you?',
+    a: 'That is a new programme and we are opening it now, so be aware you would be among the first. What we need to start: a trade price list, your warranty and RMA terms in writing, lead time to Lagos or Abuja, and who handles a failed unit. We do not hold stock, so we order per job and you fulfil.',
   },
   {
     q: 'What happens after I apply?',
-    a: 'We reply by email or WhatsApp. Installers: have your CAC number, three install photos and two reference numbers ready. Vendors: send your current price list or catalogue link.',
+    a: 'We reply by email or WhatsApp. Installers: have your CAC number, three install photos and two reference numbers ready. Vendors: send your current price list or catalogue link. Manufacturers and distributors: send the trade price list, warranty and RMA terms, and your lead times.',
   },
 ];
 
@@ -161,7 +174,7 @@ export default function WorkWithUsClient() {
     formData.businessType && formData.businessName && formData.contactEmail && formData.whatsapp && formData.city && formData.state && formData.yearsInBusiness;
   const step2Valid = formData.services.length > 0 && formData.systemSizes.length > 0;
 
-  const typeLabel = BUSINESS_TYPES.find((t) => t.id === formData.businessType)?.label ?? 'installer or vendor';
+  const typeLabel = BUSINESS_TYPES.find((t) => t.id === formData.businessType)?.label ?? 'installer, vendor or supplier';
 
   const submit = async () => {
     if (!step2Valid || status === 'sending') return;
@@ -183,9 +196,11 @@ export default function WorkWithUsClient() {
   if (submitted) {
     const isInstaller = formData.businessType === 'installer' || formData.businessType === 'both';
     const isVendor = formData.businessType === 'vendor' || formData.businessType === 'both';
+    const isSupplier = formData.businessType === 'manufacturer';
     const readyList = [
       ...(isInstaller ? ['Your CAC number', 'Photos of three past installations', 'Phone numbers for two past customers', 'Your workmanship warranty terms'] : []),
-      ...(isVendor ? ['Your current price list or catalogue link', 'The phone number customers should call'] : []),
+      ...(isVendor ? ['Your current price list or catalogue link', 'The phone number we should call to confirm a price'] : []),
+      ...(isSupplier ? ['Your trade / distributor price list, per SKU', 'Warranty and RMA terms in writing', 'Lead time from order to delivery in Lagos or Abuja', 'Minimum order quantity, if you have one'] : []),
     ];
     return (
       <div className="min-h-screen bg-white">
@@ -402,7 +417,7 @@ export default function WorkWithUsClient() {
                   Your typical price for a 5kVA / 10kWh job (optional)
                 </label>
                 <p className="text-slate-500 text-xs mb-2">
-                  Installers: labour and commissioning. Vendors: the package price. Helps us match you to the right jobs; we do not publish it.
+                  Installers: labour and commissioning. Vendors: the package price. Manufacturers and distributors: your trade price. Helps us match you to the right jobs; we do not publish it.
                 </p>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">₦</span>
@@ -520,12 +535,12 @@ export default function WorkWithUsClient() {
           <div className="max-w-6xl mx-auto">
             <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">Work with us</span>
             <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl mt-3 mb-4 max-w-3xl">
-              Installers and vendors: we bring the customer. You do the work.
+              Installers, vendors, manufacturers: we bring the demand.
             </h1>
             <p className="text-slate-500 text-lg max-w-2xl">
               SolarBuilders.ng turns a customer&apos;s load into an itemised, priced bill of materials with a quote code.
-              When they say go, we confirm prices with the vendor, buy the equipment and put a vetted installer on the job.
-              No listing fees, no badges to buy.
+              By the time they say go, they know the kVA, the kWh, the panel count and the budget. We confirm today&apos;s
+              price, buy the equipment ourselves and put a vetted installer on the job. No listing fees, no badges to buy.
             </p>
             <div className="flex flex-wrap gap-3 mt-6">
               <button
@@ -545,9 +560,9 @@ export default function WorkWithUsClient() {
           </div>
         </section>
 
-        {/* Two audiences */}
+        {/* Three audiences */}
         <section className="px-6 py-14">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 flex flex-col">
               <div className="w-11 h-11 bg-amber-50 rounded-xl flex items-center justify-center mb-4">
                 <Wrench className="w-5 h-5 text-amber-600" />
@@ -596,8 +611,8 @@ export default function WorkWithUsClient() {
               <ul className="space-y-3 mb-6">
                 {[
                   'Free listing on our brands page: your models, your prices, with the date we saw them.',
-                  'We link to your website and phone number exactly as you publish them.',
-                  'We buy from listed vendors for customer builds, and we confirm the price with you by phone before the customer pays.',
+                  'We no longer publish vendor phone numbers or shop links. Buyers come through us, so the enquiry you get is a real order, not a price-check call.',
+                  'We buy from listed vendors for customer builds, and we confirm the price with you before the customer pays.',
                   'No fee and no ranking to pay for. Stale prices get pulled, so tell us when they move.',
                 ].map((t) => (
                   <li key={t} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
@@ -618,6 +633,43 @@ export default function WorkWithUsClient() {
                 </ul>
                 <Link href="/brands" className="inline-flex items-center gap-1 text-amber-600 text-sm font-semibold mt-3 hover:underline underline-offset-4 min-h-[44px]">
                   See who is already listed <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 flex flex-col">
+              <div className="w-11 h-11 bg-amber-50 rounded-xl flex items-center justify-center mb-4">
+                <Factory className="w-5 h-5 text-amber-600" />
+              </div>
+              <span className="text-amber-500 text-xs font-semibold tracking-wide uppercase">For manufacturers and distributors</span>
+              <h2 className="font-heading font-extrabold text-slate-900 text-2xl mt-2 mb-4">
+                Give us trade pricing. We put your product in front of buyers who already know what they need.
+              </h2>
+              <ul className="space-y-3 mb-6">
+                {[
+                  'Our traffic comes from people searching what solar costs in Nigeria. They arrive specified: inverter kVA, battery kWh, panel count, and a budget they have already accepted.',
+                  'We quote your product into those builds by name, and when the customer says go we place the order ourselves. One buyer to deal with instead of fifty.',
+                  'We want trade or distributor pricing. You fulfil. We do not hold stock, we do not run a warehouse, and we buy per job.',
+                  'Straight with you: this is a new programme. We are talking to our first suppliers now, so there is no roster to show you yet.',
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
+                    <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="bg-slate-50 rounded-xl p-4 mt-auto">
+                <p className="font-heading font-semibold text-slate-900 text-sm mb-2">What we need from you</p>
+                <ul className="space-y-1.5">
+                  {SUPPLIER_CHECKS.map((c) => (
+                    <li key={c} className="text-slate-600 text-sm flex items-start gap-2">
+                      <ShieldCheck className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/brands" className="inline-flex items-center gap-1 text-amber-600 text-sm font-semibold mt-3 hover:underline underline-offset-4 min-h-[44px]">
+                  See the equipment we already price <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -670,7 +722,7 @@ export default function WorkWithUsClient() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 { t: 'Nothing to buy here', d: 'No listing fee, no verified badge, no featured spot. Anyone selling you one in our name is not us.' },
-                { t: 'We do not sell equipment', d: 'It comes from vendors on the brands page, at a price we confirm with them before the customer pays.' },
+                { t: 'We do not hold stock', d: 'We buy per job from distributors we hold trade terms with, at a price we confirm before the customer pays. Nothing sits in a warehouse.' },
                 { t: 'We do not send unchecked installers', d: 'CAC, three past installs, two references, a written warranty. Every time.' },
               ].map(({ t, d }) => (
                 <div key={t}>
@@ -711,7 +763,7 @@ export default function WorkWithUsClient() {
                 Apply to work with us <ArrowRight className="w-5 h-5" />
               </button>
               <a
-                href={whatsappLink('Hi SolarBuilders, I am an installer/vendor and want to work with you on customer builds.')}
+                href={whatsappLink('Hi SolarBuilders, I am an installer / vendor / manufacturer and want to work with you on customer builds.')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-900 rounded-full px-8 py-4 font-heading font-bold transition-colors min-h-[56px]"

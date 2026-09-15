@@ -7,11 +7,11 @@ import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNairaShort } from '@/lib/quote';
 
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
-import { Calculator, FileText, MessageCircle, ClipboardCheck, Wrench, ArrowRight } from 'lucide-react';
+import { Calculator, FileText, MessageCircle, ClipboardCheck, Wallet, Wrench, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'How It Works — Calculator, Itemised Quote, We Build It | SolarBuilders.ng',
-  description: `Pick your appliances, get an itemised solar quote priced from live Nigerian listings (${PRICES_LAST_UPDATED_LABEL}), send us the quote code on WhatsApp, and we source the equipment and manage a vetted installer until commissioning.`,
+  title: 'How It Works — Itemised Quote, We Buy It, We Build It | SolarBuilders.ng',
+  description: `Pick your appliances, get an itemised solar quote priced from live Nigerian listings (${PRICES_LAST_UPDATED_LABEL}), send us the quote code, and we order the equipment at the market price and put a vetted installer on the job until commissioning.`,
   alternates: { canonical: 'https://solarbuildersng.com/how-it-works' },
 };
 
@@ -45,18 +45,27 @@ const STEPS = [
   {
     step: '04',
     icon: ClipboardCheck,
-    title: 'We confirm the final number',
+    title: 'We confirm today’s price',
     description:
-      'We check today’s prices with the vendor, adjust for your roof, your location and anything you already own (an inverter, a changeover, existing wiring), then give you a final figure that includes workmanship. Nothing hidden till later.',
+      'Prices move with the naira and with stock, so we check the current figure with the distributor before anything is agreed. Then we adjust for your roof, your location and anything you already own (an inverter, a changeover, existing wiring) and give you one final number that includes workmanship. Nothing appears later.',
     iconBg: 'bg-purple-50',
     iconColor: 'text-purple-600',
   },
   {
     step: '05',
-    icon: Wrench,
-    title: 'We source it and get it built',
+    icon: Wallet,
+    title: 'We order it at the market price',
     description:
-      'We buy the equipment from the vendors on the quote and manage a vetted installer from delivery to commissioning. You get photos from site as work progresses and a commissioning checklist before you sign off.',
+      'You pay what the equipment sells for in Nigeria — the same figure we publish on the brand pages — and we place the order ourselves. We do not add a fee on top of your bill. Our margin comes from the trade terms we hold with distributors, so we earn on the buying, not on marking you up.',
+    iconBg: 'bg-emerald-50',
+    iconColor: 'text-emerald-600',
+  },
+  {
+    step: '06',
+    icon: Wrench,
+    title: 'A vetted installer fits it, and the paperwork is yours',
+    description:
+      'We put a vetted installer on the job and stay on it: photos from site as the work progresses, a commissioning checklist before you sign off, and the equipment warranty paperwork registered in your name, not ours. If something fails later, you are the one holding the warranty.',
     iconBg: 'bg-rose-50',
     iconColor: 'text-rose-600',
   },
@@ -65,15 +74,15 @@ const STEPS = [
 const FAQS = [
   {
     q: 'Do I pay SolarBuilders.ng?',
-    a: 'You pay the vendor for the equipment and the installer for the work. We earn a transparent sourcing fee that is agreed with you before you pay anyone. There is no fee for the calculator or the quote.',
+    a: 'You pay the market price for the equipment — the same Nigerian price we publish on the brand pages — plus the installer’s labour. We do not add a fee on top of your bill. Our margin comes from the trade terms we hold with distributors, so we earn on the buying rather than by marking you up. The calculator and the quote are free.',
   },
   {
     q: 'Can I buy the equipment myself?',
-    a: 'Yes. The quote lists every item and where it is sold in Nigeria. Use it to shop around, or send it to any installer you already trust.',
+    a: 'Yes. The quote is an itemised bill of materials with every spec written out, so you can take it to any installer you already trust or shop it around yourself. Nothing on it is locked to us.',
   },
   {
     q: 'Is the price on the quote final?',
-    a: `No. It is an estimate built from vendor listings as of ${PRICES_LAST_UPDATED_LABEL}. Prices move with the naira and with stock, so we confirm with the vendor before you pay anything.`,
+    a: `No. It is an estimate built from Nigerian listings as of ${PRICES_LAST_UPDATED_LABEL}. Prices move with the naira and with stock, so we confirm today’s figure with the distributor before you pay anything, and you hear it from us if it moved.`,
   },
   {
     q: 'What does a typical system cost?',
@@ -91,7 +100,7 @@ const faqJsonLd = {
   })),
 };
 
-const DELAYS = [75, 150, 225, 300, 450] as const;
+const DELAYS = [75, 150, 225, 300, 450, 450] as const;
 
 export default function HowItWorksPage() {
   return (
@@ -112,8 +121,8 @@ export default function HowItWorksPage() {
               Real prices first. Then we get it built.
             </h1>
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Size your system, see exactly what each part costs at Nigerian vendors, and send us the quote code.
-              We handle the sourcing and the installer.
+              Size your system, see exactly what each part costs in Nigeria, and send us the quote code. We buy it at
+              that price, put a vetted installer on the job, and stay with it to commissioning.
             </p>
           </AnimatedSection>
         </div>
@@ -182,7 +191,7 @@ export default function HowItWorksPage() {
             </div>
             <p className="text-slate-400 text-sm mt-4">
               Estimates, not final prices. Equipment carries 0% import duty and is VAT-exempt in Nigeria; labour is included in these ranges.
-              We confirm with the vendor before you pay.
+              We confirm today’s figure with the distributor before you pay, and you pay that market price — our margin sits in our trade terms, not on top of your bill.
             </p>
           </AnimatedSection>
         </div>

@@ -44,8 +44,8 @@ export default function BrandsPage() {
             What solar equipment actually costs in Nigeria
           </h1>
           <p className="text-slate-500 text-lg max-w-2xl">
-            Every price here is a real listing from a Nigerian vendor, with the source and the date we saw it
-            ({PRICES_LAST_UPDATED_LABEL}). Pick a brand, see the models, then let us source and install it.
+            Every price here is a real Nigerian listing, checked on the date shown ({PRICES_LAST_UPDATED_LABEL}). Pick a
+            brand, see what each model actually costs, then let us buy it at that price and get it installed.
           </p>
           <div className="flex flex-wrap gap-3 mt-6">
             <Link href="/calculator" className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-6 py-3 font-semibold text-sm transition-colors">
@@ -74,10 +74,11 @@ export default function BrandsPage() {
         })}
 
         <section id="vendors">
-          <h2 className="font-heading font-extrabold text-slate-900 text-2xl md:text-3xl mb-2">Where to buy in Nigeria</h2>
+          <h2 className="font-heading font-extrabold text-slate-900 text-2xl md:text-3xl mb-2">The market we track</h2>
           <p className="text-slate-500 mb-6 max-w-2xl">
-            Distributors, retailers and installers with public prices. Contact details are as published on their own websites.
-            We can also buy on your behalf as part of your build.
+            These are the Nigerian distributors and retailers whose prices we monitor — from Alaba wholesalers to Victoria
+            Island showrooms. The same inverter can differ by more than double between them. We watch all of it and buy on
+            your behalf at the market price, so you don&apos;t have to ring round.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {sellers.map((b) => <BrandCard key={b.slug} brand={b} />)}
@@ -85,10 +86,11 @@ export default function BrandsPage() {
         </section>
 
         <section className="bg-slate-900 rounded-3xl p-8 md:p-12 text-center">
-          <h2 className="font-heading font-extrabold text-white text-2xl md:text-3xl mb-3">Don&apos;t want to shop around?</h2>
+          <h2 className="font-heading font-extrabold text-white text-2xl md:text-3xl mb-3">We do the buying</h2>
           <p className="text-slate-300 max-w-xl mx-auto mb-6">
-            Size your system, get an itemised quote with a code, and send it to us. We confirm today&apos;s prices, source the
-            equipment from these vendors, and get it installed.
+            Size your system, get an itemised quote with a code, and send it to us. We confirm today&apos;s price, order the
+            equipment at the market rate, and put a vetted installer on the job. You pay what the brand charges — our
+            margin comes from our trade terms, not from a mark-up on you.
           </p>
           <Link href="/calculator" className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-8 py-4 font-heading font-bold transition-colors">
             Get my itemised quote →

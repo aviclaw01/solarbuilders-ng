@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { BRANDS } from '@/lib/brands';
+import { BRANDS, comparisonPairs } from '@/lib/brands';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://solarbuildersng.com';
@@ -36,5 +36,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }));
 
-  return [...staticPages, ...brandPages];
+  const comparisonPages = comparisonPairs().map(pair => ({
+    url: `${baseUrl}/compare/${pair.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }));
+
+  return [...staticPages, ...brandPages, ...comparisonPages];
 }

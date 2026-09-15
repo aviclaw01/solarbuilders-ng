@@ -23,10 +23,17 @@ export default function AnimatedSection({ children, delay, className = '' }: Ani
     const el = ref.current;
     if (!el) return;
 
+    const reveal = () => el.classList.add('in-view');
+
+    if (typeof IntersectionObserver === 'undefined') {
+      reveal();
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          el.classList.add('in-view');
+          reveal();
           observer.disconnect();
         }
       },
@@ -34,7 +41,19 @@ export default function AnimatedSection({ children, delay, className = '' }: Ani
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+
+    // Failsafe: if the observer hasn't fired by now (headless renderers and
+    // some crawlers never scroll), show the content anyway. Never leave it
+    // stuck at opacity 0.
+    const failsafe = window.setTimeout(() => {
+      reveal();
+      observer.disconnect();
+    }, 1500);
+
+    return () => {
+      window.clearTimeout(failsafe);
+      observer.disconnect();
+    };
   }, []);
 
   const delayClass = delay ? DELAY_CLASS[delay] : '';

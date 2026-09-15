@@ -152,6 +152,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plusJakarta.variable} ${inter.variable}`}>
       <head>
+        {/*
+          Marks the document as JS-capable before first paint, which is what
+          arms the scroll-reveal animation (see `.js .section-animate` in
+          globals.css). Without this class content renders visible, so a
+          crawler or a failed script can never leave a section blank.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
         <link rel="icon" href="/favicon.png" sizes="32x32" />
         <link rel="icon" href="/brand/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />

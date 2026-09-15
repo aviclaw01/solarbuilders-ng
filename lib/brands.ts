@@ -35,6 +35,22 @@ export interface Product {
   note?: string;
 }
 
+/**
+ * Capability facts used by the comparison tables.
+ *
+ * Only manufacturer-documented capabilities go here (app names, phase support,
+ * published warranty terms). Anything we cannot point at a source for is left
+ * undefined and renders as "not published" — never guessed.
+ */
+export interface BrandAttributes {
+  phases?: string;
+  monitoringApp?: string;
+  warranty?: string;
+  serviceNigeria?: string;
+  bestFor?: string;
+  watchOut?: string;
+}
+
 export interface Brand {
   slug: string;
   name: string;
@@ -44,6 +60,11 @@ export interface Brand {
   categories: ProductCategory[];
   tagline: string;
   description: string;
+  /**
+   * INTERNAL ONLY — procurement contacts, never rendered on public pages.
+   * We source on the customer's behalf; handing out the vendor's number is
+   * handing away the order. Used by us (and the admin area) to buy.
+   */
   website?: string;
   phones?: string[];
   whatsapp?: string; // digits only, from the vendor's own site
@@ -51,6 +72,7 @@ export interface Brand {
   carries?: string[];
   /** Optional licensed logo at /public/brands/<slug>.svg — see BrandMark. Absent = monogram. */
   logo?: string;
+  attributes?: BrandAttributes;
   pricesPublic: boolean;
   products: Product[];
 }
@@ -74,6 +96,14 @@ const MANUFACTURERS: Brand[] = [
       "Felicity is the volume leader in Nigerian homes: cheap, widely stocked in Alaba and Lekki, and every installer knows them. Inverters are 24V up to 3.5kVA and 48V from 5kVA. Batteries are LiFePO4 with 5-year warranties. Expect the lowest ₦/kVA in the market, but shop around — the same 5kVA unit ranges from ₦440k to ₦986k depending on the model generation and retailer.",
     website: "https://www.felicitysolar.ng",
     phones: ["+234 817 147 9561", "+234 707 911 7572"],
+    attributes: {
+      phases: "Single-phase",
+      monitoringApp: "Optional WiFi dongle (SmartESS)",
+      warranty: "5 years on LiFePO4 batteries (as advertised by the NG store)",
+      serviceNigeria: "Widest in the country — stocked in Alaba and most Lagos shops, so spares and swaps are easy",
+      bestFor: "Lowest upfront cost, and being able to replace a failed unit the same week",
+      watchOut: "The same 5kVA model ranges ₦440k–₦986k between sellers. Buying it right matters more than with any other brand.",
+    },
     pricesPublic: true,
     products: [
       { category: "inverter", model: "IVEM 3kVA 24V", spec: "3kVA 24V hybrid", kva: 3, priceLow: 379_000, priceHigh: 379_000, seenAt: ["solar-village"], sourceUrl: "https://solarvillage.africa/felicity-ivps-5kva-48v-solar-power-inverter.html", seenOn: D },
@@ -107,8 +137,16 @@ const MANUFACTURERS: Brand[] = [
     categories: ["inverter", "battery"],
     tagline: "The premium hybrid inverter Nigerian installers recommend when budget allows",
     description:
-      "Deye SUN-series hybrids are the reference premium inverter in Nigeria: high PV input, app monitoring, generator integration, 3-phase options and a 5–10 year warranty. You pay ₦230k–₦400k per kVA — roughly 2.5× Felicity — but get a system that scales cleanly. Beware of the cheaper 'OG' off-grid models (6kW at ~₦700k) which are a different, lower-spec line.",
+      "Deye SUN-series hybrids are the reference premium inverter in Nigeria: high PV input, app monitoring, generator integration, 3-phase options and a 5–10 year warranty. You pay a clear premium per kVA over the budget brands, but get a system that scales cleanly. Beware of the cheaper 'OG' off-grid models (6kW at ~₦700k) which are a different, lower-spec line.",
     website: "https://www.deyeinverter.com",
+    attributes: {
+      phases: "Single-phase and 3-phase (SG01LP1 / SG04LP3 lines)",
+      monitoringApp: "Solarman, included",
+      warranty: "5 years typical, extendable",
+      serviceNigeria: "Good — major distributors in Lagos and Abuja",
+      bestFor: "Homes that will grow, 3-phase supply, and anyone who wants to see production on a phone",
+      watchOut: "The cheap 6kW 'OG' off-grid line is a different, lower-spec product to the SUN-SG hybrids.",
+    },
     pricesPublic: true,
     products: [
       { category: "inverter", model: "SUN-5K-SG 1-phase", spec: "5kW 48V hybrid, single phase", kva: 5, priceLow: 1_500_000, priceHigh: 1_750_000, seenAt: ["nature-solar", "Jiji (Alaba)", "abuja-solar"], sourceUrl: "https://abujasolar.com/product-category/deye-inverter/", seenOn: D },
@@ -133,6 +171,13 @@ const MANUFACTURERS: Brand[] = [
     description:
       "Growatt SPF-series off-grid/hybrid inverters are the sensible middle: better build and support than Felicity, half the price of Deye. The SPF 5000 ES at ₦530k–₦620k is the most common 5kVA in new Lagos installs. Growatt ARK/HOPE batteries exist in Nigeria but aren't priced publicly — pair with Felicity, Deye or ITEL packs instead.",
     website: "https://www.growatt.com",
+    attributes: {
+      phases: "Single-phase",
+      monitoringApp: "ShinePhone, included",
+      serviceNigeria: "Good — several Lagos and Abuja distributors",
+      bestFor: "The sensible middle: better support than budget brands at about half the price of Deye",
+      watchOut: "Growatt's own batteries are not priced publicly in Nigeria, so pair with Felicity, Deye or ITEL packs.",
+    },
     pricesPublic: true,
     products: [
       { category: "inverter", model: "SPF 3000TL HVM-48", spec: "3kW 48V off-grid hybrid", kva: 3, priceLow: 448_500, priceHigh: 448_500, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/growatt-5kva-48v-hybrid-solar-inverter-spf-5000es/", seenOn: D },
@@ -153,6 +198,13 @@ const MANUFACTURERS: Brand[] = [
     description:
       "LuxpowerTek hybrids are popular with installers who want Deye-style features (dual MPPT, app, parallel stacking) at Growatt prices. Gennex Technologies is the official importer; 8kW and 12kW units are stocked but not priced online — ask us.",
     website: "https://luxpowerteknigeria.com",
+    attributes: {
+      phases: "Single-phase",
+      monitoringApp: "LuxPowerView, included",
+      serviceNigeria: "Gennex is the official importer, so warranty routing is clear",
+      bestFor: "Deye-style features (dual MPPT, parallel stacking) at mid-tier prices",
+      watchOut: "The 8kW and 12kW units are stocked but not priced online — we have to quote those.",
+    },
     pricesPublic: true,
     products: [
       { category: "inverter", model: "2.5kW hybrid", spec: "2.5kW hybrid", kva: 2.5, priceLow: 290_000, priceHigh: 290_000, seenAt: ["solarbuy"], sourceUrl: "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/", seenOn: D },
@@ -171,6 +223,13 @@ const MANUFACTURERS: Brand[] = [
     description:
       "Victron MultiPlus-II and Quattro inverter/chargers are what you spec when downtime is unacceptable: banks, clinics, estates. They need a separate MPPT controller and a GX device, so the all-in cost is higher than the inverter price suggests. Stocked by Solar Depot NG and SolarKobo.",
     website: "https://www.victronenergy.com",
+    attributes: {
+      phases: "Single-phase",
+      monitoringApp: "VRM portal, needs a GX device",
+      serviceNigeria: "Limited — specialist dealers only",
+      bestFor: "Clinics, banks, estates: places where downtime is unacceptable",
+      watchOut: "Needs a separate MPPT controller and GX device, so the installed cost is well above the inverter price.",
+    },
     pricesPublic: true,
     products: [
       { category: "inverter", model: "MultiPlus-II GX 48/5000", spec: "5kVA 48V inverter/charger with GX", kva: 5, priceLow: 1_548_970, priceHigh: 1_548_970, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/victron-energy-inverter", seenOn: D },
@@ -191,6 +250,12 @@ const MANUFACTURERS: Brand[] = [
     description:
       "Solis S6 hybrids are a strong alternative to Deye above 6kW — similar features at ₦200k–₦300k per kVA. The 5kW S6 at ₦650k is priced like a Growatt. Stocked by Solar Depot NG.",
     website: "https://www.solisinverters.com",
+    attributes: {
+      phases: "Single-phase (S6 low-voltage hybrids)",
+      monitoringApp: "SolisCloud, included",
+      serviceNigeria: "Limited — mainly Solar Depot",
+      bestFor: "A strong Deye alternative above 6kW",
+    },
     pricesPublic: true,
     products: [
       { category: "inverter", model: "S6 5kW 48V hybrid", spec: "5kW 48V hybrid", kva: 5, priceLow: 649_500, priceHigh: 649_500, seenAt: ["solar-depot-ng"], sourceUrl: "https://solardepotng.com/index.php?path=426&route=product%2Fcategory", seenOn: D },
@@ -211,6 +276,12 @@ const MANUFACTURERS: Brand[] = [
     description:
       "Must PV18 and PH1800 PRO hybrids are widely serviced in Nigeria and sit between Felicity and Growatt on price. Prices below are from a July 2026 guide rather than a live cart — confirm before buying.",
     website: "https://www.mustpower.com",
+    attributes: {
+      phases: "Single-phase",
+      serviceNigeria: "Long-established, widely serviced",
+      bestFor: "A known quantity between Felicity and Growatt on price",
+      watchOut: "Our prices for Must come from a July 2026 guide rather than a live cart — confirm before ordering.",
+    },
     pricesPublic: true,
     products: [
       { category: "inverter", model: "PV18-3048", spec: "5kVA 48V hybrid", kva: 5, priceLow: 630_000, priceHigh: 690_000, seenAt: ["solarenergysupplystores guide"], sourceUrl: "https://solarenergysupplystores.com/must-inverter/", seenOn: "2026-07-14", note: "Guide price" },
@@ -228,6 +299,12 @@ const MANUFACTURERS: Brand[] = [
     tagline: "Cheapest ₦/kVA hybrid on the market via Alaba wholesalers",
     description:
       "Sako (and the near-identical Luxsun) 6.2kVA hybrids sell for under ₦400k in Alaba — ₦63k per kVA. Fine for budget builds where you accept a shorter warranty and basic monitoring.",
+    attributes: {
+      phases: "Single-phase",
+      serviceNigeria: "Alaba wholesalers",
+      bestFor: "The cheapest ₦/kVA on the market when budget rules everything",
+      watchOut: "Short warranty and basic monitoring. Fine for a first system, not for a critical load.",
+    },
     pricesPublic: true,
     products: [
       { category: "inverter", model: "6.2kVA hybrid 48V", spec: "6.2kVA 48V hybrid", kva: 6.2, priceLow: 390_000, priceHigh: 420_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/sako-6-2kva-hybrid-inverter/", seenOn: D, note: "₦420k is the Luxsun-branded twin" },
@@ -243,6 +320,12 @@ const MANUFACTURERS: Brand[] = [
     tagline: "Familiar Indian brand; I-Cruze hybrids from 5kVA",
     description: "Luminous is well known in Nigeria from the tubular-battery era. Their I-Cruze hybrid line is priced above Growatt for the same kVA; worth it mainly if you already have Luminous batteries.",
     website: "https://www.luminousindia.com",
+    attributes: {
+      phases: "Single-phase",
+      serviceNigeria: "Very familiar brand in Nigeria from the tubular-battery era",
+      bestFor: "Households already running Luminous batteries",
+      watchOut: "Priced above Growatt for the same kVA.",
+    },
     pricesPublic: true,
     products: [
       { category: "inverter", model: "I-Cruze 5kVA", spec: "5kVA 48V hybrid", kva: 5, priceLow: 980_000, priceHigh: 980_000, seenAt: ["Swiftermall"], sourceUrl: "https://www.swiftermall.com/luminous-inverters/844-luminous-5kva-72v-single-phase-inverter.html", seenOn: D },
@@ -260,6 +343,12 @@ const MANUFACTURERS: Brand[] = [
     tagline: "Premium rack batteries with the longest track record",
     description: "Pylontech is the battery brand with the most installed base worldwide and the best warranty support, at ₦320k+/kWh in Nigeria — about 1.6× a Deye or Felicity pack. The popular US5000 is not currently listed by Nigerian retailers; UF5000 and UP5000 are.",
     website: "https://en.pylontech.com.cn",
+    attributes: {
+      warranty: "10 years typical",
+      serviceNigeria: "Limited — a few importers",
+      bestFor: "The longest global track record in rack batteries",
+      watchOut: "About 1.6× the ₦/kWh of a Deye or Felicity pack. The popular US5000 is not currently listed in Nigeria.",
+    },
     pricesPublic: true,
     products: [
       { category: "battery", model: "UF5000", spec: "5.12kWh 48V rack LiFePO4", kwh: 5.12, priceLow: 1_668_000, priceHigh: 1_668_000, seenAt: ["zit"], sourceUrl: "https://zit.ng/products/deye-512kw-low-voltage-lithium-ion-solar-battery-bos-se-g51-lv/", seenOn: D },
@@ -277,6 +366,10 @@ const MANUFACTURERS: Brand[] = [
     tagline: "PowerBrick and Stack batteries for 10kWh and up",
     description: "Dyness makes larger-format LiFePO4 modules (14.4kWh PowerBrick, 60kWh high-voltage Stack) at ~₦225k–₦250k/kWh. A good fit for 10kVA+ homes and small commercial. Stocked by Solar Depot NG.",
     website: "https://www.dyness.com",
+    attributes: {
+      serviceNigeria: "Solar Depot NG",
+      bestFor: "10kWh and larger banks, and small commercial",
+    },
     pricesPublic: true,
     products: [
       { category: "battery", model: "PowerBrick 51.2V 280Ah", spec: "14.4kWh 51.2V LiFePO4", kwh: 14.4, priceLow: 3_250_000, priceHigh: 3_250_000, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/lithium-deep-cycle", seenOn: D },
@@ -292,6 +385,10 @@ const MANUFACTURERS: Brand[] = [
     categories: ["battery", "inverter"],
     tagline: "Phone-brand pricing on LiFePO4: the cheapest branded packs in Nigeria",
     description: "ITEL (the phone company) now sells 51.2V LiFePO4 wall and floor packs at ₦160k–₦175k/kWh — the lowest branded price we found, with an established Nigerian service network. 3kW and 6kW inverters are also available.",
+    attributes: {
+      serviceNigeria: "Backed by an established Nigerian phone-brand service network",
+      bestFor: "The cheapest branded LiFePO4 per kWh we found",
+    },
     pricesPublic: true,
     products: [
       { category: "battery", model: "51.2V 100Ah wall/standing", spec: "5.12kWh 51.2V 100Ah", kwh: 5.12, priceLow: 895_000, priceHigh: 895_000, seenAt: ["solar-depot-ng"], sourceUrl: "https://www.solardepotng.com/lithium-deep-cycle", seenOn: D },
@@ -309,6 +406,11 @@ const MANUFACTURERS: Brand[] = [
     categories: ["battery"],
     tagline: "Lowest ₦/kWh we found — ₦129k on a 12.8kWh flat pack",
     description: "Blue Carbon flat-pack LiFePO4 batteries are the budget pick for big banks. Warranty support is thinner than Felicity or Deye; buy from a vendor who will stand behind it.",
+    attributes: {
+      serviceNigeria: "Thin — buy from a vendor who will stand behind it",
+      bestFor: "Large banks on a tight budget",
+      watchOut: "Lowest ₦/kWh in the market, but warranty support is weaker than Felicity or Deye.",
+    },
     pricesPublic: true,
     products: [
       { category: "battery", model: "48V 250Ah flat", spec: "12.8kWh 48V 250Ah LiFePO4", kwh: 12.8, priceLow: 1_650_000, priceHigh: 1_650_000, seenAt: ["solar-village"], sourceUrl: "https://solarvillage.africa/featured-brands/battery/deye/deye-bos-se-g5-1-lv-5-12kwh-lithium-battery-bos-se-g5-1-lv222.html", seenOn: D },
@@ -324,6 +426,12 @@ const MANUFACTURERS: Brand[] = [
     tagline: "Tier-1 panels; 600W+ Tiger Neo is the Nigerian default",
     description: "Jinko is the most-stocked Tier-1 panel in Nigeria. Alaba wholesalers move 600W bifacial units at ₦110k–₦120k (₦183–200/Wp); e-commerce sites charge up to ₦190k for the same class. Always buy by the pallet price if you can.",
     website: "https://www.jinkosolar.com",
+    attributes: {
+      warranty: "Tier-1 manufacturer warranties (typically 12 years product, 25+ years performance)",
+      serviceNigeria: "The most-stocked Tier-1 panel in Nigeria",
+      bestFor: "Default choice — availability and resale are both easy",
+      watchOut: "E-commerce listings run up to ₦190k for panels Alaba sells at ₦110k–₦120k.",
+    },
     pricesPublic: true,
     products: [
       { category: "panel", model: "450W mono", spec: "450W monocrystalline", watts: 450, priceLow: 82_969, priceHigh: 82_969, seenAt: ["Jumia"], sourceUrl: "https://www.jumia.com.ng/solar-panels/jinko/", seenOn: D },
@@ -342,6 +450,11 @@ const MANUFACTURERS: Brand[] = [
     tagline: "Tier-1 bifacial panels, strong at 580W",
     description: "JA Solar is stocked by Me3 Energy (VI) at showroom prices and by Jiji bulk sellers at wholesale. Performance is on par with Jinko and Longi.",
     website: "https://www.jasolar.com",
+    attributes: {
+      warranty: "Tier-1 manufacturer warranties",
+      serviceNigeria: "Showrooms (Me3) and Jiji bulk sellers",
+      bestFor: "Bifacial output at 580W and above",
+    },
     pricesPublic: true,
     products: [
       { category: "panel", model: "550W mono PERC", spec: "550W monocrystalline PERC", watts: 550, priceLow: 149_000, priceHigh: 160_000, seenAt: ["me3-energy"], sourceUrl: "https://me3energy.ng/580w-bifacial-monocrystalline-ja-solar-panels-ja-solar-580w-bifacial-monocrystalline-ja-solar-panels-ja-solar-390w-datasheet-ja-solar-250w-datasheet", seenOn: D },
@@ -359,6 +472,11 @@ const MANUFACTURERS: Brand[] = [
     tagline: "Tier-1 all-black panels at Alaba wholesale prices",
     description: "Longi Hi-MO panels are the best-value Tier-1 option through Alaba wholesalers — 550W at ₦95k is ₦173/Wp, the lowest we saw for a Tier-1 module.",
     website: "https://www.longi.com",
+    attributes: {
+      warranty: "Tier-1 manufacturer warranties",
+      serviceNigeria: "Alaba wholesalers",
+      bestFor: "Best value Tier-1 panel we found — ₦173/Wp at 550W",
+    },
     pricesPublic: true,
     products: [
       { category: "panel", model: "450W all-black", spec: "450W all-black mono", watts: 450, priceLow: 115_000, priceHigh: 115_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D },
@@ -376,6 +494,11 @@ const MANUFACTURERS: Brand[] = [
     tagline: "Tier-1 panels stocked by Gennex and Alaba",
     description: "Canadian Solar HiKu modules are stocked by Gennex (Lekki/Abuja) at ₦135k for 590W and by Nature Solar at ₦110k for 600W all-black.",
     website: "https://www.csisolar.com",
+    attributes: {
+      warranty: "Tier-1 manufacturer warranties",
+      serviceNigeria: "Gennex and Alaba",
+      bestFor: "Tier-1 quality with a recognisable name",
+    },
     pricesPublic: true,
     products: [
       { category: "panel", model: "590W HiKu", spec: "590W mono", watts: 590, priceLow: 135_000, priceHigh: 135_000, seenAt: ["gennex"], sourceUrl: "https://shop.gennextechnologies.com/", seenOn: D },
@@ -392,6 +515,12 @@ const MANUFACTURERS: Brand[] = [
     tagline: "Tier-1 Vertex panels; widest price spread — buy carefully",
     description: "Trina Vertex 600W panels range from ₦90k (Alaba) to ₦136.5k (Me3 showroom). A ₦65k listing exists online but we couldn't verify it — treat anything under ₦85k as suspect.",
     website: "https://www.trinasolar.com",
+    attributes: {
+      warranty: "Tier-1 manufacturer warranties",
+      serviceNigeria: "Showrooms and Alaba",
+      bestFor: "Tier-1 panels when you can buy at the Alaba end of the range",
+      watchOut: "Widest price spread of any panel we tracked: ₦90k to ₦136.5k for the same 600W class. Treat anything under ₦85k as suspect.",
+    },
     pricesPublic: true,
     products: [
       { category: "panel", model: "Vertex 600W", spec: "600W mono", watts: 600, priceLow: 90_000, priceHigh: 136_500, seenAt: ["nature-solar", "me3-energy"], sourceUrl: "https://me3energy.ng/600w-trina-solar-panel-high-efficiency-industrial-solar-solution-for-reliable-power-diesel-cost-reduction-in-nigeria", seenOn: D },
@@ -703,4 +832,122 @@ export function headlineUnitPrice(brand: Brand): string | null {
 export function brandSlugByName(name: string): string | undefined {
   const n = name.toLowerCase();
   return MANUFACTURERS.find((b) => b.name.toLowerCase() === n || b.name.toLowerCase().startsWith(n + " ") || b.slug === n.replace(/\s+/g, "-"))?.slug;
+}
+
+// ─────────────────────────────────────────────────────────
+// COMPARISON
+// ─────────────────────────────────────────────────────────
+
+/** The unit a category is compared in. */
+export const CATEGORY_UNIT: Partial<Record<ProductCategory, { unit: string; per: (p: Product) => number | undefined }>> = {
+  inverter: { unit: "kVA", per: (p) => p.kva },
+  battery: { unit: "kWh", per: (p) => p.kwh },
+  panel: { unit: "W", per: (p) => p.watts },
+};
+
+export interface UnitPriceStats {
+  category: ProductCategory;
+  unit: string;
+  /** ₦ per kVA / kWh / W */
+  lowPerUnit: number;
+  highPerUnit: number;
+  /** smallest and largest model size we list */
+  minSize: number;
+  maxSize: number;
+  models: number;
+}
+
+/** Cheapest/dearest ₦ per unit and the size range we list for a category. */
+export function unitPriceStats(brand: Brand, category: ProductCategory): UnitPriceStats | null {
+  const meta = CATEGORY_UNIT[category];
+  if (!meta) return null;
+  const items = brand.products.filter((p) => p.category === category && meta.per(p));
+  if (items.length === 0) return null;
+  const perUnit = items.map((p) => ({ low: p.priceLow / meta.per(p)!, high: p.priceHigh / meta.per(p)!, size: meta.per(p)! }));
+  return {
+    category,
+    unit: meta.unit,
+    lowPerUnit: Math.min(...perUnit.map((x) => x.low)),
+    highPerUnit: Math.max(...perUnit.map((x) => x.high)),
+    minSize: Math.min(...perUnit.map((x) => x.size)),
+    maxSize: Math.max(...perUnit.map((x) => x.size)),
+    models: items.length,
+  };
+}
+
+/** How many Nigerian vendors in our catalogue we saw this brand at. */
+export function vendorReach(brand: Brand): number {
+  return vendorsFor(brand).length;
+}
+
+/** Manufacturers with priced products in a category, cheapest ₦/unit first. */
+export function brandsInCategory(category: ProductCategory): Brand[] {
+  return manufacturers()
+    .filter((b) => unitPriceStats(b, category))
+    .sort((a, b) => unitPriceStats(a, category)!.lowPerUnit - unitPriceStats(b, category)!.lowPerUnit);
+}
+
+export interface ComparisonPair {
+  a: Brand;
+  b: Brand;
+  /** every category both brands are priced in — the page covers all of them */
+  categories: ProductCategory[];
+  slug: string; // "deye-vs-felicity"
+}
+
+/**
+ * Curated cross-shop pairs. Deliberately NOT every combination: generating all
+ * of them would produce dozens of thin near-duplicate pages competing with each
+ * other. These are the comparisons Nigerian buyers actually search for.
+ *
+ * One page per pair, covering every category the two share, rather than a
+ * separate thin page per category.
+ */
+const CURATED_PAIRS: [string, string][] = [
+  // Inverters — the decisions people actually agonise over
+  ["deye", "felicity"],
+  ["felicity", "growatt"],
+  ["deye", "growatt"],
+  ["growatt", "luxpower"],
+  ["deye", "luxpower"],
+  ["deye", "victron"],
+  ["deye", "solis"],
+  ["felicity", "sako"],
+  ["growatt", "must"],
+  ["felicity", "luminous"],
+  // Batteries
+  ["deye", "pylontech"],
+  ["felicity", "itel-energy"],
+  ["blue-carbon", "felicity"],
+  ["deye", "dyness"],
+  // Panels
+  ["jinko", "longi"],
+  ["ja-solar", "jinko"],
+  ["canadian-solar", "jinko"],
+  ["jinko", "trina"],
+];
+
+export function comparisonPairs(): ComparisonPair[] {
+  const out: ComparisonPair[] = [];
+  for (const [aSlug, bSlug] of CURATED_PAIRS) {
+    const a = getBrand(aSlug);
+    const b = getBrand(bSlug);
+    if (!a || !b) continue;
+    const [first, second] = [a, b].sort((x, y) => (x.slug < y.slug ? -1 : 1));
+    const categories = (["inverter", "battery", "panel"] as ProductCategory[]).filter(
+      (c) => unitPriceStats(first, c) && unitPriceStats(second, c),
+    );
+    if (categories.length === 0) continue;
+    out.push({ a: first, b: second, categories, slug: `${first.slug}-vs-${second.slug}` });
+  }
+  return out;
+}
+
+/** Other comparisons involving this brand, for cross-linking. */
+export function comparisonsFor(slug: string): ComparisonPair[] {
+  return comparisonPairs().filter((p) => p.a.slug === slug || p.b.slug === slug);
+}
+
+export function getComparison(slug: string): ComparisonPair | undefined {
+  return comparisonPairs().find((p) => p.slug === slug);
 }
