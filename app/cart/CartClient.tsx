@@ -259,7 +259,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         <WhatsAppLink
           text={waText}
           placement="cart_success"
-          className="mt-6 w-full bg-[#128C7E] hover:bg-[#0E7568] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
+          className="mt-6 w-full bg-[#0E7568] hover:bg-[#075E54] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
         >
           <MessageCircle className="w-5 h-5" /> Continue on WhatsApp
         </WhatsAppLink>
@@ -291,7 +291,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         <WhatsAppLink
           text={waText}
           placement="cart_error"
-          className="mt-6 w-full bg-[#128C7E] hover:bg-[#0E7568] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
+          className="mt-6 w-full bg-[#0E7568] hover:bg-[#075E54] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
         >
           <MessageCircle className="w-5 h-5" /> Send it on WhatsApp
         </WhatsAppLink>

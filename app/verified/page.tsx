@@ -265,7 +265,7 @@ export default function VerifiedPage() {
                     Get an itemised quote <ArrowRight className="w-5 h-5" />
                   </Link>
                   <WhatsAppLink text={'Hi SolarBuilders, I read how you vet installers and want to discuss a build.'} placement="verified"
-                    className="inline-flex items-center gap-2 bg-[#128C7E] hover:bg-[#0E7568] text-white rounded-full px-8 py-4 font-heading font-bold transition-colors min-h-[56px]"
+                    className="inline-flex items-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white rounded-full px-8 py-4 font-heading font-bold transition-colors min-h-[56px]"
                   >
                     <MessageCircle className="w-5 h-5" /> WhatsApp us
                   </WhatsAppLink>

@@ -231,7 +231,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
             href={whatsappLink(`Hi SolarBuilders, I just applied to work with you (${typeLabel}). Business: ${formData.businessName}.`)}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-heading w-full bg-[#128C7E] text-white py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#0E7568] transition-colors min-h-[56px]"
+            className="font-heading w-full bg-[#0E7568] text-white py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#075E54] transition-colors min-h-[56px]"
           >
             <MessageCircle className="w-5 h-5" /> Message us on WhatsApp
           </a>

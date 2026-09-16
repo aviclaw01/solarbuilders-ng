@@ -128,7 +128,7 @@ export default async function BrandPage({ params }: Props) {
           </div>
           <p className="text-slate-600 text-lg max-w-2xl mb-6">{brand.tagline}</p>
           <div className="flex flex-wrap gap-3">
-            <WhatsAppLink text={waText} placement={`brand:${brand.slug}`} className="inline-flex items-center gap-2 bg-[#128C7E] hover:bg-[#0E7568] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors">
+            <WhatsAppLink text={waText} placement={`brand:${brand.slug}`} className="inline-flex items-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors">
               <MessageCircle className="w-4 h-4" /> Get a system built with {isMaker ? brand.name : 'us'}
             </WhatsAppLink>
             <Link href="/calculator" className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 font-semibold text-sm transition-colors">

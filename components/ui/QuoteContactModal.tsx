@@ -113,7 +113,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => track('whatsapp_click', { placement: 'quote_handoff', quoteCode: quote.code, tier: t.label })}
-              className="w-full bg-[#128C7E] hover:bg-[#0E7568] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
+              className="w-full bg-[#0E7568] hover:bg-[#075E54] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
             >
               <MessageCircle className="w-5 h-5" /> Continue on WhatsApp
             </a>
@@ -168,7 +168,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
               type="submit"
               disabled={!canSubmit}
               className={`w-full py-4 rounded-full font-heading font-bold text-base transition-colors flex items-center justify-center gap-2 ${
-                canSubmit ? 'bg-[#128C7E] hover:bg-[#0E7568] text-white' : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
+                canSubmit ? 'bg-[#0E7568] hover:bg-[#075E54] text-white' : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
               }`}
             >
               <MessageCircle className="w-5 h-5" />

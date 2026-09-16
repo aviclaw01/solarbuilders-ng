@@ -402,7 +402,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
             track('quote_form_open', { quoteCode: quote.code, tier: t.label, amount: t.total.best });
             setShowContact(true);
           }}
-          className="w-full bg-[#128C7E] hover:bg-[#0E7568] text-white py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition-colors"
+          className="w-full bg-[#0E7568] hover:bg-[#075E54] text-white py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition-colors"
         >
           <MessageCircle className="w-5 h-5" /> Get this system built
         </button>

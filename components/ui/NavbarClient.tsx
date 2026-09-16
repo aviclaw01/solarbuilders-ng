@@ -319,7 +319,7 @@ export default function NavbarClient({
               href={whatsappLink('Hi SolarBuilders, I have a question about going solar.')}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#128C7E] hover:bg-[#0E7568] text-white py-3.5 rounded-full font-semibold min-h-[52px]"
+              className="flex items-center justify-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white py-3.5 rounded-full font-semibold min-h-[52px]"
             >
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </a>
