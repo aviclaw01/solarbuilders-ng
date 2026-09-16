@@ -24,7 +24,7 @@ import { buildQuote, type Quote, type QuoteAppliance } from "./quote";
 // APPLIANCE TABLE — mirrors app/calculator/page.tsx
 // ─────────────────────────────────────────────────────────
 
-type Preset = Omit<QuoteAppliance, "qty">;
+export type Preset = Omit<QuoteAppliance, "qty">;
 
 /**
  * hoursPerDay = effective running hours, exactly as the calculator defaults
@@ -71,6 +71,21 @@ const CUSTOM_APPLIANCES: Preset[] = [
 ];
 
 const BY_ID = new Map<string, Preset>([...PRESETS, ...CUSTOM_APPLIANCES].map((p) => [p.id, p]));
+
+/**
+ * The calculator's own appliance wattages, exposed so a page explaining
+ * "typical appliance wattage" (inverter-size-guide, the calculator guide)
+ * quotes the exact numbers the calculator uses instead of a hand-typed,
+ * driftable copy of them.
+ */
+export const APPLIANCE_PRESETS: readonly Preset[] = PRESETS;
+
+/** Look up one appliance preset's watts by calculator id, for a page quoting a single figure. */
+export function presetWatts(id: string): number {
+  const p = BY_ID.get(id);
+  if (!p) throw new Error(`lib/sizing.ts: unknown appliance id "${id}"`);
+  return p.watts;
+}
 
 /** Look up an appliance by calculator id and give it a quantity. */
 function a(id: string, qty = 1): QuoteAppliance {

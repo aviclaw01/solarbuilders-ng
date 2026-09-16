@@ -2,38 +2,84 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
-import { formatNaira } from '@/lib/quote';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import { formatNaira, formatNairaShort } from '@/lib/quote';
+import { getScenario, scenarioQuote } from '@/lib/sizing';
+import { generatorCostPerDay } from '@/lib/energy-costs';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Carbon, FairMoney, or Renmoney: Best Solar Loans in Nigeria 2026',
-  description: 'Compare solar financing options in Nigeria — Carbon, FairMoney, Renmoney, PAYG schemes and bank loans — with real monthly repayment maths for a ₦3.8M 5kVA/10kWh lithium system and a ₦2M starter (September 2026 prices).',
+  description:
+    'Compare solar financing options in Nigeria — fintech personal loans, bank loans, PAYG schemes and staged payment — with repayment maths run against two real, computed system prices (September 2026).',
   keywords: ['solar loan Nigeria', 'solar financing Nigeria', 'pay as you go solar Nigeria', 'Carbon solar loan', 'FairMoney solar loan'],
   openGraph: {
-    title: 'Best Solar Loans in Nigeria 2026 — Carbon, FairMoney & More',
+    title: 'Best Solar Loans in Nigeria 2026 — Carbon, FairMoney & More | SolarBuilders.ng',
     description: 'Compare solar financing options in Nigeria to fund your solar installation.',
-    url: 'https://solarbuildersng.com/blog/solar-loans-nigeria',
+    url: `${SITE_URL}/blog/solar-loans-nigeria`,
     type: 'article',
   },
-  alternates: { canonical: 'https://solarbuildersng.com/blog/solar-loans-nigeria' },
+  alternates: { canonical: `${SITE_URL}/blog/solar-loans-nigeria` },
 };
 
-const starter = HEADLINE_PACKAGES[0]; // 1.5–2.5kVA · 5kWh lithium
-const family = HEADLINE_PACKAGES[2]; // 5kVA · 10kWh lithium
+/**
+ * Flat monthly interest on the original principal — how Nigerian fintech
+ * personal loans are normally quoted (reducing-balance loans cost less than
+ * this). The rate itself is not something we hold a published source for —
+ * it varies by lender and by applicant — so it is named as an illustrative
+ * range rather than presented as fact, the same way GENSET_HOURS_PER_DAY_ASSUMED
+ * is named in lib/energy-costs.ts.
+ */
+const ILLUSTRATIVE_FLAT_RATE_PCT = { low: 2, high: 3 };
+
+function flatLoan(principal: number, monthlyRatePct: number, months: number) {
+  const total = Math.round(principal * (1 + (monthlyRatePct / 100) * months));
+  return { total, monthly: Math.round(total / months) };
+}
 
 export default function SolarLoansPage() {
+  // Same two loads used elsewhere on the site — the 3-bedroom-flat Standard
+  // build is the "family" worked example on the payback and generator pages,
+  // and the essentials build is the "starter" case on the payback page. Using
+  // the same scenarios here means this page cannot quietly disagree with them.
+  const familyScenario = getScenario('how-many-solar-panels-for-3-bedroom-flat')!;
+  const family = scenarioQuote(familyScenario).tiers.standard;
+  const starterScenario = getScenario('solar-for-lights-fans-and-tv-only')!;
+  const starter = scenarioQuote(starterScenario).tiers.standard;
+
+  const gen = generatorCostPerDay(6);
+  const genMonthly = { low: gen.low * 30, high: gen.high * 30 };
+
+  const familyLoans = [
+    { label: `Fintech personal loan, 12 months`, ...flatLoan(family.total.best, ILLUSTRATIVE_FLAT_RATE_PCT.high, 12) },
+    { label: `Fintech personal loan, 24 months`, ...flatLoan(family.total.best, ILLUSTRATIVE_FLAT_RATE_PCT.low, 24) },
+  ];
+  const starterLoans = [
+    { label: `Fintech personal loan, 12 months`, ...flatLoan(starter.total.best, ILLUSTRATIVE_FLAT_RATE_PCT.high, 12) },
+    { label: `Fintech personal loan, 18 months`, ...flatLoan(starter.total.best, ILLUSTRATIVE_FLAT_RATE_PCT.low, 18) },
+  ];
+
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: 'Carbon, FairMoney, or Renmoney: Best Solar Loans in Nigeria 2026',
+    description:
+      'Solar financing options in Nigeria compared, with repayment maths run against two real, computed system prices.',
+    author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
+    publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
+    datePublished: '2026-03-01',
+    dateModified: '2026-09-16',
+    url: `${SITE_URL}/blog/solar-loans-nigeria`,
+  };
+
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       <Navbar />
       <main>
       <article className="max-w-3xl mx-auto px-6 py-16">
-        <div className="flex items-center gap-2 text-sm text-slate-500 mb-8">
-          <Link href="/" className="hover:text-slate-900">Home</Link>
-          <span>/</span>
-          <Link href="/blog" className="hover:text-slate-900">Blog</Link>
-          <span>/</span>
-          <span className="text-slate-900">Solar Loans Nigeria</span>
-        </div>
+        <Breadcrumbs trail={[{ href: '/blog', label: 'Blog' }, { label: 'Solar loans Nigeria' }]} className="mb-8" />
 
         <div className="mb-4">
           <span className="bg-amber-50 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full border border-amber-200">Financing</span>
@@ -49,61 +95,65 @@ export default function SolarLoansPage() {
 
         <div className="prose prose-slate max-w-none">
           <p className="text-slate-600 text-lg leading-relaxed mb-6">
-            The biggest barrier to solar in Nigeria isn&apos;t technology or availability — it&apos;s upfront cost. As of {PRICES_LAST_UPDATED_LABEL}, a {family.label} system for a family home with one AC costs {formatNaira(family.low)}–{formatNaira(family.high)} installed, and even a {starter.label} starter (lights, fans, TV, fridge) is {formatNaira(starter.low)}–{formatNaira(starter.high)}. Most middle-class Nigerian families don&apos;t have that sitting in a savings account. The good news: the financing options have improved, and a proper itemised quote makes applying much easier.
+            The biggest barrier to solar in Nigeria isn&apos;t technology or availability — it&apos;s upfront cost. As
+            of {PRICES_LAST_UPDATED_LABEL}, the Standard build for a {familyScenario.question.toLowerCase()} load
+            costs {formatNaira(family.total.best)} installed, and a {starterScenario.question.toLowerCase()} load —
+            lights, fans, TV, no AC — is {formatNaira(starter.total.best)}. Most middle-class Nigerian families
+            don&apos;t have that sitting in a savings account. The good news: the financing options have improved,
+            and a proper itemised quote makes applying much easier.
           </p>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+            <p className="text-amber-800 text-sm">
+              A note on the numbers below: the two system prices are computed by our quote engine from{' '}
+              {PRICES_LAST_UPDATED_LABEL} Nigerian vendor listings. The lender rates, limits and terms are not — no
+              lender publishes a single national rate, and we do not hold a sourced figure for any of them. Where we
+              can&apos;t cite a number we have described the product qualitatively instead and told you to get the
+              live figure from the lender.
+            </p>
+          </div>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">First: get a quote a lender can read</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Every lender below will ask what the money is for and how much you need. &quot;Solar, about ₦4 million&quot; is a weak answer. An itemised quote — inverter, battery modules, panels, mounting and protection, labour, each with a price — is a strong one. Our <Link href="/calculator" className="text-amber-600 font-semibold hover:underline">calculator</Link> produces exactly that, with a quote code and a PDF you can attach to a loan application or show a bank officer. Build the quote first, then borrow the number on it, not a guess.
+            Every lender below will ask what the money is for and how much you need. &quot;Solar, a few million
+            naira&quot; is a weak answer. An itemised quote — inverter, battery modules, panels, mounting and
+            protection, labour, each with a price — is a strong one. Our{' '}
+            <Link href="/calculator" className="text-amber-600 font-semibold hover:underline">calculator</Link>{' '}
+            produces exactly that, with a quote code and a PDF you can attach to a loan application or show a bank
+            officer. Build the quote first, then borrow the number on it, not a guess.
           </p>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Option 1: Fintech personal loans (Carbon, FairMoney, Renmoney)</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            These platforms offer personal loans with no collateral — just your BVN, employment details, and sometimes a salary account. Rates are high but access is fast.
+            These platforms offer personal loans with no collateral — just your BVN, employment details, and
+            sometimes a salary account. Approval is fast and rates are high; both the rate you are actually offered
+            and the limit you are approved for depend on your own risk profile, so treat anything below as a
+            starting point for comparison, not a quote.
           </p>
           <div className="space-y-4 mb-6">
             {[
               {
                 name: 'Carbon (formerly Paylater)',
-                rate: '2–5% monthly',
-                limit: 'Up to ₦2,000,000',
-                term: '3–12 months',
-                pros: 'Instant approval, clean app, flexible repayment',
-                cons: 'High interest rate; limit covers a starter system, not a 5kVA/10kWh build on its own',
+                shape: 'Short terms, small-to-mid limits',
+                pros: 'Instant in-app approval, flexible repayment, no collateral',
+                cons: `Limits are usually enough for a ${starterScenario.question.toLowerCase()} build on their own, rarely a full family system — check your live limit in-app`,
               },
               {
                 name: 'FairMoney',
-                rate: '2.5–4.5% monthly',
-                limit: 'Up to ₦1,500,000',
-                term: '3–18 months',
-                pros: 'Quick disbursement, good for salaried earners',
-                cons: 'Shorter terms mean higher monthly payments; limit is below most full-system quotes',
+                shape: 'Short terms, geared to salaried earners',
+                pros: 'Quick disbursement, good for salary-account customers',
+                cons: 'Shorter terms mean a heavier monthly payment for the same principal',
               },
               {
                 name: 'Renmoney',
-                rate: '2–3.5% monthly',
-                limit: 'Up to ₦6,000,000',
-                term: '3–24 months',
-                pros: 'Higher loan amounts, longer terms, lower rates than others — the only fintech here that covers a 5kVA/10kWh system outright',
-                cons: 'Stricter qualification, slower approval',
+                shape: 'Longer terms, higher limits than the other two',
+                pros: 'The fintech most likely to cover a full family system in one loan',
+                cons: 'Stricter qualification, slower approval than Carbon or FairMoney',
               },
-            ].map(option => (
+            ].map((option) => (
               <div key={option.name} className="bg-white border border-slate-100 rounded-2xl p-6">
-                <h3 className="font-heading font-bold text-slate-900 text-lg mb-3">{option.name}</h3>
-                <div className="grid grid-cols-3 gap-3 mb-4 text-sm">
-                  <div className="bg-slate-50 rounded-xl p-3 text-center">
-                    <p className="text-slate-500 text-xs mb-1">Rate</p>
-                    <p className="font-semibold text-slate-900">{option.rate}</p>
-                  </div>
-                  <div className="bg-slate-50 rounded-xl p-3 text-center">
-                    <p className="text-slate-500 text-xs mb-1">Limit</p>
-                    <p className="font-semibold text-slate-900">{option.limit}</p>
-                  </div>
-                  <div className="bg-slate-50 rounded-xl p-3 text-center">
-                    <p className="text-slate-500 text-xs mb-1">Term</p>
-                    <p className="font-semibold text-slate-900">{option.term}</p>
-                  </div>
-                </div>
+                <h3 className="font-heading font-bold text-slate-900 text-lg mb-2">{option.name}</h3>
+                <p className="text-slate-500 text-xs uppercase tracking-wide font-semibold mb-3">{option.shape}</p>
                 <div className="text-sm space-y-1">
                   <p><span className="text-emerald-600 font-semibold">Pros:</span> <span className="text-slate-600">{option.pros}</span></p>
                   <p><span className="text-red-500 font-semibold">Cons:</span> <span className="text-slate-600">{option.cons}</span></p>
@@ -114,46 +164,61 @@ export default function SolarLoansPage() {
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">What the repayments actually look like</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Two systems, priced from our calculator at {PRICES_LAST_UPDATED_LABEL} rates: a <strong>₦3,800,000</strong> 5kVA / 10kWh lithium family system (mid-range of {formatNaira(family.low)}–{formatNaira(family.high)}) and a <strong>₦2,000,000</strong> 5kWh lithium starter. The illustrations below use flat monthly interest on the original principal, which is how most Nigerian fintech loans are quoted — always confirm the lender&apos;s own repayment schedule, as reducing-balance loans cost less.
+            Two systems, priced by our calculator at {PRICES_LAST_UPDATED_LABEL} rates: the{' '}
+            {familyScenario.question.toLowerCase()} Standard build at {formatNaira(family.total.best)}, and the{' '}
+            {starterScenario.question.toLowerCase()} build at {formatNaira(starter.total.best)}. The rows below use
+            flat monthly interest on the original principal, at {ILLUSTRATIVE_FLAT_RATE_PCT.low}–
+            {ILLUSTRATIVE_FLAT_RATE_PCT.high}% a month — an illustrative range for how Nigerian fintech personal
+            loans are commonly quoted, not a rate any named lender has published to us. Confirm the lender&apos;s own
+            schedule before borrowing; a reducing-balance loan costs less than flat interest on the same headline rate.
           </p>
           <div className="overflow-x-auto mb-4">
             <table className="w-full text-sm border border-slate-100 rounded-2xl overflow-hidden">
               <thead>
                 <tr className="bg-slate-50">
+                  <th className="text-left p-4 font-heading font-semibold">System</th>
                   <th className="text-left p-4 font-heading font-semibold">Loan</th>
-                  <th className="text-left p-4 font-heading font-semibold">Rate × term</th>
                   <th className="text-left p-4 font-heading font-semibold">Total repaid</th>
                   <th className="text-left p-4 font-heading font-semibold">Per month</th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  ['₦3.8M system — fintech (Carbon/FairMoney-style)', '3%/mo × 12 months', '₦5,168,000', '₦430,667'],
-                  ['₦3.8M system — Renmoney', '2.5%/mo × 24 months', '₦6,080,000', '₦253,333'],
-                  ['₦3.8M system — bank loan, ₦3M cap + ₦800k cash', '2%/mo × 24 months on ₦3M', '₦4,440,000', '₦185,000'],
-                  ['₦2M starter — fintech', '3%/mo × 12 months', '₦2,720,000', '₦226,667'],
-                  ['₦2M starter — Renmoney', '2.5%/mo × 18 months', '₦2,900,000', '₦161,111'],
-                ].map(([loan, terms, total, monthly]) => (
-                  <tr key={loan} className="border-t border-slate-100">
-                    <td className="p-4 text-slate-600">{loan}</td>
-                    <td className="p-4 text-slate-600">{terms}</td>
-                    <td className="p-4 text-slate-900">{total}</td>
-                    <td className="p-4 font-semibold text-amber-600">{monthly}</td>
+                  ...familyLoans.map((l) => ({ system: `${formatNairaShort(family.total.best)} family system`, ...l })),
+                  ...starterLoans.map((l) => ({ system: `${formatNairaShort(starter.total.best)} starter`, ...l })),
+                ].map((row) => (
+                  <tr key={`${row.system}-${row.label}`} className="border-t border-slate-100">
+                    <td className="p-4 text-slate-600">{row.system}</td>
+                    <td className="p-4 text-slate-600">{row.label}</td>
+                    <td className="p-4 text-slate-900">{formatNaira(row.total)}</td>
+                    <td className="p-4 font-semibold text-amber-600">{formatNaira(row.monthly)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <p className="text-slate-600 leading-relaxed mb-6">
-            The comparison that matters: a Lagos household running a generator 6 hours a day spends roughly ₦260,000 a month on fuel and servicing. A 24-month Renmoney repayment on the full family system is about the same as that fuel bill — and when the loan ends, the system keeps running for a decade on lithium. The 12-month fintech route is faster but the monthly figure is heavy; it suits the ₦2M starter far better than the ₦3.8M build.
+            The comparison that matters: a Lagos household whose generator runs 6 hours a day spends{' '}
+            {formatNaira(genMonthly.low)}–{formatNaira(genMonthly.high)} a month on petrol alone — no oil, no
+            servicing, no repairs, because we do not hold a reliable national figure for those (full working in{' '}
+            <Link href="/blog/generator-vs-solar-lagos" className="text-amber-600 font-semibold hover:underline">
+              generator vs solar in Lagos
+            </Link>
+            ). A 24-month loan on the family system above sits inside that same monthly range — and once it is repaid
+            the fuel bill stops for good while the system keeps running on lithium for a decade or more.
           </p>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Option 2: Solar-specific PAYG (Pay-As-You-Go) schemes</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            These companies install the system and you pay monthly — like a utility bill. When you&apos;ve paid the total cost, you own the system outright.
+            These companies install the system and you pay monthly — like a utility bill. When you&apos;ve paid the
+            total cost, you own the system outright.
           </p>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Providers operating in Nigeria include Arnergy Solar, Rensource, and d.light. Monthly payments typically start at ₦15,000–₦50,000 depending on system size. The downside: you don&apos;t choose the equipment, so you get whatever system they&apos;ve standardised on, and the total paid over the term is usually well above the cash price.
+            Providers operating in Nigeria include Arnergy Solar, Rensource, and d.light. The monthly payment is sized
+            to the specific system they install for you, so we cannot quote a national figure here — ask for the full
+            repayment schedule before you sign, and compare the total paid over the term against the cash price of an
+            equivalent system from our calculator. The downside beyond price: you don&apos;t choose the equipment, so
+            you get whatever system they&apos;ve standardised on.
           </p>
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
             <p className="text-amber-800 text-sm font-semibold">PAYG caveat: You&apos;re locked into their ecosystem. If the company folds, your system support could disappear. Stick to established providers with proven track records.</p>
@@ -161,23 +226,28 @@ export default function SolarLoansPage() {
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Option 3: Bank loans</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Several Nigerian banks offer specific solar loans at lower rates than fintech:
+            Several Nigerian banks — Access, GTBank and Stanbic IBTC among them — offer named solar or energy loans,
+            generally at lower rates than fintech personal loans but slower to approve (weeks, not the same day) and
+            usually capped below a full system price for an unsecured facility. We do not hold a sourced, current
+            rate or cap for any of them — ask your own bank for its live terms rather than assuming ours.
           </p>
-          <ul className="space-y-2 text-slate-600 mb-6 list-disc list-inside">
-            <li><strong>Access Bank Solar Loan:</strong> ~2% monthly, up to ₦3M, 12–36 months</li>
-            <li><strong>GTBank Energy Loan:</strong> Competitive rates for salaried GTBank customers</li>
-            <li><strong>Stanbic IBTC Solar Loan:</strong> Good rates for employed individuals</li>
-          </ul>
           <p className="text-slate-600 leading-relaxed mb-6">
-            Bank loans are cheaper but slower — expect 2–4 weeks for approval vs same-day for fintech. Worth it if you can wait. Note the ₦3M cap: on a ₦3.8M system you would cover the balance in cash, which is where the quote PDF earns its keep — the bank sees exactly what the ₦3M buys. Banks in particular want an itemised, dated quote from a named supplier, so attach the PDF.
+            If your bank&apos;s cap is below the system price, the gap is where the quote PDF earns its keep — the
+            loan officer sees exactly what the capped amount buys, and you cover the balance in cash or with a
+            smaller top-up loan. Banks in particular want an itemised, dated quote from a named supplier, so attach
+            the PDF.
           </p>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Option 4: Staged payment on the build</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Not a loan, but it changes how much you need to borrow. A solar build is naturally staged: equipment has to be paid for before it is delivered, labour is paid on commissioning. Deposit-plus-balance is the normal structure, and it means the last part of the money is only due once the system is running.
+            Not a loan, but it changes how much you need to borrow. A solar build is naturally staged: equipment has
+            to be paid for before it is delivered, labour is paid on commissioning. Deposit-plus-balance is the
+            normal structure, and it means the last part of the money is only due once the system is running.
           </p>
           <p className="text-slate-600 leading-relaxed mb-6">
-            Combine that with a smaller loan — for example, borrow the equipment portion and pay labour and balance from salary a month later — and the monthly figures above come down. Never pay 100% upfront to anyone, financed or not.
+            Combine that with a smaller loan — for example, borrow the equipment portion and pay labour and balance
+            from salary a month later — and the monthly figures above come down. Never pay 100% upfront to anyone,
+            financed or not.
           </p>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Which option should I choose?</h2>
@@ -191,9 +261,9 @@ export default function SolarLoansPage() {
               </thead>
               <tbody>
                 {[
-                  ['Need money in 24 hours, starter system (≤ ₦2M)', 'Carbon or FairMoney'],
-                  ['Full 5kVA/10kWh system, want one loan for all of it', 'Renmoney (24 months)'],
-                  ['Salaried employee, can wait 2–4 weeks', 'Bank loan (cheapest) + cash for the balance'],
+                  [`Need money fast, ${starterScenario.question.toLowerCase()} build`, 'Carbon or FairMoney'],
+                  ['Full family system, want one loan for all of it', 'Renmoney, or whichever fintech quotes the longest term'],
+                  ['Salaried employee, can wait 2–4 weeks', 'Bank loan (cheapest) + cash or a top-up loan for the balance'],
                   ['Want zero-hassle, no upfront', 'PAYG scheme'],
                   ['Want to borrow less', 'Smaller loan + staged payment on the build'],
                   ['Diaspora funding family back home', 'Build the quote, send us the quote code on WhatsApp — we manage the build'],
@@ -209,7 +279,8 @@ export default function SolarLoansPage() {
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Watch out for solar scams</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            If someone offers you solar with &quot;zero upfront, unlimited payment plan&quot; from an unknown company — run. Solar scams in Nigeria typically follow one of three patterns:
+            If someone offers you solar with &quot;zero upfront, unlimited payment plan&quot; from an unknown
+            company — run. Solar scams in Nigeria typically follow one of three patterns:
           </p>
           <ul className="space-y-2 text-slate-600 mb-6 list-disc list-inside">
             <li>Collecting upfront payment then disappearing before installation</li>
@@ -217,7 +288,11 @@ export default function SolarLoansPage() {
             <li>Inflating system size recommendations to charge more</li>
           </ul>
           <p className="text-slate-600 leading-relaxed">
-            A priced, itemised quote is your defence against all three: you know what each part should cost (see current vendor prices on our <Link href="/brands" className="text-amber-600 font-semibold hover:underline">brands page</Link>), you know the size your appliances actually need, and there is no lump sum to hide behind. When we manage a build, we confirm every line against current stock and use installers we have <Link href="/verified" className="text-amber-600 font-semibold hover:underline">already vetted</Link>.
+            A priced, itemised quote is your defence against all three: you know what each part should cost (see
+            current vendor prices on our <Link href="/brands" className="text-amber-600 font-semibold hover:underline">brands page</Link>),
+            you know the size your appliances actually need, and there is no lump sum to hide behind. When we manage
+            a build, we confirm every line against current stock and use installers we have{' '}
+            <Link href="/verified" className="text-amber-600 font-semibold hover:underline">already vetted</Link>.
           </p>
         </div>
 

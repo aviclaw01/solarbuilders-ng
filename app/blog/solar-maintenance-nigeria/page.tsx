@@ -2,38 +2,54 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { PRICES_LAST_UPDATED_LABEL, TUBULAR_200AH } from '@/lib/prices';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import { LITHIUM_MODULE_KWH, LITHIUM_PER_KWH, PRICES_LAST_UPDATED_LABEL, TUBULAR_200AH } from '@/lib/prices';
 import { formatNaira } from '@/lib/quote';
+import { SOILING_LOSS_PCT } from '@/lib/energy-costs';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Solar Panel Maintenance: What Nigerian Homeowners Need to Know',
-  description: 'Complete guide to maintaining your solar system in Nigeria: cleaning panels, battery care, annual checks, and the real cost of battery replacement — lithium (10+ years) vs tubular (2–4 years) at September 2026 prices.',
+  description: 'Complete guide to maintaining your solar system in Nigeria: cleaning panels, battery care, annual checks, and the real cost of battery replacement — lithium (10+ years) vs tubular (2–4 years), priced at September 2026 vendor rates.',
   keywords: ['solar panel maintenance Nigeria', 'solar system care Nigeria', 'solar cleaning Nigeria', 'solar battery maintenance'],
   openGraph: {
-    title: 'Solar Panel Maintenance: What Nigerian Homeowners Need to Know',
+    title: 'Solar Panel Maintenance: What Nigerian Homeowners Need to Know | SolarBuilders.ng',
     description: 'Complete guide to maintaining your solar system in Nigeria.',
-    url: 'https://solarbuildersng.com/blog/solar-maintenance-nigeria',
+    url: `${SITE_URL}/blog/solar-maintenance-nigeria`,
     type: 'article',
   },
-  alternates: { canonical: 'https://solarbuildersng.com/blog/solar-maintenance-nigeria' },
+  alternates: { canonical: `${SITE_URL}/blog/solar-maintenance-nigeria` },
 };
 
+// A standard 48V lithium module (5.12kWh) at mid-tier pricing — the same
+// "5kWh lithium pack" figure the calculator quotes for a Standard-tier build.
+// Recompute from lib/prices.ts rather than typing a number, so this page
+// cannot drift from what the calculator actually charges.
+const lithiumPackLow = Math.round(LITHIUM_PER_KWH.mid.low * LITHIUM_MODULE_KWH);
+const lithiumPackHigh = Math.round(LITHIUM_PER_KWH.mid.high * LITHIUM_MODULE_KWH);
 const tubularBankLow = TUBULAR_200AH.low * 4;
 const tubularBankHigh = TUBULAR_200AH.high * 4;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: 'Solar Panel Maintenance: What Nigerian Homeowners Need to Know',
+  description: 'What Nigerian solar owners actually need to do, and the real ten-year cost of battery replacement, computed from vendor pricing.',
+  author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
+  publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
+  datePublished: '2026-03-01',
+  dateModified: '2026-09-16',
+  url: `${SITE_URL}/blog/solar-maintenance-nigeria`,
+};
 
 export default function SolarMaintenancePage() {
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       <Navbar />
       <main>
       <article className="max-w-3xl mx-auto px-6 py-16">
-        <div className="flex items-center gap-2 text-sm text-slate-500 mb-8">
-          <Link href="/" className="hover:text-slate-900">Home</Link>
-          <span>/</span>
-          <Link href="/blog" className="hover:text-slate-900">Blog</Link>
-          <span>/</span>
-          <span className="text-slate-900">Solar Maintenance</span>
-        </div>
+        <Breadcrumbs trail={[{ href: '/blog', label: 'Blog' }, { label: 'Solar maintenance' }]} className="mb-8" />
 
         <div className="mb-4">
           <span className="bg-amber-50 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full border border-amber-200">Maintenance</span>
@@ -49,15 +65,31 @@ export default function SolarMaintenancePage() {
 
         <div className="prose prose-slate max-w-none">
           <p className="text-slate-600 text-lg leading-relaxed mb-6">
-            Good news: solar systems are remarkably low-maintenance. Bad news: &quot;low maintenance&quot; doesn&apos;t mean zero maintenance. In Nigeria&apos;s dusty, humid climate, neglecting your system can reduce efficiency by 20–30%. Here&apos;s what you need to do — what you can ignore — and the one maintenance cost that dwarfs all the others: batteries.
+            Good news: solar systems are remarkably low-maintenance. Bad news: &quot;low maintenance&quot; doesn&apos;t
+            mean zero maintenance. Peer-reviewed West African research puts harmattan dust soiling losses at{' '}
+            {SOILING_LOSS_PCT.typicalLow}–{SOILING_LOSS_PCT.typicalHigh}% typically, and as high as{' '}
+            {SOILING_LOSS_PCT.worstCase}% at the worst-affected sites measured (
+            <a href={SOILING_LOSS_PCT.sourceUrl} rel="nofollow noopener" target="_blank" className="text-amber-600 font-semibold hover:underline">
+              {SOILING_LOSS_PCT.source}
+            </a>
+            ) — the full breakdown is in our{' '}
+            <Link href="/blog/harmattan-solar-panel-cleaning" className="text-amber-600 font-semibold hover:underline">
+              harmattan cleaning guide
+            </Link>. Here&apos;s what you actually need to do — what you can ignore — and the one maintenance cost
+            that dwarfs all the others: batteries.
           </p>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Panel cleaning (every 1–3 months)</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Nigeria&apos;s harmattan season deposits thick dust on panels from November to March. During the rainy season, bird droppings and algae can build up. Both reduce how much sunlight reaches your panels.
+            Nigeria&apos;s harmattan season deposits thick dust on panels from November to March. During the rainy
+            season, bird droppings and algae can build up. Both reduce how much sunlight reaches your panels.
           </p>
           <p className="text-slate-600 leading-relaxed mb-4">
-            <strong>How to clean:</strong> Use a soft cloth or sponge with clean water. Early morning (before panels heat up) or evening is best. Avoid abrasive materials — they scratch the glass coating. Most homeowners can do this safely from the roof, or hire a cleaner for ₦2,000–₦5,000 per session.
+            <strong>How to clean:</strong> Use a soft cloth or sponge with clean water. Early morning (before panels
+            heat up) or evening is best. Avoid abrasive materials — they scratch the glass coating. Most homeowners
+            can do this safely from the roof, or hire a cleaner. We do not hold a reliable national figure for what a
+            cleaning visit costs — it varies by city and by roof access far more than equipment prices do — so get a
+            quote from a local cleaner or your installer rather than trusting a number here.
           </p>
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
             <p className="text-amber-800 text-sm font-semibold">Harmattan tip: Clean your panels every 3–4 weeks during harmattan season (Nov–Feb). You can visually inspect from the ground — a visibly dusty panel is losing efficiency.</p>
@@ -65,7 +97,8 @@ export default function SolarMaintenancePage() {
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Battery maintenance</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Your batteries are the most maintenance-intensive part of the system. What you need to do depends on your battery type:
+            Your batteries are the most maintenance-intensive part of the system. What you need to do depends on
+            your battery type:
           </p>
           <div className="space-y-4 mb-6">
             <div className="bg-slate-50 rounded-xl border border-slate-100 p-5">
@@ -90,7 +123,9 @@ export default function SolarMaintenancePage() {
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Battery replacement: the real maintenance cost</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Cleaning and annual checks are pocket change next to batteries. This is where the lithium-vs-tubular decision pays off — or costs you — over the life of the system. Prices below are Nigerian vendor listings as of {PRICES_LAST_UPDATED_LABEL}.
+            Cleaning and annual checks are pocket change next to batteries. This is where the lithium-vs-tubular
+            decision pays off — or costs you — over the life of the system. Prices below are computed from Nigerian
+            vendor listings, last checked {PRICES_LAST_UPDATED_LABEL}.
           </p>
           <div className="overflow-x-auto mb-4">
             <table className="w-full text-sm border border-slate-100 rounded-2xl overflow-hidden">
@@ -104,8 +139,18 @@ export default function SolarMaintenancePage() {
               </thead>
               <tbody>
                 {[
-                  ['Lithium — one 5kWh LiFePO4 pack (Deye, Felicity, Growatt, Dyness)', '₦1,000,000 – ₦1,350,000', 'Every 10+ years', '₦1,000,000 – ₦1,350,000 (the original pack, still running)'],
-                  [`Tubular — 4 × 200Ah 12V (${formatNaira(TUBULAR_200AH.low)} – ${formatNaira(TUBULAR_200AH.high)} each)`, `${formatNaira(tubularBankLow)} – ${formatNaira(tubularBankHigh)}`, 'Every 2–4 years', `${formatNaira(tubularBankLow * 3)} – ${formatNaira(tubularBankHigh * 5)} (3–5 banks)`],
+                  [
+                    'Lithium — one 5.12kWh LiFePO4 module (Felicity, Growatt, Dyness)',
+                    `${formatNaira(lithiumPackLow)} – ${formatNaira(lithiumPackHigh)}`,
+                    'Every 10+ years',
+                    `${formatNaira(lithiumPackLow)} – ${formatNaira(lithiumPackHigh)} (the original pack, still running)`,
+                  ],
+                  [
+                    `Tubular — 4 × 200Ah 12V (${formatNaira(TUBULAR_200AH.low)} – ${formatNaira(TUBULAR_200AH.high)} each)`,
+                    `${formatNaira(tubularBankLow)} – ${formatNaira(tubularBankHigh)}`,
+                    'Every 2–4 years',
+                    `${formatNaira(tubularBankLow * 3)} – ${formatNaira(tubularBankHigh * 5)} (3–5 banks)`,
+                  ],
                 ].map(([bank, cost, freq, tenYear]) => (
                   <tr key={bank} className="border-t border-slate-100">
                     <td className="p-4 text-slate-600">{bank}</td>
@@ -118,10 +163,22 @@ export default function SolarMaintenancePage() {
             </table>
           </div>
           <p className="text-slate-600 leading-relaxed mb-4">
-            The two banks store a similar amount of usable energy: a 5.12kWh lithium module at 90% depth of discharge gives about 4.6kWh, and four 200Ah tubulars (9.6kWh nominal) at the 50% you should never exceed give about 4.8kWh. The tubular bank is cheaper on day one — {formatNaira(tubularBankLow)}–{formatNaira(tubularBankHigh)} against ₦1,000,000–₦1,350,000 — but you buy it three to five times in the period a single lithium pack lasts, and you spend every month topping up electrolyte and cleaning terminals.
+            The two banks store a similar amount of usable energy: a 5.12kWh lithium module at 90% depth of
+            discharge gives about 4.6kWh, and four 200Ah tubulars (9.6kWh nominal) at the 50% you should never
+            exceed give about 4.8kWh. The tubular bank is cheaper on day one — {formatNaira(tubularBankLow)}–
+            {formatNaira(tubularBankHigh)} against {formatNaira(lithiumPackLow)}–{formatNaira(lithiumPackHigh)} — but
+            you buy it three to five times in the period a single lithium pack lasts, and you spend every month
+            topping up electrolyte and cleaning terminals. The full ten-year arithmetic, including where tubular
+            still wins, is in{' '}
+            <Link href="/blog/lithium-vs-tubular-battery-nigeria" className="text-amber-600 font-semibold hover:underline">
+              lithium vs tubular batteries
+            </Link>.
           </p>
           <p className="text-slate-600 leading-relaxed mb-6">
-            If you already have a tubular bank that is fading, the sensible replacement is usually a lithium module rather than another set of tubulars — provided your inverter supports lithium charging profiles. Most hybrid inverters sold since 2023 do; older units may need a firmware setting or a replacement. Ask before you buy the battery.
+            If you already have a tubular bank that is fading, the sensible replacement is usually a lithium module
+            rather than another set of tubulars — provided your inverter supports lithium charging profiles. Most
+            hybrid inverters sold since 2023 do; older units may need a firmware setting or a replacement. Ask before
+            you buy the battery.
           </p>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Annual professional service check</h2>
@@ -136,7 +193,9 @@ export default function SolarMaintenancePage() {
             <li>Charge controller / inverter battery settings (especially after a battery change)</li>
           </ul>
           <p className="text-slate-600 leading-relaxed mb-6">
-            A professional service call costs ₦15,000–₦40,000 and catches problems before they become expensive.
+            We do not hold a sourced national figure for what a service call costs — quotes vary by technician and by
+            city far more than equipment prices do. Ask your installer for a rate before booking one; whatever it is,
+            it is real money worth budgeting for even though we cannot put a number on it here.
           </p>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Warning signs to watch for</h2>
@@ -157,10 +216,14 @@ export default function SolarMaintenancePage() {
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">What you definitely don&apos;t need to do</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
-            Ignore anyone who tells you panels need to be replaced every 5 years. Quality Tier-1 panels (Jinko, JA Solar, Longi, Trina, Canadian Solar) last 20–25 years and come with manufacturer warranties. They lose about 0.5% efficiency per year — barely noticeable.
+            Ignore anyone who tells you panels need to be replaced every 5 years. Quality Tier-1 panels (Jinko, JA
+            Solar, Longi, Trina, Canadian Solar) last 20–25 years and come with manufacturer warranties. They lose
+            about 0.5% efficiency per year — barely noticeable.
           </p>
           <p className="text-slate-600 leading-relaxed mb-6">
-            You also don&apos;t need to turn off your system during lightning storms — a properly installed system has surge protection. If your installer didn&apos;t include surge protection, that&apos;s a gap worth fixing; it is a standard line in every quote our calculator produces.
+            You also don&apos;t need to turn off your system during lightning storms — a properly installed system
+            has surge protection. If your installer didn&apos;t include surge protection, that&apos;s a gap worth
+            fixing; it is a standard line in every quote our calculator produces.
           </p>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Maintenance schedule summary</h2>
@@ -175,13 +238,13 @@ export default function SolarMaintenancePage() {
               </thead>
               <tbody>
                 {[
-                  ['Panel cleaning', 'Monthly (harmattan) / Quarterly (wet season)', '₦0–₦5,000'],
+                  ['Panel cleaning', 'Monthly (harmattan) / Quarterly (wet season)', 'Ask a local cleaner — no sourced national figure'],
                   ['Visual inspection', 'Monthly', 'Free'],
                   ['Battery electrolyte check (tubular only)', 'Monthly', 'Free'],
                   ['Terminal cleaning (tubular only)', 'Every 3 months', 'Free'],
-                  ['Professional service', 'Annually', '₦15,000–₦40,000'],
+                  ['Professional service', 'Annually', 'Ask your installer — no sourced national figure'],
                   ['Tubular bank replacement (4 × 200Ah)', 'Every 2–4 years', `${formatNaira(tubularBankLow)}–${formatNaira(tubularBankHigh)}`],
-                  ['Lithium pack replacement (5kWh)', 'Every 10+ years', '₦1,000,000–₦1,350,000'],
+                  ['Lithium module replacement (5.12kWh)', 'Every 10+ years', `${formatNaira(lithiumPackLow)}–${formatNaira(lithiumPackHigh)}`],
                 ].map(([task, freq, cost]) => (
                   <tr key={task} className="border-t border-slate-100">
                     <td className="p-4 text-slate-600">{task}</td>

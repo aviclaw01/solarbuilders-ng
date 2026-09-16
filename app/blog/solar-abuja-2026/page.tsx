@@ -2,30 +2,64 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { HEADLINE_PACKAGES, LABOUR_PER_KVA, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import {
+  HEADLINE_PACKAGES,
+  INVERTER_PER_KVA,
+  LABOUR_PER_KVA,
+  LITHIUM_MODULE_KWH,
+  LITHIUM_PER_KWH,
+  PANEL_PER_WP,
+  PANEL_WATTS,
+  PRICES_LAST_UPDATED_LABEL,
+} from '@/lib/prices';
 import { formatNaira } from '@/lib/quote';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Solar in Abuja: Prices and How to Get It Installed (2026)',
   description: 'Solar in Abuja, Nigeria: September 2026 installed prices for 5kWh lithium starters to 10kVA homes, why the FCT is good for solar, and how to go from an itemised quote to a managed installation.',
   keywords: ['solar Abuja 2026', 'solar installer Abuja', 'solar panels Abuja price', 'best solar company Abuja Nigeria'],
-  alternates: { canonical: 'https://solarbuildersng.com/blog/solar-abuja-2026' },
+  openGraph: {
+    title: 'Solar in Abuja: Prices and How to Get It Installed (2026) | SolarBuilders.ng',
+    description: 'What solar costs in Abuja and how to get it installed, priced from Nigerian vendor listings.',
+    url: `${SITE_URL}/blog/solar-abuja-2026`,
+    type: 'article',
+  },
+  alternates: { canonical: `${SITE_URL}/blog/solar-abuja-2026` },
 };
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: 'Solar in Abuja: Prices and How to Get It Installed (2026)',
+  description: 'What solar costs in Abuja and how to get it installed, priced from Nigerian vendor listings.',
+  author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
+  publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
+  datePublished: '2026-09-16',
+  dateModified: '2026-09-16',
+  url: `${SITE_URL}/blog/solar-abuja-2026`,
+};
+
+// Every figure in the "where the money goes" paragraph below is read off
+// lib/prices.ts at render time — the three figures used to happen to match
+// what was hand-typed here, which was a coincidence, not a guarantee.
+const lithiumPackLow = Math.round(LITHIUM_PER_KWH.mid.low * LITHIUM_MODULE_KWH);
+const lithiumPackHigh = Math.round(LITHIUM_PER_KWH.mid.high * LITHIUM_MODULE_KWH);
+const panelUnitLow = Math.round(PANEL_PER_WP.low * PANEL_WATTS);
+const panelUnitHigh = Math.round(PANEL_PER_WP.high * PANEL_WATTS);
+const inverter5kvaLow = Math.round(INVERTER_PER_KVA.mid.low * 5);
+const inverter5kvaHigh = Math.round(INVERTER_PER_KVA.mid.high * 5);
 
 export default function SolarAbujaPage() {
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       <Navbar />
       <main>
 
       <article className="max-w-3xl mx-auto px-4 py-16">
-        <div className="flex items-center gap-2 text-sm text-[#64748B] mb-8">
-          <Link href="/" className="hover:text-[#0A0F1E]">Home</Link>
-          <span>/</span>
-          <Link href="/blog" className="hover:text-[#0A0F1E]">Blog</Link>
-          <span>/</span>
-          <span className="text-[#0A0F1E]">Solar Abuja 2026</span>
-        </div>
+        <Breadcrumbs trail={[{ href: '/blog', label: 'Blog' }, { label: 'Solar in Abuja' }]} className="mb-8" />
 
         <span className="inline-block bg-[#FEF3C7] text-[#0A0F1E] text-xs font-heading font-semibold px-3 py-1 rounded-full mb-6">
           City Guide
@@ -79,7 +113,13 @@ export default function SolarAbujaPage() {
             </table>
           </div>
           <p className="text-[#64748B] leading-relaxed">
-            Where the money goes: a 5kWh lithium pack is ₦1,000,000–₦1,350,000, Tier-1 panels ₦185–₦300 per Wp (about ₦100,000–₦165,000 per 550W panel), a mid-tier 5kVA hybrid inverter ₦500,000–₦1,000,000, and roof-mount labour {formatNaira(LABOUR_PER_KVA.low)}–{formatNaira(LABOUR_PER_KVA.high)} per kVA. Import duty and VAT on panels, inverters and batteries are 0%. See current vendor prices by brand on our <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands page</Link>.
+            Where the money goes: a {LITHIUM_MODULE_KWH}kWh lithium module is {formatNaira(lithiumPackLow)}–
+            {formatNaira(lithiumPackHigh)}, Tier-1 panels {formatNaira(PANEL_PER_WP.low)}–{formatNaira(PANEL_PER_WP.high)} per
+            Wp (about {formatNaira(panelUnitLow)}–{formatNaira(panelUnitHigh)} per {PANEL_WATTS}W panel), a mid-tier 5kVA
+            hybrid inverter {formatNaira(inverter5kvaLow)}–{formatNaira(inverter5kvaHigh)}, and roof-mount labour{' '}
+            {formatNaira(LABOUR_PER_KVA.low)}–{formatNaira(LABOUR_PER_KVA.high)} per kVA. Import duty and VAT on panels,
+            inverters and batteries are 0%. See current vendor prices by brand on our{' '}
+            <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands page</Link>.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Where in Abuja</h2>

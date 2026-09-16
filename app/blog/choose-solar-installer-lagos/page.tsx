@@ -2,38 +2,53 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { HEADLINE_PACKAGES, LABOUR_PER_KVA, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import { HEADLINE_PACKAGES, LABOUR_FLOOR, LABOUR_PER_KVA, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNaira } from '@/lib/quote';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'How to Choose a Solar Installer in Lagos',
   description: 'How to choose a reliable solar installer in Lagos: CAC registration, past installs, references, written warranty, correct sizing and an itemised quote. The same checklist we apply when we vet installers for customer builds. Updated September 2026.',
   keywords: ['solar installer Lagos', 'choose solar company Lagos', 'best solar installer Lagos', 'solar installation Lagos guide'],
   openGraph: {
-    title: 'How to Choose a Solar Installer in Lagos',
+    title: 'How to Choose a Solar Installer in Lagos | SolarBuilders.ng',
     description: 'What to look for, red flags to avoid, and the checklist we use when we vet installers.',
-    url: 'https://solarbuildersng.com/blog/choose-solar-installer-lagos',
+    url: `${SITE_URL}/blog/choose-solar-installer-lagos`,
     type: 'article',
   },
-  alternates: { canonical: 'https://solarbuildersng.com/blog/choose-solar-installer-lagos' },
+  alternates: { canonical: `${SITE_URL}/blog/choose-solar-installer-lagos` },
+};
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: 'How to Choose a Solar Installer in Lagos',
+  description: 'What to look for, red flags to avoid, and the checklist we use when we vet installers.',
+  author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
+  publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
+  datePublished: '2026-03-01',
+  dateModified: '2026-09-16',
+  url: `${SITE_URL}/blog/choose-solar-installer-lagos`,
 };
 
 const starter = HEADLINE_PACKAGES[1]; // 3.5kVA · 5kWh lithium
+// A 50% deposit on the starter system's own range, not a single invented figure.
+const depositLow = Math.round(starter.low * 0.5);
+const depositHigh = Math.round(starter.high * 0.5);
+// Labour on a 5kVA system, straight from the per-kVA rate.
+const labour5kvaLow = LABOUR_PER_KVA.low * 5;
+const labour5kvaHigh = LABOUR_PER_KVA.high * 5;
 
 export default function ChooseSolarInstallerLagosPage() {
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       <Navbar />
       <main>
 
       <article className="max-w-3xl mx-auto px-4 py-16">
-        <div className="flex items-center gap-2 text-sm text-[#64748B] mb-8">
-          <Link href="/" className="hover:text-[#0A0F1E]">Home</Link>
-          <span>/</span>
-          <Link href="/blog" className="hover:text-[#0A0F1E]">Blog</Link>
-          <span>/</span>
-          <span className="text-[#0A0F1E]">Choose Solar Installer Lagos</span>
-        </div>
+        <Breadcrumbs trail={[{ href: '/blog', label: 'Blog' }, { label: 'Choose a solar installer in Lagos' }]} className="mb-8" />
 
         <span className="inline-block bg-[#FEF3C7] text-[#0A0F1E] text-xs font-heading font-semibold px-3 py-1 rounded-full mb-6">
           Buyer Guide
@@ -54,7 +69,7 @@ export default function ChooseSolarInstallerLagosPage() {
             Lagos has hundreds of solar companies — from established firms with years of track record to WhatsApp vendors who disappear after collecting a deposit. This is the checklist we apply before we let an installer anywhere near a customer build. Use it yourself, whoever ends up doing your installation.
           </p>
           <p className="text-[#64748B] leading-relaxed">
-            The stakes are real. A {starter.label} system costs {formatNaira(starter.low)}–{formatNaira(starter.high)} installed as of {PRICES_LAST_UPDATED_LABEL}, so a typical 50% deposit is close to ₦1,000,000. That is not money to hand over on a phone call.
+            The stakes are real. A {starter.label} system costs {formatNaira(starter.low)}–{formatNaira(starter.high)} installed as of {PRICES_LAST_UPDATED_LABEL}, so a typical 50% deposit is {formatNaira(depositLow)}–{formatNaira(depositHigh)}. That is not money to hand over on a phone call.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">1. CAC Registration and a Physical Presence</h2>
@@ -91,10 +106,10 @@ export default function ChooseSolarInstallerLagosPage() {
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">5. An Itemised Quote, Not a Lump Sum</h2>
           <p className="text-[#64748B] leading-relaxed">
-            A proper quote lists every line: inverter (brand, kVA), battery (brand, kWh, number of modules), panels (brand, wattage, count), mounting, cables, breakers and surge protection, and labour — each with its own price. A single &quot;₦2.5M all-in&quot; figure hides where the money goes and makes it impossible to compare quotes.
+            A proper quote lists every line: inverter (brand, kVA), battery (brand, kWh, number of modules), panels (brand, wattage, count), mounting, cables, breakers and surge protection, and labour — each with its own price. A single lump-sum &quot;all-in&quot; figure hides where the money goes and makes it impossible to compare quotes.
           </p>
           <p className="text-[#64748B] leading-relaxed">
-            As a sanity check on the labour line: roof-mount installation in Lagos runs {formatNaira(LABOUR_PER_KVA.low)}–{formatNaira(LABOUR_PER_KVA.high)} per kVA as of {PRICES_LAST_UPDATED_LABEL}, with a floor of about ₦100,000 for small jobs. So labour on a 5kVA system should sit around ₦100,000–₦300,000, not ₦800,000. Our calculator produces exactly this kind of itemised quote, priced from the same vendor data on the <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands page</Link>.
+            As a sanity check on the labour line: roof-mount installation in Lagos runs {formatNaira(LABOUR_PER_KVA.low)}–{formatNaira(LABOUR_PER_KVA.high)} per kVA as of {PRICES_LAST_UPDATED_LABEL}, with a floor of about {formatNaira(LABOUR_FLOOR)} for small jobs. So labour on a 5kVA system should sit around {formatNaira(labour5kvaLow)}–{formatNaira(labour5kvaHigh)} — treat anything more than double that top figure as a red flag worth asking about. Our calculator produces exactly this kind of itemised quote, priced from the same vendor data on the <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands page</Link>.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">6. A Written Workmanship Warranty</h2>
