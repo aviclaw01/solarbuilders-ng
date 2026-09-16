@@ -21,6 +21,12 @@ export const metadata: Metadata = {
   // Without this, relative OG/Twitter image paths don't resolve to absolute
   // URLs and social crawlers drop the preview image.
   metadataBase: new URL('https://solarbuildersng.com'),
+  // Bing Webmaster Tools site ownership. Google's equivalent is the static file
+  // at public/google22eba5c4deea8933.html. Both must stay put — removing either
+  // un-verifies the site and we lose the search console data.
+  verification: {
+    other: { 'msvalidate.01': '08FF2B73C13436DB64C89AB49149801D' },
+  },
   title: {
     default: "SolarBuilders.ng — Real Solar Prices & Quotes for Nigeria",
     template: "%s | SolarBuilders.ng"
