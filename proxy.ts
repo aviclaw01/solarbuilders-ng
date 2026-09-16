@@ -25,6 +25,16 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const REALM = 'Basic realm="SolarBuilders admin", charset="UTF-8"';
 
+/**
+ * Paths that need the superadmin credential when one is configured.
+ *
+ * These are the surfaces where a person decides that a business becomes a
+ * publicly visible "verified partner", and where jobs and commission get
+ * confirmed. The leads/orders/funnel dashboards stay on the general admin
+ * credential.
+ */
+const SUPER_ONLY_PATHS = ["/admin/partners", "/admin/routing"];
+
 /** Constant-time comparison of two equal-length byte arrays. */
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) return false;
@@ -70,6 +80,23 @@ function unauthorized(): NextResponse {
   });
 }
 
+/**
+ * Authenticated, but on the wrong tier. 403 rather than 401 on purpose: the
+ * browser must NOT pop the credential box again, because the credentials it
+ * already has are valid — they are just not sufficient for this page.
+ */
+function forbidden(path: string): NextResponse {
+  return new NextResponse(
+    `This page needs the superadmin credential (ADMIN_SUPER_USER / ADMIN_SUPER_PASSWORD).\n\n` +
+      `The admin login you used is valid, but it cannot open ${path} — approving a partner ` +
+      `publishes our name next to theirs, so it is deliberately a separate, senior credential.\n`,
+    {
+      status: 403,
+      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+    },
+  );
+}
+
 export async function proxy(req: NextRequest) {
   const user = process.env.ADMIN_USER;
   const password = process.env.ADMIN_PASSWORD;
@@ -105,10 +132,41 @@ export async function proxy(req: NextRequest) {
     timingSafeEqualString(givenUser, user),
     timingSafeEqualString(givenPassword, password),
   ]);
+  const isAdmin = userOk && passwordOk;
 
-  if (!userOk || !passwordOk) return unauthorized();
+  // ── Second tier: superadmin ────────────────────────────────────────────────
+  // Approving a vendor puts our name next to them publicly, so it warrants a
+  // credential the everyday leads login does not have. When ADMIN_SUPER_USER and
+  // ADMIN_SUPER_PASSWORD are unset we fall back to the single admin tier (and the
+  // pages say so, so nobody believes approval is better protected than it is).
+  const superUser = process.env.ADMIN_SUPER_USER;
+  const superPassword = process.env.ADMIN_SUPER_PASSWORD;
+  const superConfigured = Boolean(superUser && superPassword);
 
-  return NextResponse.next();
+  let isSuper = false;
+  if (superConfigured) {
+    const [suOk, spOk] = await Promise.all([
+      timingSafeEqualString(givenUser, superUser as string),
+      timingSafeEqualString(givenPassword, superPassword as string),
+    ]);
+    isSuper = suOk && spOk;
+  }
+
+  if (!isAdmin && !isSuper) return unauthorized();
+
+  const path = req.nextUrl.pathname;
+  const needsSuper = SUPER_ONLY_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
+  if (needsSuper && superConfigured && !isSuper) return forbidden(path);
+
+  // Tell the pages which tier got in. A route outside this matcher could receive a
+  // client-supplied header, so this value is only ever used to decide what to
+  // SHOW — never to decide what to allow. The allow/deny decision is above.
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-sb-role", isSuper ? "superadmin" : "admin");
+  requestHeaders.set("x-sb-super-configured", superConfigured ? "1" : "0");
+  requestHeaders.set("x-sb-actor", isSuper ? (superUser as string) : (user as string));
+
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

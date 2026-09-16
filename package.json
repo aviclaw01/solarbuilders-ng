@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/partner-routing.test.mjs",
+    "smoke": "node scripts/partner-smoke.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
