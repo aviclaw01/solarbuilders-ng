@@ -3,6 +3,8 @@ import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import "./globals.css";
 import PublicChrome from '@/components/ui/PublicChrome';
 import GoogleAnalytics from '@/components/ui/GoogleAnalytics';
+import TagManager from '@/components/ui/TagManager';
+import MetaPixel from '@/components/ui/MetaPixel';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -187,6 +189,8 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} antialiased`} style={{ fontFamily: "'NairaBody', var(--font-body), sans-serif" }}>
         <GoogleAnalytics />
+        <TagManager />
+        <MetaPixel />
         {children}
         <PublicChrome />
       </body>

@@ -1,7 +1,7 @@
 'use client';
 
 import Script from 'next/script';
-import { useEffect, useState } from 'react';
+import { useTrackingConsent } from './useTrackingConsent';
 
 /**
  * Google Analytics 4 — consent-gated and environment-driven.
@@ -17,34 +17,14 @@ import { useEffect, useState } from 'react';
  *    NDPR/GDPR notice decorative. Analytics now waits for an explicit accept
  *    and never loads on decline.
  *
- * To switch it on: set NEXT_PUBLIC_GA_MEASUREMENT_ID in Vercel (Production and
- * Preview) to the G-XXXXXXXXXX id from the GA4 property. No code change.
+ * To switch it on: set NEXT_PUBLIC_GA_MEASUREMENT_ID in Vercel (Production only, so
+ * preview traffic stays out of the numbers) to the G-XXXXXXXXXX id from the GA4 property. No code change.
  */
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-const CONSENT_KEY = 'cookie-consent';
 
 export default function GoogleAnalytics() {
-  const [consented, setConsented] = useState(false);
-
-  useEffect(() => {
-    const read = () => {
-      try {
-        setConsented(window.localStorage.getItem(CONSENT_KEY) === 'accepted');
-      } catch {
-        setConsented(false);
-      }
-    };
-    read();
-    // The banner writes on the same page, so listen for its change as well as
-    // the cross-tab storage event.
-    window.addEventListener('storage', read);
-    window.addEventListener('sb-consent-change', read);
-    return () => {
-      window.removeEventListener('storage', read);
-      window.removeEventListener('sb-consent-change', read);
-    };
-  }, []);
+  const consented = useTrackingConsent();
 
   if (!GA_ID || !consented) return null;
 
