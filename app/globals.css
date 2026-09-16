@@ -44,7 +44,7 @@
   --slate-500: #64748B;
   --slate-700: #334155;
   --verified-green: #10B981;
-  --whatsapp: #25D366;
+  --whatsapp: #0E7568; /* #25D366 fails AA under white text (1.98:1); this is 5.58:1 */
 }
 
 body {
