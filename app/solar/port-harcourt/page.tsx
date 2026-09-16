@@ -4,6 +4,8 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import BrandCard from '@/components/ui/BrandCard';
 import { getBrand, vendors } from '@/lib/brands';
+import { HEADLINE_PACKAGES } from '@/lib/prices';
+import { formatNairaShort } from '@/lib/quote';
 import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -19,12 +21,61 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://solarbuildersng.com/solar/port-harcourt' },
 };
 
+const span = (low: number, high: number) => `${formatNairaShort(low)}–${formatNairaShort(high)}`;
+
+const STARTER = HEADLINE_PACKAGES[0];  // 1.5-2.5kVA - 5kWh lithium
+const COMMON = HEADLINE_PACKAGES[2];   // 5kVA - 10kWh lithium
+const LARGE = HEADLINE_PACKAGES[3];    // 8-10kVA - 15kWh
+
+/**
+ * Defined once and used for both the visible FAQ and the FAQPage JSON-LD.
+ * They used to be written out separately on the city pages, which lets the
+ * markup drift from the page — and structured data that disagrees with the
+ * visible text is a rich-result violation, not just untidy.
+ */
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: 'How much does solar cost in Port Harcourt?',
+    a:
+      `Solar installation in Port Harcourt ranges from about ${formatNairaShort(STARTER.low)} for a ${STARTER.label} ` +
+      `system (${STARTER.powers}) up to ${formatNairaShort(LARGE.high)} at the ${LARGE.label} end. The most common ` +
+      `package — ${COMMON.label} — costs ${span(COMMON.low, COMMON.high)} installed. These are national equipment ` +
+      `prices — we track prices by product, not by city, so we cannot quote a Port Harcourt-specific premium.`,
+  },
+  {
+    q: 'How long does solar installation take in Port Harcourt?',
+    a: 'Most residential solar installations in Port Harcourt take 1–3 days, depending on system size and roof access. Larger commercial arrays can take longer.',
+  },
+  {
+    q: 'Does Port Harcourt’s coastal climate affect solar equipment?',
+    a:
+      'Port Harcourt’s coastal humidity and salt air make corrosion-resistant mounting hardware and properly ' +
+      'rated enclosures worth asking your installer about specifically — mounting kits not rated for coastal ' +
+      'conditions will corrode faster than they would inland. Ask what grade of hardware is quoted before you sign.',
+  },
+  {
+    q: 'What warranty should I expect from a Port Harcourt solar installer?',
+    a: 'Reputable installers should offer at minimum: 1–2 year workmanship warranty, 5-year product warranty on inverters, 10-year product warranty on solar panels (with 25-year performance guarantee), and 1-year warranty on batteries.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
 export default function SolarPortHarcourtPage() {
   const localVendors = vendors().filter(v => v.origin.includes('Port Harcourt'));
   const featuredBrands = ['felicity', 'deye', 'growatt', 'jinko'].map(getBrand).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Navbar />
       <main>
 
@@ -56,6 +107,19 @@ export default function SolarPortHarcourtPage() {
           </div>
           <div className="mt-6">
             <Link href="/brands" className="text-amber-600 font-semibold text-sm hover:underline underline-offset-4">All brands &amp; vendors →</Link>
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <div className="max-w-3xl mb-16">
+          <h2 className="font-heading font-extrabold text-[#0A0F1E] text-3xl mb-8">Frequently Asked Questions — Solar in Port Harcourt</h2>
+          <div className="space-y-6">
+            {FAQS.map((faq, i) => (
+              <div key={i} className="border border-[#E2E8F0] rounded-2xl p-6">
+                <h3 className="font-heading font-bold text-[#0A0F1E] text-lg mb-3">{faq.q}</h3>
+                <p className="text-[#64748B] leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
           </div>
         </div>
 
