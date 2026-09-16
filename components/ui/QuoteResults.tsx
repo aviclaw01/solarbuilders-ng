@@ -71,7 +71,7 @@ function SpecWithBrands({ base, brands, fallback }: { base?: string; brands?: st
         return (
           <span key={b}>
             {slug ? (
-              <Link href={`/brands/${slug}`} className="text-amber-600 hover:underline" target="_blank">
+              <Link href={`/brands/${slug}`} className="text-amber-700 hover:underline" target="_blank">
                 {b}
               </Link>
             ) : (
@@ -204,7 +204,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
               <p className="font-heading font-extrabold text-[#0A0F1E] text-base sm:text-lg leading-tight mt-0.5">
                 {formatNairaShort(tq.total.best)}
               </p>
-              <p className="text-[10px] text-[#94A3B8]">{tq.inverterKva}kVA · {tq.batteryKwh}kWh · {tq.panelCount} panels</p>
+              <p className="text-[10px] text-[#64748B]">{tq.inverterKva}kVA · {tq.batteryKwh}kWh · {tq.panelCount} panels</p>
             </button>
           );
         })}
@@ -217,7 +217,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
             <SlidersHorizontal className="w-3.5 h-3.5" /> Customise {t.label}
           </p>
           {customised && (
-            <button onClick={resetTierOptions} className="text-[11px] text-[#94A3B8] hover:text-[#0A0F1E] underline underline-offset-2">
+            <button onClick={resetTierOptions} className="text-[11px] text-[#64748B] hover:text-[#0A0F1E] underline underline-offset-2">
               Reset to default
             </button>
           )}
@@ -238,7 +238,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
                     }`}
                   >
                     {c.label}
-                    <span className={`block text-[10px] font-normal ${active ? 'text-[#94A3B8]' : 'text-[#94A3B8]'}`}>
+                    <span className={`block text-[10px] font-normal ${active ? 'text-[#94A3B8]' : 'text-[#64748B]'}`}>
                       {INVERTER_BRANDS[c.key].slice(0, 2).join(' / ')}
                     </span>
                   </button>
@@ -260,7 +260,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
                     }`}
                   >
                     {b.label}
-                    <span className="block text-[10px] font-normal text-[#94A3B8]">{b.hint}</span>
+                    <span className={`block text-[10px] font-normal ${active ? 'text-[#94A3B8]' : 'text-[#64748B]'}`}>{b.hint}</span>
                   </button>
                 );
               })}
@@ -274,16 +274,16 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
         <div className="flex items-start justify-between gap-4 mb-5">
           <div>
             <p className="font-heading font-extrabold text-[#0A0F1E] text-lg leading-none">
-              Solar<span className="text-[#F59E0B]">Builders</span>.ng
+              Solar<span className="text-[#B45309]">Builders</span>.ng
             </p>
             <p className="text-[#64748B] text-xs mt-1">
               Solar system estimate · {t.label} tier{customised ? ' · customised' : ''}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-widest text-[#94A3B8] font-semibold">Quote code</p>
+            <p className="text-[10px] uppercase tracking-widest text-[#64748B] font-semibold">Quote code</p>
             <p className="font-mono font-bold text-[#0A0F1E] text-base">{quote.code}</p>
-            <p className="text-[10px] text-[#94A3B8]">{quote.generatedAt}</p>
+            <p className="text-[10px] text-[#64748B]">{quote.generatedAt}</p>
           </div>
         </div>
 
@@ -318,7 +318,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
               <col className="w-[32%]" />
             </colgroup>
             <thead>
-              <tr className="text-[10px] uppercase tracking-wider text-[#94A3B8] border-b border-[#E2E8F0]">
+              <tr className="text-[10px] uppercase tracking-wider text-[#64748B] border-b border-[#E2E8F0]">
                 <th className="text-left font-semibold py-2 px-1">Item</th>
                 <th className="text-right font-semibold py-2 px-1">Qty</th>
                 <th className="text-right font-semibold py-2 px-1">Est. price</th>
@@ -339,7 +339,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
                   </td>
                   <td className="py-2.5 px-1 text-right">
                     <p className="font-semibold text-[#0A0F1E] text-xs sm:text-sm">{formatNaira(l.lineCost.best)}</p>
-                    <p className="text-[10px] text-[#94A3B8]">{formatRange(l.lineCost)}</p>
+                    <p className="text-[10px] text-[#64748B]">{formatRange(l.lineCost)}</p>
                   </td>
                 </tr>
               ))}
@@ -347,7 +347,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
             <tfoot>
               <tr>
                 <td className="pt-3 px-1 font-heading font-bold text-[#0A0F1E]" colSpan={2}>Estimated total</td>
-                <td className="pt-3 px-1 text-right font-heading font-extrabold text-[#F59E0B] text-lg whitespace-nowrap">{formatNaira(t.total.best)}</td>
+                <td className="pt-3 px-1 text-right font-heading font-extrabold text-[#B45309] text-lg whitespace-nowrap">{formatNaira(t.total.best)}</td>
               </tr>
             </tfoot>
           </table>
@@ -390,7 +390,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
             vetted installer.
           </p>
         </div>
-        <p className="text-[10px] text-[#94A3B8] mt-3 text-center">
+        <p className="text-[10px] text-[#64748B] mt-3 text-center">
           {SITE_URL.replace(/^https?:\/\//, '')}/calculator · quote <span className="font-mono">{quote.code}</span>
         </p>
       </div>
@@ -402,7 +402,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
             track('quote_form_open', { quoteCode: quote.code, tier: t.label, amount: t.total.best });
             setShowContact(true);
           }}
-          className="w-full bg-[#25D366] hover:bg-[#22c55e] text-white py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition-colors"
+          className="w-full bg-[#0E7568] hover:bg-[#075E54] text-white py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition-colors"
         >
           <MessageCircle className="w-5 h-5" /> Get this system built
         </button>

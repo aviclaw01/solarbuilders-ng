@@ -96,10 +96,10 @@ export default function SizingHubPage() {
                       {num(t.inverterKva)}kVA · {num(t.batteryKwh)}kWh · {t.panelCount} panel
                       {t.panelCount === 1 ? '' : 's'}
                     </div>
-                    <div className="text-slate-400 text-sm mt-1">
+                    <div className="text-slate-500 text-sm mt-1">
                       from {formatNairaShort(t.total.low)} installed · {formatRange(t.total)}
                     </div>
-                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F59E0B] mt-4">
+                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#B45309] mt-4">
                       See the full answer <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </Link>

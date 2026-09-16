@@ -69,7 +69,7 @@ export default function SolarAbujaPage() {
           Solar in Abuja: Prices and How to Get It Installed (2026)
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>5 min read</span>
@@ -106,7 +106,7 @@ export default function SolarAbujaPage() {
                   <tr key={p.label} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{p.label}</td>
                     <td className="p-4 text-[#64748B]">{p.powers}</td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{formatNaira(p.low)} – {formatNaira(p.high)}</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{formatNaira(p.low)} – {formatNaira(p.high)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -119,7 +119,7 @@ export default function SolarAbujaPage() {
             hybrid inverter {formatNaira(inverter5kvaLow)}–{formatNaira(inverter5kvaHigh)}, and roof-mount labour{' '}
             {formatNaira(LABOUR_PER_KVA.low)}–{formatNaira(LABOUR_PER_KVA.high)} per kVA. Import duty and VAT on panels,
             inverters and batteries are 0%. See current vendor prices by brand on our{' '}
-            <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands page</Link>.
+            <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brands page</Link>.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Where in Abuja</h2>
@@ -140,7 +140,7 @@ export default function SolarAbujaPage() {
             The advice for choosing an installer is the same everywhere in Nigeria: CAC registration, past installs with photos, references, a written workmanship warranty, correct sizing and an itemised quote. Abuja has plenty of good companies — and its share of operators who disappeared after collecting deposits.
           </p>
           <p className="text-[#64748B] leading-relaxed">
-            Our process removes that guesswork. Build your quote in the <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">calculator</Link> (pick appliances, get three itemised tiers with a quote code, download the PDF), then tap &quot;Get this system built&quot; to send it to us on WhatsApp. We confirm prices against current stock, source the equipment from Nigerian vendors, and manage an installer we have <Link href="/verified" className="text-[#F59E0B] font-semibold hover:underline">already vetted</Link> through to commissioning. More on our Abuja service at <Link href="/solar/abuja" className="text-[#F59E0B] font-semibold hover:underline">solar in Abuja</Link>.
+            Our process removes that guesswork. Build your quote in the <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">calculator</Link> (pick appliances, get three itemised tiers with a quote code, download the PDF), then tap &quot;Get this system built&quot; to send it to us on WhatsApp. We confirm prices against current stock, source the equipment from Nigerian vendors, and manage an installer we have <Link href="/verified" className="text-[#B45309] font-semibold hover:underline">already vetted</Link> through to commissioning. More on our Abuja service at <Link href="/solar/abuja" className="text-[#B45309] font-semibold hover:underline">solar in Abuja</Link>.
           </p>
         </div>
 

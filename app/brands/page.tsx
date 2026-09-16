@@ -76,7 +76,7 @@ export default function BrandsPage() {
 
       <div className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">Brands &amp; prices</span>
+          <span className="text-amber-700 text-sm font-semibold tracking-wide uppercase">Brands &amp; prices</span>
           <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl mt-3 mb-4">
             What solar equipment actually costs in Nigeria
           </h1>

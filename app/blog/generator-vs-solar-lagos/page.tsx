@@ -92,7 +92,7 @@ export default function GeneratorVsSolarPage() {
           The True Cost of Generator vs Solar in Lagos
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>9 min read</span>
@@ -124,11 +124,11 @@ export default function GeneratorVsSolarPage() {
           <p className="text-[#64748B] leading-relaxed">
             A 3kVA petrol generator at roughly half load burns {GENSET_3KVA_LITRES_PER_HOUR.low}–
             {GENSET_3KVA_LITRES_PER_HOUR.high} litres an hour (
-            <a href={GENSET_3KVA_LITRES_PER_HOUR.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href={GENSET_3KVA_LITRES_PER_HOUR.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               {GENSET_3KVA_LITRES_PER_HOUR.source}
             </a>
             ). Petrol is {formatNaira(PETROL_PER_LITRE.low)}–{formatNaira(PETROL_PER_LITRE.high)} a litre nationally (
-            <a href={PETROL_PER_LITRE.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href={PETROL_PER_LITRE.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               {PETROL_PER_LITRE.source}
             </a>
             , {ENERGY_COSTS_LAST_CHECKED_LABEL}) — Lagos pump prices move with the national price, not against it, so
@@ -152,7 +152,7 @@ export default function GeneratorVsSolarPage() {
                     <tr key={opt.hours} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                       <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{opt.label}</td>
                       <td className="p-4 text-[#64748B]">{formatNaira(cost.low)} – {formatNaira(cost.high)}</td>
-                      <td className="p-4 font-semibold text-[#F59E0B]">
+                      <td className="p-4 font-semibold text-[#B45309]">
                         {formatNairaShort(annual.low)} – {formatNairaShort(annual.high)}
                       </td>
                     </tr>
@@ -161,7 +161,7 @@ export default function GeneratorVsSolarPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Fuel only — no oil, no servicing, no repairs, no cost of the generator itself. Those are real money and we
             explain below why we have left them out rather than guessed at them.
           </p>
@@ -208,10 +208,10 @@ export default function GeneratorVsSolarPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Range {formatRange(standard.total)}. Equipment priced from Nigerian vendor listings, last checked{' '}
             {PRICES_LAST_UPDATED_LABEL}. Quote {quote.code}. Full working on the{' '}
-            <Link href={`/sizing/${scenario.slug}`} className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href={`/sizing/${scenario.slug}`} className="text-[#B45309] font-semibold hover:underline">
               sizing page for this load
             </Link>.
           </p>
@@ -266,7 +266,7 @@ export default function GeneratorVsSolarPage() {
                 {CUMULATIVE_YEARS.map((y, i) => (
                   <tr key={y} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">Year {y}</td>
-                    <td className="p-4 text-[#F59E0B] font-semibold">
+                    <td className="p-4 text-[#B45309] font-semibold">
                       {formatNairaShort(assumedAnnual.low * y)} – {formatNairaShort(assumedAnnual.high * y)}
                     </td>
                     <td className="p-4 text-[#64748B]">{formatNaira(standard.total.best)}</td>
@@ -275,7 +275,7 @@ export default function GeneratorVsSolarPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Generator column is fuel only, held at the {GENSET_HOURS_PER_DAY_ASSUMED}h/day assumption throughout —
             recompute it yourself from the first table if your hours differ. Solar column assumes no battery
             replacement in the window shown; see the caveat below for why that is a reasonable assumption at ten years
@@ -305,11 +305,11 @@ export default function GeneratorVsSolarPage() {
               ],
             ].map(([title, body, href, linkText]) => (
               <li key={title as string} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span>
                   <strong className="text-[#0A0F1E]">{title}.</strong> {body}
                   {href && (
-                    <Link href={href} className="text-[#F59E0B] font-semibold hover:underline">
+                    <Link href={href} className="text-[#B45309] font-semibold hover:underline">
                       {linkText}
                     </Link>
                   )}
@@ -330,17 +330,17 @@ export default function GeneratorVsSolarPage() {
           <p className="text-[#64748B] leading-relaxed">
             The two inputs that matter are yours, not ours: how many hours your generator actually runs, and what
             appliances you actually want solar to carry. Get the second from the{' '}
-            <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">calculator</Link>, then
+            <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">calculator</Link>, then
             apply your own hours to the fuel formula above. For the fuller three-case payback — generator, grid, or
             both, which is what most Nigerian homes actually pay — see{' '}
-            <Link href="/blog/is-solar-worth-it-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/is-solar-worth-it-nigeria" className="text-[#B45309] font-semibold hover:underline">
               is solar worth it in Nigeria
             </Link>. If part of what you are running is a stable grid connection rather than a generator, the tariff
             side of the sum is in{' '}
-            <Link href="/blog/band-a-tariff-vs-solar" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/band-a-tariff-vs-solar" className="text-[#B45309] font-semibold hover:underline">
               your Band A bill versus solar
             </Link>. And if the number above is more than you want to spend at once, see{' '}
-            <Link href="/budget" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/budget" className="text-[#B45309] font-semibold hover:underline">
               what smaller budgets actually buy
             </Link>.
           </p>

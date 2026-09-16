@@ -93,7 +93,7 @@ export default function BandAVsSolarPage() {
           Your Band A Bill vs Solar: What {formatNaira(BAND_A_TARIFF.high)} per kWh Costs Over Five Years
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>8 min read</span>
@@ -113,7 +113,7 @@ export default function BandAVsSolarPage() {
           <p className="text-[#64748B] leading-relaxed">
             Band A customers are paying {formatNaira(BAND_A_TARIFF.low)}–{formatNaira(BAND_A_TARIFF.high)} per kWh in
             2026 (
-            <a href={BAND_A_TARIFF.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href={BAND_A_TARIFF.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               {BAND_A_TARIFF.source}
             </a>
             , read {ENERGY_COSTS_LAST_CHECKED_LABEL}). Band A is defined by a service promise of at least{' '}
@@ -158,13 +158,13 @@ export default function BandAVsSolarPage() {
                     <td className="p-4 font-semibold text-[#0A0F1E]">
                       {formatNairaShort(r.fiveYear.low)} – {formatNairaShort(r.fiveYear.high)}
                     </td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{formatRange(r.standard.total)}</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{formatRange(r.standard.total)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Grid cost = daily kWh × tariff × 365, at {formatNaira(BAND_A_TARIFF.low)}–{formatNaira(BAND_A_TARIFF.high)}
             {' '}per kWh. Solar prices from Nigerian vendor listings, last checked {PRICES_LAST_UPDATED_LABEL}. Both
             columns are held flat — no tariff rises, no equipment price changes.
@@ -181,7 +181,7 @@ export default function BandAVsSolarPage() {
             purchase on a five-year view. It becomes one on a ten-year view, because the panels and the lithium are still
             working while the meter keeps running. We set out that longer sum, including the parts that go against
             solar, in{' '}
-            <Link href="/blog/is-solar-worth-it-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/is-solar-worth-it-nigeria" className="text-[#B45309] font-semibold hover:underline">
               is solar worth it in Nigeria
             </Link>.
           </p>
@@ -230,11 +230,11 @@ export default function BandAVsSolarPage() {
           </p>
           <p className="text-[#64748B] leading-relaxed">
             Work out which of your loads you actually want off the grid before you talk to anybody about price. The{' '}
-            <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">calculator</Link> is
+            <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">calculator</Link> is
             built for exactly that: tick appliances, watch the number move, and see what each one costs you in system
             size. If you are in{' '}
-            <Link href="/solar/lagos" className="text-[#F59E0B] font-semibold hover:underline">Lagos</Link> or{' '}
-            <Link href="/solar/abuja" className="text-[#F59E0B] font-semibold hover:underline">Abuja</Link>, the local
+            <Link href="/solar/lagos" className="text-[#B45309] font-semibold hover:underline">Lagos</Link> or{' '}
+            <Link href="/solar/abuja" className="text-[#B45309] font-semibold hover:underline">Abuja</Link>, the local
             pages cover what installation looks like there.
           </p>
         </div>

@@ -87,7 +87,7 @@ export default function SolarLoansPage() {
         <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl leading-tight mb-4">
           Carbon, FairMoney, or Renmoney: Best Solar Loans in Nigeria
         </h1>
-        <div className="flex items-center gap-4 text-slate-400 text-sm mb-12 pb-8 border-b border-slate-100">
+        <div className="flex items-center gap-4 text-slate-500 text-sm mb-12 pb-8 border-b border-slate-100">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>8 min read</span>
@@ -118,7 +118,7 @@ export default function SolarLoansPage() {
             Every lender below will ask what the money is for and how much you need. &quot;Solar, a few million
             naira&quot; is a weak answer. An itemised quote — inverter, battery modules, panels, mounting and
             protection, labour, each with a price — is a strong one. Our{' '}
-            <Link href="/calculator" className="text-amber-600 font-semibold hover:underline">calculator</Link>{' '}
+            <Link href="/calculator" className="text-amber-700 font-semibold hover:underline">calculator</Link>{' '}
             produces exactly that, with a quote code and a PDF you can attach to a loan application or show a bank
             officer. Build the quote first, then borrow the number on it, not a guess.
           </p>
@@ -191,7 +191,7 @@ export default function SolarLoansPage() {
                     <td className="p-4 text-slate-600">{row.system}</td>
                     <td className="p-4 text-slate-600">{row.label}</td>
                     <td className="p-4 text-slate-900">{formatNaira(row.total)}</td>
-                    <td className="p-4 font-semibold text-amber-600">{formatNaira(row.monthly)}</td>
+                    <td className="p-4 font-semibold text-amber-700">{formatNaira(row.monthly)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -201,7 +201,7 @@ export default function SolarLoansPage() {
             The comparison that matters: a Lagos household whose generator runs 6 hours a day spends{' '}
             {formatNaira(genMonthly.low)}–{formatNaira(genMonthly.high)} a month on petrol alone — no oil, no
             servicing, no repairs, because we do not hold a reliable national figure for those (full working in{' '}
-            <Link href="/blog/generator-vs-solar-lagos" className="text-amber-600 font-semibold hover:underline">
+            <Link href="/blog/generator-vs-solar-lagos" className="text-amber-700 font-semibold hover:underline">
               generator vs solar in Lagos
             </Link>
             ). A 24-month loan on the family system above sits inside that same monthly range — and once it is repaid
@@ -289,10 +289,10 @@ export default function SolarLoansPage() {
           </ul>
           <p className="text-slate-600 leading-relaxed">
             A priced, itemised quote is your defence against all three: you know what each part should cost (see
-            current vendor prices on our <Link href="/brands" className="text-amber-600 font-semibold hover:underline">brands page</Link>),
+            current vendor prices on our <Link href="/brands" className="text-amber-700 font-semibold hover:underline">brands page</Link>),
             you know the size your appliances actually need, and there is no lump sum to hide behind. When we manage
             a build, we confirm every line against current stock and use installers we have{' '}
-            <Link href="/verified" className="text-amber-600 font-semibold hover:underline">already vetted</Link>.
+            <Link href="/verified" className="text-amber-700 font-semibold hover:underline">already vetted</Link>.
           </p>
         </div>
 

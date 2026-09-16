@@ -88,7 +88,7 @@ export default function BestInverterPage() {
           The Best Solar Inverter in Nigeria, Ranked by What It Costs per kVA
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>9 min read</span>
@@ -141,7 +141,7 @@ export default function BestInverterPage() {
                       <Link href={`/brands/${r.brand.slug}`} className="hover:text-[#F59E0B]">{r.brand.name}</Link>
                     </td>
                     <td className="p-4 text-[#64748B]">{r.brand.tier ? TIER_LABEL[r.brand.tier] : '—'}</td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">
+                    <td className="p-4 font-semibold text-[#B45309]">
                       {formatNaira(r.stats.lowPerUnit)} – {formatNaira(r.stats.highPerUnit)}
                     </td>
                     <td className="p-4 text-[#64748B]">{r.stats.minSize}–{r.stats.maxSize} kVA</td>
@@ -152,7 +152,7 @@ export default function BestInverterPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             {ranked.length} brands with priced inverter listings in our catalogue. {'“'}Nigerian sellers{'”'} counts the
             vendors in our own catalogue where we found that brand stocked — a floor, not a census.
           </p>
@@ -190,14 +190,14 @@ export default function BestInverterPage() {
                 {ranked.map((r, i) => (
                   <tr key={r.brand.slug} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{r.brand.name}</td>
-                    <td className="p-4 text-[#64748B]">{r.brand.attributes?.warranty ?? <span className="text-[#94A3B8]">Not published</span>}</td>
-                    <td className="p-4 text-[#64748B]">{r.brand.attributes?.serviceNigeria ?? <span className="text-[#94A3B8]">Not published</span>}</td>
+                    <td className="p-4 text-[#64748B]">{r.brand.attributes?.warranty ?? <span className="text-[#64748B]">Not published</span>}</td>
+                    <td className="p-4 text-[#64748B]">{r.brand.attributes?.serviceNigeria ?? <span className="text-[#64748B]">Not published</span>}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             {withWarranty.length} of {ranked.length} inverter brands we track publish a warranty term we could verify.
           </p>
 
@@ -221,8 +221,8 @@ export default function BestInverterPage() {
                 {ranked.map((r, i) => (
                   <tr key={r.brand.slug} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{r.brand.name}</td>
-                    <td className="p-4 text-[#64748B]">{r.brand.attributes?.monitoringApp ?? <span className="text-[#94A3B8]">Not published</span>}</td>
-                    <td className="p-4 text-[#64748B]">{r.brand.attributes?.phases ?? <span className="text-[#94A3B8]">Not published</span>}</td>
+                    <td className="p-4 text-[#64748B]">{r.brand.attributes?.monitoringApp ?? <span className="text-[#64748B]">Not published</span>}</td>
+                    <td className="p-4 text-[#64748B]">{r.brand.attributes?.phases ?? <span className="text-[#64748B]">Not published</span>}</td>
                   </tr>
                 ))}
               </tbody>
@@ -243,7 +243,7 @@ export default function BestInverterPage() {
                     <h3 className="font-heading font-bold text-[#0A0F1E] text-base">
                       <Link href={`/brands/${r.brand.slug}`} className="hover:text-[#F59E0B]">{r.brand.name}</Link>
                     </h3>
-                    <span className="text-[#F59E0B] font-semibold text-sm">
+                    <span className="text-[#B45309] font-semibold text-sm">
                       from {formatNaira(r.stats.lowPerUnit)} / kVA
                     </span>
                   </div>
@@ -284,11 +284,11 @@ export default function BestInverterPage() {
           </ol>
           <p className="text-[#64748B] leading-relaxed">
             The head-to-heads are written up separately if you have narrowed it to two —{' '}
-            <Link href="/compare" className="text-[#F59E0B] font-semibold hover:underline">all our comparisons</Link>,
+            <Link href="/compare" className="text-[#B45309] font-semibold hover:underline">all our comparisons</Link>,
             including{' '}
-            <Link href="/compare/deye-vs-felicity" className="text-[#F59E0B] font-semibold hover:underline">Deye vs Felicity</Link>{' '}
+            <Link href="/compare/deye-vs-felicity" className="text-[#B45309] font-semibold hover:underline">Deye vs Felicity</Link>{' '}
             and{' '}
-            <Link href="/compare/growatt-vs-luxpower" className="text-[#F59E0B] font-semibold hover:underline">Growatt vs Luxpower</Link>.
+            <Link href="/compare/growatt-vs-luxpower" className="text-[#B45309] font-semibold hover:underline">Growatt vs Luxpower</Link>.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Common questions</h2>

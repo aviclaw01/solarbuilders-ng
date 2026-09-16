@@ -60,11 +60,11 @@ export default function BlogPage() {
                   <p className="text-[#64748B] text-sm leading-relaxed mb-6">{article.excerpt}</p>
                   <div className="flex items-center justify-between mt-auto pt-4 border-t border-[#E2E8F0]">
                     <div className="flex items-center gap-3">
-                      <span className="text-[#94A3B8] text-xs">{article.date}</span>
-                      <span className="text-[#94A3B8] text-xs">·</span>
-                      <span className="text-[#94A3B8] text-xs">{article.readTime}</span>
+                      <span className="text-[#64748B] text-xs">{article.date}</span>
+                      <span className="text-[#64748B] text-xs">·</span>
+                      <span className="text-[#64748B] text-xs">{article.readTime}</span>
                     </div>
-                    <span className="text-[#F59E0B] text-sm font-semibold group-hover:translate-x-1 transition-transform duration-200 inline-block">
+                    <span className="text-[#B45309] text-sm font-semibold group-hover:translate-x-1 transition-transform duration-200 inline-block">
                       Read →
                     </span>
                   </div>
@@ -94,8 +94,8 @@ export default function BlogPage() {
                   </h2>
                   <p className="text-[#64748B] text-sm leading-relaxed mb-4 line-clamp-3">{article.excerpt}</p>
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="text-[#94A3B8] text-xs">{article.readTime}</span>
-                    <span className="text-[#F59E0B] text-xs font-semibold group-hover:translate-x-1 transition-transform duration-200 inline-block">
+                    <span className="text-[#64748B] text-xs">{article.readTime}</span>
+                    <span className="text-[#B45309] text-xs font-semibold group-hover:translate-x-1 transition-transform duration-200 inline-block">
                       Read →
                     </span>
                   </div>

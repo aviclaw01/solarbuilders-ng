@@ -115,7 +115,7 @@ export default function FakeSolarPanelsPage() {
           How to Tell a Real Solar Panel from a Fake One in Nigeria
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>8 min read</span>
@@ -157,7 +157,7 @@ export default function FakeSolarPanelsPage() {
                   <tr key={f.item} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{f.item}</td>
                     <td className="p-4 text-[#64748B]">{f.unit}</td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{formatNaira(f.floor)}</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{formatNaira(f.floor)}</td>
                     <td className="p-4 text-[#64748B]">{formatNaira(f.typical)}</td>
                   </tr>
                 ))}
@@ -208,7 +208,7 @@ export default function FakeSolarPanelsPage() {
               ['The label under the glass, not just on the back', 'Tier-1 makers print the model and often a laser-etched code inside the laminate. A back-sticker alone, especially one that peels, is a red flag.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -267,8 +267,8 @@ export default function FakeSolarPanelsPage() {
           </p>
           <p className="text-[#64748B] leading-relaxed">
             We publish prices by brand and model, dated, on our{' '}
-            <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands pages</Link> and in the{' '}
-            <Link href="/shop" className="text-[#F59E0B] font-semibold hover:underline">shop</Link>. We do not publish
+            <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brands pages</Link> and in the{' '}
+            <Link href="/shop" className="text-[#B45309] font-semibold hover:underline">shop</Link>. We do not publish
             our vendors{'’'} contact details, because sourcing is the service we are paid for. What we do publish is
             every price we saw, where the class of seller was, and the date — so you can check any quote, including
             ours, against it.
@@ -286,11 +286,11 @@ export default function FakeSolarPanelsPage() {
 
           <p className="text-[#64748B] leading-relaxed">
             The companion piece to this one is about the person selling you the panel rather than the panel itself:{' '}
-            <Link href="/blog/check-solar-installer-qualified-nemsa" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/check-solar-installer-qualified-nemsa" className="text-[#B45309] font-semibold hover:underline">
               how to check your installer is actually qualified
             </Link>, including NEMSA certification and how deposits should be staged. And if you want to know what our
             own vetting involves, it is written out on{' '}
-            <Link href="/verified" className="text-[#F59E0B] font-semibold hover:underline">how we vet</Link>.
+            <Link href="/verified" className="text-[#B45309] font-semibold hover:underline">how we vet</Link>.
           </p>
         </div>
 

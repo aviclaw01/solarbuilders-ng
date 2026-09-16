@@ -691,7 +691,7 @@ function AffordableSections({
                 </dl>
                 <div className="mt-5 pt-5 border-t border-slate-100">
                   <div className="font-heading font-extrabold text-[#0A0F1E] text-xl">{formatNaira(v.build.price)}</div>
-                  <div className={`text-xs mt-1 ${v.overBudgetBy > 0 ? 'text-[#F59E0B]' : 'text-slate-500'}`}>
+                  <div className={`text-xs mt-1 ${v.overBudgetBy > 0 ? 'text-[#B45309]' : 'text-slate-500'}`}>
                     {v.overBudgetBy > 0
                       ? `${formatNaira(v.overBudgetBy)} more than your ${point.label}`
                       : `${formatNaira(-v.overBudgetBy)} less than your ${point.label}`}

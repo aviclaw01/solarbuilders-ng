@@ -79,7 +79,7 @@ export default function ComparePage() {
       <div className="bg-white border-b border-slate-100 px-6 py-16 md:py-20">
         <div className="max-w-6xl mx-auto">
           <div className="mb-4">
-            <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">System Comparison</span>
+            <span className="text-amber-700 text-sm font-semibold tracking-wide uppercase">System Comparison</span>
           </div>
           <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl mb-4">
             Solar System Comparison
@@ -113,8 +113,8 @@ export default function ComparePage() {
               </div>
 
               <div className="mb-6">
-                <p className="text-slate-400 text-xs uppercase font-semibold mb-1">Cost Range</p>
-                <p className={`font-heading font-extrabold text-2xl ${tier.highlight ? 'text-amber-500' : 'text-slate-900'}`}>
+                <p className="text-slate-500 text-xs uppercase font-semibold mb-1">Cost Range</p>
+                <p className={`font-heading font-extrabold text-2xl ${tier.highlight ? 'text-amber-700' : 'text-slate-900'}`}>
                   {tier.costRange}
                 </p>
               </div>
@@ -137,13 +137,13 @@ export default function ComparePage() {
 
               {/* Best for */}
               <div className="mb-4">
-                <p className="text-slate-400 text-xs uppercase font-semibold mb-2">Best For</p>
+                <p className="text-slate-500 text-xs uppercase font-semibold mb-2">Best For</p>
                 <p className="text-slate-700 text-sm">{tier.bestFor}</p>
               </div>
 
               {/* Can run */}
               <div className="mb-4">
-                <p className="text-slate-400 text-xs uppercase font-semibold mb-2">Can Run</p>
+                <p className="text-slate-500 text-xs uppercase font-semibold mb-2">Can Run</p>
                 <ul className="space-y-1">
                   {tier.canRun.map(item => (
                     <li key={item} className="flex items-start gap-2 text-sm">
@@ -156,12 +156,12 @@ export default function ComparePage() {
 
               {tier.cannotRun[0] !== 'Nothing significant — this system runs everything' && (
                 <div className="mb-6">
-                  <p className="text-slate-400 text-xs uppercase font-semibold mb-2">Cannot Run Well</p>
+                  <p className="text-slate-500 text-xs uppercase font-semibold mb-2">Cannot Run Well</p>
                   <ul className="space-y-1">
                     {tier.cannotRun.map(item => (
                       <li key={item} className="flex items-start gap-2 text-sm">
                         <span className="w-4 h-4 flex-shrink-0 mt-0.5 text-center text-slate-300">×</span>
-                        <span className="text-slate-400">{item}</span>
+                        <span className="text-slate-500">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -240,7 +240,7 @@ export default function ComparePage() {
                         <span className="block font-semibold text-slate-900 text-sm">
                           {pair.a.name} vs {pair.b.name}
                         </span>
-                        <span className="block text-slate-400 text-xs mt-1">
+                        <span className="block text-slate-500 text-xs mt-1">
                           {pair.categories.map(c => CATEGORY_LABEL[c]).join(' · ')}
                         </span>
                       </Link>

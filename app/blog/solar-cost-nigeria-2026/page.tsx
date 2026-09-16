@@ -61,7 +61,7 @@ function BrandList({ names }: { names: string[] }) {
           <span key={name}>
             {i > 0 && ', '}
             {slug ? (
-              <Link href={`/brands/${slug}`} className="text-[#F59E0B] font-semibold hover:underline">{name}</Link>
+              <Link href={`/brands/${slug}`} className="text-[#B45309] font-semibold hover:underline">{name}</Link>
             ) : (
               name
             )}
@@ -114,7 +114,7 @@ export default function SolarCostNigeriaPage() {
           What a Nigerian Solar System Actually Costs — Every Component, Every Price
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>11 min read</span>
@@ -145,13 +145,13 @@ export default function SolarCostNigeriaPage() {
                   <tr key={p.label} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{p.label}</td>
                     <td className="p-4 text-[#64748B]">{p.powers}</td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{formatNaira(p.low)} – {formatNaira(p.high)}</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{formatNaira(p.low)} – {formatNaira(p.high)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Everything included: inverter, lithium battery, Tier-1 panels, mounting and protection, and installation
             labour. Import duty and VAT on panels, inverters and batteries are {EQUIPMENT_VAT}%.
           </p>
@@ -190,9 +190,9 @@ export default function SolarCostNigeriaPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Range {formatRange(t.total)}. Quote {quote.code}. Full working on the{' '}
-            <Link href={`/sizing/${scenario.slug}`} className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href={`/sizing/${scenario.slug}`} className="text-[#B45309] font-semibold hover:underline">
               sizing page for this load
             </Link>.
           </p>
@@ -220,7 +220,7 @@ export default function SolarCostNigeriaPage() {
                     <td className="p-4 text-[#64748B]">
                       {formatNaira(INVERTER_PER_KVA[tier].low)} – {formatNaira(INVERTER_PER_KVA[tier].high)}
                     </td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{formatNaira(INVERTER_PER_KVA[tier].best)}</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{formatNaira(INVERTER_PER_KVA[tier].best)}</td>
                     <td className="p-4 text-[#64748B]"><BrandList names={INVERTER_BRANDS[tier]} /></td>
                   </tr>
                 ))}
@@ -232,7 +232,7 @@ export default function SolarCostNigeriaPage() {
             {formatNaira(INVERTER_PER_KVA.budget.best * 5)}; the same size in premium class around{' '}
             {formatNaira(INVERTER_PER_KVA.premium.best * 5)}. If your quote is far outside that, the question is which
             class you are actually being sold. We rank every brand we track on measured ₦/kVA in{' '}
-            <Link href="/blog/best-solar-inverter-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/best-solar-inverter-nigeria" className="text-[#B45309] font-semibold hover:underline">
               the best solar inverter in Nigeria
             </Link>.
           </p>
@@ -260,7 +260,7 @@ export default function SolarCostNigeriaPage() {
                     <td className="p-4 text-[#64748B]">
                       {formatNaira(LITHIUM_PER_KWH[tier].low)} – {formatNaira(LITHIUM_PER_KWH[tier].high)}
                     </td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">
+                    <td className="p-4 font-semibold text-[#B45309]">
                       {formatNaira(LITHIUM_PER_KWH[tier].best * LITHIUM_MODULE_KWH)}
                     </td>
                     <td className="p-4 text-[#64748B]"><BrandList names={LITHIUM_BRANDS[tier]} /></td>
@@ -274,7 +274,7 @@ export default function SolarCostNigeriaPage() {
             {formatNaira(TUBULAR_200AH.low)}–{formatNaira(TUBULAR_200AH.high)}. It looks much cheaper and is not, once
             you account for the half of it you are not allowed to use and the number of times you buy it again. We work
             that out in full in{' '}
-            <Link href="/blog/lithium-vs-tubular-battery-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/lithium-vs-tubular-battery-nigeria" className="text-[#B45309] font-semibold hover:underline">
               lithium vs tubular batteries
             </Link>.
           </p>
@@ -292,7 +292,7 @@ export default function SolarCostNigeriaPage() {
             ${(PANEL_PER_WP.low * PANEL_WATTS / USD_NGN_RATE).toFixed(0)} a module landed. That is a genuinely thin
             number, which is why a panel quoted well below it is the single most reliable warning sign in the market —
             the full set of checks is in{' '}
-            <Link href="/blog/fake-solar-panels-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/fake-solar-panels-nigeria" className="text-[#B45309] font-semibold hover:underline">
               how to tell a real solar panel from a fake one
             </Link>.
           </p>
@@ -304,7 +304,7 @@ export default function SolarCostNigeriaPage() {
           </p>
           <ul className="space-y-3 text-[#64748B]">
             <li className="flex items-start gap-2">
-              <span className="text-[#F59E0B] mt-1">•</span>
+              <span className="text-[#B45309] mt-1">•</span>
               <span>
                 <strong className="text-[#0A0F1E]">Mounting, cables and protection</strong> — rails, DC and AC cable,
                 breakers, surge protection, combiner box, earthing, changeover. We price this at{' '}
@@ -314,7 +314,7 @@ export default function SolarCostNigeriaPage() {
               </span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-[#F59E0B] mt-1">•</span>
+              <span className="text-[#B45309] mt-1">•</span>
               <span>
                 <strong className="text-[#0A0F1E]">Installation and commissioning</strong> —{' '}
                 {formatNaira(LABOUR_PER_KVA.low)}–{formatNaira(LABOUR_PER_KVA.high)} per kVA for a Lagos, Abuja or Port
@@ -348,7 +348,7 @@ export default function SolarCostNigeriaPage() {
               ['What the buyer appears to know', 'Uncomfortable, but true: the price a Nigerian buyer is quoted varies with how much they seem to understand. A published price list is the cheapest defence available against that.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -359,8 +359,8 @@ export default function SolarCostNigeriaPage() {
             Every figure on this page comes from a price research exercise over live Nigerian vendor listings — around
             130 priced data points across 38 sellers, each recorded with the vendor, the source page and the date it was
             seen. Those individual listings, with their sources, sit on the{' '}
-            <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brand pages</Link> and in the{' '}
-            <Link href="/shop" className="text-[#F59E0B] font-semibold hover:underline">shop</Link>. This page is the
+            <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brand pages</Link> and in the{' '}
+            <Link href="/shop" className="text-[#B45309] font-semibold hover:underline">shop</Link>. This page is the
             per-unit summary of them.
           </p>
           <p className="text-[#64748B] leading-relaxed">
@@ -385,13 +385,13 @@ export default function SolarCostNigeriaPage() {
           </ol>
           <p className="text-[#64748B] leading-relaxed">
             Then run the same load through our{' '}
-            <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">calculator</Link> and put
+            <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">calculator</Link> and put
             the two itemised lists side by side. Where they differ, you have a specific question to ask rather than a
             general unease. If you want the payback arithmetic on top of the price, it is in{' '}
-            <Link href="/blog/is-solar-worth-it-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/is-solar-worth-it-nigeria" className="text-[#B45309] font-semibold hover:underline">
               is solar worth it in Nigeria
             </Link>; if the person quoting you is the thing you are unsure about, start with{' '}
-            <Link href="/blog/check-solar-installer-qualified-nemsa" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/check-solar-installer-qualified-nemsa" className="text-[#B45309] font-semibold hover:underline">
               how to check your installer is qualified
             </Link>.
           </p>

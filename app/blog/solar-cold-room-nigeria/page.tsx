@@ -94,7 +94,7 @@ export default function SolarColdRoomPage() {
           What It Costs to Solar-Power a Cold Room
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>10 min read</span>
@@ -164,7 +164,7 @@ export default function SolarColdRoomPage() {
               ['Ambient heat works against you', 'The hotter the day, the harder the compressor works and the longer it runs — so the load peaks in exactly the season when everything else in the system is also under thermal stress.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -197,7 +197,7 @@ export default function SolarColdRoomPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Range {formatRange(standard.total)}. Equipment priced from Nigerian vendor listings, last checked{' '}
             {PRICES_LAST_UPDATED_LABEL}. Quote {quote.code}.
           </p>
@@ -221,7 +221,7 @@ export default function SolarColdRoomPage() {
               ['Get the LRA from the nameplate', 'Locked-rotor amps is the number that actually determines whether your inverter survives the start. It is printed on the unit. Give it to whoever sizes your system, and if they do not ask for it, that tells you something.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -266,7 +266,7 @@ export default function SolarColdRoomPage() {
             Your generator{'’'}s litres per hour × your diesel price × the hours it runs = your displaced annual spend.
             Divide {formatNaira(standard.total.best)} by that figure and you have the payback in years. The full worked
             method, applied to a household with petrol, is in{' '}
-            <Link href="/blog/is-solar-worth-it-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/is-solar-worth-it-nigeria" className="text-[#B45309] font-semibold hover:underline">
               is solar worth it in Nigeria
             </Link>{' '}
             — the arithmetic is identical, only the fuel changes.
@@ -283,7 +283,7 @@ export default function SolarColdRoomPage() {
             Regulations 2026 allow qualifying prosumers to export surplus to the DisCo for credit. That threshold is far
             beyond a single small cold room but well within reach of a processing plant, a poultry operation at scale or
             an industrial cold store. We have written up{' '}
-            <Link href="/blog/sell-solar-power-to-nepa-net-billing" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/sell-solar-power-to-nepa-net-billing" className="text-[#B45309] font-semibold hover:underline">
               who net billing actually covers
             </Link>{' '}
             and what the process involves.
@@ -294,14 +294,14 @@ export default function SolarColdRoomPage() {
             Commercial jobs go wrong in procurement more often than in engineering. Our process is the same one we use
             for homes, with the bill of materials fixed before money moves: you get an itemised quote with model classes,
             we confirm each line against current stock with Nigerian vendors, and we manage an installer we have{' '}
-            <Link href="/verified" className="text-[#F59E0B] font-semibold hover:underline">already vetted</Link>{' '}
+            <Link href="/verified" className="text-[#B45309] font-semibold hover:underline">already vetted</Link>{' '}
             through to commissioning. We take a procurement margin — that is how we are paid, and you should know it
             before you read our price as neutral.
           </p>
           <p className="text-[#64748B] leading-relaxed">
             For anything at site scale, start at{' '}
-            <Link href="/for-builders" className="text-[#F59E0B] font-semibold hover:underline">for builders and developers</Link>{' '}
-            or just <Link href="/contact" className="text-[#F59E0B] font-semibold hover:underline">send us the nameplate photo</Link>.
+            <Link href="/for-builders" className="text-[#B45309] font-semibold hover:underline">for builders and developers</Link>{' '}
+            or just <Link href="/contact" className="text-[#B45309] font-semibold hover:underline">send us the nameplate photo</Link>.
             The nameplate is genuinely the fastest way to get a real answer.
           </p>
 

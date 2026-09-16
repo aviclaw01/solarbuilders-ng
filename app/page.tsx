@@ -75,7 +75,7 @@ export default function HomePage() {
             </div>
             <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-6">
               What solar really costs in Nigeria.<br />
-              <span className="text-amber-500">And we buy it for you.</span>
+              <span className="text-amber-600">And we buy it for you.</span>
             </h1>
             <p className="text-slate-500 text-xl leading-relaxed mb-8 max-w-xl">
               Work out the system your home needs, see the real price of every part, then hand it to us. We order the
@@ -108,7 +108,7 @@ export default function HomePage() {
               </Link>
             </p>
             {/* Trust row */}
-            <p className="text-slate-400 text-sm font-medium">
+            <p className="text-slate-500 text-sm font-medium">
               {PRICED_PRODUCTS} prices checked in {PRICES_LAST_UPDATED_LABEL} · Free to use · No mark-up on equipment
             </p>
           </div>
@@ -148,7 +148,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500 text-xs">Estimated cost range</span>
-                  <span className="font-heading font-bold text-amber-500 text-sm">{formatNairaShort(familyHome.low)}–{formatNairaShort(familyHome.high)}</span>
+                  <span className="font-heading font-bold text-amber-700 text-sm">{formatNairaShort(familyHome.low)}–{formatNairaShort(familyHome.high)}</span>
                 </div>
               </div>
               <Link href="/calculator" className="block w-full bg-amber-400 hover:bg-amber-500 text-slate-900 py-3 rounded-full text-center font-semibold text-sm transition-all">
@@ -199,7 +199,7 @@ export default function HomePage() {
                 href={card.href}
                 className="group bg-white rounded-2xl border border-slate-100 hover:border-amber-400 p-6 flex flex-col transition-colors"
               >
-                <p className="text-amber-600 text-xs font-semibold uppercase tracking-wide mb-2">{card.step}</p>
+                <p className="text-amber-700 text-xs font-semibold uppercase tracking-wide mb-2">{card.step}</p>
                 <h3 className="font-heading font-bold text-slate-900 text-xl mb-2">{card.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed flex-1">{card.body}</p>
                 <span className="mt-4 text-sm font-semibold text-slate-900 group-hover:text-amber-600 transition-colors">
@@ -208,7 +208,7 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
-          <p className="text-slate-400 text-sm mt-6">
+          <p className="text-slate-500 text-sm mt-6">
             Whichever route you take, it ends the same way: you send us the list, we confirm today&apos;s price with the
             distributor, and only then does anyone pay.
           </p>
@@ -222,7 +222,7 @@ export default function HomePage() {
       <section className="bg-white py-20 md:py-28 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-4">
-            <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">How It Works</span>
+            <span className="text-amber-700 text-sm font-semibold tracking-wide uppercase">How It Works</span>
           </div>
           <h2 className="font-heading font-extrabold text-slate-900 text-3xl md:text-5xl leading-tight mb-16">
             Everything you need to go solar
@@ -285,7 +285,7 @@ export default function HomePage() {
                 {comparisonPairs().slice(0, 3).map((pair) => (
                   <div key={pair.slug} className="flex items-center justify-between text-xs">
                     <span className="text-slate-600">{pair.a.name.split(' ')[0]} vs {pair.b.name.split(' ')[0]}</span>
-                    <span className="text-amber-600 font-semibold">compare →</span>
+                    <span className="text-amber-700 font-semibold">compare →</span>
                   </div>
                 ))}
               </div>
@@ -321,7 +321,7 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <p className="text-slate-500 text-xs mt-6">Last full price refresh: {PRICES_LAST_UPDATED_LABEL}.</p>
+          <p className="text-slate-400 text-xs mt-6">Last full price refresh: {PRICES_LAST_UPDATED_LABEL}.</p>
         </div>
       </section>
 

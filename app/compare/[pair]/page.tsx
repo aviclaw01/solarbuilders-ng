@@ -233,7 +233,7 @@ export default async function ComparePairPage({ params }: Props) {
       {/* Hero */}
       <header className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <nav className="text-sm text-slate-400 mb-6">
+          <nav className="text-sm text-slate-500 mb-6">
             <Breadcrumbs trail={[{ href: '/compare', label: 'Compare' }, { label: `${pair.a.name} vs ${pair.b.name}` }]} className="mb-6" />
             <span className="mx-2">/</span>
             <span className="text-slate-600">{a.name} vs {b.name}</span>
@@ -255,7 +255,7 @@ export default async function ComparePairPage({ params }: Props) {
             priced here for {catList}. {gap?.sentence}
           </p>
 
-          <p className="text-slate-400 text-sm mt-4">
+          <p className="text-slate-500 text-sm mt-4">
             Prices last checked {PRICES_LAST_UPDATED_LABEL} at Nigerian retailers. We publish the price we can verify —
             and then source the equipment for you at it.
           </p>
@@ -280,7 +280,7 @@ export default async function ComparePairPage({ params }: Props) {
                       <h3 className="font-heading font-bold text-slate-900">Choose {brand.name} if…</h3>
                     </div>
                     <p className="text-slate-600 text-sm leading-relaxed">{chooseLine(brand, gap)}</p>
-                    <p className="text-slate-400 text-xs mt-3">
+                    <p className="text-slate-500 text-xs mt-3">
                       {(() => {
                         const s = unitPriceStats(brand, gap.category);
                         return s ? `${perUnitRange(s)} · ${s.models} model${s.models === 1 ? '' : 's'} tracked` : null;
@@ -313,7 +313,7 @@ export default async function ComparePairPage({ params }: Props) {
                   <table className="w-full min-w-[560px] text-sm">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-100">
-                        <th className="text-left font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3 w-[28%]">
+                        <th className="text-left font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3 w-[28%]">
                           &nbsp;
                         </th>
                         {[a, b].map((brand) => (
@@ -342,10 +342,10 @@ export default async function ComparePairPage({ params }: Props) {
                       ].map(([label, va, vb]) => (
                         <tr key={label} className="border-b border-slate-100 last:border-0 align-top">
                           <th className="text-left font-medium text-slate-500 px-4 py-3">{label}</th>
-                          <td className={`px-4 py-3 ${va === 'Not published' ? 'text-slate-400' : 'text-slate-900 font-medium'}`}>
+                          <td className={`px-4 py-3 ${va === 'Not published' ? 'text-slate-500' : 'text-slate-900 font-medium'}`}>
                             {va}
                           </td>
-                          <td className={`px-4 py-3 ${vb === 'Not published' ? 'text-slate-400' : 'text-slate-900 font-medium'}`}>
+                          <td className={`px-4 py-3 ${vb === 'Not published' ? 'text-slate-500' : 'text-slate-900 font-medium'}`}>
                             {vb}
                           </td>
                         </tr>
@@ -375,7 +375,7 @@ export default async function ComparePairPage({ params }: Props) {
                               <span className="font-heading font-bold text-slate-900 text-sm">{priceRange(p)}</span>
                             </div>
                             <p className="text-slate-500 text-xs mt-1">{p.spec}</p>
-                            <p className="text-slate-400 text-xs mt-1">
+                            <p className="text-slate-500 text-xs mt-1">
                               Price seen {seenOnLabel(p.seenOn)}
                               {p.note ? ` · ${p.note}` : ''}
                             </p>
@@ -506,7 +506,7 @@ export default async function ComparePairPage({ params }: Props) {
                   </span>
                   <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-amber-500 ml-auto flex-shrink-0" />
                 </span>
-                <span className="block text-slate-400 text-xs mt-2">
+                <span className="block text-slate-500 text-xs mt-2">
                   {p.categories.map((c) => CATEGORY_LABEL[c]).join(' · ')}
                 </span>
               </Link>

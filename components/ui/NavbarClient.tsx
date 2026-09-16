@@ -173,14 +173,14 @@ export default function NavbarClient({
                             href={group.featured.href}
                             className="group/card rounded-xl bg-gradient-to-br from-amber-50 to-white border border-amber-100 p-4 flex flex-col hover:border-amber-300 transition-colors"
                           >
-                            <span className="text-[11px] font-semibold uppercase tracking-wide text-amber-600">
+                            <span className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">
                               {group.featured.eyebrow}
                             </span>
                             <span className="font-heading font-bold text-slate-900 text-base mt-1">
                               {group.featured.title}
                             </span>
                             {group.featured.stat && (
-                              <span className="font-heading font-extrabold text-amber-500 text-lg mt-1.5">
+                              <span className="font-heading font-extrabold text-amber-700 text-lg mt-1.5">
                                 {group.featured.stat}
                               </span>
                             )}
@@ -282,7 +282,7 @@ export default function NavbarClient({
 
             {menus.map((group) => (
               <div key={group.label} className="mb-7">
-                <p className="text-xs font-heading font-bold text-slate-400 uppercase tracking-widest mb-2">
+                <p className="text-xs font-heading font-bold text-slate-500 uppercase tracking-widest mb-2">
                   {group.label}
                 </p>
                 <div className="space-y-1">
@@ -319,7 +319,7 @@ export default function NavbarClient({
               href={whatsappLink('Hi SolarBuilders, I have a question about going solar.')}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#22c55e] text-white py-3.5 rounded-full font-semibold min-h-[52px]"
+              className="flex items-center justify-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white py-3.5 rounded-full font-semibold min-h-[52px]"
             >
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </a>

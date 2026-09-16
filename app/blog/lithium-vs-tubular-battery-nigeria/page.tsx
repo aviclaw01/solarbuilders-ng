@@ -110,7 +110,7 @@ export default function LithiumVsTubularPage() {
           Lithium vs Tubular Batteries in Nigeria: the 10-Year Cost
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>9 min read</span>
@@ -162,7 +162,7 @@ export default function LithiumVsTubularPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Priced from Nigerian vendor listings, last checked {PRICES_LAST_UPDATED_LABEL}. Quotes {lithiumQuote.code}{' '}
             and {tubularQuote.code}.
           </p>
@@ -192,12 +192,12 @@ export default function LithiumVsTubularPage() {
                 <tr className="border-b border-[#E2E8F0] bg-white">
                   <td className="p-4 font-heading font-semibold text-[#0A0F1E]">Lithium LiFePO4 (mid tier)</td>
                   <td className="p-4 text-[#64748B]">{formatNaira(LITHIUM_PER_KWH.mid.best)}</td>
-                  <td className="p-4 font-semibold text-[#F59E0B]">{formatNaira(liPerUsableKwh)}</td>
+                  <td className="p-4 font-semibold text-[#B45309]">{formatNaira(liPerUsableKwh)}</td>
                 </tr>
                 <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
                   <td className="p-4 font-heading font-semibold text-[#0A0F1E]">Tubular 200Ah 12V</td>
                   <td className="p-4 text-[#64748B]">{formatNaira(TUBULAR_200AH.best / TUBULAR_NOMINAL_KWH)}</td>
-                  <td className="p-4 font-semibold text-[#F59E0B]">{formatNaira(tubPerUsableKwh)}</td>
+                  <td className="p-4 font-semibold text-[#B45309]">{formatNaira(tubPerUsableKwh)}</td>
                 </tr>
               </tbody>
             </table>
@@ -231,8 +231,8 @@ export default function LithiumVsTubularPage() {
                 </tr>
                 <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
                   <td className="p-4 font-heading font-semibold text-[#0A0F1E]">Total spent on batteries</td>
-                  <td className="p-4 font-semibold text-[#F59E0B]">{formatNaira(liTenYear)}</td>
-                  <td className="p-4 font-semibold text-[#F59E0B]">
+                  <td className="p-4 font-semibold text-[#B45309]">{formatNaira(liTenYear)}</td>
+                  <td className="p-4 font-semibold text-[#B45309]">
                     {formatNaira(tubTenYear.low)} – {formatNaira(tubTenYear.high)}
                   </td>
                 </tr>
@@ -247,7 +247,7 @@ export default function LithiumVsTubularPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Deliberately conservative: this holds today{'’'}s prices flat for ten years. In reality each replacement is
             bought at a future naira price, which makes the tubular column worse, not better. We have not tried to
             forecast that, because we cannot.
@@ -275,7 +275,7 @@ export default function LithiumVsTubularPage() {
               ['You need it replaceable in any town, today', 'Tubular batteries are sold everywhere in Nigeria and every technician can swap one. Lithium service depends on the brand, which is why we track how many Nigerian vendors carry each one.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -290,18 +290,18 @@ export default function LithiumVsTubularPage() {
             Lithium, in almost every case, and a {LITHIUM_MODULE_KWH}kWh 48V module is the unit the whole Nigerian market
             is built around — it is what our quotes default to. Which brand depends on budget and on whether you can get
             it serviced where you live: budget packs from{' '}
-            <Link href="/brands/blue-carbon" className="text-[#F59E0B] font-semibold hover:underline">Blue Carbon</Link>{' '}
+            <Link href="/brands/blue-carbon" className="text-[#B45309] font-semibold hover:underline">Blue Carbon</Link>{' '}
             and{' '}
-            <Link href="/brands/itel-energy" className="text-[#F59E0B] font-semibold hover:underline">ITEL</Link>,
+            <Link href="/brands/itel-energy" className="text-[#B45309] font-semibold hover:underline">ITEL</Link>,
             the volume choice from{' '}
-            <Link href="/brands/felicity" className="text-[#F59E0B] font-semibold hover:underline">Felicity</Link>, and
+            <Link href="/brands/felicity" className="text-[#B45309] font-semibold hover:underline">Felicity</Link>, and
             the premium end from{' '}
-            <Link href="/brands/deye" className="text-[#F59E0B] font-semibold hover:underline">Deye</Link> and{' '}
-            <Link href="/brands/pylontech" className="text-[#F59E0B] font-semibold hover:underline">Pylontech</Link>.
+            <Link href="/brands/deye" className="text-[#B45309] font-semibold hover:underline">Deye</Link> and{' '}
+            <Link href="/brands/pylontech" className="text-[#B45309] font-semibold hover:underline">Pylontech</Link>.
             We have the head-to-heads written up at{' '}
-            <Link href="/compare/blue-carbon-vs-felicity" className="text-[#F59E0B] font-semibold hover:underline">Blue Carbon vs Felicity</Link>{' '}
+            <Link href="/compare/blue-carbon-vs-felicity" className="text-[#B45309] font-semibold hover:underline">Blue Carbon vs Felicity</Link>{' '}
             and{' '}
-            <Link href="/compare/deye-vs-pylontech" className="text-[#F59E0B] font-semibold hover:underline">Deye vs Pylontech</Link>.
+            <Link href="/compare/deye-vs-pylontech" className="text-[#B45309] font-semibold hover:underline">Deye vs Pylontech</Link>.
           </p>
           <p className="text-[#64748B] leading-relaxed">
             One buying rule that matters more than the brand: get the model number on the invoice before you pay. The

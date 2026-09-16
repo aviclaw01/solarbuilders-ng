@@ -81,7 +81,7 @@ export default function LeadCaptureModal() {
       <div className="relative bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
         <button
           onClick={dismiss}
-          className="absolute top-4 right-4 text-[#94A3B8] hover:text-[#0A0F1E] transition-colors"
+          className="absolute top-4 right-4 text-[#64748B] hover:text-[#0A0F1E] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -152,7 +152,7 @@ export default function LeadCaptureModal() {
             <button
               type="button"
               onClick={dismiss}
-              className="w-full text-[#94A3B8] text-sm hover:text-[#64748B] transition-colors"
+              className="w-full text-[#64748B] text-sm hover:text-[#64748B] transition-colors"
             >
               No thanks, I&apos;ll browse myself
             </button>

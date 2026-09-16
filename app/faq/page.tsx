@@ -83,7 +83,7 @@ export default function FaqPage() {
         <header className="bg-white border-b border-slate-100 px-6 py-10 md:py-14">
           <div className="max-w-3xl mx-auto">
             <Breadcrumbs trail={[{ label: 'FAQs' }]} className="mb-6" />
-            <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">Questions &amp; answers</span>
+            <span className="text-amber-700 text-sm font-semibold tracking-wide uppercase">Questions &amp; answers</span>
             <h1 className="font-heading font-extrabold text-[#0A0F1E] text-3xl md:text-5xl mt-3 mb-4">
               Solar questions Nigerians actually ask
             </h1>
@@ -106,7 +106,7 @@ export default function FaqPage() {
                   >
                     <Icon className="w-4 h-4 text-amber-500" />
                     {g.label}
-                    <span className="text-slate-400 font-normal">{g.items.length}</span>
+                    <span className="text-slate-500 font-normal">{g.items.length}</span>
                   </a>
                 );
               })}
@@ -136,7 +136,7 @@ export default function FaqPage() {
                       <summary className="cursor-pointer list-none flex items-start justify-between gap-4 font-heading font-bold text-[#0A0F1E] text-base md:text-lg">
                         <h3 className="font-heading font-bold">{f.q}</h3>
                         <span
-                          className="text-amber-500 text-2xl leading-none transition-transform group-open:rotate-45 flex-shrink-0"
+                          className="text-amber-600 text-2xl leading-none transition-transform group-open:rotate-45 flex-shrink-0"
                           aria-hidden="true"
                         >
                           +
@@ -146,7 +146,7 @@ export default function FaqPage() {
                       {f.link && (
                         <Link
                           href={f.link.href}
-                          className="inline-flex items-center gap-1 text-amber-600 text-sm font-semibold mt-3 hover:underline underline-offset-4"
+                          className="inline-flex items-center gap-1 text-amber-700 text-sm font-semibold mt-3 hover:underline underline-offset-4"
                         >
                           {f.link.label} <ArrowRight className="w-4 h-4" />
                         </Link>

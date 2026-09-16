@@ -140,7 +140,7 @@ export default function AboutPage() {
             ].map((step, i) => (
               <AnimatedSection key={step.num} delay={(i + 1) * 75 as 75 | 150 | 225 | 300 | 450}>
                 <div className="bg-[#FAFAF7] rounded-2xl p-8 card-hover h-full">
-                  <div className="font-heading font-extrabold text-[#F59E0B] text-5xl mb-5 leading-none">
+                  <div className="font-heading font-extrabold text-[#D97706] text-5xl mb-5 leading-none">
                     {step.num}
                   </div>
                   <h3 className="font-heading font-bold text-[#0F172A] text-xl mb-3">{step.title}</h3>
@@ -175,7 +175,7 @@ export default function AboutPage() {
                     {item.stat}
                   </div>
                   <p className="font-heading font-semibold text-white text-lg">{item.label}</p>
-                  <p className="text-[#64748B] text-sm mt-1">{item.sub}</p>
+                  <p className="text-[#94A3B8] text-sm mt-1">{item.sub}</p>
                 </div>
               </AnimatedSection>
             ))}

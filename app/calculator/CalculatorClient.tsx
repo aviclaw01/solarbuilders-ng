@@ -237,13 +237,13 @@ function CalculatorInner({ navbar, footer }: { navbar: React.ReactNode; footer: 
                   <div key={appliance.id} className="flex items-center justify-between py-2 border-b border-[#E2E8F0] last:border-0">
                     <span className="text-[#0A0F1E] text-sm">
                       {appliance.qty}× {appliance.name}{' '}
-                      <span className="text-[#94A3B8] text-xs">· {appliance.watts}W · {appliance.hoursPerDay}h/day</span>
+                      <span className="text-[#64748B] text-xs">· {appliance.watts}W · {appliance.hoursPerDay}h/day</span>
                     </span>
                     <button
                       onClick={() =>
                         appliance.id.startsWith('custom_') ? removeCustomAppliance(appliance.id) : setQty(appliance.id, 0)
                       }
-                      className="text-[#94A3B8] hover:text-red-500 transition-colors p-1"
+                      className="text-[#64748B] hover:text-red-500 transition-colors p-1"
                       aria-label={`Remove ${appliance.name}`}
                     >
                       <X className="w-4 h-4" />
@@ -283,7 +283,7 @@ function CalculatorInner({ navbar, footer }: { navbar: React.ReactNode; footer: 
                     {step > s.n ? '✓' : s.n}
                   </div>
                   <div className="hidden sm:block">
-                    <p className={`text-xs font-heading font-semibold leading-tight ${step === s.n ? 'text-[#0F172A]' : 'text-[#94A3B8]'}`}>
+                    <p className={`text-xs font-heading font-semibold leading-tight ${step === s.n ? 'text-[#0F172A]' : 'text-[#64748B]'}`}>
                       {s.emoji} {s.label}
                     </p>
                   </div>
@@ -319,7 +319,7 @@ function CalculatorInner({ navbar, footer }: { navbar: React.ReactNode; footer: 
               >
                 <div className="text-3xl text-center mb-2">{appliance.emoji}</div>
                 <p className="font-heading font-semibold text-[#0A0F1E] text-sm text-center leading-tight">{appliance.name}</p>
-                <p className="text-[#94A3B8] text-xs text-center mb-1">{appliance.watts}W</p>
+                <p className="text-[#64748B] text-xs text-center mb-1">{appliance.watts}W</p>
                 <Stepper qty={qty} onDecrement={() => setQty(appliance.id, qty - 1)} onIncrement={() => setQty(appliance.id, qty + 1)} />
                 {qty > 0 && (
                   <div className="flex items-center justify-center gap-1.5 mt-2">
@@ -330,7 +330,7 @@ function CalculatorInner({ navbar, footer }: { navbar: React.ReactNode; footer: 
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="text-amber-600 text-xs font-semibold min-w-[52px] text-center">
+                    <span className="text-amber-700 text-xs font-semibold min-w-[52px] text-center">
                       ⏱ {getHours(appliance.id, appliance.hoursPerDay)}h/day
                     </span>
                     <button
@@ -358,7 +358,7 @@ function CalculatorInner({ navbar, footer }: { navbar: React.ReactNode; footer: 
                       <span className="text-sm font-medium text-[#0A0F1E]">⚙️ {ca.name}</span>
                       <span className="text-xs text-[#64748B] ml-2">{ca.watts}W · {ca.hoursPerDay}h/day</span>
                     </div>
-                    <button onClick={() => removeCustomAppliance(ca.id)} className="text-[#94A3B8] hover:text-red-500 transition-colors p-1" aria-label={`Remove ${ca.name}`}>
+                    <button onClick={() => removeCustomAppliance(ca.id)} className="text-[#64748B] hover:text-red-500 transition-colors p-1" aria-label={`Remove ${ca.name}`}>
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -400,7 +400,7 @@ function CalculatorInner({ navbar, footer }: { navbar: React.ReactNode; footer: 
                 </div>
               </div>
             ) : (
-              <button onClick={() => setShowCustomForm(true)} className="text-sm font-semibold text-[#F59E0B] hover:text-[#D97706] transition-colors">
+              <button onClick={() => setShowCustomForm(true)} className="text-sm font-semibold text-[#B45309] hover:text-[#D97706] transition-colors">
                 ＋ Add custom appliance
               </button>
             )}
@@ -412,7 +412,7 @@ function CalculatorInner({ navbar, footer }: { navbar: React.ReactNode; footer: 
             <div>
               <p className="text-[#94A3B8] text-xs mb-1">Current load estimate</p>
               <p className="font-heading font-extrabold text-[#F59E0B] text-2xl">{(totalWatts / 1000).toFixed(2)} kW</p>
-              <p className="text-[#64748B] text-xs">
+              <p className="text-[#94A3B8] text-xs">
                 {selectedAppliances.length} appliance{selectedAppliances.length !== 1 ? 's' : ''} · Add more to refine
               </p>
             </div>

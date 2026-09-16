@@ -106,7 +106,7 @@ export default function InverterSizeGuidePage() {
         <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl leading-tight mb-4">
           What Size Inverter Do I Need? A Nigerian Guide
         </h1>
-        <div className="flex items-center gap-4 text-slate-400 text-sm mb-12 pb-8 border-b border-slate-100">
+        <div className="flex items-center gap-4 text-slate-500 text-sm mb-12 pb-8 border-b border-slate-100">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>7 min read</span>
@@ -166,7 +166,7 @@ export default function InverterSizeGuidePage() {
             </div>
             <div className="border-t border-amber-200 pt-3 flex justify-between font-heading font-bold text-slate-900">
               <span>Total peak load</span>
-              <span className="text-amber-600">{example.peakWatts}W</span>
+              <span className="text-amber-700">{example.peakWatts}W</span>
             </div>
           </div>
 
@@ -182,7 +182,7 @@ export default function InverterSizeGuidePage() {
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">Price by size: what a real load on that inverter costs</h2>
           <p className="text-slate-600 leading-relaxed mb-4">
             Rather than a generic price band, here is the inverter-only price for four real loads from our{' '}
-            <Link href="/sizing" className="text-amber-600 font-semibold hover:underline">sizing guides</Link> — each
+            <Link href="/sizing" className="text-amber-700 font-semibold hover:underline">sizing guides</Link> — each
             one a representative appliance list that actually lands on that inverter size, priced from Nigerian
             vendor listings as of {PRICES_LAST_UPDATED_LABEL}.
           </p>
@@ -204,7 +204,7 @@ export default function InverterSizeGuidePage() {
                       </Link>
                     </td>
                     <td className="p-4 font-semibold text-slate-900">{standard.inverterKva}kVA</td>
-                    <td className="p-4 text-amber-600 font-semibold">
+                    <td className="p-4 text-amber-700 font-semibold">
                       {formatNaira(inverterLine.unitCost.low)}–{formatNaira(inverterLine.unitCost.high)} ({standard.inverterBrands.join(' / ')})
                     </td>
                   </tr>
@@ -241,7 +241,7 @@ export default function InverterSizeGuidePage() {
             <li><strong>Premium —</strong> {INVERTER_BRANDS.premium.join(', ')}</li>
           </ul>
           <p className="text-slate-600 leading-relaxed mb-6">
-            Current vendor prices for each brand are on our <Link href="/brands" className="text-amber-600 font-semibold hover:underline">brands page</Link>.
+            Current vendor prices for each brand are on our <Link href="/brands" className="text-amber-700 font-semibold hover:underline">brands page</Link>.
           </p>
 
           <h2 className="font-heading font-bold text-slate-900 text-2xl mb-4 mt-10">What about batteries?</h2>

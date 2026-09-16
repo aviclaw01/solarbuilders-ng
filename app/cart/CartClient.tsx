@@ -234,7 +234,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         )}
 
         <div className="border border-slate-100 rounded-2xl p-5 mt-6 text-left">
-          <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-400 mb-3">What we&apos;re pricing</p>
+          <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-500 mb-3">What we&apos;re pricing</p>
           <ul className="space-y-2">
             {result.lines.map((l) => (
               <li key={`${l.brandSlug}::${l.model}`} className="flex justify-between gap-4 text-sm">
@@ -249,7 +249,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
             <span className="text-sm text-slate-500">Equipment, midpoint</span>
             <span className="font-heading font-extrabold text-slate-900 text-xl">{formatNaira(result.totals.best)}</span>
           </div>
-          <p className="text-xs text-slate-400 text-right mt-1">
+          <p className="text-xs text-slate-500 text-right mt-1">
             {result.totals.low === result.totals.high
               ? 'Every line has one listed price, so this is exact at the prices we checked'
               : `${formatNaira(result.totals.low)} – ${formatNaira(result.totals.high)} across the listings we checked`}
@@ -259,12 +259,12 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         <WhatsAppLink
           text={waText}
           placement="cart_success"
-          className="mt-6 w-full bg-[#25D366] hover:bg-[#22c55e] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
+          className="mt-6 w-full bg-[#0E7568] hover:bg-[#075E54] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
         >
           <MessageCircle className="w-5 h-5" /> Continue on WhatsApp
         </WhatsAppLink>
 
-        <Link href="/shop" className="block mt-4 text-sm text-slate-400 hover:text-slate-600">
+        <Link href="/shop" className="block mt-4 text-sm text-slate-500 hover:text-slate-600">
           Back to equipment prices
         </Link>
       </div>
@@ -291,14 +291,14 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         <WhatsAppLink
           text={waText}
           placement="cart_error"
-          className="mt-6 w-full bg-[#25D366] hover:bg-[#22c55e] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
+          className="mt-6 w-full bg-[#0E7568] hover:bg-[#075E54] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
         >
           <MessageCircle className="w-5 h-5" /> Send it on WhatsApp
         </WhatsAppLink>
         <button
           type="button"
           onClick={() => setStatus('idle')}
-          className="mt-4 text-sm text-slate-400 hover:text-slate-600"
+          className="mt-4 text-sm text-slate-500 hover:text-slate-600"
         >
           Try the form again
         </button>
@@ -312,7 +312,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
     return (
       <div className="max-w-2xl">
         <h1 className="font-heading font-extrabold text-slate-900 text-3xl md:text-4xl">Your order request</h1>
-        <p className="text-slate-400 mt-3 text-sm">Loading your list…</p>
+        <p className="text-slate-500 mt-3 text-sm">Loading your list…</p>
       </div>
     );
   }
@@ -377,10 +377,10 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
               <div className="flex items-start gap-3">
                 <BrandMark brand={{ slug: l.brand.slug, name: l.brand.name, logo: l.brand.logo }} size={36} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs text-slate-400">{l.brand.name}</p>
+                  <p className="text-xs text-slate-500">{l.brand.name}</p>
                   <p className="font-heading font-bold text-slate-900 leading-tight break-words">{l.product.model}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{l.product.spec}</p>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     {l.product.priceLow === l.product.priceHigh
                       ? `${formatNaira(l.product.priceLow)} each`
                       : `${formatNaira(l.product.priceLow)} – ${formatNaira(l.product.priceHigh)} each`}
@@ -422,7 +422,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
                 <div className="text-right">
                   <p className="font-heading font-extrabold text-slate-900">{formatNaira(l.lineBest)}</p>
                   {l.lineLow !== l.lineHigh && (
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-slate-500">
                       {formatNaira(l.lineLow)} – {formatNaira(l.lineHigh)}
                     </p>
                   )}
@@ -451,7 +451,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
             </div>
           )}
 
-          <Link href="/shop" className="inline-block text-sm font-semibold text-amber-600 hover:text-amber-700 pt-1">
+          <Link href="/shop" className="inline-block text-sm font-semibold text-amber-700 hover:text-amber-800 pt-1">
             ← Add more equipment
           </Link>
         </div>
@@ -459,7 +459,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         {/* Totals + form */}
         <div className="lg:sticky lg:top-6 space-y-4">
           <div className="border border-slate-100 rounded-2xl p-5 bg-slate-50/60">
-            <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-400">
+            <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-500">
               Equipment total ({totals.items} item{totals.items === 1 ? '' : 's'})
             </p>
             <p className="font-heading font-extrabold text-slate-900 text-3xl mt-1">{formatNaira(totals.best)}</p>
@@ -468,7 +468,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
                 ? 'Every line has one listed price, so this is exact at the prices we checked'
                 : `${formatNaira(totals.low)} – ${formatNaira(totals.high)} across the listings we checked`}
             </p>
-            <p className="text-[11px] text-slate-400 mt-3">
+            <p className="text-[11px] text-slate-500 mt-3">
               Midpoint of real Nigerian listings from {pricesAsOfLabel}. Not a quote, and not a bill — we confirm
               today&apos;s price with the distributor before you pay anyone.
             </p>
@@ -535,7 +535,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
               />
               <span className="text-sm text-slate-700">
                 I also want installation
-                <span className="block text-xs text-slate-400">
+                <span className="block text-xs text-slate-500">
                   Quoted per job once we know the site. Untick for supply only.
                 </span>
               </span>
@@ -550,7 +550,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
             >
               {status === 'submitting' ? 'Sending…' : 'Request this order'}
             </button>
-            <p className="text-[11px] text-slate-400 text-center">
+            <p className="text-[11px] text-slate-500 text-center">
               Sending this costs nothing and commits you to nothing. We confirm the price before you pay anyone.
             </p>
           </form>

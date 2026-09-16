@@ -231,7 +231,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
             href={whatsappLink(`Hi SolarBuilders, I just applied to work with you (${typeLabel}). Business: ${formData.businessName}.`)}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-heading w-full bg-[#25D366] text-white py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#22c55e] transition-colors min-h-[56px]"
+            className="font-heading w-full bg-[#0E7568] text-white py-4 rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:bg-[#075E54] transition-colors min-h-[56px]"
           >
             <MessageCircle className="w-5 h-5" /> Message us on WhatsApp
           </a>
@@ -460,7 +460,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
                   maxLength={150}
                   className={`${INPUT} resize-none`}
                 />
-                <p className="text-slate-400 text-xs text-right">{formData.bio.length}/150</p>
+                <p className="text-slate-500 text-xs text-right">{formData.bio.length}/150</p>
               </div>
             </div>
           )}
@@ -537,7 +537,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
         {/* Hero */}
         <section className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
           <div className="max-w-6xl mx-auto">
-            <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">Work with us</span>
+            <span className="text-amber-700 text-sm font-semibold tracking-wide uppercase">Work with us</span>
             <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl mt-3 mb-4 max-w-3xl">
               Installers, vendors, manufacturers: we bring the demand.
             </h1>
@@ -571,7 +571,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
               <div className="w-11 h-11 bg-amber-50 rounded-xl flex items-center justify-center mb-4">
                 <Wrench className="w-5 h-5 text-amber-600" />
               </div>
-              <span className="text-amber-500 text-xs font-semibold tracking-wide uppercase">For installers</span>
+              <span className="text-amber-700 text-xs font-semibold tracking-wide uppercase">For installers</span>
               <h2 className="font-heading font-extrabold text-slate-900 text-2xl mt-2 mb-4">
                 Jobs that arrive with a BOM, a budget and the equipment.
               </h2>
@@ -598,7 +598,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
                     </li>
                   ))}
                 </ul>
-                <Link href="/verified" className="inline-flex items-center gap-1 text-amber-600 text-sm font-semibold mt-3 hover:underline underline-offset-4 min-h-[44px]">
+                <Link href="/verified" className="inline-flex items-center gap-1 text-amber-700 text-sm font-semibold mt-3 hover:underline underline-offset-4 min-h-[44px]">
                   Full vetting checklist <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -608,7 +608,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
               <div className="w-11 h-11 bg-amber-50 rounded-xl flex items-center justify-center mb-4">
                 <Store className="w-5 h-5 text-amber-600" />
               </div>
-              <span className="text-amber-500 text-xs font-semibold tracking-wide uppercase">For vendors and distributors</span>
+              <span className="text-amber-700 text-xs font-semibold tracking-wide uppercase">For vendors and distributors</span>
               <h2 className="font-heading font-extrabold text-slate-900 text-2xl mt-2 mb-4">
                 Your catalogue and prices in front of buyers who already have a BOM.
               </h2>
@@ -635,7 +635,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
                     </li>
                   ))}
                 </ul>
-                <Link href="/brands" className="inline-flex items-center gap-1 text-amber-600 text-sm font-semibold mt-3 hover:underline underline-offset-4 min-h-[44px]">
+                <Link href="/brands" className="inline-flex items-center gap-1 text-amber-700 text-sm font-semibold mt-3 hover:underline underline-offset-4 min-h-[44px]">
                   See who is already listed <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -645,7 +645,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
               <div className="w-11 h-11 bg-amber-50 rounded-xl flex items-center justify-center mb-4">
                 <Factory className="w-5 h-5 text-amber-600" />
               </div>
-              <span className="text-amber-500 text-xs font-semibold tracking-wide uppercase">For manufacturers and distributors</span>
+              <span className="text-amber-700 text-xs font-semibold tracking-wide uppercase">For manufacturers and distributors</span>
               <h2 className="font-heading font-extrabold text-slate-900 text-2xl mt-2 mb-4">
                 Give us trade pricing. We put your product in front of buyers who already know what they need.
               </h2>
@@ -672,7 +672,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
                     </li>
                   ))}
                 </ul>
-                <Link href="/brands" className="inline-flex items-center gap-1 text-amber-600 text-sm font-semibold mt-3 hover:underline underline-offset-4 min-h-[44px]">
+                <Link href="/brands" className="inline-flex items-center gap-1 text-amber-700 text-sm font-semibold mt-3 hover:underline underline-offset-4 min-h-[44px]">
                   See the equipment we already price <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>

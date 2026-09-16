@@ -154,7 +154,7 @@ function ProductCard({ item }: { item: ShopItem }) {
               {item.brandName}
             </Link>
             {item.brandTier && (
-              <span className="text-[10px] uppercase tracking-wide font-semibold text-slate-400">{TIER_LABEL[item.brandTier]}</span>
+              <span className="text-[10px] uppercase tracking-wide font-semibold text-slate-500">{TIER_LABEL[item.brandTier]}</span>
             )}
           </div>
           <p className="font-heading font-extrabold text-slate-900 text-base leading-tight mt-0.5 break-words">{item.model}</p>
@@ -170,7 +170,7 @@ function ProductCard({ item }: { item: ShopItem }) {
           {sameLowHigh ? 'Listed price' : 'Range across the listings we checked'}
           {item.unitPrice && item.unit ? ` · ${formatNaira(item.unitPrice)} per ${item.unit}` : ''}
         </p>
-        <p className="text-[11px] text-slate-400 mt-1">Price seen {formatSeenOn(item.seenOn)}</p>
+        <p className="text-[11px] text-slate-500 mt-1">Price seen {formatSeenOn(item.seenOn)}</p>
       </div>
 
       {(item.note || item.caveat) && (
@@ -268,7 +268,7 @@ function Chip({
 function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-400 mb-2">{title}</p>
+      <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-500 mb-2">{title}</p>
       <div className="flex flex-wrap gap-2">{children}</div>
     </div>
   );
@@ -410,7 +410,7 @@ function ShopInner({ items }: { items: ShopItem[] }) {
               <span className="bg-amber-400 text-slate-900 rounded-full px-2 py-0.5 text-[11px]">{activeCount}</span>
             )}
           </span>
-          <span className="text-slate-400 text-xs">{panelOpen ? 'Hide' : 'Show'}</span>
+          <span className="text-slate-500 text-xs">{panelOpen ? 'Hide' : 'Show'}</span>
         </button>
 
         <div className={`${panelOpen ? 'block' : 'hidden'} sm:block mt-3 sm:mt-0 space-y-5 border border-slate-100 rounded-2xl p-5`}>
@@ -477,7 +477,7 @@ function ShopInner({ items }: { items: ShopItem[] }) {
           </FilterGroup>
 
           <div>
-            <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-400 mb-2">Brand</p>
+            <p className="text-[11px] uppercase tracking-wide font-semibold text-slate-500 mb-2">Brand</p>
             <div className="flex flex-wrap gap-2 max-h-52 overflow-y-auto pr-1">
               {brandOptions.map((b) => (
                 <Chip key={b.slug} active={brandSel.has(b.slug)} onClick={() => toggleBrand(b.slug)}>
@@ -508,7 +508,7 @@ function ShopInner({ items }: { items: ShopItem[] }) {
             {cat ? ` in ${CATEGORY_LABEL[cat].toLowerCase()}` : ''}
           </p>
           <div className="flex items-center gap-3">
-            <label htmlFor="shop-sort" className="text-xs text-slate-400">
+            <label htmlFor="shop-sort" className="text-xs text-slate-500">
               Sort
             </label>
             <select
@@ -521,7 +521,7 @@ function ShopInner({ items }: { items: ShopItem[] }) {
               <option value="price-desc">Price: high to low</option>
               {cat && CATEGORY_UNIT[cat] && <option value="value">Best value (₦ per {CATEGORY_UNIT[cat]})</option>}
             </select>
-            <Link href="/cart" className="text-sm font-semibold text-amber-600 hover:text-amber-700 whitespace-nowrap">
+            <Link href="/cart" className="text-sm font-semibold text-amber-700 hover:text-amber-800 whitespace-nowrap">
               Your order →
             </Link>
           </div>

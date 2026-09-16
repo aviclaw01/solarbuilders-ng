@@ -93,7 +93,7 @@ export default function SolarKanoPage() {
             {[...localVendors, ...featuredBrands].slice(0, 6).map(b => <BrandCard key={b!.slug} brand={b!} />)}
           </div>
           <div className="mt-6">
-            <Link href="/brands" className="text-amber-600 font-semibold text-sm hover:underline underline-offset-4">All brands &amp; vendors →</Link>
+            <Link href="/brands" className="text-amber-700 font-semibold text-sm hover:underline underline-offset-4">All brands &amp; vendors →</Link>
           </div>
         </div>
 
