@@ -35,6 +35,7 @@ import {
   type TierQuote,
 } from "./quote";
 import type { InverterTier } from "./prices";
+import { bestBuildWithin, walkBill, type BudgetLookupData, type LookupBuild } from "./budget-lookup";
 
 // ─────────────────────────────────────────────────────────
 // APPLIANCE CATALOGUE — borrowed from the sizing scenarios
@@ -514,6 +515,66 @@ export function cheapestCompleteBuild(): BudgetBuild {
 }
 
 // ─────────────────────────────────────────────────────────
+// THE CALCULATOR'S COPY
+// ─────────────────────────────────────────────────────────
+
+function toLookupBuild(b: BudgetBuild): LookupBuild {
+  return {
+    price: b.price,
+    low: b.tier.total.low,
+    high: b.tier.total.high,
+    rung: b.rungIndex,
+    inverterKva: b.tier.inverterKva,
+    inverterClass: b.inverterClass,
+    batteryKwh: b.tier.batteryKwh,
+    battery: b.battery,
+    panelCount: b.tier.panelCount,
+    panelWatts: b.tier.panelWatts,
+    autonomyHours: b.tier.autonomyHours,
+    tierKey: b.tierKey,
+  };
+}
+
+let LOOKUP: BudgetLookupData | null = null;
+
+/**
+ * Everything the calculator's budget mode needs, computed here so the browser
+ * never runs the search (see lib/budget-lookup.ts). Only builds that beat
+ * every cheaper build are kept — the rest can never be anyone's best answer —
+ * which turns a couple of hundred candidates into a list small enough to
+ * serialise into the page.
+ */
+export function budgetLookupData(): BudgetLookupData {
+  if (LOOKUP) return LOOKUP;
+  // Stable sort, so equal-priced builds keep candidate order and the tie falls
+  // the same way it does in bestWithin().
+  const sorted = allCandidates().sort((x, y) => x.price - y.price);
+  const frontier: BudgetBuild[] = [];
+  let best: BudgetBuild | null = null;
+  for (const b of sorted) {
+    if (!best || (better(best, b) === b && b !== best)) {
+      // An equal-priced build that ranks higher replaces its twin outright.
+      if (best && best.price === b.price) frontier.pop();
+      best = b;
+      frontier.push(b);
+    }
+  }
+  LOOKUP = {
+    frontier: frontier.map(toLookupBuild),
+    rungs: LADDER.map((rung, i) => ({ summary: rung.summary, payload: quoteFor(i, "budget", "lithium").payload })),
+    cheapestBill: cheapestCompleteBuild().tier.bom.map((l) => ({
+      key: l.key,
+      item: l.item,
+      qty: l.qty,
+      unit: l.unit,
+      unitBest: l.unitCost.best,
+    })),
+    points: BUDGET_POINTS.map(({ amount, label, slug }) => ({ amount, label, slug })),
+  };
+  return LOOKUP;
+}
+
+// ─────────────────────────────────────────────────────────
 // THE OTHER WAYS TO SPEND THE SAME MONEY
 // ─────────────────────────────────────────────────────────
 
@@ -654,6 +715,34 @@ export function budgetIntegrityIssues(): string[] {
     const clash = seen.get(fingerprint);
     if (clash) issues.push(`${answer.point.label} and ${clash} give the same answer — they should be one page`);
     seen.set(fingerprint, answer.point.label);
+  }
+
+  // The calculator answers from the precomputed list, the /budget pages from the
+  // full search. A visitor who does both must get the same system back.
+  const lookup = budgetLookupData();
+  for (const answer of budgetAnswers()) {
+    const amount = answer.point.amount;
+    const fromLookup = bestBuildWithin(lookup, amount);
+    if (answer.build) {
+      const b = answer.build;
+      const same =
+        fromLookup &&
+        lookup.rungs[fromLookup.rung].payload === b.quote.payload &&
+        fromLookup.tierKey === b.tierKey &&
+        fromLookup.inverterClass === b.inverterClass &&
+        fromLookup.battery === b.battery &&
+        fromLookup.price === b.price;
+      if (!same) {
+        issues.push(`calculator budget lookup disagrees with the ${answer.point.label} page`);
+      }
+    } else if (fromLookup) {
+      issues.push(`calculator budget lookup finds a build for ${answer.point.label}; the page says none fits`);
+    } else {
+      const walk = walkBill(lookup, amount);
+      if (walk.shortBy !== answer.shortfall!.shortBy || walk.spentBefore !== answer.shortfall!.spentBefore) {
+        issues.push(`calculator shortfall walk disagrees with the ${answer.point.label} page`);
+      }
+    }
   }
 
   return issues;
