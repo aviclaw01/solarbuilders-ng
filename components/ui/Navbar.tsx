@@ -3,6 +3,7 @@ import type { MenuGroup, MenuItem } from '@/components/ui/navTypes';
 import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { comparisonPairs } from '@/lib/brands';
 import { SIZING_SCENARIOS } from '@/lib/sizing';
+import { BUDGET_POINTS } from '@/lib/budget';
 import { formatNairaShort } from '@/lib/quote';
 
 /**
@@ -67,6 +68,7 @@ const MENUS: MenuGroup[] = [
     label: 'Resources',
     items: [
       { href: '/sizing', label: 'Sizing guides', hint: `${SIZING_SCENARIOS.length} worked answers` },
+      { href: '/budget', label: 'What my budget buys', hint: `${BUDGET_POINTS.length} budgets, priced` },
       { href: '/blog', label: 'Solar guides', hint: 'Costs, maintenance, financing' },
       { href: '/faq', label: 'FAQs', hint: 'Straight answers, no sales pitch' },
       { href: '/how-it-works', label: 'How it works' },
@@ -74,11 +76,11 @@ const MENUS: MenuGroup[] = [
       { href: '/blog/solar-loans-nigeria', label: 'Paying for it' },
     ],
     featured: {
-      href: '/sizing',
-      eyebrow: 'Most asked',
-      title: 'What size do I need?',
-      body: `Worked answers for ACs, flats, shops and offices — every figure computed, not guessed. Prices from ${PRICES_LAST_UPDATED_LABEL}.`,
-      stat: `${SIZING_SCENARIOS.length} guides`,
+      href: '/budget',
+      eyebrow: 'Start from the money',
+      title: 'What will my budget buy?',
+      body: `Name the amount and get the system it actually buys — including the budgets that honestly buy nothing yet. Prices from ${PRICES_LAST_UPDATED_LABEL}.`,
+      stat: `${BUDGET_POINTS.length} budgets`,
     },
   },
 ];

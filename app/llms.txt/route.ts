@@ -51,6 +51,7 @@ with the distributor before anyone pays.
 - ${SITE_URL}/brands — prices by brand
 - ${SITE_URL}/compare — brand-vs-brand comparisons
 - ${SITE_URL}/sizing — "what size do I need" answers
+- ${SITE_URL}/budget — "what will ₦X buy me" answers, including the budgets that buy nothing
 - ${SITE_URL}/calculator — appliance-based system sizing
 - ${SITE_URL}/faq — common questions
 - ${SITE_URL}/how-it-works — how the buying process works

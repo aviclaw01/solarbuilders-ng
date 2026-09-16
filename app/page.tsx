@@ -96,6 +96,17 @@ export default function HomePage() {
                 Shop equipment
               </Link>
             </div>
+            {/* The research found most people arrive with an amount, not an appliance
+                list. Keep the calculator as the primary CTA but give that half of the
+                market its own door. */}
+            <p className="mb-6 -mt-2">
+              <Link
+                href="/budget"
+                className="text-slate-700 hover:text-slate-900 text-base font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 transition-colors"
+              >
+                Or start from your budget →
+              </Link>
+            </p>
             {/* Trust row */}
             <p className="text-slate-400 text-sm font-medium">
               {PRICED_PRODUCTS} prices checked in {PRICES_LAST_UPDATED_LABEL} · Free to use · No mark-up on equipment

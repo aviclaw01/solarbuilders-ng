@@ -107,6 +107,7 @@ export default function Footer() {
               </li>
             ))}
             <li><Link href="/sizing" className={linkCls}>All sizing guides</Link></li>
+            <li><Link href="/budget" className={linkCls}>What my budget buys</Link></li>
           </Column>
 
           <Column title="Prices">

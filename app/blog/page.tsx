@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
+import { ARTICLES } from './articles';
 
 export const metadata: Metadata = {
   title: 'Solar Energy Guide for Nigeria — Tips, Costs & Advice',
@@ -16,68 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://solarbuildersng.com/blog' },
 };
 
-const ARTICLES = [
-  {
-    slug: 'solar-cost-nigeria-2026',
-    title: 'How Much Does Solar Cost in Nigeria? (2026 Guide)',
-    excerpt: 'A complete breakdown of solar installation costs in Nigeria — from budget 2kVA systems to full 10kVA home solutions. Real prices from verified installers.',
-    readTime: '6 min read',
-    date: 'March 2026',
-    tag: 'Costs & Pricing',
-    tagColor: 'bg-blue-50 text-blue-700 border-blue-200',
-    featured: true,
-  },
-  {
-    slug: 'generator-vs-solar-lagos',
-    title: 'The True Cost of Generator vs Solar in Lagos',
-    excerpt: 'Most Lagosians know generators are expensive. But few have done the math. We did — and the numbers over 3 years are eye-opening.',
-    readTime: '8 min read',
-    date: 'March 2026',
-    tag: 'Cost Analysis',
-    tagColor: 'bg-red-50 text-red-700 border-red-200',
-    featured: true,
-  },
-  {
-    slug: 'inverter-size-guide',
-    title: 'What Size Inverter Do I Need? A Nigerian Guide',
-    excerpt: 'Choosing the wrong inverter size is one of the most expensive mistakes solar buyers make. This guide helps you calculate exactly what you need.',
-    readTime: '7 min read',
-    date: 'February 2026',
-    tag: 'System Sizing',
-    tagColor: 'bg-purple-50 text-purple-700 border-purple-200',
-    featured: false,
-  },
-  {
-    slug: 'choose-solar-installer-lagos',
-    title: 'How to Choose a Solar Installer in Nigeria (Without Getting Scammed)',
-    excerpt: 'Not all solar installers are equal. This guide shows you what to look for, the right questions to ask, and red flags to avoid before paying a single naira.',
-    readTime: '5 min read',
-    date: 'March 2026',
-    tag: 'Buyer Guide',
-    tagColor: 'bg-amber-50 text-amber-700 border-amber-200',
-    featured: false,
-  },
-  {
-    slug: 'solar-maintenance-nigeria',
-    title: 'Solar Panel Maintenance: What Nigerian Homeowners Need to Know',
-    excerpt: 'Good news: solar is remarkably low-maintenance. Here\'s what you actually need to do — and what you can safely ignore — in Nigeria\'s climate.',
-    readTime: '6 min read',
-    date: 'March 2026',
-    tag: 'Maintenance',
-    tagColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    featured: false,
-  },
-  {
-    slug: 'solar-loans-nigeria',
-    title: 'Carbon, FairMoney, or Renmoney: Best Solar Loans in Nigeria',
-    excerpt: 'Compare the best solar financing options in Nigeria — fintech loans, bank products, PAYG schemes, and installer payment plans.',
-    readTime: '7 min read',
-    date: 'March 2026',
-    tag: 'Financing',
-    tagColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    featured: false,
-  },
-];
+
 
 export default function BlogPage() {
   const featured = ARTICLES.filter(a => a.featured);

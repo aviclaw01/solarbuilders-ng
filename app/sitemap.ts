@@ -2,7 +2,9 @@ import { MetadataRoute } from 'next';
 import { BRANDS, comparisonPairs } from '@/lib/brands';
 import { PRICES_LAST_UPDATED } from '@/lib/prices';
 import { sizingSitemapEntries } from './sizing/sitemap-entries';
+import { budgetSitemapEntries } from './budget/sitemap-entries';
 import { faqSitemapEntry } from './faq/sitemap-entry';
+import { ARTICLES } from './blog/articles';
 import { SITE_URL } from '@/lib/site';
 
 /**
@@ -47,16 +49,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ['/solar/enugu', 0.8],
   ] as const;
 
-  const articles = [
-    ['/blog/solar-cost-nigeria-2026', 0.75],
-    ['/blog/inverter-size-guide', 0.75],
-    ['/blog/generator-vs-solar-lagos', 0.75],
-    ['/blog/solar-calculator-nigeria', 0.75],
-    ['/blog/solar-abuja-2026', 0.75],
-    ['/blog/choose-solar-installer-lagos', 0.75],
-    ['/blog/solar-maintenance-nigeria', 0.7],
-    ['/blog/solar-loans-nigeria', 0.7],
-  ] as const;
+  // Derived from the blog registry so a new post cannot be published without a
+  // sitemap row. Two posts (solar-abuja-2026, solar-calculator-nigeria) were
+  // live but absent from both this list and the blog index, which is what
+  // happens when the same set of posts is maintained by hand in two places.
+  const articles = ARTICLES.map((a) => [`/blog/${a.slug}`, a.priority ?? (a.featured ? 0.75 : 0.7)] as const);
 
   return [
     ...core,
@@ -65,6 +62,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...BRANDS.map((brand) => page(`/brands/${brand.slug}`, 0.75, 'monthly', PRICED)),
     ...comparisonPairs().map((pair) => page(`/compare/${pair.slug}`, 0.8, 'monthly', PRICED)),
     ...sizingSitemapEntries(SITE_URL),
+    ...budgetSitemapEntries(SITE_URL),
     faqSitemapEntry(SITE_URL),
   ];
 }
