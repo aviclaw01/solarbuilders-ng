@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { formatNaira } from "@/lib/quote";
 import AdminNav from "@/components/ui/AdminNav";
+import { requireAdmin } from "@/lib/admin-auth";
 
 /**
  * Internal leads dashboard — every "Get this system built" submission from
@@ -168,6 +169,13 @@ async function fetchLeads(params: URLSearchParams): Promise<FetchResult> {
 
 async function updateStatus(formData: FormData) {
   "use server";
+
+  // A server action is a public endpoint reachable from any route, so the
+  // proxy's /admin/* gate does not cover it. Check the credential here too.
+  if (!(await requireAdmin())) {
+    console.error("[admin/leads] updateStatus: rejected unauthenticated call");
+    return;
+  }
 
   const id = Number(formData.get("id"));
   const status = formData.get("status");

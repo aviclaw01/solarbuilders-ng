@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import AdminNav from "@/components/ui/AdminNav";
 import { formatNaira } from "@/lib/quote";
+import { requireAdmin } from "@/lib/admin-auth";
 
 /**
  * Internal order-requests dashboard — every cart sent from /shop, newest first.
@@ -229,6 +230,13 @@ async function fetchOrders(params: URLSearchParams): Promise<FetchResult> {
 
 async function updateStatus(formData: FormData) {
   "use server";
+
+  // A server action is a public endpoint reachable from any route, so the
+  // proxy's /admin/* gate does not cover it. Check the credential here too.
+  if (!(await requireAdmin())) {
+    console.error("[admin/orders] updateStatus: rejected unauthenticated call");
+    return;
+  }
 
   const id = Number(formData.get("id"));
   const status = formData.get("status");
