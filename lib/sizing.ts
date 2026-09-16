@@ -572,3 +572,17 @@ export function sizingIntegrityIssues(): string[] {
   }
   return issues;
 }
+
+/**
+ * Run the integrity check at module load on the server, so a bad edit fails the
+ * build instead of shipping. sizingIntegrityIssues existed but was never called by anything,
+ * which meant it protected nothing.
+ */
+if (typeof window === "undefined") {
+  const issues = sizingIntegrityIssues();
+  if (issues.length) {
+    throw new Error(
+      "lib/sizing.ts: integrity check failed:\n  " + issues.join("\n  "),
+    );
+  }
+}

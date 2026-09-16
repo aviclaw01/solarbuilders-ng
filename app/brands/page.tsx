@@ -4,7 +4,15 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import BrandCard from '@/components/ui/BrandCard';
 import { manufacturers, vendors, type ProductCategory } from '@/lib/brands';
-import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import {
+  PRICES_LAST_UPDATED_LABEL,
+  INVERTER_PER_KVA,
+  INVERTER_BRANDS,
+  LITHIUM_PER_KWH,
+  PANEL_PER_WP,
+  PANEL_WATTS,
+} from '@/lib/prices';
+import { formatNaira, formatNairaShort } from '@/lib/quote';
 
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import { Zap, MessageCircle } from 'lucide-react';
@@ -23,10 +31,38 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://solarbuildersng.com/brands' },
 };
 
+/**
+ * Spans read straight off the price table rather than typed in. The typed
+ * versions had already drifted -- the battery blurb still advertised a ceiling
+ * of a third more per kWh than the catalogue actually holds.
+ */
+const perKva = {
+  low: Math.min(...Object.values(INVERTER_PER_KVA).map((r) => r.low)),
+  high: Math.max(...Object.values(INVERTER_PER_KVA).map((r) => r.high)),
+};
+const perKwh = {
+  low: Math.min(...Object.values(LITHIUM_PER_KWH).map((r) => r.low)),
+  high: Math.max(...Object.values(LITHIUM_PER_KWH).map((r) => r.high)),
+};
+const tierBrands = (tier: 'budget' | 'mid' | 'premium') => INVERTER_BRANDS[tier].join('/');
+
 const SECTIONS: { key: ProductCategory; title: string; blurb: string }[] = [
-  { key: 'inverter', title: 'Inverter brands', blurb: 'Hybrid inverters from ₦63k to ₦400k per kVA. Budget = Felicity/Sako, mid = Growatt/Luxpower/Solis, premium = Deye/Victron.' },
-  { key: 'battery', title: 'Lithium battery brands', blurb: 'LiFePO4 packs from ₦129k to ₦330k per kWh. Most homes install 5–10kWh.' },
-  { key: 'panel', title: 'Solar panel brands', blurb: 'Tier-1 550–700W panels. Alaba wholesale ₦170–200/W; showrooms ₦225–300/W.' },
+  {
+    key: 'inverter',
+    title: 'Inverter brands',
+    blurb: `Hybrid inverters from ${formatNairaShort(perKva.low)} to ${formatNairaShort(perKva.high)} per kVA. Budget = ${tierBrands('budget')}, mid = ${tierBrands('mid')}, premium = ${tierBrands('premium')}.`,
+  },
+  {
+    key: 'battery',
+    title: 'Lithium battery brands',
+    blurb: `LiFePO4 packs from ${formatNairaShort(perKwh.low)} to ${formatNairaShort(perKwh.high)} per kWh. Most homes install 5-10kWh.`,
+  },
+  {
+    key: 'panel',
+    title: 'Solar panel brands',
+    // formatNairaShort rounds to thousands, which turns a per-watt price into "\u20a60k".
+    blurb: `Tier-1 ${PANEL_WATTS}W panels at ${formatNaira(PANEL_PER_WP.low)}-${formatNaira(PANEL_PER_WP.high)} per watt, depending on whether you buy at Alaba or in a showroom.`,
+  },
 ];
 
 export default function BrandsPage() {

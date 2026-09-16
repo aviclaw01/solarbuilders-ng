@@ -4,6 +4,8 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import BrandCard from '@/components/ui/BrandCard';
 import { getBrand, vendors } from '@/lib/brands';
+import { HEADLINE_PACKAGES } from '@/lib/prices';
+import { formatNairaShort } from '@/lib/quote';
 import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -19,12 +21,52 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://solarbuildersng.com/solar/abuja' },
 };
 
+const span = (low: number, high: number) => `${formatNairaShort(low)}\u2013${formatNairaShort(high)}`;
+
+const SMALL = HEADLINE_PACKAGES[1];   // 3.5kVA - 5kWh lithium
+const COMMON = HEADLINE_PACKAGES[2];  // 5kVA - 10kWh lithium
+
+/**
+ * One array feeding both the visible FAQ and the FAQPage JSON-LD. Structured
+ * data that disagrees with the page it describes is a rich-result violation,
+ * and keeping two copies in sync by hand is how that happens.
+ */
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: 'Is Abuja good for solar energy?',
+    a: 'Yes — Abuja is excellent for solar. With 6–7 peak sun hours daily and relatively lower humidity than coastal cities, solar panels in Abuja perform very well. The FCT is one of the most solar-optimal locations in Nigeria.',
+  },
+  {
+    q: 'Should I get a hybrid or off-grid system in Abuja?',
+    a: 'For most Abuja residents, a hybrid system makes more sense. Abuja has better NEPA supply than most Nigerian cities, so a hybrid system can use grid power when available and solar the rest of the time — giving you smaller (cheaper) battery requirements.',
+  },
+  {
+    q: 'How much does solar cost in Abuja?',
+    a:
+      `A ${SMALL.label} system typically costs ${span(SMALL.low, SMALL.high)} installed, and a ${COMMON.label} ` +
+      `system ${span(COMMON.low, COMMON.high)}. These are national equipment prices — we track prices by product, ` +
+      `not by city, so we cannot tell you an Abuja premium. Equipment for the FCT is generally trucked from Lagos, ` +
+      `and any transport cost shows up in the installer's quote rather than in the equipment price.`,
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
 export default function SolarAbujaPage() {
   const localVendors = vendors().filter(v => v.origin.includes('Abuja'));
   const featuredBrands = ['felicity', 'deye', 'growatt', 'jinko'].map(getBrand).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Navbar />
       <main>
 
@@ -62,20 +104,7 @@ export default function SolarAbujaPage() {
         <div className="max-w-3xl mb-16">
           <h2 className="font-heading font-extrabold text-[#0A0F1E] text-3xl mb-8">FAQ — Solar in Abuja</h2>
           <div className="space-y-6">
-            {[
-              {
-                q: 'Is Abuja good for solar energy?',
-                a: 'Yes — Abuja is excellent for solar. With 6–7 peak sun hours daily and relatively lower humidity than coastal cities, solar panels in Abuja perform very well. The FCT is one of the most solar-optimal locations in Nigeria.',
-              },
-              {
-                q: 'Should I get a hybrid or off-grid system in Abuja?',
-                a: 'For most Abuja residents, a hybrid system makes more sense. Abuja has better NEPA supply than most Nigerian cities, so a hybrid system can use grid power when available and solar the rest of the time — giving you smaller (cheaper) battery requirements.',
-              },
-              {
-                q: 'How much does solar cost in Abuja?',
-                a: 'Abuja prices run slightly above Lagos because equipment is trucked in. In 2026 a 3.5kVA / 5kWh lithium system typically costs ₦1.9M–₦2.7M installed, and a 5kVA / 10kWh system with AC support ₦3.3M–₦5M.',
-              },
-            ].map((faq, i) => (
+            {FAQS.map((faq, i) => (
               <div key={i} className="border border-[#E2E8F0] rounded-2xl p-6">
                 <h3 className="font-heading font-bold text-[#0A0F1E] text-lg mb-3">{faq.q}</h3>
                 <p className="text-[#64748B] leading-relaxed">{faq.a}</p>

@@ -4,6 +4,10 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import BrandCard from '@/components/ui/BrandCard';
 import { getBrand, vendors } from '@/lib/brands';
+import { HEADLINE_PACKAGES } from '@/lib/prices';
+import { formatNairaShort } from '@/lib/quote';
+import { generatorCostPerDay } from '@/lib/energy-costs';
+import { SITE_URL } from '@/lib/site';
 import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -19,12 +23,65 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://solarbuildersng.com/solar/lagos' },
 };
 
+const span = (low: number, high: number) => `${formatNairaShort(low)}\u2013${formatNairaShort(high)}`;
+
+const STARTER = HEADLINE_PACKAGES[0];   // 1.5-2.5kVA - 5kWh lithium
+const COMMON = HEADLINE_PACKAGES[2];    // 5kVA - 10kWh lithium
+const LARGE = HEADLINE_PACKAGES[3];     // 8-10kVA - 15kWh
+
+/** Fuel only, at the sourced pump price. Servicing is deliberately absent — see the answer. */
+const GEN_MONTH = generatorCostPerDay(5);
+
+/**
+ * Defined once and used for both the visible FAQ and the FAQPage JSON-LD.
+ * They used to be written out separately on the city pages, which lets the
+ * markup drift from the page — and structured data that disagrees with the
+ * visible text is a rich-result violation, not just untidy.
+ */
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: 'How much does solar installation cost in Lagos?',
+    a:
+      `Solar installation in Lagos ranges from about ${formatNairaShort(STARTER.low)} for a ${STARTER.label} system ` +
+      `(${STARTER.powers}) up to ${formatNairaShort(LARGE.high)} at the ${LARGE.label} end. The most common ` +
+      `package — ${COMMON.label} — costs ${span(COMMON.low, COMMON.high)} installed. These are national ` +
+      `equipment prices; we do not hold separate per-city price data.`,
+  },
+  {
+    q: 'How long does solar installation take in Lagos?',
+    a: 'Most residential solar installations in Lagos take 1–2 days. The actual mounting and wiring typically takes one day; testing and handover takes another half day. Complex commercial systems or large arrays may take 3–5 days.',
+  },
+  {
+    q: 'Is solar worth it in Lagos given the cost of electricity?',
+    a:
+      `A generator running five hours a day burns roughly ${span(GEN_MONTH.low * 30, GEN_MONTH.high * 30)} of petrol a ` +
+      `month at current pump prices. That is fuel alone — we hold no sourceable figure for servicing, so it is not ` +
+      `included and the real number is higher. Whether that pays back a solar system depends on how many hours you ` +
+      `actually run the generator; the payback arithmetic is worked through in full at ${SITE_URL}/blog/is-solar-worth-it-nigeria.`,
+  },
+  {
+    q: 'What warranty should I expect from a Lagos solar installer?',
+    a: 'Reputable Lagos installers should offer at minimum: 1-2 year workmanship warranty, 5-year product warranty on inverters, 10-year product warranty on solar panels (with 25-year performance guarantee), and 1-year warranty on batteries.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
 export default function SolarLagosPage() {
   const localVendors = vendors().filter(v => v.origin.includes('Lagos'));
   const featuredBrands = ['felicity', 'deye', 'growatt', 'jinko'].map(getBrand).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Navbar />
       <main>
 
@@ -63,24 +120,7 @@ export default function SolarLagosPage() {
         <div className="max-w-3xl mb-16">
           <h2 className="font-heading font-extrabold text-[#0A0F1E] text-3xl mb-8">Frequently Asked Questions — Solar in Lagos</h2>
           <div className="space-y-6">
-            {[
-              {
-                q: 'How much does solar installation cost in Lagos?',
-                a: 'In 2026, solar installation in Lagos ranges from about ₦1.4M for a 5kWh lithium starter system (lights, fans, TV, fridge — no AC) to ₦6M+ for a 10kVA home running several ACs. The most common package — a 5kVA inverter with 10kWh lithium and 6–8 panels — costs ₦3.2M–₦4.8M installed.',
-              },
-              {
-                q: 'How long does solar installation take in Lagos?',
-                a: 'Most residential solar installations in Lagos take 1–2 days. The actual mounting and wiring typically takes one day; testing and handover takes another half day. Complex commercial systems or large arrays may take 3–5 days.',
-              },
-              {
-                q: 'Is solar worth it in Lagos given the cost of electricity?',
-                a: 'Yes. A Lagos household running a generator 4–6 hours a day spends ₦100,000–₦250,000 per month on fuel and servicing. A ₦3.5M–₦4M solar system pays for itself in roughly 2–3 years at those rates, and lithium batteries last 10+ years — after that the power is essentially free.',
-              },
-              {
-                q: 'What warranty should I expect from a Lagos solar installer?',
-                a: 'Reputable Lagos installers should offer at minimum: 1-2 year workmanship warranty, 5-year product warranty on inverters, 10-year product warranty on solar panels (with 25-year performance guarantee), and 1-year warranty on batteries.',
-              },
-            ].map((faq, i) => (
+            {FAQS.map((faq, i) => (
               <div key={i} className="border border-[#E2E8F0] rounded-2xl p-6">
                 <h3 className="font-heading font-bold text-[#0A0F1E] text-lg mb-3">{faq.q}</h3>
                 <p className="text-[#64748B] leading-relaxed">{faq.a}</p>

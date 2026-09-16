@@ -4,6 +4,8 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import BrandCard from '@/components/ui/BrandCard';
 import { getBrand, vendors } from '@/lib/brands';
+import { HEADLINE_PACKAGES } from '@/lib/prices';
+import { formatNairaShort } from '@/lib/quote';
 import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -19,35 +21,39 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://solarbuildersng.com/solar/enugu' },
 };
 
+const span = (low: number, high: number) => `${formatNairaShort(low)}\u2013${formatNairaShort(high)}`;
+
+const STARTER = HEADLINE_PACKAGES[0];  // 1.5-2.5kVA - 5kWh lithium
+const COMMON = HEADLINE_PACKAGES[2];   // 5kVA - 10kWh lithium
+const LARGE = HEADLINE_PACKAGES[3];    // 8-10kVA - 15kWh
+
+/**
+ * One array feeding both the visible FAQ and the FAQPage JSON-LD. These were
+ * written out twice as byte-identical copies waiting to drift, and structured
+ * data that disagrees with the page it describes is a rich-result violation.
+ */
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: 'How much does solar cost in Enugu?',
+    a:
+      `A solar installation costs from about ${formatNairaShort(STARTER.low)} for a ${STARTER.label} starter ` +
+      `system (${STARTER.powers}) up to ${formatNairaShort(LARGE.high)} at the ${LARGE.label} end. A typical ` +
+      `${COMMON.label} system is ${span(COMMON.low, COMMON.high)} installed. These are national equipment ` +
+      `prices — we track prices by product, not by city. Equipment for Enugu is generally moved from Lagos, and ` +
+      `that transport shows up in the installer's quote rather than in the equipment price.`,
+  },
+  { q: 'How long does solar installation take in Enugu?', a: 'Residential solar installations in Enugu typically take 1–3 days to complete. The timeline depends on system size, roof type, and parts availability.' },
+  { q: 'Are solar installers in Enugu insured?', a: 'Every installer we send to a job is checked for business registration, past installations and customer references, and we stay involved until commissioning. Always ask for a written warranty on both equipment and workmanship.' },
+];
+
 const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "How much does solar cost in Enugu?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "In 2026 a solar installation in Enugu costs from about ₦1.4M for a 5kWh lithium starter system (lights, fans, TV, fridge) to ₦6M+ for a 10kVA home with several ACs. A typical 5kVA / 10kWh system is ₦3.2M–₦4.8M installed; add ₦50k–₦150k for transporting equipment from Lagos."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How long does solar installation take in Enugu?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Residential solar installations in Enugu typically take 1–3 days to complete. The timeline depends on system size, roof type, and parts availability."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Are solar installers in Enugu insured?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Every installer we send to a job is checked for business registration, past installations and customer references, and we stay involved until commissioning. Always ask for a written warranty on both equipment and workmanship."
-      }
-    }
-  ]
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
 };
 
 export default function SolarEnuguPage() {
@@ -95,20 +101,7 @@ export default function SolarEnuguPage() {
         <div className="max-w-2xl mb-16">
           <h2 className="font-heading font-bold text-slate-900 text-3xl mb-8">Frequently asked questions</h2>
           <div className="space-y-6">
-            {[
-              {
-                q: 'How much does solar cost in Enugu?',
-                a: 'In 2026 a solar installation in Enugu costs from about ₦1.4M for a 5kWh lithium starter system (lights, fans, TV, fridge) to ₦6M+ for a 10kVA home with several ACs. A typical 5kVA / 10kWh system is ₦3.2M–₦4.8M installed; add ₦50k–₦150k for transporting equipment from Lagos.',
-              },
-              {
-                q: 'How long does solar installation take in Enugu?',
-                a: 'Residential solar installations in Enugu typically take 1–3 days to complete. The timeline depends on system size, roof type, and parts availability.',
-              },
-              {
-                q: 'Are solar installers in Enugu insured?',
-                a: 'Every installer we send to a job is checked for business registration, past installations and customer references, and we stay involved until commissioning. Always ask for a written warranty on both equipment and workmanship.',
-              },
-            ].map(({ q, a }) => (
+            {FAQS.map(({ q, a }) => (
               <div key={q} className="bg-white border border-slate-100 rounded-2xl p-6">
                 <h3 className="font-heading font-semibold text-slate-900 mb-2">{q}</h3>
                 <p className="text-slate-500 leading-relaxed">{a}</p>

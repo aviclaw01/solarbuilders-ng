@@ -6,6 +6,12 @@
  * sitemap for exactly that reason: the list existed in one place and the
  * sitemap kept its own copy. Add a post here and it appears in both.
  */
+import { BAND_A_TARIFF } from '@/lib/energy-costs';
+import { formatNaira } from '@/lib/quote';
+
+/** Rendered once so both excerpts quoting the tariff move with the source. */
+const BAND_A = `${formatNaira(BAND_A_TARIFF.low)}\u2013${formatNaira(BAND_A_TARIFF.high)} per kWh`;
+
 export interface Article {
   slug: string;
   title: string;
@@ -33,7 +39,7 @@ export const ARTICLES: Article[] = [
   {
     slug: 'is-solar-worth-it-nigeria',
     title: 'Is Solar Worth It in Nigeria? The Payback Period, Calculated Properly',
-    excerpt: 'Published payback claims run from one year to five and none shows its working. We show ours — against petrol at the pump and Band A at ₦209–₦225 per kWh.',
+    excerpt: `Published payback claims run from one year to five and none shows its working. We show ours \u2014 against petrol at the pump and Band A at ${BAND_A}.`,
     readTime: '10 min read',
     date: 'September 2026',
     tag: 'Cost Analysis',
@@ -143,7 +149,7 @@ export const ARTICLES: Article[] = [
   {
     slug: 'band-a-tariff-vs-solar',
     title: 'Your Band A Bill vs Solar: the Five-Year Arithmetic',
-    excerpt: 'Band A customers pay ₦209–₦225 per kWh. Here is what that adds up to over five years for real Nigerian households, and what the same money buys as a solar system.',
+    excerpt: `Band A customers pay ${BAND_A}. Here is what that adds up to over five years for real Nigerian households, and what the same money buys as a solar system.`,
     readTime: '8 min read',
     date: 'September 2026',
     tag: 'Grid & Tariffs',

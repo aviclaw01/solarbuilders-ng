@@ -658,3 +658,17 @@ export function budgetIntegrityIssues(): string[] {
 
   return issues;
 }
+
+/**
+ * Run the integrity check at module load on the server, so a bad edit fails the
+ * build instead of shipping. budgetIntegrityIssues existed but was never called by anything,
+ * which meant it protected nothing.
+ */
+if (typeof window === "undefined") {
+  const issues = budgetIntegrityIssues();
+  if (issues.length) {
+    throw new Error(
+      "lib/budget.ts: integrity check failed:\n  " + issues.join("\n  "),
+    );
+  }
+}
