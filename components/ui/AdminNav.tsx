@@ -13,8 +13,7 @@ import { BarChart3, ExternalLink, Inbox, Route, ShieldCheck, ShoppingCart } from
  *
  * "Partners" and "Routing" sit behind the superadmin credential (see proxy.ts).
  * They are still listed here for everyone: a plain admin who clicks one gets a
- * page that explains exactly why it is locked, which is more useful than a link
- * that silently is not there.
+ * plain-text 403 that says which credential is needed.
  */
 
 export type AdminSection = "leads" | "orders" | "routing" | "partners" | "funnel";

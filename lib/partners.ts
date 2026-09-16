@@ -6,11 +6,14 @@
  * applicant, server-side validation, and the projection that turns a private
  * partner record into the shape a public profile is allowed to show.
  *
- * Deliberately pure: no database, no secrets, no node built-ins. The browser
- * imports this file (the application form), so portal token logic lives in
- * `lib/partner-auth.ts` (server-only) instead.
+ * Deliberately pure: no database, no secrets, no env vars, no node built-ins.
+ * It is safe to import from a 'use client' component. Anything that touches
+ * Supabase, Resend or PARTNER_TOKEN_SECRET lives in the server-only
+ * lib/partner-db.ts, lib/partner-mail.ts, lib/partner-auth.ts and
+ * lib/partner-storage.ts instead.
  *
- * The rules encoded here are the fixes for the loopholes in PARTNER-PIPELINE.md §3.
+ * The "(L1)"…"(L18)" tags in comments refer to the loophole list the pipeline was
+ * designed against; each tag marks the rule that closes that loophole.
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -85,13 +88,13 @@ export const PARTNER_STATUS_META: Record<PartnerStatus, StatusMeta> = {
   info_requested: {
     label: "We need something else",
     applicantLine: "We need one or two more things from you before we can finish.",
-    nextStep: "Open the link we emailed you and answer the requests listed in your portal.",
+    nextStep: "Reply to our email with the items we listed, quoting your reference.",
     chip: "bg-indigo-50 text-indigo-700 border-indigo-200",
   },
   approved: {
     label: "Approved — verified partner",
-    applicantLine: "You are approved. Your profile is live and jobs can be routed to you.",
-    nextStep: "Keep your availability current — that is what decides who gets offered a job.",
+    applicantLine: "You are approved as a verified partner.",
+    nextStep: "We contact you when a customer job fits your coverage. Tell us whenever your availability changes.",
     chip: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   rejected: {
@@ -635,14 +638,30 @@ export function validateApplication(input: unknown): ApplicationValidation {
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Application reference shown to the applicant. Not a secret — a lookup key. */
+const REF_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O or 1/I confusion
+
+/**
+ * Six characters from a 32-letter alphabet (30 bits) using the platform CSPRNG,
+ * which exists as `globalThis.crypto` in both browsers and Node 20. Always
+ * exactly six characters (Math.random().toString(36) sometimes gave fewer).
+ */
+function refSuffix(): string {
+  const bytes = new Uint8Array(6);
+  globalThis.crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => REF_ALPHABET[b % REF_ALPHABET.length]).join("");
+}
+
+/**
+ * Application reference shown to the applicant. Not a secret on its own: the
+ * status lookup needs it AND the email address it was issued to.
+ */
 export function partnerRef(): string {
-  return `SB-PTR-${Math.random().toString(36).toUpperCase().slice(2, 8)}`;
+  return `SB-PTR-${refSuffix()}`;
 }
 
 /** Job reference, shared by us and the partner. Not a secret. */
 export function jobRef(): string {
-  return `SB-JOB-${Math.random().toString(36).toUpperCase().slice(2, 8)}`;
+  return `SB-JOB-${refSuffix()}`;
 }
 
 /** URL-safe slug for the public profile. */
@@ -711,19 +730,20 @@ export function verificationChecksDone(row: PartnerRow): { key: VerificationChec
 
 /**
  * The words that go on the badge and the profile (L2). Only checks that were
- * actually ticked are claimed, and the installs/references counts are the real
- * ones from the application, not a marketing number.
+ * actually ticked are claimed. Counts come from the application itself; when the
+ * row we were given does not carry them (e.g. a public projection), no number is
+ * claimed at all rather than a made-up default.
  */
 export function verificationScopeLabel(row: PartnerRow): string {
   const parts: string[] = [];
   if (row.check_cac) parts.push("CAC");
   if (row.check_installs) {
-    const seen = (row.installs ?? []).filter((i) => i.photoUrl).length || 3;
-    parts.push(`${seen} install${seen === 1 ? "" : "s"}`);
+    const seen = (row.installs ?? []).filter((i) => i.photoUrl).length;
+    parts.push(seen > 0 ? `${seen} install${seen === 1 ? "" : "s"}` : "past installs");
   }
   if (row.check_references) {
-    const called = (row.refs ?? []).length || 2;
-    parts.push(`${called} reference${called === 1 ? "" : "s"}`);
+    const called = (row.refs ?? []).length;
+    parts.push(called > 0 ? `${called} reference${called === 1 ? "" : "s"}` : "customer references");
   }
   if (row.check_warranty) parts.push("a written warranty");
   if (parts.length === 0) return "identity and capability";

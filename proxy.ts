@@ -3,7 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * HTTP Basic auth for the internal admin area.
  *
- * Protects /admin/* (the leads dashboard) and /api/admin/* (its JSON routes).
+ * Protects /admin/* (the internal dashboards) and /api/admin/* (their JSON routes).
+ * /admin/partners and /admin/routing additionally need the superadmin credential.
  * Nothing else on the site is touched — see `config.matcher` below.
  *
  * Required env vars (Vercel → Project → Settings → Environment Variables):
@@ -29,11 +30,33 @@ const REALM = 'Basic realm="SolarBuilders admin", charset="UTF-8"';
  * Paths that need the superadmin credential when one is configured.
  *
  * These are the surfaces where a person decides that a business becomes a
- * publicly visible "verified partner", and where jobs and commission get
- * confirmed. The leads/orders/funnel dashboards stay on the general admin
- * credential.
+ * "verified partner", and where job routing is decided. The leads/orders/funnel
+ * dashboards stay on the general admin credential.
+ *
+ * Fails closed: if ADMIN_SUPER_USER / ADMIN_SUPER_PASSWORD are not set, these
+ * paths answer 503 for everybody. There is no fallback to the general admin
+ * login. Server actions on these pages re-verify the credential themselves
+ * (lib/admin-auth.ts), because a server action can be invoked by ID from any
+ * route and so is not protected by this matcher alone.
  */
-const SUPER_ONLY_PATHS = ["/admin/partners", "/admin/routing"];
+const SUPER_ONLY_PATHS = ["/admin/partners", "/admin/routing", "/api/admin/partners", "/api/admin/routing"];
+
+/**
+ * Does this path need the superadmin tier? The path is percent-decoded, lower-cased
+ * and de-duplicated of slashes first, so `/admin/%70artners`, `/Admin/partners` or
+ * `/admin//partners` cannot slip past a literal prefix match. A path that fails to
+ * decode is treated as needing the higher tier (fail closed).
+ */
+function isSuperOnlyPath(rawPath: string): boolean {
+  let path: string;
+  try {
+    path = decodeURIComponent(rawPath);
+  } catch {
+    return true;
+  }
+  path = path.replace(/\/{2,}/g, "/").toLowerCase();
+  return SUPER_ONLY_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
+}
 
 /** Constant-time comparison of two equal-length byte arrays. */
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
@@ -85,11 +108,11 @@ function unauthorized(): NextResponse {
  * browser must NOT pop the credential box again, because the credentials it
  * already has are valid — they are just not sufficient for this page.
  */
-function forbidden(path: string): NextResponse {
+function forbidden(): NextResponse {
   return new NextResponse(
     `This page needs the superadmin credential (ADMIN_SUPER_USER / ADMIN_SUPER_PASSWORD).\n\n` +
-      `The admin login you used is valid, but it cannot open ${path} — approving a partner ` +
-      `publishes our name next to theirs, so it is deliberately a separate, senior credential.\n`,
+      `The admin login you used is valid, but it cannot open the partner or routing pages — approving ` +
+      `a partner puts our name next to theirs, so it is deliberately a separate, senior credential.\n`,
     {
       status: 403,
       headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
@@ -135,10 +158,10 @@ export async function proxy(req: NextRequest) {
   const isAdmin = userOk && passwordOk;
 
   // ── Second tier: superadmin ────────────────────────────────────────────────
-  // Approving a vendor puts our name next to them publicly, so it warrants a
-  // credential the everyday leads login does not have. When ADMIN_SUPER_USER and
-  // ADMIN_SUPER_PASSWORD are unset we fall back to the single admin tier (and the
-  // pages say so, so nobody believes approval is better protected than it is).
+  // Approving a vendor puts our name next to them, so it warrants a credential
+  // the everyday leads login does not have. When ADMIN_SUPER_USER and
+  // ADMIN_SUPER_PASSWORD are unset the superadmin pages are closed (503), never
+  // opened to the general admin login.
   const superUser = process.env.ADMIN_SUPER_USER;
   const superPassword = process.env.ADMIN_SUPER_PASSWORD;
   const superConfigured = Boolean(superUser && superPassword);
@@ -154,19 +177,20 @@ export async function proxy(req: NextRequest) {
 
   if (!isAdmin && !isSuper) return unauthorized();
 
-  const path = req.nextUrl.pathname;
-  const needsSuper = SUPER_ONLY_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
-  if (needsSuper && superConfigured && !isSuper) return forbidden(path);
+  const needsSuper = isSuperOnlyPath(req.nextUrl.pathname);
+  if (needsSuper && !superConfigured) {
+    console.error("[proxy] superadmin area requested but ADMIN_SUPER_USER / ADMIN_SUPER_PASSWORD are not set");
+    return new NextResponse(
+      "The partner and routing pages are not configured. Set ADMIN_SUPER_USER and ADMIN_SUPER_PASSWORD in the environment and redeploy.\n",
+      {
+        status: 503,
+        headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+      },
+    );
+  }
+  if (needsSuper && !isSuper) return forbidden();
 
-  // Tell the pages which tier got in. A route outside this matcher could receive a
-  // client-supplied header, so this value is only ever used to decide what to
-  // SHOW — never to decide what to allow. The allow/deny decision is above.
-  const requestHeaders = new Headers(req.headers);
-  requestHeaders.set("x-sb-role", isSuper ? "superadmin" : "admin");
-  requestHeaders.set("x-sb-super-configured", superConfigured ? "1" : "0");
-  requestHeaders.set("x-sb-actor", isSuper ? (superUser as string) : (user as string));
-
-  return NextResponse.next({ request: { headers: requestHeaders } });
+  return NextResponse.next();
 }
 
 export const config = {

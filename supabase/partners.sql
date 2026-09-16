@@ -7,12 +7,15 @@
 --   partner_payments — the commission the partner says they paid us, and our verdict
 --   partner_events   — append-only audit trail (who did what, when)
 --
--- Written 2026-09-16. Idempotent: safe to re-run. Run in the Supabase SQL editor or
--- with psql (see PARTNER-PIPELINE.md §6).
+-- Written 2026-09-16. Idempotent: safe to re-run. NOT applied automatically by any
+-- deploy: a human runs it once in the Supabase SQL editor (or with psql) before
+-- enabling the partner pages.
 --
--- RLS is ON with no public policies on every table: all reads and writes go through
--- the service-role key from server code. Bank details, CAC documents and reference
--- phone numbers live here and must never be reachable with the anon key.
+-- RLS is ON with no policies on every table, and table privileges are revoked from
+-- the `anon` and `authenticated` roles as a second lock: all reads and writes go
+-- through the service-role key from server code. Contact details, CAC documents,
+-- reference phone numbers and bank details live here and must never be reachable
+-- with the public anon key.
 -- ─────────────────────────────────────────────────────────────────────────────
 
 create table if not exists public.partners (
@@ -23,7 +26,8 @@ create table if not exists public.partners (
   -- identity
   ref                       text not null unique,          -- SB-PTR-XXXXXX, given to the applicant
   slug                      text unique,                   -- public profile path, set at approval
-  kind                      text not null,                 -- installer | vendor | manufacturer | both
+  kind                      text not null
+                            check (kind in ('installer', 'vendor', 'manufacturer', 'both')),
   business_name             text not null,
   contact_name              text not null,
   email                     text not null,
@@ -67,10 +71,11 @@ create table if not exists public.partners (
   rma_terms                 text,
 
   -- review pipeline
-  status                    text not null default 'submitted',
-                            -- submitted | under_review | info_requested | approved | rejected | suspended
-  tier                      text not null default 'partner',  -- partner | tracked (L3)
-  status_note               text,                             -- shown to the applicant on /partners/status
+  status                    text not null default 'submitted'
+                            check (status in ('submitted', 'under_review', 'info_requested', 'approved', 'rejected', 'suspended')),
+  tier                      text not null default 'partner'   -- partner | tracked (L3)
+                            check (tier in ('partner', 'tracked')),
+  status_note               text,                             -- applicant-facing (returned by /api/partner-status)
   review_notes              text,                             -- INTERNAL
   rejected_reason           text,
   suspended_reason          text,
@@ -82,10 +87,12 @@ create table if not exists public.partners (
   verified_until            timestamptz,                    -- re-verify after 12 months (L1)
   verified_by               text,                           -- admin user name
   verification_scope        text,                           -- what the tick means, in words (L2)
-  commission_rate           numeric(5,2) not null default 5.00,
+  commission_rate           numeric(5,2) not null default 5.00
+                            check (commission_rate between 0 and 25),  -- MIN/MAX_COMMISSION_RATE
 
   -- routing state
-  availability              text not null default 'available', -- available | busy | paused
+  availability              text not null default 'available'
+                            check (availability in ('available', 'busy', 'paused')),
   jobs_per_month_cap        integer default 4,
   availability_confirmed_at timestamptz,
 
@@ -94,7 +101,7 @@ create table if not exists public.partners (
   account_name              text,
   account_number            text,
 
-  -- partner portal (L12: only the hash is stored)
+  -- partner portal (not built yet). Only HMAC-SHA256(PARTNER_TOKEN_SECRET, token) is stored.
   portal_token_hash         text,
   portal_token_issued_at    timestamptz,
   portal_last_seen_at       timestamptz,
@@ -119,9 +126,11 @@ create index if not exists partners_created_at_idx   on public.partners (created
 create index if not exists partners_email_idx        on public.partners (lower(email));
 create index if not exists partners_state_status_idx on public.partners (state, status);
 create index if not exists partners_listed_idx       on public.partners (listed) where verified;
-create index if not exists partners_portal_token_idx on public.partners (portal_token_hash);
+create unique index if not exists partners_portal_token_idx
+  on public.partners (portal_token_hash) where portal_token_hash is not null;
 
 alter table public.partners enable row level security;
+revoke all on table public.partners from anon, authenticated;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- JOB ROUTING
@@ -155,13 +164,13 @@ create table if not exists public.partner_jobs (
   -- our money (L6: our numbers, never theirs)
   commission_rate       numeric(5,2),
   commission_amount     integer,
-  commission_status     text not null default 'none',
-                        -- none | due | receipt_uploaded | confirmed | overdue | waived
+  commission_status     text not null default 'none'
+                        check (commission_status in ('none', 'due', 'receipt_uploaded', 'confirmed', 'overdue', 'waived')),
   commission_due_at     timestamptz,
   commission_cleared_at timestamptz,
 
-  status                text not null default 'offered',
-                        -- offered | accepted | declined | completed | cancelled | expired
+  status                text not null default 'offered'
+                        check (status in ('offered', 'accepted', 'declined', 'completed', 'cancelled', 'expired')),
   offered_at            timestamptz not null default now(),
   offer_expires_at      timestamptz not null,      -- 24h (L9); an expired offer frees the job
   responded_at          timestamptz,
@@ -184,6 +193,7 @@ create unique index if not exists partner_jobs_one_live_per_source_idx
   where status in ('accepted', 'completed');
 
 alter table public.partner_jobs enable row level security;
+revoke all on table public.partner_jobs from anon, authenticated;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- COMMISSION PAYMENTS (L7)
@@ -207,7 +217,8 @@ create table if not exists public.partner_payments (
   receipt_url      text,                          -- partner-supplied link, if any
   receipt_path     text,                          -- private bucket object path, if uploaded
   note             text,
-  status           text not null default 'submitted',  -- submitted | confirmed | rejected
+  status           text not null default 'submitted'
+                   check (status in ('submitted', 'confirmed', 'rejected')),
   confirmed_at     timestamptz,
   confirmed_by     text,
   reject_reason    text
@@ -219,6 +230,7 @@ create index if not exists partner_payments_job_idx     on public.partner_paymen
 create index if not exists partner_payments_invoice_idx on public.partner_payments (invoice_ref);
 
 alter table public.partner_payments enable row level security;
+revoke all on table public.partner_payments from anon, authenticated;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- AUDIT TRAIL
@@ -242,17 +254,56 @@ create index if not exists partner_events_partner_idx on public.partner_events (
 create index if not exists partner_events_action_idx  on public.partner_events (action);
 
 alter table public.partner_events enable row level security;
+revoke all on table public.partner_events from anon, authenticated;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- updated_at maintenance (otherwise the column would only ever hold the insert time)
+-- ─────────────────────────────────────────────────────────────────────────────
+
+create or replace function public.partners_touch_updated_at()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+revoke all on function public.partners_touch_updated_at() from public, anon, authenticated;
+
+drop trigger if exists partners_touch_updated_at on public.partners;
+create trigger partners_touch_updated_at
+  before update on public.partners
+  for each row execute function public.partners_touch_updated_at();
+
+drop trigger if exists partner_jobs_touch_updated_at on public.partner_jobs;
+create trigger partner_jobs_touch_updated_at
+  before update on public.partner_jobs
+  for each row execute function public.partners_touch_updated_at();
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- STORAGE: commission receipts
 --
--- Private bucket. Partners upload through the portal (service role, server side);
--- admin reads a 5-minute signed URL. Nothing here is ever public.
+-- Private bucket, used once the partner portal exists. Uploads go through server
+-- code with the service role; reads are 5-minute signed URLs. No storage policies,
+-- so the anon key can neither list, read nor write it. The bucket itself also
+-- enforces the same 5MB / type limits as lib/partner-storage.ts.
 -- If this insert fails on your Supabase project (the storage schema is owned by
 -- supabase_storage_admin), create the bucket in Dashboard → Storage instead:
--- name `partner-receipts`, public = OFF.
+-- name `partner-receipts`, public = OFF, 5MB limit, JPG/PNG/WebP/PDF only.
 -- ────────────────────────────────────────────────────────────────────────────
 
-insert into storage.buckets (id, name, public)
-values ('partner-receipts', 'partner-receipts', false)
-on conflict (id) do nothing;
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'partner-receipts',
+  'partner-receipts',
+  false,
+  5242880,
+  array['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+)
+on conflict (id) do update
+  set public = false,
+      file_size_limit = excluded.file_size_limit,
+      allowed_mime_types = excluded.allowed_mime_types;

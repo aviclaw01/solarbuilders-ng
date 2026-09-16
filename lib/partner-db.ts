@@ -15,11 +15,14 @@
  *      rendering — that is how phone numbers and bank details stay off the site.
  */
 
-import type {
-  PartnerEventRow,
-  PartnerJobRow,
-  PartnerPaymentRow,
-  PartnerRow,
+import "server-only";
+import {
+  PARTNER_KINDS,
+  PARTNER_STATUSES,
+  type PartnerEventRow,
+  type PartnerJobRow,
+  type PartnerPaymentRow,
+  type PartnerRow,
 } from "./partners";
 
 /** Columns safe to render on the public site. Deliberately narrow (L8a, L14). */
@@ -51,10 +54,20 @@ export const PUBLIC_PARTNER_COLUMNS = [
   "listed",
 ].join(",");
 
+let warnedMissingEnv = false;
+
 export function supabaseEnv(): { url: string; key: string } | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key || url.includes("your-project")) return null;
+  if (!url || !key || url.includes("your-project")) {
+    if (!warnedMissingEnv) {
+      warnedMissingEnv = true;
+      console.error(
+        "[partner-db] NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set — partner programme storage is disabled",
+      );
+    }
+    return null;
+  }
   return { url, key };
 }
 
@@ -201,31 +214,30 @@ export async function getPartner(id: number): Promise<PartnerRow | null> {
   return rows[0] ?? null;
 }
 
-export async function getPartnerBySlug(slug: string): Promise<PartnerRow | null> {
-  const rows = await dbGet<PartnerRow>("partners", { select: "*", slug: `eq.${slug}`, limit: "1" });
-  return rows[0] ?? null;
-}
-
 export async function listPartners(opts: {
   status?: string;
   kind?: string;
   /** free-text match on business name, ref or email */
   search?: string;
   limit?: number;
-} = {}): Promise<PartnerRow[]> {
+} = {}): Promise<DbResult<PartnerRow[]>> {
   const filter: Record<string, string | number | undefined> = {
     select: "*",
     order: "created_at.desc",
     limit: opts.limit ?? 300,
   };
-  if (opts.status) filter.status = `eq.${opts.status}`;
-  if (opts.kind) filter.kind = `eq.${opts.kind}`;
+  // Allow-listed, so a query-string value can never become a PostgREST operator.
+  if (opts.status && (PARTNER_STATUSES as readonly string[]).includes(opts.status)) {
+    filter.status = `eq.${opts.status}`;
+  }
+  if (opts.kind && PARTNER_KINDS.some((k) => k.id === opts.kind)) filter.kind = `eq.${opts.kind}`;
   if (opts.search) {
-    // PostgREST or=(…) is its own mini-syntax: strip anything that could break out.
-    const s = opts.search.replace(/[(),"\\]/g, " ").trim().slice(0, 80);
+    // PostgREST or=(…) is its own mini-syntax: keep only characters that cannot
+    // break out of it (no parens, commas, quotes, backslashes or wildcards).
+    const s = opts.search.replace(/[^\p{L}\p{N} @._+-]/gu, " ").replace(/\s{2,}/g, " ").trim().slice(0, 80);
     if (s) filter.or = `(business_name.ilike.*${s}*,ref.ilike.*${s}*,email.ilike.*${s}*)`;
   }
-  return dbGet<PartnerRow>("partners", filter);
+  return dbGetChecked<PartnerRow>("partners", filter);
 }
 
 /**
@@ -259,7 +271,7 @@ export async function listPublicPartners(limit = 100): Promise<PartnerRow[]> {
 export async function partnerByRefAndEmail(ref: string, email: string): Promise<PartnerRow | null> {
   const r = ref.trim().toUpperCase().slice(0, 20);
   const e = email.trim().toLowerCase().slice(0, 160);
-  if (!r || !e) return null;
+  if (!/^SB-PTR-[A-Z0-9]{6}$/.test(r) || !e.includes("@")) return null;
   const rows = await dbGet<PartnerRow>("partners", {
     select: "*",
     ref: `eq.${r}`,
@@ -336,8 +348,8 @@ export async function listJobsForSource(source: string, sourceId: number): Promi
 }
 
 /**
- * Release offers nobody answered (L9). Called lazily from the admin routing page
- * and the portal, so an unanswered offer frees the job without a cron job.
+ * Release offers nobody answered (L9). Called lazily from the admin routing page,
+ * so an unanswered offer frees the job without a cron job.
  * Returns how many offers were released.
  */
 export async function expireStaleOffers(): Promise<number> {
@@ -494,30 +506,4 @@ export async function getPublicPartnerBySlug(slug: string): Promise<PartnerRow |
     if (!Number.isNaN(until) && until <= Date.now()) return null;
   }
   return row;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// COMMISSION BANKING
-//
-// Where a partner sends our commission. Deliberately env, not the database and
-// not lib/site.ts: it is our own financial detail, it can change without a code
-// change, and site.ts is imported by client components (which must never ship
-// an account number to the browser).
-//
-// When these are unset the portal says "ask us for the account details" instead
-// of rendering half an account number.
-// ─────────────────────────────────────────────────────────────────────────────
-
-export interface CommissionBank {
-  bankName: string;
-  accountName: string;
-  accountNumber: string;
-}
-
-export function commissionBank(): CommissionBank | null {
-  const bankName = process.env.PARTNER_BANK_NAME;
-  const accountName = process.env.PARTNER_ACCOUNT_NAME;
-  const accountNumber = process.env.PARTNER_ACCOUNT_NUMBER;
-  if (!bankName || !accountName || !accountNumber) return null;
-  return { bankName, accountName, accountNumber };
 }

@@ -378,6 +378,38 @@ check("size buckets come from the quote summary", () => {
   eq(R.sizeBucketFromText("no size mentioned"), null);
 });
 
+// ── 7. lib/partners.ts helpers ─────────────────────────────────────────────
+console.log("\npartner helpers");
+check("application references are always SB-PTR- plus six unambiguous characters", () => {
+  const RE = /^SB-PTR-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/;
+  for (let i = 0; i < 500; i++) {
+    const ref = P.partnerRef();
+    ok(RE.test(ref), `bad ref: ${ref}`);
+  }
+  ok(/^SB-JOB-[A-Z2-9]{6}$/.test(P.jobRef()), "bad job ref");
+});
+
+check("the scope label never invents install or reference counts", () => {
+  const base = { check_cac: true, check_installs: true, check_references: true, check_warranty: false };
+  eq(P.verificationScopeLabel({ ...base, installs: null, refs: null }), "CAC, past installs and customer references");
+  eq(
+    P.verificationScopeLabel({
+      ...base,
+      installs: [{ photoUrl: "https://x/1.jpg" }, { photoUrl: "" }],
+      refs: [{ name: "a" }, { name: "b" }],
+    }),
+    "CAC, 1 install and 2 references",
+  );
+  eq(P.verificationScopeLabel({ check_cac: false, check_installs: false, check_references: false, check_warranty: false }), "identity and capability");
+});
+
+check("server-side validation rejects thin, empty and unknown-kind applications", () => {
+  const thin = P.validateApplication({ kind: "installer", businessName: "x" });
+  ok(!thin.ok, "thin application should fail");
+  ok(P.validateApplication(null).ok === false, "null body should fail");
+  ok(P.validateApplication({ kind: "hacker" }).ok === false, "unknown kind should fail");
+});
+
 // ── report ─────────────────────────────────────────────────────────────────
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) {
