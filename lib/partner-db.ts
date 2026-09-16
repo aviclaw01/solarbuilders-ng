@@ -480,9 +480,16 @@ export async function routingCandidates(
 
   const [partners, stats] = await Promise.all([dbGet<PartnerRow>("partners", filter), jobStatsByPartner(now)]);
 
+  // A verification past its re-check date no longer counts (L1).
+  const current = partners.filter((p) => {
+    if (!p.verified_until) return true;
+    const until = new Date(p.verified_until).getTime();
+    return Number.isNaN(until) ? false : until > now.getTime();
+  });
+
   return {
     releasedOffers,
-    candidates: partners.map((partner) => ({
+    candidates: current.map((partner) => ({
       partner,
       stats: stats.get(partner.id) ?? { ...EMPTY_STATS },
     })),
