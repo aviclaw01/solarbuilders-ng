@@ -6,7 +6,7 @@ import AnimatedSection from '@/components/ui/AnimatedSection';
 import { MessageCircle, Mail, ArrowRight, MapPin, Phone } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Get in Touch — SolarBuilders.ng',
+  title: 'Get in Touch',
   description: 'Contact the SolarBuilders.ng team. We respond within 2 hours on WhatsApp. Visit us at 11 Mogbonjubola St, Gbagada, Lagos.',
   alternates: { canonical: 'https://solarbuildersng.com/contact' },
 };

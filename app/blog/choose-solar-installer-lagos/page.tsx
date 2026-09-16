@@ -6,7 +6,7 @@ import { HEADLINE_PACKAGES, LABOUR_PER_KVA, PRICES_LAST_UPDATED_LABEL } from '@/
 import { formatNaira } from '@/lib/quote';
 
 export const metadata: Metadata = {
-  title: 'How to Choose a Solar Installer in Lagos — SolarBuilders.ng',
+  title: 'How to Choose a Solar Installer in Lagos',
   description: 'How to choose a reliable solar installer in Lagos: CAC registration, past installs, references, written warranty, correct sizing and an itemised quote. The same checklist we apply when we vet installers for customer builds. Updated September 2026.',
   keywords: ['solar installer Lagos', 'choose solar company Lagos', 'best solar installer Lagos', 'solar installation Lagos guide'],
   openGraph: {

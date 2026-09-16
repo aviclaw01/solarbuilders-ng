@@ -7,7 +7,7 @@ import { getBrand, vendors } from '@/lib/brands';
 import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Solar in Enugu — 2026 Prices, Brands & Quotes | SolarBuilders.ng',
+  title: 'Solar in Enugu — 2026 Prices, Brands & Quotes',
   description: 'Real 2026 solar prices for Enugu — inverters, lithium batteries and panels by brand — plus an itemised quote calculator and a team that gets your system installed.',
   keywords: ['solar installer Enugu', 'solar company Enugu Nigeria', 'solar installation Enugu State', 'solar panels Enugu price', 'best solar Enugu 2026'],
   openGraph: {

@@ -15,7 +15,7 @@ function num(n: number): string {
 }
 
 export const metadata: Metadata = {
-  title: `What Can Your Budget Buy in Solar? ${BUDGET_POINTS.length} Nigerian Budgets, Priced | SolarBuilders.ng`,
+  title: `What Can Your Budget Buy in Solar? ${BUDGET_POINTS.length} Nigerian Budgets, Priced`,
   description:
     `${BUDGET_POINTS[0].label} to ${BUDGET_POINTS[BUDGET_POINTS.length - 1].label}: the inverter, battery and panel ` +
     `count each budget actually buys at ${PRICES_LAST_UPDATED_LABEL} Nigerian prices — including the budgets that ` +

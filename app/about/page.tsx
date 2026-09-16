@@ -9,7 +9,7 @@ import { formatNairaShort } from '@/lib/quote';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 
 export const metadata: Metadata = {
-  title: 'About SolarBuilders.ng — Real Solar Prices for Nigeria, Built by Nexprove',
+  title: 'About Us — Real Solar Prices for Nigeria, Built by Nexprove',
   description: 'SolarBuilders.ng gives Nigerians real solar prices and itemised quotes, then gets the system built. Built by Nexprove to solve the trust problem in Nigeria\'s solar industry.',
   alternates: { canonical: 'https://solarbuildersng.com/about' },
 };

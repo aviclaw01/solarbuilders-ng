@@ -6,7 +6,7 @@ import { HEADLINE_PACKAGES, LABOUR_PER_KVA, PRICES_LAST_UPDATED_LABEL } from '@/
 import { formatNaira } from '@/lib/quote';
 
 export const metadata: Metadata = {
-  title: 'Solar in Abuja: Prices and How to Get It Installed (2026) — SolarBuilders.ng',
+  title: 'Solar in Abuja: Prices and How to Get It Installed (2026)',
   description: 'Solar in Abuja, Nigeria: September 2026 installed prices for 5kWh lithium starters to 10kVA homes, why the FCT is good for solar, and how to go from an itemised quote to a managed installation.',
   keywords: ['solar Abuja 2026', 'solar installer Abuja', 'solar panels Abuja price', 'best solar company Abuja Nigeria'],
   alternates: { canonical: 'https://solarbuildersng.com/blog/solar-abuja-2026' },

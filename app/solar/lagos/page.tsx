@@ -7,7 +7,7 @@ import { getBrand, vendors } from '@/lib/brands';
 import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Solar in Lagos — 2026 Prices, Brands & Quotes | SolarBuilders.ng',
+  title: 'Solar in Lagos — 2026 Prices, Brands & Quotes',
   description: 'Real 2026 solar prices for Lagos — inverters, lithium batteries and panels by brand — plus an itemised quote calculator and a team that gets your system installed.',
   keywords: ['solar installer Lagos', 'solar company Lagos Nigeria', 'solar installation Lagos', 'best solar Lagos 2026', 'solar panels Lagos price'],
   openGraph: {

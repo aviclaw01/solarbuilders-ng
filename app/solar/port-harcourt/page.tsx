@@ -7,7 +7,7 @@ import { getBrand, vendors } from '@/lib/brands';
 import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Solar in Port Harcourt — 2026 Prices, Brands & Quotes | SolarBuilders.ng',
+  title: 'Solar in Port Harcourt — 2026 Prices, Brands & Quotes',
   description: 'Real 2026 solar prices for Port Harcourt — inverters, lithium batteries and panels by brand — plus an itemised quote calculator and a team that gets your system installed.',
   keywords: ['solar installer Port Harcourt', 'solar company Port Harcourt Nigeria', 'solar installation Rivers State', 'solar PH Nigeria', 'solar panels Port Harcourt price'],
   openGraph: {

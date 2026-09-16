@@ -160,11 +160,11 @@ function buildFaqs(scenario: SizingScenario, quote: Quote): Array<{ q: string; a
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const scenario = getScenario(slug);
-  if (!scenario) return { title: 'Sizing guide | SolarBuilders.ng' };
+  if (!scenario) return { title: 'Sizing guide' };
 
   const quote = scenarioQuote(scenario);
   const t = quote.tiers.standard;
-  const title = `${scenario.question} (${titleAnswer(scenario, t)}) | SolarBuilders.ng`;
+  const title = `${scenario.question} (${titleAnswer(scenario, t)})`;
   const description =
     `${headlineAnswer(t)} — ${formatRange(t.total)} installed at ${PRICES_LAST_UPDATED_LABEL} Nigerian prices. ` +
     `Peak load ${num(quote.peakWatts)}W, ${kwh(quote.dailyKwh)} a day. Every figure computed, with the full bill of materials.`;

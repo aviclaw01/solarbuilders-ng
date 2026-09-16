@@ -29,7 +29,7 @@ import { SITE_URL } from '@/lib/site';
  */
 
 export const metadata: Metadata = {
-  title: 'Solar FAQs for Nigeria — Costs, Sizing, Installation | SolarBuilders.ng',
+  title: 'Solar FAQs for Nigeria — Costs, Sizing, Installation',
   description:
     `${FAQS.length} straight answers about solar in Nigeria — what a system really costs at ${PRICES_LAST_UPDATED_LABEL} prices, ` +
     `what size you need, lithium vs tubular, who installs it, warranties, and how paying for it actually works. Every naira figure is computed from real Nigerian listings.`,

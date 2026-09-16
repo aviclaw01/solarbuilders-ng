@@ -10,7 +10,7 @@ import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import { Calculator, FileText, MessageCircle, ClipboardCheck, Wallet, Wrench, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'How It Works — Itemised Quote, We Buy It, We Build It | SolarBuilders.ng',
+  title: 'How It Works — Itemised Quote, We Buy It, We Build It',
   description: `Pick your appliances, get an itemised solar quote priced from live Nigerian listings (${PRICES_LAST_UPDATED_LABEL}), send us the quote code, and we order the equipment at the market price and put a vetted installer on the job until commissioning.`,
   alternates: { canonical: 'https://solarbuildersng.com/how-it-works' },
 };

@@ -218,7 +218,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `one we can price is ${formatNaira(answer.shortfall!.cheapest.price)}. Here is exactly where the money stops, line by line.`;
 
   return {
-    title: `${question} (${titleAnswer(answer)}) | SolarBuilders.ng`,
+    title: `${question} (${titleAnswer(answer)})`,
     description,
     keywords: [
       `what can ${point.label} of solar get you in nigeria`,

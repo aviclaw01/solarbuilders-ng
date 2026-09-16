@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'How We Vet Installers and Vendors — SolarBuilders.ng',
+  title: 'How We Vet Installers and Vendors',
   description:
     'The checks every installer passes before we put them on a customer build, what we do on every job from price confirmation to commissioning, and what we never do. No paid badges, no listing fees.',
   keywords: ['vetted solar installer Nigeria', 'how to check a solar installer', 'solar installer CAC registration', 'solar workmanship warranty Nigeria'],

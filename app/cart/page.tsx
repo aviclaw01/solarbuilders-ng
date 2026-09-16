@@ -15,7 +15,7 @@ import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
  * cart in search results helps nobody.
  */
 export const metadata: Metadata = {
-  title: 'Your order request | SolarBuilders.ng',
+  title: 'Your order request',
   description: 'The equipment you asked us to source. We confirm the price with the distributor before you pay anyone.',
   robots: { index: false, follow: false },
 };

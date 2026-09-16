@@ -43,9 +43,9 @@ export const ARTICLES: Article[] = [
   {
     slug: 'generator-vs-solar-lagos',
     title: 'The True Cost of Generator vs Solar in Lagos',
-    excerpt: 'Most Lagosians know generators are expensive. But few have done the math. We did — and the numbers over 3 years are eye-opening.',
-    readTime: '8 min read',
-    date: 'March 2026',
+    excerpt: 'Petrol at the pump, a real itemised solar build, and a payback table computed at four different generator-hours assumptions — no invented monthly fuel figure.',
+    readTime: '9 min read',
+    date: 'September 2026',
     tag: 'Cost Analysis',
     tagColor: 'bg-red-50 text-red-700 border-red-200',
     featured: false,

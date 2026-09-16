@@ -14,7 +14,7 @@ function num(n: number): string {
 }
 
 export const metadata: Metadata = {
-  title: `Solar & Inverter Sizing Questions, Answered with Real Nigerian Prices | SolarBuilders.ng`,
+  title: `Solar & Inverter Sizing Questions, Answered with Real Nigerian Prices`,
   description:
     `What size inverter for a 1.5HP AC, how many panels for a 2 bedroom flat, what a 5kVA inverter really runs — ` +
     `${SIZING_SCENARIOS.length} sizing questions answered with a computed inverter size, battery, panel count and ` +

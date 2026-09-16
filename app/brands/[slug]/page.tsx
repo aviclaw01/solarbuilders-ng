@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!brand) return { title: 'Brand not found' };
   const what = brand.kind === 'manufacturer' ? `${brand.name} prices in Nigeria` : `${brand.name} — solar vendor in ${brand.origin}`;
   return {
-    title: `${what} (${PRICES_LAST_UPDATED_LABEL}) | SolarBuilders.ng`,
+    title: `${what} (${PRICES_LAST_UPDATED_LABEL})`,
     description: `${brand.tagline}. ${brand.products.length ? `${brand.products.length} priced models with sources.` : ''} ${brand.description.slice(0, 120)}…`,
     openGraph: { title: what, description: brand.tagline, url: `${SITE_URL}/brands/${brand.slug}`, type: 'website' },
     alternates: { canonical: `${SITE_URL}/brands/${brand.slug}` },

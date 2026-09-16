@@ -6,7 +6,7 @@ import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNaira } from '@/lib/quote';
 
 export const metadata: Metadata = {
-  title: 'Solar Calculator Nigeria: What Size System Do I Need? — SolarBuilders.ng',
+  title: 'Solar Calculator Nigeria: What Size System Do I Need?',
   description: 'How to size a solar system for your Nigerian home: peak kW, kWh per day, lithium battery modules and 550W panels explained. Our free calculator turns your appliance list into an itemised quote with September 2026 prices.',
   keywords: ['solar calculator Nigeria', 'solar system size Nigeria', 'how many solar panels Nigeria', 'kVA solar Nigeria'],
   alternates: { canonical: 'https://solarbuildersng.com/blog/solar-calculator-nigeria' },

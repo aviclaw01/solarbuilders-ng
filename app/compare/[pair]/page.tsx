@@ -167,7 +167,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { a, b } = pair;
   const gap = priceGap(pair);
   const cats = pair.categories.map((c) => CATEGORY_LABEL[c].toLowerCase()).join(' and ');
-  const title = `${a.name} vs ${b.name} in Nigeria — ${PRICE_YEAR} Prices Compared | SolarBuilders.ng`;
+  const title = `${a.name} vs ${b.name} in Nigeria — ${PRICE_YEAR} Prices Compared`;
   const spread = gap
     ? ` ${gap.cheaper.name} ${perUnitRange(gap.cheaperStats)}, ${gap.dearer.name} ${perUnitRange(gap.dearerStats)}.`
     : '';
