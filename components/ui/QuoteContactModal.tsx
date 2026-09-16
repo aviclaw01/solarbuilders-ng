@@ -86,7 +86,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
     <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div className="relative bg-white rounded-t-3xl sm:rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[92vh] overflow-y-auto">
-        <button onClick={onClose} className="absolute top-4 right-4 text-[#94A3B8] hover:text-[#0A0F1E]" aria-label="Close">
+        <button onClick={onClose} className="absolute top-4 right-4 text-[#64748B] hover:text-[#0A0F1E]" aria-label="Close">
           <X className="w-5 h-5" />
         </button>
 
@@ -113,11 +113,11 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => track('whatsapp_click', { placement: 'quote_handoff', quoteCode: quote.code, tier: t.label })}
-              className="w-full bg-[#25D366] hover:bg-[#22c55e] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
+              className="w-full bg-[#128C7E] hover:bg-[#0E7568] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
             >
               <MessageCircle className="w-5 h-5" /> Continue on WhatsApp
             </a>
-            <button onClick={onClose} className="mt-4 text-[#94A3B8] text-sm hover:text-[#64748B]">
+            <button onClick={onClose} className="mt-4 text-[#64748B] text-sm hover:text-[#64748B]">
               Close
             </button>
           </div>
@@ -168,13 +168,13 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
               type="submit"
               disabled={!canSubmit}
               className={`w-full py-4 rounded-full font-heading font-bold text-base transition-colors flex items-center justify-center gap-2 ${
-                canSubmit ? 'bg-[#25D366] hover:bg-[#22c55e] text-white' : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
+                canSubmit ? 'bg-[#128C7E] hover:bg-[#0E7568] text-white' : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
               }`}
             >
               <MessageCircle className="w-5 h-5" />
               {status === 'submitting' ? 'Sending…' : 'Send & continue on WhatsApp'}
             </button>
-            <p className="text-[11px] text-[#94A3B8] text-center">
+            <p className="text-[11px] text-[#64748B] text-center">
               We send your quote to our team and open WhatsApp so you can chat with us directly. No spam.
             </p>
           </form>

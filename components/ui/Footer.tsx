@@ -77,7 +77,7 @@ export default function Footer() {
               href={whatsappLink('Hi SolarBuilders, I have a question about going solar.')}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#22c55e] text-white text-sm font-semibold px-4 py-2.5 rounded-full mt-3 transition-colors"
+              className="inline-flex items-center gap-2 bg-[#128C7E] hover:bg-[#0E7568] text-white text-sm font-semibold px-4 py-2.5 rounded-full mt-3 transition-colors"
             >
               <MessageCircle className="w-4 h-4" /> Message us
             </a>

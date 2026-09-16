@@ -73,7 +73,7 @@ export default function SolarCalculatorNigeriaPage() {
           Solar Calculator: What Size System Do I Need?
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>7 min read</span>
@@ -155,7 +155,7 @@ export default function SolarCalculatorNigeriaPage() {
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">What the Calculator Gives You</h2>
           <p className="text-[#64748B] leading-relaxed">
             All of the maths above is built into our{' '}
-            <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">free calculator</Link>.
+            <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">free calculator</Link>.
             You pick appliances and quantities; it shows your peak kW and kWh per day, then three sized systems:
           </p>
           <ul className="space-y-3 text-[#64748B]">
@@ -167,7 +167,7 @@ export default function SolarCalculatorNigeriaPage() {
               const t = tier as typeof standard;
               return (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="text-[#F59E0B] mt-1">•</span>
+                  <span className="text-[#B45309] mt-1">•</span>
                   <span>
                     <strong className="text-[#0A0F1E]">{t.label}:</strong>{' '}
                     {t.inverterBrands.join(' / ')} inverter, {t.batteryBrands.join(' / ')} lithium, {desc as string}
@@ -206,7 +206,7 @@ export default function SolarCalculatorNigeriaPage() {
                     <td className="p-4 text-[#64748B]">
                       {t.inverterKva}kVA · {t.batteryModules} × {LITHIUM_MODULE_KWH}kWh · {t.panelCount} × {PANEL_WATTS}W
                     </td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">
+                    <td className="p-4 font-semibold text-[#B45309]">
                       {formatNaira(t.total.best)} ({formatRange(t.total)})
                     </td>
                   </tr>
@@ -232,7 +232,7 @@ export default function SolarCalculatorNigeriaPage() {
                   <tr key={p.label} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{p.label}</td>
                     <td className="p-4 text-[#64748B]">{p.powers}</td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{formatNaira(p.low)} – {formatNaira(p.high)}</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{formatNaira(p.low)} – {formatNaira(p.high)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -243,9 +243,9 @@ export default function SolarCalculatorNigeriaPage() {
           <p className="text-[#64748B] leading-relaxed">
             When the quote looks right, tap <strong>Get this system built</strong>. That sends the quote to us and
             opens WhatsApp. We confirm every line against current vendor stock (the same vendors listed on our{' '}
-            <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands page</Link>), source
+            <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brands page</Link>), source
             the equipment, and manage an installer we have{' '}
-            <Link href="/verified" className="text-[#F59E0B] font-semibold hover:underline">already vetted</Link>{' '}
+            <Link href="/verified" className="text-[#B45309] font-semibold hover:underline">already vetted</Link>{' '}
             through to commissioning. The calculator estimate is the starting point; the confirmed price comes after
             we check stock and your site.
           </p>

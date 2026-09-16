@@ -57,7 +57,7 @@ export default function SolarMaintenancePage() {
         <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl leading-tight mb-4">
           Solar Panel Maintenance: What Nigerian Homeowners Need to Know
         </h1>
-        <div className="flex items-center gap-4 text-slate-400 text-sm mb-12 pb-8 border-b border-slate-100">
+        <div className="flex items-center gap-4 text-slate-500 text-sm mb-12 pb-8 border-b border-slate-100">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>7 min read</span>
@@ -69,11 +69,11 @@ export default function SolarMaintenancePage() {
             mean zero maintenance. Peer-reviewed West African research puts harmattan dust soiling losses at{' '}
             {SOILING_LOSS_PCT.typicalLow}–{SOILING_LOSS_PCT.typicalHigh}% typically, and as high as{' '}
             {SOILING_LOSS_PCT.worstCase}% at the worst-affected sites measured (
-            <a href={SOILING_LOSS_PCT.sourceUrl} rel="nofollow noopener" target="_blank" className="text-amber-600 font-semibold hover:underline">
+            <a href={SOILING_LOSS_PCT.sourceUrl} rel="nofollow noopener" target="_blank" className="text-amber-700 font-semibold hover:underline">
               {SOILING_LOSS_PCT.source}
             </a>
             ) — the full breakdown is in our{' '}
-            <Link href="/blog/harmattan-solar-panel-cleaning" className="text-amber-600 font-semibold hover:underline">
+            <Link href="/blog/harmattan-solar-panel-cleaning" className="text-amber-700 font-semibold hover:underline">
               harmattan cleaning guide
             </Link>. Here&apos;s what you actually need to do — what you can ignore — and the one maintenance cost
             that dwarfs all the others: batteries.
@@ -156,7 +156,7 @@ export default function SolarMaintenancePage() {
                     <td className="p-4 text-slate-600">{bank}</td>
                     <td className="p-4 font-semibold text-slate-900">{cost}</td>
                     <td className="p-4 text-slate-600">{freq}</td>
-                    <td className="p-4 text-amber-600 font-semibold">{tenYear}</td>
+                    <td className="p-4 text-amber-700 font-semibold">{tenYear}</td>
                   </tr>
                 ))}
               </tbody>
@@ -170,7 +170,7 @@ export default function SolarMaintenancePage() {
             you buy it three to five times in the period a single lithium pack lasts, and you spend every month
             topping up electrolyte and cleaning terminals. The full ten-year arithmetic, including where tubular
             still wins, is in{' '}
-            <Link href="/blog/lithium-vs-tubular-battery-nigeria" className="text-amber-600 font-semibold hover:underline">
+            <Link href="/blog/lithium-vs-tubular-battery-nigeria" className="text-amber-700 font-semibold hover:underline">
               lithium vs tubular batteries
             </Link>.
           </p>
@@ -249,7 +249,7 @@ export default function SolarMaintenancePage() {
                   <tr key={task} className="border-t border-slate-100">
                     <td className="p-4 text-slate-600">{task}</td>
                     <td className="p-4 text-slate-600">{freq}</td>
-                    <td className="p-4 text-amber-600 font-semibold">{cost}</td>
+                    <td className="p-4 text-amber-700 font-semibold">{cost}</td>
                   </tr>
                 ))}
               </tbody>

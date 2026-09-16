@@ -88,7 +88,7 @@ export default function CheckInstallerNemsaPage() {
           How to Check Your Solar Installer Is Actually Qualified
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>9 min read</span>
@@ -118,12 +118,12 @@ export default function CheckInstallerNemsaPage() {
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Check 1 — NEMSA certification</h2>
           <p className="text-[#64748B] leading-relaxed">
             Almost nobody tells Nigerian buyers this exists. The{' '}
-            <a href="https://nemsa.gov.ng/competency-certification/" rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href="https://nemsa.gov.ng/competency-certification/" rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               Nigerian Electricity Management Services Agency
             </a>{' '}
             is the statutory body responsible for electrical safety standards and the enforcement of technical standards
             in the Nigerian electricity supply industry, and it runs a{' '}
-            <a href="https://nemsa.gov.ng/wp-content/uploads/2024/05/REVISED-CERTIFICATION-SCHEMES-13052024.pdf" rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href="https://nemsa.gov.ng/wp-content/uploads/2024/05/REVISED-CERTIFICATION-SCHEMES-13052024.pdf" rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               published competency certification scheme
             </a>{' '}
             covering electrical installation personnel, including renewable-energy contractors.
@@ -173,14 +173,14 @@ export default function CheckInstallerNemsaPage() {
                   <tr key={label as string} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{label}</td>
                     <td className="p-4 text-[#64748B]">{formatNaira(cost as number)}</td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{share}</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{share}</td>
                     <td className="p-4 text-[#64748B]">{when}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Computed from our quote engine at {PRICES_LAST_UPDATED_LABEL} prices. Quote {quote.code}.
           </p>
           <p className="text-[#64748B] leading-relaxed">
@@ -214,7 +214,7 @@ export default function CheckInstallerNemsaPage() {
               ['Warranty orphaning', 'You cannot claim on a warranty for a product you cannot name. The serial numbers of what was actually installed belong on your handover document.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -222,7 +222,7 @@ export default function CheckInstallerNemsaPage() {
           <p className="text-[#64748B] leading-relaxed">
             If a quote you have been given is a single number, ask for it broken down. The reaction to that request is
             itself the test. Our{' '}
-            <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">calculator</Link> produces
+            <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">calculator</Link> produces
             an itemised build for exactly this reason — you can take it to any installer and ask them to price against
             it line by line.
           </p>
@@ -239,7 +239,7 @@ export default function CheckInstallerNemsaPage() {
             price list means the question stops being {'“'}is this a fair price?{'”'}, which you cannot answer, and
             becomes {'“'}why is this line above the published range for that model?{'”'}, which the person in front of
             you has to answer. Our per-brand prices are on the{' '}
-            <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands pages</Link> with the
+            <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brands pages</Link> with the
             date we saw each one.
           </p>
           <p className="text-[#64748B] leading-relaxed">
@@ -278,7 +278,7 @@ export default function CheckInstallerNemsaPage() {
             fixing and the undersized cable. Get its term in writing. Then check what the manufacturer actually publishes
             for the brand you are buying: we list the published warranty and the Nigerian service presence for every
             brand we track on the{' '}
-            <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brand pages</Link>, and where a
+            <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brand pages</Link>, and where a
             brand publishes nothing we say so rather than repeating a seller{'’'}s claim.
           </p>
 
@@ -295,7 +295,7 @@ export default function CheckInstallerNemsaPage() {
               'Pressure to decide today because of a price that expires tonight.',
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span>{item}</span>
               </li>
             ))}
@@ -305,7 +305,7 @@ export default function CheckInstallerNemsaPage() {
             quote is not automatically a trick. What tells you which it is: a legitimate expiring quote names the
             components and the date it was priced, so you can check the movement yourself. A pressure tactic does not.
             The related check — whether the hardware itself is what it claims to be — is in{' '}
-            <Link href="/blog/fake-solar-panels-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/fake-solar-panels-nigeria" className="text-[#B45309] font-semibold hover:underline">
               how to tell a real solar panel from a fake one
             </Link>.
           </p>
@@ -313,20 +313,20 @@ export default function CheckInstallerNemsaPage() {
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">How we do it</h2>
           <p className="text-[#64748B] leading-relaxed">
             You should hold us to everything above. Our process: you build an itemised quote in the{' '}
-            <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">calculator</Link> and get a
+            <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">calculator</Link> and get a
             quote code; we confirm every line against current vendor stock before anyone pays; we source the equipment
             and manage an installer we have vetted through to commissioning. What our vetting actually involves is
             written out on{' '}
-            <Link href="/verified" className="text-[#F59E0B] font-semibold hover:underline">how we vet</Link>, and the
+            <Link href="/verified" className="text-[#B45309] font-semibold hover:underline">how we vet</Link>, and the
             end-to-end process is on{' '}
-            <Link href="/how-it-works" className="text-[#F59E0B] font-semibold hover:underline">how it works</Link>.
+            <Link href="/how-it-works" className="text-[#B45309] font-semibold hover:underline">how it works</Link>.
           </p>
           <p className="text-[#64748B] leading-relaxed">
             For choosing between installers in a specific city, we have a companion guide on{' '}
-            <Link href="/blog/choose-solar-installer-lagos" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/choose-solar-installer-lagos" className="text-[#B45309] font-semibold hover:underline">
               choosing a solar installer in Lagos
             </Link>. And if you have a quote in front of you right now and want a second opinion on it,{' '}
-            <Link href="/contact" className="text-[#F59E0B] font-semibold hover:underline">send it to us</Link> — we will
+            <Link href="/contact" className="text-[#B45309] font-semibold hover:underline">send it to us</Link> — we will
             tell you which lines look wrong even if you never buy anything from us.
           </p>
 

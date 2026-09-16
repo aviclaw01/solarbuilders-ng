@@ -100,7 +100,7 @@ export default function VerifiedPage() {
         <section className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
           <div className="max-w-6xl mx-auto">
             <AnimatedSection>
-              <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">How we vet</span>
+              <span className="text-amber-700 text-sm font-semibold tracking-wide uppercase">How we vet</span>
               <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl mt-3 mb-4 max-w-3xl">
                 How we vet installers and vendors
               </h1>
@@ -181,7 +181,7 @@ export default function VerifiedPage() {
                       </li>
                     ))}
                   </ul>
-                  <Link href="/brands" className="inline-flex items-center gap-1 text-amber-600 text-sm font-semibold mt-4 hover:underline underline-offset-4 min-h-[44px]">
+                  <Link href="/brands" className="inline-flex items-center gap-1 text-amber-700 text-sm font-semibold mt-4 hover:underline underline-offset-4 min-h-[44px]">
                     See brands and vendors <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -265,7 +265,7 @@ export default function VerifiedPage() {
                     Get an itemised quote <ArrowRight className="w-5 h-5" />
                   </Link>
                   <WhatsAppLink text={'Hi SolarBuilders, I read how you vet installers and want to discuss a build.'} placement="verified"
-                    className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#22c55e] text-white rounded-full px-8 py-4 font-heading font-bold transition-colors min-h-[56px]"
+                    className="inline-flex items-center gap-2 bg-[#128C7E] hover:bg-[#0E7568] text-white rounded-full px-8 py-4 font-heading font-bold transition-colors min-h-[56px]"
                   >
                     <MessageCircle className="w-5 h-5" /> WhatsApp us
                   </WhatsAppLink>

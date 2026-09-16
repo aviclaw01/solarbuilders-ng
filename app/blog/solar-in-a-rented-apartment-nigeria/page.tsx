@@ -86,7 +86,7 @@ export default function SolarRentedApartmentPage() {
           Can Your Landlord Stop You Installing Solar? A Renter{'’'}s Guide
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>9 min read</span>
@@ -123,7 +123,7 @@ export default function SolarRentedApartmentPage() {
               ['He thinks it becomes his', 'The unspoken one. A landlord who believes an expensive system will simply be abandoned at the end of the tenancy behaves very differently from one who knows you are taking it with you — which is why the written agreement below matters more than any technical argument.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -163,7 +163,7 @@ export default function SolarRentedApartmentPage() {
               'Keep every carton, manual and serial number. A system you can prove you bought is a system you can prove you own.',
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span>{item}</span>
               </li>
             ))}
@@ -195,7 +195,7 @@ export default function SolarRentedApartmentPage() {
             Hand him the itemised quote with it. An itemised bill of materials with model numbers does more to reassure a
             landlord than any amount of explaining, because it shows him this is engineered rather than improvised — and
             it is what our{' '}
-            <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">calculator</Link> produces
+            <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">calculator</Link> produces
             by default.
           </p>
 
@@ -247,16 +247,16 @@ export default function SolarRentedApartmentPage() {
                     <td className="p-4 text-[#64748B]">{t.inverterKva}kVA</td>
                     <td className="p-4 text-[#64748B]">{t.batteryKwh}kWh</td>
                     <td className="p-4 text-[#64748B]">{t.panelCount} × {t.panelWatts}W</td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{formatRange(t.total)}</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{formatRange(t.total)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Priced from Nigerian vendor listings, last checked {PRICES_LAST_UPDATED_LABEL}. Quote {quote.code}. Full
             bill of materials on the{' '}
-            <Link href={`/sizing/${scenario.slug}`} className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href={`/sizing/${scenario.slug}`} className="text-[#B45309] font-semibold hover:underline">
               lights, fans and TV sizing page
             </Link>.
           </p>
@@ -269,11 +269,11 @@ export default function SolarRentedApartmentPage() {
           </p>
           <p className="text-[#64748B] leading-relaxed">
             If you have a bigger flat, the{' '}
-            <Link href="/sizing/how-many-solar-panels-for-2-bedroom-flat" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/sizing/how-many-solar-panels-for-2-bedroom-flat" className="text-[#B45309] font-semibold hover:underline">
               two-bedroom sizing page
             </Link>{' '}
             is the next step up, and the{' '}
-            <Link href="/blog/solar-loans-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/solar-loans-nigeria" className="text-[#B45309] font-semibold hover:underline">
               pay small small options
             </Link>{' '}
             are set out separately for anyone whose landlord said yes before their bank did.

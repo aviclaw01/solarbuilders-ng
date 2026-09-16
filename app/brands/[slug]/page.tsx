@@ -120,7 +120,7 @@ export default async function BrandPage({ params }: Props) {
                 {TIER_LABEL[brand.tier]} tier
               </span>
             )}
-            <span className="text-slate-400 text-xs flex items-center gap-1"><MapPin className="w-3 h-3" /> {brand.origin}</span>
+            <span className="text-slate-500 text-xs flex items-center gap-1"><MapPin className="w-3 h-3" /> {brand.origin}</span>
           </div>
           <div className="flex items-center gap-4 mb-3">
             <BrandMark brand={brand} size={56} />
@@ -128,7 +128,7 @@ export default async function BrandPage({ params }: Props) {
           </div>
           <p className="text-slate-600 text-lg max-w-2xl mb-6">{brand.tagline}</p>
           <div className="flex flex-wrap gap-3">
-            <WhatsAppLink text={waText} placement={`brand:${brand.slug}`} className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#22c55e] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors">
+            <WhatsAppLink text={waText} placement={`brand:${brand.slug}`} className="inline-flex items-center gap-2 bg-[#128C7E] hover:bg-[#0E7568] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors">
               <MessageCircle className="w-4 h-4" /> Get a system built with {isMaker ? brand.name : 'us'}
             </WhatsAppLink>
             <Link href="/calculator" className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 font-semibold text-sm transition-colors">
@@ -148,12 +148,12 @@ export default async function BrandPage({ params }: Props) {
           {byCategory.map(({ c, items }) => (
             <section key={c}>
               <h2 className="font-heading font-bold text-slate-900 text-xl mb-1">{CATEGORY_LABEL[c]}</h2>
-              <p className="text-slate-400 text-xs mb-4">Prices seen at Nigerian vendors, {PRICES_LAST_UPDATED_LABEL}. Tap a source to verify.</p>
+              <p className="text-slate-500 text-xs mb-4">Prices seen at Nigerian vendors, {PRICES_LAST_UPDATED_LABEL}. Tap a source to verify.</p>
               <div className="rounded-2xl border border-slate-100 overflow-hidden">
                 <table className="w-full text-sm table-fixed">
                   <colgroup><col className="w-[46%]" /><col className="w-[36%]" /><col className="w-[18%]" /></colgroup>
                   <thead>
-                    <tr className="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-400">
+                    <tr className="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500">
                       <th className="text-left font-semibold p-3">Model</th>
                       <th className="text-right font-semibold p-3">Price (₦)</th>
                       <th className="text-right font-semibold p-3">Checked</th>
@@ -171,13 +171,13 @@ export default async function BrandPage({ params }: Props) {
                           </td>
                           <td className="p-3 text-right">
                             <p className="font-semibold text-slate-900 text-xs sm:text-sm">{priceCell(p)}</p>
-                            {unit && <p className="text-[11px] text-slate-400">{unit}</p>}
+                            {unit && <p className="text-[11px] text-slate-500">{unit}</p>}
                             <p className="text-[11px] text-slate-500 mt-0.5">
                               across {p.seenAt.length} {p.seenAt.length === 1 ? 'seller' : 'sellers'}
                             </p>
                           </td>
                           <td className="p-3 text-right">
-                            <span className="inline-flex items-center gap-1 text-xs text-slate-400" title={`Price checked ${p.seenOn}`}>
+                            <span className="inline-flex items-center gap-1 text-xs text-slate-500" title={`Price checked ${p.seenOn}`}>
                               <CheckCircle2 className="w-3 h-3 text-emerald-500" /> {p.seenOn.slice(5).replace('-', '/')}
                             </span>
                           </td>
@@ -228,7 +228,7 @@ export default async function BrandPage({ params }: Props) {
                 </li>
               ))}
             </ol>
-            <p className="text-[11px] text-slate-400 mt-4">
+            <p className="text-[11px] text-slate-500 mt-4">
               We compared {stockists.length > 0 ? `${stockists.length} Nigerian sellers` : 'the Nigerian market'} for this
               brand. You pay the market price; our margin comes from the trade terms we hold, not from a mark-up on you.
             </p>

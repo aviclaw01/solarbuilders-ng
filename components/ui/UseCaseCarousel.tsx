@@ -187,7 +187,7 @@ export default function UseCaseCarousel({ comparisons }: { comparisons: Comparis
     <section className="bg-slate-50 py-20 md:py-28 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-4">
-          <span className="text-amber-500 text-sm font-semibold tracking-wide uppercase">Use Cases</span>
+          <span className="text-amber-700 text-sm font-semibold tracking-wide uppercase">Use Cases</span>
         </div>
         <h2 className="font-heading font-extrabold text-slate-900 text-3xl md:text-5xl leading-tight mb-10">
           Solar for every Nigerian

@@ -236,7 +236,7 @@ export default async function SizingScenarioPage({ params }: Props) {
       <header className="bg-white border-b border-slate-100 px-6 py-12 md:py-16">
         <div className="max-w-6xl mx-auto">
           <Breadcrumbs trail={[{ href: '/sizing', label: 'Sizing guides' }, { label: scenario.question }]} className="mb-6" />
-          <nav className="text-sm text-slate-400 mb-6">
+          <nav className="text-sm text-slate-500 mb-6">
             <Link href="/sizing" className="hover:text-slate-700">Sizing</Link>
             <span className="mx-2">/</span>
             <span className="text-slate-600">{scenario.h1}</span>
@@ -254,7 +254,7 @@ export default async function SizingScenarioPage({ params }: Props) {
 
           <p className="text-slate-500 mt-4 max-w-3xl leading-relaxed">{scenario.intro}</p>
 
-          <p className="text-slate-400 text-sm mt-4">
+          <p className="text-slate-500 text-sm mt-4">
             Quote {quote.code} · equipment priced at Nigerian market rates last checked {PRICES_LAST_UPDATED_LABEL}.
           </p>
         </div>
@@ -272,7 +272,7 @@ export default async function SizingScenarioPage({ params }: Props) {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {answerStats.map(({ icon: Icon, label, value }) => (
                 <div key={label} className="bg-white rounded-2xl border border-slate-100 p-5">
-                  <div className="flex items-center gap-2 text-slate-400 text-xs uppercase tracking-wide mb-2">
+                  <div className="flex items-center gap-2 text-slate-500 text-xs uppercase tracking-wide mb-2">
                     <Icon className="w-4 h-4" />
                     {label}
                   </div>
@@ -322,11 +322,11 @@ export default async function SizingScenarioPage({ params }: Props) {
               <table className="w-full min-w-[560px] text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100">
-                    <th className="text-left font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3">Appliance</th>
-                    <th className="text-right font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3">Watts each</th>
-                    <th className="text-right font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3">Qty</th>
-                    <th className="text-right font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3">Hours/day</th>
-                    <th className="text-right font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3">kWh/day</th>
+                    <th className="text-left font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3">Appliance</th>
+                    <th className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3">Watts each</th>
+                    <th className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3">Qty</th>
+                    <th className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3">Hours/day</th>
+                    <th className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3">kWh/day</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -380,10 +380,10 @@ export default async function SizingScenarioPage({ params }: Props) {
                       {t.emoji} {t.label}
                     </h3>
                     {isStandard && (
-                      <span className="text-[10px] uppercase tracking-wide font-bold text-[#F59E0B]">Most installed</span>
+                      <span className="text-[10px] uppercase tracking-wide font-bold text-[#B45309]">Most installed</span>
                     )}
                   </div>
-                  <p className="text-slate-400 text-xs mb-5">{t.tagline}</p>
+                  <p className="text-slate-500 text-xs mb-5">{t.tagline}</p>
 
                   <dl className="space-y-2 text-sm">
                     {[
@@ -401,7 +401,7 @@ export default async function SizingScenarioPage({ params }: Props) {
 
                   <div className="mt-5 pt-5 border-t border-slate-100">
                     <div className="font-heading font-extrabold text-[#0A0F1E] text-xl">{formatRange(t.total)}</div>
-                    <div className="text-slate-400 text-xs mt-1">
+                    <div className="text-slate-500 text-xs mt-1">
                       best estimate {formatNairaShort(t.total.best)} · installed
                     </div>
                   </div>
@@ -435,10 +435,10 @@ export default async function SizingScenarioPage({ params }: Props) {
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100">
-                    <th className="text-left font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3">Item</th>
-                    <th className="text-right font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3">Qty</th>
-                    <th className="text-right font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3">Line cost</th>
-                    <th className="text-right font-semibold text-slate-400 text-xs uppercase tracking-wide px-4 py-3">Range</th>
+                    <th className="text-left font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3">Item</th>
+                    <th className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3">Qty</th>
+                    <th className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3">Line cost</th>
+                    <th className="text-right font-semibold text-slate-500 text-xs uppercase tracking-wide px-4 py-3">Range</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -446,7 +446,7 @@ export default async function SizingScenarioPage({ params }: Props) {
                     <tr key={line.key} className="border-b border-slate-100 last:border-0 align-top">
                       <th scope="row" className="text-left px-4 py-3">
                         <span className="font-medium text-[#0A0F1E] block">{line.item}</span>
-                        <span className="text-slate-400 text-xs block mt-0.5">{line.spec}</span>
+                        <span className="text-slate-500 text-xs block mt-0.5">{line.spec}</span>
                       </th>
                       <td className="text-right text-slate-600 px-4 py-3 whitespace-nowrap">
                         {line.qty} {line.unit}
@@ -455,7 +455,7 @@ export default async function SizingScenarioPage({ params }: Props) {
                       <td className="text-right text-[#0A0F1E] font-medium px-4 py-3 whitespace-nowrap">
                         {formatNaira(line.lineCost.best)}
                       </td>
-                      <td className="text-right text-slate-400 px-4 py-3 whitespace-nowrap">{formatRange(line.lineCost)}</td>
+                      <td className="text-right text-slate-500 px-4 py-3 whitespace-nowrap">{formatRange(line.lineCost)}</td>
                     </tr>
                   ))}
                   <tr className="bg-slate-50">
@@ -475,7 +475,7 @@ export default async function SizingScenarioPage({ params }: Props) {
             </div>
           </div>
 
-          <p className="text-slate-400 text-sm mt-4 max-w-3xl">
+          <p className="text-slate-500 text-sm mt-4 max-w-3xl">
             Equipment {formatRange(standard.equipment)} · mounting, cables and protection {formatRange(standard.bos)} ·
             labour {formatRange(standard.labour)}. Transport outside Lagos, Abuja or Port Harcourt is extra.
           </p>

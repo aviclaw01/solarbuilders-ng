@@ -9,7 +9,7 @@ export default function NotFound() {
       <main>
       <div className="flex-1 flex items-center justify-center px-6 py-20">
         <div className="text-center max-w-md">
-          <p className="text-amber-400 font-heading font-bold text-7xl mb-4">404</p>
+          <p className="text-amber-600 font-heading font-bold text-7xl mb-4">404</p>
           <h1 className="font-heading font-extrabold text-slate-900 text-3xl mb-3">
             We could not find that page.
           </h1>

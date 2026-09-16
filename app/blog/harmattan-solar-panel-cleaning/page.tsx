@@ -104,7 +104,7 @@ export default function HarmattanCleaningPage() {
           Harmattan Is Coming: What Dust Does to Your Panels
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>8 min read</span>
@@ -125,7 +125,7 @@ export default function HarmattanCleaningPage() {
             practical. Work published on decentralised solar in the region reports soiling losses{' '}
             <strong className="text-[#0A0F1E]">exceeding {SOILING_LOSS_PCT.worstCase}%</strong> in the worst-affected
             locations, and year-to-year variation of the same order — one Harmattan is not the next (
-            <a href={SOILING_LOSS_PCT.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href={SOILING_LOSS_PCT.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               {SOILING_LOSS_PCT.source}
             </a>
             ).
@@ -166,14 +166,14 @@ export default function HarmattanCleaningPage() {
                     </td>
                     <td className="p-4 text-[#64748B]">{r.panels}</td>
                     <td className="p-4 text-[#64748B]">{r.quote.dailyKwh}</td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{formatNaira(r.costTypical)}/mo</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{formatNaira(r.costTypical)}/mo</td>
                     <td className="p-4 text-[#64748B]">{formatNaira(r.costWorst)}/mo</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Lost energy × {formatNaira(BAND_A_TARIFF.high)}/kWh × {DAYS_PER_MONTH} days. Loads from our sizing pages;
             system prices last checked {PRICES_LAST_UPDATED_LABEL}.
           </p>
@@ -199,14 +199,14 @@ export default function HarmattanCleaningPage() {
               ['Walking on the glass', 'Cells crack under point loads long before the glass does. The module keeps working at reduced output and the warranty claim gets refused on inspection.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
           </ul>
           <p className="text-[#64748B] leading-relaxed">
             Warranty terms differ by manufacturer, and the ones we can verify from published documentation are listed on
-            each <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brand page</Link>. Where
+            each <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brand page</Link>. Where
             a brand publishes nothing, we say so rather than guessing — which is itself information worth having before
             you buy.
           </p>
@@ -222,7 +222,7 @@ export default function HarmattanCleaningPage() {
             is damage. A tubular battery that is chronically undercharged sulphates, and sulphation is what turns a
             four-year battery into a two-year one. If you are running tubular, the cleaning schedule is not about saving
             energy — it is about protecting the most expensive line on your invoice. The full arithmetic on that is in{' '}
-            <Link href="/blog/lithium-vs-tubular-battery-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/lithium-vs-tubular-battery-nigeria" className="text-[#B45309] font-semibold hover:underline">
               lithium vs tubular batteries
             </Link>.
           </p>
@@ -241,7 +241,7 @@ export default function HarmattanCleaningPage() {
               ['It is simply cloudier', 'Rainy-season output is genuinely lower and no amount of cleaning changes that. That is a different problem with a different answer — sizing.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -250,7 +250,7 @@ export default function HarmattanCleaningPage() {
             This is the argument for buying an inverter with working monitoring. Being able to see daily production on a
             phone turns {'“'}my solar is not strong again{'”'} into a dated chart, and a dated chart turns a guess into a
             diagnosis. Which brands publish a monitoring app, and whether it works here, is one of the attributes we
-            track on every <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brand page</Link>.
+            track on every <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brand page</Link>.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">The north/south calendar</h2>
@@ -292,10 +292,10 @@ export default function HarmattanCleaningPage() {
           </div>
           <p className="text-[#64748B] leading-relaxed">
             The rest of the routine — batteries, inverter, wiring — is covered in our{' '}
-            <Link href="/blog/solar-maintenance-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/solar-maintenance-nigeria" className="text-[#B45309] font-semibold hover:underline">
               general maintenance guide
             </Link>. If something is wrong rather than dirty, start with{' '}
-            <Link href="/contact" className="text-[#F59E0B] font-semibold hover:underline">a message to us</Link> before
+            <Link href="/contact" className="text-[#B45309] font-semibold hover:underline">a message to us</Link> before
             you let anyone start replacing parts.
           </p>
 

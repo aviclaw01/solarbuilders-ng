@@ -81,7 +81,7 @@ export default function ContactClient() {
                   <p className="text-[#64748B] text-sm leading-relaxed">{item.a}</p>
                 ) : (
                   <p className="text-sm">
-                    <Link href="/for-builders" className="text-[#F59E0B] font-semibold hover:underline">
+                    <Link href="/for-builders" className="text-[#B45309] font-semibold hover:underline">
                       See how we work with installers and vendors →
                     </Link>
                   </p>

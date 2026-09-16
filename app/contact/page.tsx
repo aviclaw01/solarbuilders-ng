@@ -87,7 +87,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h2 className="font-heading font-bold text-[#0F172A] text-lg mb-1">Call us</h2>
-                  <p className="text-amber-600 font-semibold underline underline-offset-2">+234 916 839 4923</p>
+                  <p className="text-amber-700 font-semibold underline underline-offset-2">+234 916 839 4923</p>
                   <p className="text-slate-500 text-sm mt-1">Mon–Sat, 8am–6pm WAT</p>
                 </div>
               </a>
@@ -131,7 +131,7 @@ export default function ContactPage() {
                   href="https://maps.google.com/?q=11+Mogbonjubola+St,+Gbagada,+Lagos,+Nigeria"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-amber-600 underline underline-offset-4 hover:text-amber-700 transition-colors"
+                  className="text-amber-700 underline underline-offset-4 hover:text-amber-800 transition-colors"
                 >
                   Open in Google Maps →
                 </a>

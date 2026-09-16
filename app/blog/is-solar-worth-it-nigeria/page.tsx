@@ -97,7 +97,7 @@ export default function IsSolarWorthItPage() {
           Is Solar Worth It in Nigeria? The Payback Period, Calculated Properly
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>10 min read</span>
@@ -139,7 +139,7 @@ export default function IsSolarWorthItPage() {
               'Case 3 — you are replacing a bit of both, which is what almost every Nigerian home actually does.',
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span>{item}</span>
               </li>
             ))}
@@ -180,7 +180,7 @@ export default function IsSolarWorthItPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Equipment priced from Nigerian vendor listings, last checked {PRICES_LAST_UPDATED_LABEL}. Quote{' '}
             {main.quote.code}.
           </p>
@@ -189,11 +189,11 @@ export default function IsSolarWorthItPage() {
           <p className="text-[#64748B] leading-relaxed">
             A 3kVA petrol generator at about half load burns {GENSET_3KVA_LITRES_PER_HOUR.low}–
             {GENSET_3KVA_LITRES_PER_HOUR.high} litres an hour (
-            <a href={GENSET_3KVA_LITRES_PER_HOUR.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href={GENSET_3KVA_LITRES_PER_HOUR.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               {GENSET_3KVA_LITRES_PER_HOUR.source}
             </a>
             ). Petrol is {formatNaira(PETROL_PER_LITRE.low)}–{formatNaira(PETROL_PER_LITRE.high)} a litre (
-            <a href={PETROL_PER_LITRE.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href={PETROL_PER_LITRE.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               {PETROL_PER_LITRE.source}
             </a>
             , {ENERGY_COSTS_LAST_CHECKED_LABEL}). Run it {GENSET_HOURS_PER_DAY_ASSUMED} hours a day and the fuel alone
@@ -218,7 +218,7 @@ export default function IsSolarWorthItPage() {
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Case 2 — replacing Band A grid units</h2>
           <p className="text-[#64748B] leading-relaxed">
             Band A customers pay {formatNaira(BAND_A_TARIFF.low)}–{formatNaira(BAND_A_TARIFF.high)} per kWh in 2026 (
-            <a href={BAND_A_TARIFF.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href={BAND_A_TARIFF.sourceUrl} rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               {BAND_A_TARIFF.source}
             </a>
             ) in exchange for a promised {BAND_A_PROMISED_HOURS} hours of supply a day. At {main.quote.dailyKwh}kWh a
@@ -276,7 +276,7 @@ export default function IsSolarWorthItPage() {
                     <td className="p-4 text-[#64748B]">
                       {c.standard.inverterKva}kVA · {c.standard.batteryKwh}kWh · {c.standard.panelCount} panels
                     </td>
-                    <td className="p-4 font-semibold text-[#F59E0B]">{formatRange(c.standard.total)}</td>
+                    <td className="p-4 font-semibold text-[#B45309]">{formatRange(c.standard.total)}</td>
                     <td className="p-4 text-[#64748B]">
                       {formatNairaShort(c.grid.low)} – {formatNairaShort(c.grid.high)}
                     </td>
@@ -288,7 +288,7 @@ export default function IsSolarWorthItPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-[#94A3B8] text-sm">
+          <p className="text-[#64748B] text-sm">
             Generator spend is held constant across the rows at {formatNairaShort(genAnnual.low)} a year, because a
             household with a bigger load does not necessarily burn more petrol — it simply goes without more. That makes
             the larger systems look slower to pay back than they probably are. We would rather understate it.
@@ -304,7 +304,7 @@ export default function IsSolarWorthItPage() {
               ['The gen does not disappear', 'Most people keep it for the worst week of the rainy season. That is sensible; it also means the generator purchase is not a saving, only the fuel is.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -327,14 +327,14 @@ export default function IsSolarWorthItPage() {
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Run it on your own numbers</h2>
           <p className="text-[#64748B] leading-relaxed">
             The one input you should not take from us is the load. Pick your own appliances in the{' '}
-            <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">calculator</Link>, get the
+            <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">calculator</Link>, get the
             three itemised builds and the daily kWh, then divide your own installed price by your own displaced spend.
             If you want the generator side of the sum in more detail, we costed it for Lagos in{' '}
-            <Link href="/blog/generator-vs-solar-lagos" className="text-[#F59E0B] font-semibold hover:underline">generator versus solar</Link>,
+            <Link href="/blog/generator-vs-solar-lagos" className="text-[#B45309] font-semibold hover:underline">generator versus solar</Link>,
             and the tariff side in{' '}
-            <Link href="/blog/band-a-tariff-vs-solar" className="text-[#F59E0B] font-semibold hover:underline">your Band A bill versus solar</Link>.
+            <Link href="/blog/band-a-tariff-vs-solar" className="text-[#B45309] font-semibold hover:underline">your Band A bill versus solar</Link>.
             If the barrier is cash rather than arithmetic, the{' '}
-            <Link href="/blog/solar-loans-nigeria" className="text-[#F59E0B] font-semibold hover:underline">pay small small options</Link>{' '}
+            <Link href="/blog/solar-loans-nigeria" className="text-[#B45309] font-semibold hover:underline">pay small small options</Link>{' '}
             are set out separately.
           </p>
         </div>

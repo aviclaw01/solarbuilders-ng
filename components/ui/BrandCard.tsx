@@ -34,7 +34,7 @@ export default function BrandCard({ brand }: { brand: Brand }) {
         )}
       </div>
       <p className="text-slate-500 text-sm leading-snug mb-3 flex-1">{brand.tagline}</p>
-      <p className="text-slate-400 text-xs flex items-center gap-1 mb-3">
+      <p className="text-slate-500 text-xs flex items-center gap-1 mb-3">
         <MapPin className="w-3 h-3" /> {brand.origin}
       </p>
       <div className="flex flex-wrap gap-1.5 mb-4">
@@ -45,7 +45,7 @@ export default function BrandCard({ brand }: { brand: Brand }) {
         ))}
       </div>
       <div className="flex items-center justify-between mt-auto">
-        <span className="font-heading font-bold text-amber-500 text-sm">
+        <span className="font-heading font-bold text-amber-700 text-sm">
           {unit ??
             (brand.carries?.length
               ? `Stocks ${brand.carries.slice(0, 3).map((s) => s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())).join(', ')}${brand.carries.length > 3 ? ' +' : ''}`

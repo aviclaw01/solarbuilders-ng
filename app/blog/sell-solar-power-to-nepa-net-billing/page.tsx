@@ -88,7 +88,7 @@ export default function NetBillingPage() {
           No, You Cannot Sell Solar Power to NEPA Yet
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>7 min read</span>
@@ -115,7 +115,7 @@ export default function NetBillingPage() {
           <p className="text-[#64748B] leading-relaxed">
             Pulse put the limitation plainly: the scheme is {'“'}mainly for commercial, industrial, and institutional
             electricity users, not small residential solar installations{'”'} (
-            <a href={NET_BILLING_SOURCE_URL} rel="nofollow noopener" target="_blank" className="text-[#F59E0B] font-semibold hover:underline">
+            <a href={NET_BILLING_SOURCE_URL} rel="nofollow noopener" target="_blank" className="text-[#B45309] font-semibold hover:underline">
               Pulse Nigeria
             </a>
             ). That sentence is the whole article you are reading, and it did not travel nearly as far as the headline
@@ -151,7 +151,7 @@ export default function NetBillingPage() {
                   <td className="p-4 font-heading font-semibold text-[#0A0F1E]">Net billing minimum</td>
                   <td className="p-4 text-[#64748B]">{NET_BILLING_MIN_KWP} kWp</td>
                   <td className="p-4 text-[#64748B]">~{panelsNeeded} × {PANEL_WATTS}W</td>
-                  <td className="p-4 font-semibold text-[#F59E0B]">Entry point</td>
+                  <td className="p-4 font-semibold text-[#B45309]">Entry point</td>
                 </tr>
                 <tr className="bg-white">
                   <td className="p-4 font-heading font-semibold text-[#0A0F1E]">Net billing maximum</td>
@@ -178,7 +178,7 @@ export default function NetBillingPage() {
               ['A bidirectional meter', 'A meter that measures energy in both directions. Your existing prepaid meter does not do this, and the cost of the new one sits with the project.'],
             ].map(([title, body]) => (
               <li key={title} className="flex items-start gap-2">
-                <span className="text-[#F59E0B] mt-1">•</span>
+                <span className="text-[#B45309] mt-1">•</span>
                 <span><strong className="text-[#0A0F1E]">{title}.</strong> {body}</span>
               </li>
             ))}
@@ -199,9 +199,9 @@ export default function NetBillingPage() {
           <p className="text-[#64748B] leading-relaxed">
             If that describes a site you are responsible for, the power side of it is worth costing independently of
             whoever is selling you the equipment. Our{' '}
-            <Link href="/for-builders" className="text-[#F59E0B] font-semibold hover:underline">for builders and developers</Link>{' '}
+            <Link href="/for-builders" className="text-[#B45309] font-semibold hover:underline">for builders and developers</Link>{' '}
             page covers how we work on larger projects, and{' '}
-            <Link href="/blog/solar-cold-room-nigeria" className="text-[#F59E0B] font-semibold hover:underline">
+            <Link href="/blog/solar-cold-room-nigeria" className="text-[#B45309] font-semibold hover:underline">
               what it costs to solar-power a cold room
             </Link>{' '}
             works through one commercial load end to end.

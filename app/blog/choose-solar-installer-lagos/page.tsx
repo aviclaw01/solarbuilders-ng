@@ -58,7 +58,7 @@ export default function ChooseSolarInstallerLagosPage() {
           How to Choose a Solar Installer in Lagos
         </h1>
 
-        <div className="flex items-center gap-4 text-[#94A3B8] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-4 text-[#64748B] text-sm mb-12 pb-8 border-b border-[#E2E8F0]">
           <span>Updated {PRICES_LAST_UPDATED_LABEL}</span>
           <span>·</span>
           <span>6 min read</span>
@@ -93,12 +93,12 @@ export default function ChooseSolarInstallerLagosPage() {
             Good installers can tell you precisely what they use and why. In the Nigerian market today that means hybrid inverters from Felicity or Sako (budget), Growatt, Luxpower or Solis (mid), and Deye or Victron (premium); Tier-1 panels from Jinko, JA Solar, Longi, Trina or Canadian Solar; and lithium (LiFePO4) batteries from Deye, Felicity, Growatt or Dyness.
           </p>
           <p className="text-[#64748B] leading-relaxed">
-            Be cautious of &quot;we use quality components&quot; — that is not an answer. Once you have brand names, check what they actually cost from Nigerian vendors on our <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands and prices page</Link>. If an installer&apos;s equipment line is far above vendor prices, ask why.
+            Be cautious of &quot;we use quality components&quot; — that is not an answer. Once you have brand names, check what they actually cost from Nigerian vendors on our <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brands and prices page</Link>. If an installer&apos;s equipment line is far above vendor prices, ask why.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">4. Correct Sizing Before Any Quote</h2>
           <p className="text-[#64748B] leading-relaxed">
-            An installer who quotes a system size without asking what you run, for how many hours, is guessing. Undersized systems trip constantly; oversized ones waste money on batteries you never use. Do the load calculation yourself first with our <Link href="/calculator" className="text-[#F59E0B] font-semibold hover:underline">free calculator</Link> — it turns your appliance list into peak kW, kWh per day and a sized system — so you walk into every conversation knowing what you need.
+            An installer who quotes a system size without asking what you run, for how many hours, is guessing. Undersized systems trip constantly; oversized ones waste money on batteries you never use. Do the load calculation yourself first with our <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">free calculator</Link> — it turns your appliance list into peak kW, kWh per day and a sized system — so you walk into every conversation knowing what you need.
           </p>
           <p className="text-[#64748B] leading-relaxed">
             Then insist on a site survey before paying anything. Roof condition, cable run lengths and your existing wiring all change the job.
@@ -109,7 +109,7 @@ export default function ChooseSolarInstallerLagosPage() {
             A proper quote lists every line: inverter (brand, kVA), battery (brand, kWh, number of modules), panels (brand, wattage, count), mounting, cables, breakers and surge protection, and labour — each with its own price. A single lump-sum &quot;all-in&quot; figure hides where the money goes and makes it impossible to compare quotes.
           </p>
           <p className="text-[#64748B] leading-relaxed">
-            As a sanity check on the labour line: roof-mount installation in Lagos runs {formatNaira(LABOUR_PER_KVA.low)}–{formatNaira(LABOUR_PER_KVA.high)} per kVA as of {PRICES_LAST_UPDATED_LABEL}, with a floor of about {formatNaira(LABOUR_FLOOR)} for small jobs. So labour on a 5kVA system should sit around {formatNaira(labour5kvaLow)}–{formatNaira(labour5kvaHigh)} — treat anything more than double that top figure as a red flag worth asking about. Our calculator produces exactly this kind of itemised quote, priced from the same vendor data on the <Link href="/brands" className="text-[#F59E0B] font-semibold hover:underline">brands page</Link>.
+            As a sanity check on the labour line: roof-mount installation in Lagos runs {formatNaira(LABOUR_PER_KVA.low)}–{formatNaira(LABOUR_PER_KVA.high)} per kVA as of {PRICES_LAST_UPDATED_LABEL}, with a floor of about {formatNaira(LABOUR_FLOOR)} for small jobs. So labour on a 5kVA system should sit around {formatNaira(labour5kvaLow)}–{formatNaira(labour5kvaHigh)} — treat anything more than double that top figure as a red flag worth asking about. Our calculator produces exactly this kind of itemised quote, priced from the same vendor data on the <Link href="/brands" className="text-[#B45309] font-semibold hover:underline">brands page</Link>.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">6. A Written Workmanship Warranty</h2>
@@ -140,7 +140,7 @@ export default function ChooseSolarInstallerLagosPage() {
             When you send us a quote from the calculator, we confirm the prices against current vendor stock, source the equipment from Nigerian vendors, and assign an installer we have already vetted against every point above — CAC registration, at least three past installs with photos, references we have called, and a written workmanship warranty. We manage the build through to commissioning.
           </p>
           <p className="text-[#64748B] leading-relaxed">
-            The full process is on our <Link href="/verified" className="text-[#F59E0B] font-semibold hover:underline">how we vet installers</Link> page. It does not guarantee perfection, but it removes the guesswork from the part of the job most people get wrong.
+            The full process is on our <Link href="/verified" className="text-[#B45309] font-semibold hover:underline">how we vet installers</Link> page. It does not guarantee perfection, but it removes the guesswork from the part of the job most people get wrong.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Final Checklist Before You Pay</h2>

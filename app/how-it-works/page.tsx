@@ -116,7 +116,7 @@ export default function HowItWorksPage() {
       <section className="bg-white border-b border-slate-100 py-20 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <AnimatedSection>
-            <p className="text-amber-600 font-semibold text-sm tracking-wide uppercase mb-3">How it works</p>
+            <p className="text-amber-700 font-semibold text-sm tracking-wide uppercase mb-3">How it works</p>
             <h1 className="font-heading font-extrabold text-[#0F172A] text-4xl md:text-5xl mb-4 leading-tight">
               Real prices first. Then we get it built.
             </h1>
@@ -189,7 +189,7 @@ export default function HowItWorksPage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-slate-400 text-sm mt-4">
+            <p className="text-slate-500 text-sm mt-4">
               Estimates, not final prices. Equipment carries 0% import duty and is VAT-exempt in Nigeria; labour is included in these ranges.
               We confirm today’s figure with the distributor before you pay, and you pay that market price — our margin sits in our trade terms, not on top of your bill.
             </p>
@@ -211,7 +211,7 @@ export default function HowItWorksPage() {
                 <details className="group bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
                   <summary className="cursor-pointer list-none flex items-center justify-between gap-4 font-heading font-bold text-[#0F172A] text-lg">
                     {f.q}
-                    <span className="text-amber-500 text-2xl leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+                    <span className="text-amber-600 text-2xl leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
                   </summary>
                   <p className="text-slate-500 leading-relaxed mt-4">{f.a}</p>
                 </details>
