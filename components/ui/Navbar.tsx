@@ -73,6 +73,7 @@ const MENUS: MenuGroup[] = [
       { href: '/faq', label: 'FAQs', hint: 'Straight answers, no sales pitch' },
       { href: '/how-it-works', label: 'How it works' },
       { href: '/verified', label: 'How we vet installers' },
+      { href: '/partners', label: 'Verified partners', hint: 'The directory, and each partner\'s checks' },
       { href: '/blog/solar-loans-nigeria', label: 'Paying for it' },
     ],
     featured: {

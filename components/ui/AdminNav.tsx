@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, ExternalLink, Inbox, ShoppingCart } from "lucide-react";
+import { BarChart3, ExternalLink, Inbox, Route, ShieldCheck, ShoppingCart } from "lucide-react";
 
 /**
  * Shared header nav for the internal admin area.
@@ -10,13 +10,20 @@ import { BarChart3, ExternalLink, Inbox, ShoppingCart } from "lucide-react";
  * actions) and this keeps it that way.
  *
  * Add to a new admin page with a single line:  <AdminNav active="orders" />
+ *
+ * "Partners" and "Routing" sit behind the superadmin credential (see proxy.ts).
+ * They are still listed here for everyone: a plain admin who clicks one gets a
+ * page that explains exactly why it is locked, which is more useful than a link
+ * that silently is not there.
  */
 
-export type AdminSection = "leads" | "orders" | "funnel";
+export type AdminSection = "leads" | "orders" | "routing" | "partners" | "funnel";
 
 const LINKS: { key: AdminSection; href: string; label: string; icon: React.ReactNode }[] = [
   { key: "leads", href: "/admin/leads", label: "Leads", icon: <Inbox className="w-3.5 h-3.5" /> },
   { key: "orders", href: "/admin/orders", label: "Orders", icon: <ShoppingCart className="w-3.5 h-3.5" /> },
+  { key: "routing", href: "/admin/routing", label: "Routing", icon: <Route className="w-3.5 h-3.5" /> },
+  { key: "partners", href: "/admin/partners", label: "Partners", icon: <ShieldCheck className="w-3.5 h-3.5" /> },
   { key: "funnel", href: "/admin/funnel", label: "Funnel", icon: <BarChart3 className="w-3.5 h-3.5" /> },
 ];
 

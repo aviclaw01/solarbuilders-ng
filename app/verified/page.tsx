@@ -150,10 +150,18 @@ export default function VerifiedPage() {
                 </AnimatedSection>
               ))}
             </div>
+            <AnimatedSection delay={225}>
+              <p className="text-slate-500 text-sm mt-6 max-w-2xl">
+                Partners who pass all four are listed, with the checks we actually completed, on the{' '}
+                <Link href="/partners" className="text-amber-700 font-semibold underline underline-offset-4 hover:text-amber-800">
+                  verified-partner directory
+                </Link>
+                . Nobody pays for a place on it.
+              </p>
+            </AnimatedSection>
           </div>
         </section>
 
-        {/* Vendors */}
         <section className="px-6 pb-14">
           <div className="max-w-6xl mx-auto">
             <AnimatedSection>
@@ -258,6 +266,12 @@ export default function VerifiedPage() {
                   equipment and put a vetted installer on it.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
+                  <Link
+                    href="/partners"
+                    className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full px-8 py-4 font-heading font-bold transition-colors min-h-[56px]"
+                  >
+                    See the verified partners <ArrowRight className="w-5 h-5" />
+                  </Link>
                   <Link
                     href="/calculator"
                     className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-8 py-4 font-heading font-bold transition-colors min-h-[56px]"

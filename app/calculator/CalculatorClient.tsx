@@ -294,6 +294,14 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
 
           <QuoteResults key={quote.code} appliances={selectedAppliances} initialTier={initialTier} initialOptions={initialOptions} />
 
+          {/* Unique quote ID for lead follow-up */}
+          <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] mt-3 p-4 flex items-center gap-3">
+            <span className="text-sm text-[#64748B]">Quote ID: </span>
+            <span className="font-mono font-semibold text-[#1E293B]" id="quote-id">
+              {quote.code}
+            </span>
+          </div>
+
           <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] mt-8">
             <button onClick={() => setAppliancesOpen(!appliancesOpen)} className="w-full flex items-center justify-between p-5">
               <h2 className="font-heading font-semibold text-[#64748B] text-xs uppercase tracking-widest">

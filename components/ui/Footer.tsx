@@ -127,10 +127,13 @@ export default function Footer() {
             <li><Link href="/how-it-works" className={linkCls}>How it works</Link></li>
             <li><Link href="/faq" className={linkCls}>FAQs</Link></li>
             <li><Link href="/verified" className={linkCls}>How we vet installers</Link></li>
+            <li><Link href="/partners" className={linkCls}>Verified partners</Link></li>
             <li><Link href="/blog" className={linkCls}>Solar guides</Link></li>
             <li><Link href="/about" className={linkCls}>Our story</Link></li>
             <li><Link href="/contact" className={linkCls}>Contact</Link></li>
             <li><Link href="/for-builders" className={linkCls}>Work with us</Link></li>
+            <li><Link href="/partners/status" className={linkCls}>Check an application</Link></li>
+            <li><Link href="/changelog" className={linkCls}>Changelog</Link></li>
           </Column>
         </div>
 
