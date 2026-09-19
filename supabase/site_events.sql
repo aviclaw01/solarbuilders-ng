@@ -15,11 +15,19 @@ create table if not exists public.site_events (
   amount        integer,
   lender        text,
   placement     text,
+  item          text,
   format        text,
   utm_source    text,
   utm_medium    text,
   utm_campaign  text
 );
+
+-- Added after the table shipped: `item` carries the catalogue line on a
+-- `cart_add` (e.g. "deye::SUN-5K-SG 1-phase"). Databases created before this
+-- column existed need the alter; new ones already have it from the block above.
+-- PostgREST rejects an INSERT whose payload names a column it cannot see, so a
+-- missing `item` here does not drop one field — it drops the whole event.
+alter table public.site_events add column if not exists item text;
 
 create index if not exists site_events_created_at_idx on public.site_events (created_at desc);
 create index if not exists site_events_event_idx on public.site_events (event);
