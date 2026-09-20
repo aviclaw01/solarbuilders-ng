@@ -10,7 +10,6 @@ import {
   ShoppingCart,
   Unlock,
 } from "lucide-react";
-import AdminNav from "@/components/ui/AdminNav";
 
 /**
  * The admin home.
@@ -81,9 +80,7 @@ export default async function AdminHomePage() {
   const superConfigured = h.get("x-sb-super-configured") === "1";
 
   return (
-    <div className="min-h-screen bg-white">
-      <main className="max-w-4xl mx-auto px-6 py-10">
-        <AdminNav />
+    <>
 
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
           <h1 className="font-heading font-extrabold text-slate-900 text-2xl">Admin</h1>
@@ -140,8 +137,7 @@ export default async function AdminHomePage() {
         </div>
 
         <TierExplainer isSuper={isSuper} superConfigured={superConfigured} />
-      </main>
-    </div>
+    </>
   );
 }
 

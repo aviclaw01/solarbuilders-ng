@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PageHeader from "@/components/ui/AdminPageHeader";
 import { revalidatePath } from "next/cache";
 import {
   AlertTriangle,
@@ -13,7 +14,6 @@ import {
   ShoppingCart,
   TrendingUp,
 } from "lucide-react";
-import AdminNav from "@/components/ui/AdminNav";
 import { formatNaira } from "@/lib/quote";
 
 /**
@@ -508,25 +508,13 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-[#0A0F1E] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <span className="text-[#F59E0B] text-xs font-semibold tracking-wide uppercase">
-              Internal · not indexed
-            </span>
-            <h1 className="font-heading font-extrabold text-2xl md:text-3xl mt-1">Order requests</h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Carts sent from the shop. No payment has been taken on any of these.
-            </p>
-          </div>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        <AdminNav active="orders" />
-        {children}
-      </main>
-    </div>
+    <>
+      <PageHeader
+        title="Order requests"
+        subtitle="Carts sent from the shop. No payment has been taken on any of these."
+      />
+      {children}
+    </>
   );
 }
 

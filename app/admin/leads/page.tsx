@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PageHeader from "@/components/ui/AdminPageHeader";
 import { revalidatePath } from "next/cache";
 import {
   AlertTriangle,
@@ -13,7 +14,6 @@ import {
   Users,
 } from "lucide-react";
 import { formatNaira } from "@/lib/quote";
-import AdminNav from "@/components/ui/AdminNav";
 
 /**
  * Internal leads dashboard — every "Get this system built" submission from
@@ -584,25 +584,10 @@ function EnquiriesSection({
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-[#0A0F1E] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <span className="text-[#F59E0B] text-xs font-semibold tracking-wide uppercase">
-              Internal · not indexed
-            </span>
-            <h1 className="font-heading font-extrabold text-2xl md:text-3xl mt-1">Quote requests</h1>
-          </div>
-          <Link href="/" className="text-sm text-slate-300 hover:text-white transition-colors">
-            ← Back to site
-          </Link>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        <AdminNav active="leads" />
-        {children}
-      </main>
-    </div>
+    <>
+      <PageHeader title="Quote requests" subtitle="Every 'Get this system built' submission from the calculator." />
+      {children}
+    </>
   );
 }
 
