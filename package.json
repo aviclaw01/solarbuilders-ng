@@ -8,6 +8,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "node scripts/partner-routing.test.mjs",
+    "prices:check": "node scripts/check-headline-prices.mjs",
     "smoke": "node scripts/partner-smoke.mjs"
   },
   "dependencies": {

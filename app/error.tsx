@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { Home, RefreshCw, MessageCircle } from 'lucide-react';
 
+import { CONTACT_WHATSAPP } from '@/lib/site';
+
 /**
  * Route-level error boundary. Next.js renders this whenever a page (or its
  * client components) throws during render or data handling — without it a
@@ -56,7 +58,7 @@ export default function Error({
           </Link>
         </div>
         <a
-          href="https://wa.me/2349168394923"
+          href={`https://wa.me/${CONTACT_WHATSAPP}`}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-6 inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 text-sm transition-colors"

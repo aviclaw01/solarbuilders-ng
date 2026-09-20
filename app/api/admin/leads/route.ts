@@ -3,7 +3,7 @@
  *
  * PATCH /api/admin/leads  { "id": 12, "status": "contacted" }
  *
- * Sits under /api/admin, so middleware.ts already requires HTTP Basic auth
+ * Sits under /api/admin, so proxy.ts already requires HTTP Basic auth
  * (ADMIN_USER / ADMIN_PASSWORD) before this handler ever runs. It talks to
  * Supabase with the service-role key over PostgREST, the same way
  * app/api/quote-request/route.ts does.

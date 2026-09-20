@@ -4,6 +4,7 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import AnimatedSection from '@/components/ui/AnimatedSection';
 import { MessageCircle, Mail, ArrowRight, MapPin, Phone } from 'lucide-react';
+import { CONTACT_WHATSAPP } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Get in Touch',
@@ -37,7 +38,7 @@ export default function ContactPage() {
             {/* WhatsApp CTA */}
             <AnimatedSection>
               <a
-                href="https://wa.me/2349168394923"
+                href={`https://wa.me/${CONTACT_WHATSAPP}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex flex-col items-start gap-4 p-8 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-amber-200 transition-all group"
@@ -79,7 +80,7 @@ export default function ContactPage() {
           <div className="max-w-3xl mx-auto mt-6 grid md:grid-cols-2 gap-6">
             <AnimatedSection delay={150}>
               <a
-                href="tel:+2349168394923"
+                href={`tel:+${CONTACT_WHATSAPP}`}
                 className="flex items-start gap-4 p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-amber-200 transition-all"
               >
                 <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0">

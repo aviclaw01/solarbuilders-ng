@@ -5,7 +5,7 @@ import PublicChrome from '@/components/ui/PublicChrome';
 import GoogleAnalytics from '@/components/ui/GoogleAnalytics';
 import MetaPixel from '@/components/ui/MetaPixel';
 import ToastProvider from '@/components/ui/Toast';
-import { claimedSocials } from '@/lib/site';
+import { claimedSocials, CONTACT_WHATSAPP } from '@/lib/site';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -103,7 +103,7 @@ const localBusinessSchema = {
   "additionalType": "https://schema.org/SolarEnergyCompany",
   "name": "SolarBuilders.ng",
   "url": "https://solarbuildersng.com",
-  "telephone": "+2349168394923",
+  "telephone": `+${CONTACT_WHATSAPP}`,
   "image": "https://solarbuildersng.com/brand/og-image.png",
   "description": "Real solar equipment prices for Nigeria, an itemised quote calculator, and a team that gets your system built.",
   "address": {
@@ -130,7 +130,7 @@ const localBusinessSchema = {
     "closes": "18:00"
   },
   "sameAs": [
-    "https://wa.me/2349168394923",
+    `https://wa.me/${CONTACT_WHATSAPP}`,
     // Only claimed accounts — matches the footer, kept in sync via lib/site.ts.
     ...claimedSocials().map((s) => s.url),
   ]
@@ -141,7 +141,7 @@ const organizationSchema = {
   "@type": "Organization",
   "name": "SolarBuilders.ng",
   "url": "https://solarbuildersng.com",
-  "telephone": "+2349168394923",
+  "telephone": `+${CONTACT_WHATSAPP}`,
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "11 Mogbonjubola St",
@@ -152,7 +152,7 @@ const organizationSchema = {
   "logo": "https://solarbuildersng.com/brand/og-image.png",
   "contactPoint": {
     "@type": "ContactPoint",
-    "telephone": "+2349168394923",
+    "telephone": `+${CONTACT_WHATSAPP}`,
     "contactType": "customer service",
     "areaServed": "NG",
     "availableLanguage": "English"

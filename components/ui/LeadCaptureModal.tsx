@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import { NIGERIAN_STATES, isPhone, type FieldErrors } from '@/lib/validation';
+import { CONTACT_WHATSAPP } from '@/lib/site';
 
 const SYSTEM_SIZES = [
   'Not sure yet',
@@ -133,7 +134,7 @@ export default function LeadCaptureModal() {
               Try again
             </button>
             <a
-              href="https://wa.me/2349168394923"
+              href={`https://wa.me/${CONTACT_WHATSAPP}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block mt-3 text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors"
