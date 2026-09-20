@@ -5,6 +5,7 @@
 create table if not exists public.quote_requests (
   id          bigint generated always as identity primary key,
   created_at  timestamptz not null default now(),
+  reference   text,                        -- SB-QR-XXXXXX, the customer's handle on this request
   quote_code  text not null,
   name        text not null,
   phone       text not null,
@@ -19,6 +20,15 @@ create table if not exists public.quote_requests (
   summary     text not null,
   status      text not null default 'new'   -- new | contacted | quoted | won | lost
 );
+
+-- Added after the table shipped (#21). `quote_code` is a CONTENT HASH of the
+-- appliance list, so two customers who pick the same appliances collide on it;
+-- `reference` is minted per submission and is what we quote back to a customer.
+-- PostgREST rejects an INSERT naming a column it cannot see, so without this
+-- the whole row is dropped, not just this field.
+alter table public.quote_requests add column if not exists reference text;
+
+create index if not exists quote_requests_reference_idx on public.quote_requests (reference);
 
 create index if not exists quote_requests_created_at_idx on public.quote_requests (created_at desc);
 create index if not exists quote_requests_quote_code_idx on public.quote_requests (quote_code);
