@@ -115,12 +115,14 @@ export async function declineOffer(formData: FormData): Promise<ActionResult> {
     return { ok: false, error: "Tell us why in a few words — it stops us sending you the same mismatch again." };
   }
 
-  const res = await dbPatch(
+  const res = await dbPatch<PartnerJobRow>(
     "partner_jobs",
     { id: `eq.${job.id}`, status: "eq.offered" },
     { status: "declined", responded_at: new Date().toISOString(), decline_reason: reason },
   );
   if (!res.ok) return { ok: false, error: "We could not record that just now. Try again in a moment." };
+  // Zero rows means the compound filter did not match — someone else moved it.
+  if (res.data.length === 0) return { ok: false, error: "That offer is no longer open." };
 
   await logPartnerEvent(partner.id, "partner", "job:declined", `${job.reference} — ${reason}`, job.id);
   done();
@@ -132,9 +134,18 @@ export async function declineOffer(formData: FormData): Promise<ActionResult> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Mark the work finished. This does NOT close the job: `completed` still waits
- * on the customer's confirmation (L16), and the commission becomes due from
- * OUR figure on the row, never from anything the partner enters (L6).
+ * Mark the work finished, and make the commission due from OUR figure on the
+ * row (L6) — never from anything the partner enters.
+ *
+ * HONEST LIMITATION, and it is a real gap against L16. This writes `completed`
+ * on the partner's word alone. `customer_confirmed_at` exists on the row and
+ * NOTHING in this repo writes it, so there is no customer-confirmation step to
+ * wait for. That matters because `completed` raises the partner's routing
+ * score, frees a capacity slot, and permanently locks the source request out
+ * of re-routing through the one-live-job index.
+ *
+ * Until a confirmation action exists, neither this function nor the UI may
+ * claim the customer confirms anything. See issue #44.
  */
 export async function markComplete(formData: FormData): Promise<ActionResult> {
   const partner = await me();
@@ -145,10 +156,14 @@ export async function markComplete(formData: FormData): Promise<ActionResult> {
   if (job.status !== "accepted") return { ok: false, error: "Only a job you have accepted can be completed." };
 
   const now = new Date();
-  // 14 days to settle, consistent with the commission clock in lib/routing.ts.
-  const dueAt = new Date(now.getTime() + 14 * 86_400_000);
+  // Commission falls due on completion. COMMISSION_PAUSE_DAYS (14) and
+  // COMMISSION_SUSPEND_DAYS (30) in lib/routing.ts are measured from
+  // commission_due_at, so any grace added here is added ON TOP of them — a
+  // 14-day window would have meant pause at +28 and suspend at +44, doubling
+  // the L5 clock. Due immediately keeps the gate at the 14/30 L5 states.
+  const dueAt = now;
 
-  const res = await dbPatch(
+  const res = await dbPatch<PartnerJobRow>(
     "partner_jobs",
     { id: `eq.${job.id}`, status: "eq.accepted" },
     {
@@ -159,12 +174,13 @@ export async function markComplete(formData: FormData): Promise<ActionResult> {
     },
   );
   if (!res.ok) return { ok: false, error: "We could not record that just now. Try again in a moment." };
+  if (res.data.length === 0) return { ok: false, error: "That job is no longer in progress." };
 
   await logPartnerEvent(partner.id, "partner", "job:completed", job.reference, job.id);
   done();
   return {
     ok: true,
-    message: "Marked complete. We confirm with the customer before it is final.",
+    message: "Marked complete. The commission for it is now due.",
   };
 }
 
@@ -229,6 +245,18 @@ export async function submitReceipt(formData: FormData): Promise<ActionResult> {
     return { ok: false, error: "Attach the receipt, or paste a link to it." };
   }
 
+  // One live claim per job. Without this a double submit inserts two payment
+  // rows against one invoice reference, and a resubmit after confirmation
+  // would drag a cleared commission backwards.
+  const existing = await dbGet<{ id: number; status: string }>("partner_payments", {
+    select: "id,status",
+    job_id: `eq.${job.id}`,
+    limit: "10",
+  });
+  if (existing.some((p) => p.status !== "rejected")) {
+    return { ok: false, error: "We already have a receipt for this one. We will come back to you on it." };
+  }
+
   const res = await dbInsert("partner_payments", {
     partner_id: partner.id,
     job_id: job.id,
@@ -248,7 +276,23 @@ export async function submitReceipt(formData: FormData): Promise<ActionResult> {
     return { ok: false, error: "We could not record that just now. Try again in a moment." };
   }
 
-  await dbPatch("partner_jobs", { id: `eq.${job.id}` }, { commission_status: "receipt_uploaded" });
+  // Only move a commission that is actually outstanding. Unfiltered, this
+  // could drag a `confirmed` commission back to `receipt_uploaded` and re-block
+  // the partner.
+  const moved = await dbPatch<PartnerJobRow>(
+    "partner_jobs",
+    { id: `eq.${job.id}`, commission_status: "in.(due,overdue)" },
+    { commission_status: "receipt_uploaded" },
+  );
+  if (!moved.ok || moved.data.length === 0) {
+    // The claim is recorded either way; only the job's flag lagged. Say so
+    // rather than reporting a clean success we did not achieve.
+    console.error("[partner/actions] receipt stored but job flag not moved:", job.reference);
+    return {
+      ok: true,
+      message: "Receipt received. Flagging it on the job did not go through, so we may chase you — quote " + invoiceRef(job.reference) + " if we do.",
+    };
+  }
   await logPartnerEvent(partner.id, "partner", "commission:receipt", `${invoiceRef(job.reference)} · ${bankRef}`, job.id);
   done();
   return {
@@ -316,19 +360,4 @@ export async function respondToInfoRequest(formData: FormData): Promise<ActionRe
   await logPartnerEvent(partner.id, "partner", "info:responded", Object.keys(answers).join(", "));
   done();
   return { ok: true, message: "Thank you — your application is back with a reviewer." };
-}
-
-/** Commission rate on this partner's row, clamped. Used for display only. */
-export async function rateFor(partner: PartnerRow): Promise<number> {
-  return commissionRateOf(partner);
-}
-
-/** Payments this partner has claimed, newest first. */
-export async function myPayments(partnerId: number) {
-  return dbGet("partner_payments", {
-    select: "*",
-    partner_id: `eq.${partnerId}`,
-    order: "created_at.desc",
-    limit: "50",
-  });
 }

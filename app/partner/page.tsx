@@ -17,7 +17,13 @@ import {
 import { readPartnerSession } from '@/lib/partner-auth';
 import { listJobsForPartner, listPaymentsForPartner, commissionBank } from '@/lib/partner-db';
 import { PARTNER_STATUS_META, commissionRateOf, type PartnerJobRow, type PartnerRow } from '@/lib/partners';
-import { AVAILABILITY_STALE_DAYS, OFFER_WINDOW_HOURS, invoiceRef, isOfferExpired } from '@/lib/routing';
+import {
+  AVAILABILITY_STALE_DAYS,
+  OFFER_WINDOW_HOURS,
+  commissionStatusFor,
+  invoiceRef,
+  isOfferExpired,
+} from '@/lib/routing';
 import { formatNaira } from '@/lib/quote';
 import PortalForm, { SubmitButton } from '@/components/ui/PortalForm';
 import {
@@ -160,7 +166,7 @@ export default async function PartnerPortalPage({ searchParams }: Props) {
                   <JobHead job={job} />
                   <p className="text-amber-900 text-xs mt-2 inline-flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" aria-hidden="true" />
-                    Expires {new Date(job.offer_expires_at).toLocaleString('en-NG')}
+                    Expires {new Date(job.offer_expires_at).toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })}
                   </p>
                   {job.detail && <p className="text-slate-700 text-sm mt-2 whitespace-pre-wrap">{job.detail}</p>}
                   <p className="text-slate-500 text-xs mt-2">
@@ -217,7 +223,8 @@ export default async function PartnerPortalPage({ searchParams }: Props) {
                     <input type="hidden" name="job_id" value={job.id} />
                     <SubmitButton variant="secondary">Mark the work complete</SubmitButton>
                     <p className="text-slate-500 text-xs mt-1.5">
-                      We confirm with the customer before it is final, then the commission invoice is issued.
+                      This closes the job and makes the commission due. Only mark it complete once the customer has the
+                      system working.
                     </p>
                   </PortalForm>
                 </li>
@@ -238,7 +245,13 @@ export default async function PartnerPortalPage({ searchParams }: Props) {
           ) : (
             <ul className="space-y-4">
               {owing.map((job) => {
-                const claim = payments.find((p) => p.job_id === job.id);
+                // A REJECTED claim must not block a resubmission. Rejecting
+                // puts the job back to `due`, so without this the partner sees
+                // "Status: rejected" forever, can never resubmit, and the L5
+                // gate keeps them out of every future offer permanently.
+                const claims = payments.filter((p) => p.job_id === job.id);
+                const claim = claims.find((p) => p.status !== 'rejected') ?? null;
+                const rejected = !claim ? claims.find((p) => p.status === 'rejected') ?? null : null;
                 return (
                   <li key={job.id} className="border border-slate-200 rounded-2xl p-4 bg-white">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -249,8 +262,12 @@ export default async function PartnerPortalPage({ searchParams }: Props) {
                     </div>
                     <p className="text-slate-500 text-xs mt-1">
                       For {job.reference}
-                      {job.commission_due_at ? ` · due ${new Date(job.commission_due_at).toLocaleDateString('en-NG')}` : ''}
-                      {job.commission_status === 'overdue' ? ' · overdue' : ''}
+                      {job.commission_due_at
+                        ? ` · due ${new Date(job.commission_due_at).toLocaleDateString('en-NG', { timeZone: 'Africa/Lagos' })}`
+                        : ''}
+                      {commissionStatusFor(job.commission_due_at, now, job.commission_status) === 'overdue'
+                        ? ' · overdue'
+                        : ''}
                     </p>
 
                     {claim ? (
@@ -260,7 +277,17 @@ export default async function PartnerPortalPage({ searchParams }: Props) {
                         against our own statement before it clears — a receipt on its own is not proof the money landed.
                       </p>
                     ) : (
-                      <ReceiptForm jobId={job.id} />
+                      <>
+                        {rejected && (
+                          <p className="mt-3 text-sm text-rose-800 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2">
+                            We could not match your last receipt
+                            {rejected.bank_ref ? <> (reference <span className="font-mono">{rejected.bank_ref}</span>)</> : null}
+                            {rejected.reject_reason ? <>: {rejected.reject_reason}</> : '.'} Send it again below with the
+                            correct details and we will check straight away.
+                          </p>
+                        )}
+                        <ReceiptForm jobId={job.id} />
+                      </>
                     )}
                   </li>
                 );

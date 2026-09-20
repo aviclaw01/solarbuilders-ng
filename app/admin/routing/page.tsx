@@ -97,12 +97,20 @@ interface QueueItem {
 // DATA
 // ─────────────────────────────────────────────────────────
 
-/** A job that stops this request being offered again (L9). */
-function blocksRouting(job: PartnerJobRow, now: Date): boolean {
-  if (job.status === "accepted" || job.status === "completed") return true;
-  if (job.status !== "offered") return false;
-  // An unanswered offer holds the request only until its window closes.
-  return !isOfferExpired(job.offer_expires_at, now);
+/**
+ * A job that stops this request being offered again (L9).
+ *
+ * This must match liveJobFor() in ./actions.ts exactly — ANY `offered` row
+ * blocks, expiry included. The page used to ignore expired offers, so it would
+ * list a request as routable that offerJob then refused, and offerJob reports
+ * nothing back: the admin clicked Offer and watched nothing happen.
+ *
+ * Ignoring expiry here is safe because routingCandidates() runs
+ * expireStaleOffers() before this is called, which flips a lapsed offer out of
+ * `offered` — so a genuinely expired offer has already stopped blocking.
+ */
+function blocksRouting(job: PartnerJobRow): boolean {
+  return job.status === "accepted" || job.status === "completed" || job.status === "offered";
 }
 
 function key(source: string, id: number): string {
@@ -147,7 +155,7 @@ async function loadQueue(now: Date): Promise<
 
   const live = new Map<string, PartnerJobRow>();
   for (const [k, list] of byRequest) {
-    const blocking = list.find((j) => blocksRouting(j, now));
+    const blocking = list.find(blocksRouting);
     if (blocking) live.set(k, blocking);
   }
 
@@ -183,6 +191,14 @@ function profileFor(item: QueueItem, now: Date): RequestProfile {
     needsInstall: item.req.needs_install !== false,
     now,
   };
+}
+
+/** Time remaining until a future instant. `ago` only ever looks backwards. */
+function until(iso: string, now: Date): string {
+  const hours = (new Date(iso).getTime() - now.getTime()) / 3_600_000;
+  if (!Number.isFinite(hours) || hours <= 0) return "expired";
+  if (hours < 1) return `${Math.max(1, Math.round(hours * 60))}m left`;
+  return `${Math.round(hours)}h left`;
 }
 
 function ago(iso: string, now: Date): string {
@@ -256,6 +272,10 @@ export default async function RoutingPage({ searchParams }: Props) {
   // 24h window closed (L9).
   const { candidates, releasedOffers } = await routingCandidates(now);
   const capabilities = candidates.map((c) => capabilityFrom(c.partner, c.stats));
+  // Each partner's own agreed rate. A flat default here silently offered every
+  // job at 5%, so a partner on a negotiated 10% was under-charged unless the
+  // admin retyped the box — L6's "our figure", computed from the wrong number.
+  const rateByPartner = new Map(candidates.map((c) => [c.partner.id, commissionRateOf(c.partner)]));
 
   const selectedSource: Source | null =
     sourceParam === "quote_request" || sourceParam === "order_request" ? sourceParam : null;
@@ -310,7 +330,7 @@ export default async function RoutingPage({ searchParams }: Props) {
       {!selected && queue.live.size > 0 && <LiveOffers live={queue.live} now={now} />}
 
       {selected ? (
-        <Selected item={selected} eligible={eligible} blocked={blocked} now={now} />
+        <Selected item={selected} eligible={eligible} blocked={blocked} now={now} rateByPartner={rateByPartner} />
       ) : queue.items.length === 0 ? (
         <Empty icon={CheckCircle2} title="Nothing waiting to be routed">
           Every quote and order request either has a partner on it or was closed. New requests appear here as they come
@@ -377,9 +397,7 @@ function LiveOffers({ live, now }: { live: Map<string, PartnerJobRow>; now: Date
               {job.status}
             </span>
             {job.status === "offered" && job.offer_expires_at && (
-              <span className="text-slate-400 text-xs">
-                expires {ago(job.offer_expires_at, now).replace(" ago", "")} from now
-              </span>
+              <span className="text-slate-400 text-xs">{until(job.offer_expires_at, now)}</span>
             )}
             {job.status === "offered" && (
               <form action={releaseOffer} className="ml-auto">
@@ -423,15 +441,18 @@ function Selected({
   eligible,
   blocked,
   now,
+  rateByPartner,
 }: {
   item: QueueItem;
   eligible: PartnerVerdict[];
   blocked: PartnerVerdict[];
   now: Date;
+  rateByPartner: Map<number, number>;
 }) {
   const { req } = item;
-  const rate = 5;
-  const estimate = commissionAmount({ budgetBest: req.total_best, installFee: null, ratePercent: rate });
+  // Shown as a guide only; the figure that counts is per-partner, below.
+  const topRate = eligible.length > 0 ? (rateByPartner.get(eligible[0].partnerId) ?? 5) : 5;
+  const estimate = commissionAmount({ budgetBest: req.total_best, installFee: null, ratePercent: topRate });
 
   return (
     <div>
@@ -448,7 +469,7 @@ function Selected({
           <Field label="Customer">{req.name || "—"}</Field>
           <Field label="Location">{req.location || "not given"}</Field>
           <Field label="Their figure">{req.total_best ? formatNaira(req.total_best) : "—"}</Field>
-          <Field label={`Commission at ${rate}%`}>{estimate ? formatNaira(estimate) : "—"}</Field>
+          <Field label={`Commission at ${topRate}%`}>{estimate ? formatNaira(estimate) : "—"}</Field>
         </dl>
         {req.note && <p className="text-slate-600 text-sm mt-3 whitespace-pre-wrap">{req.note}</p>}
         <p className="text-slate-400 text-xs mt-3">
@@ -535,7 +556,7 @@ function Selected({
                     <input
                       type="number"
                       name="commission_rate"
-                      defaultValue={rate}
+                      defaultValue={rateByPartner.get(v.partnerId) ?? 5}
                       min={0}
                       max={25}
                       step={0.5}
