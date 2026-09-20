@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, AlertTriangle } from 'lucide-react';
+import { isEmail, isPhone, type FieldErrors } from '@/lib/validation';
+import { useToast } from '@/components/ui/Toast';
 
 const FAQ_ITEMS = [
   {
@@ -38,26 +40,61 @@ export default function ContactClient() {
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [hp, setHp] = useState('');
+  const { toast } = useToast();
+
+  function clearError(field: string) {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !message.trim()) return;
+    if (status === 'submitting') return;
+
+    // Per-field validation — the same rules the server enforces (lib/validation).
+    const next: FieldErrors = {};
+    const n = name.trim();
+    const em = email.trim();
+    const msg = message.trim();
+    const ph = phone.trim();
+    if (n.length < 2) next.name = n ? 'Name must be at least 2 characters.' : 'Name is required.';
+    if (!em) next.email = 'Email is required.';
+    else if (!isEmail(em)) next.email = "That email doesn't look right — check for typos.";
+    if (ph && !isPhone(ph)) next.phone = 'That number looks short — e.g. 0803 000 0000.';
+    if (msg.length < 10) next.message = msg ? 'Please write at least 10 characters so we can help.' : 'Message is required.';
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
+
     setStatus('submitting');
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          phone: phone.trim(),
-          message: message.trim(),
+          name: n,
+          email: em,
+          phone: ph || undefined,
+          message: msg,
+          hp,
         }),
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data?.ok) {
+        if (data?.fields) setErrors(data.fields as FieldErrors);
+        setStatus('error');
+        return;
+      }
       setStatus('success');
+      toast("Message sent — we'll get back to you shortly.", 'success');
     } catch {
       setStatus('error');
+      toast('Network error — check your connection and try again.', 'error');
     }
   }
 
@@ -102,60 +139,90 @@ export default function ContactClient() {
             <p className="text-[#64748B] text-sm">We&apos;ll get back to you shortly.</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            {/* Honeypot — hidden from humans, bait for scripts. */}
+            <input
+              type="text"
+              name="hp"
+              value={hp}
+              onChange={(e) => setHp(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="hidden"
+            />
+
             <div>
-              <label className="block text-sm font-medium text-[#0A0F1E] mb-1">Name *</label>
+              <label htmlFor="contact-name" className="block text-sm font-medium text-[#0A0F1E] mb-1">Name *</label>
               <input
+                id="contact-name"
                 type="text"
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={e => { setName(e.target.value); clearError('name'); }}
                 placeholder="Your name"
-                className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                aria-invalid={!!errors.name}
+                className={`w-full bg-white border rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors ${errors.name ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
               />
+              {errors.name && <p className="text-rose-600 text-xs mt-1">{errors.name}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#0A0F1E] mb-1">Email *</label>
+              <label htmlFor="contact-email" className="block text-sm font-medium text-[#0A0F1E] mb-1">Email *</label>
               <input
+                id="contact-email"
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => { setEmail(e.target.value); clearError('email'); }}
                 placeholder="you@example.com"
-                className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                aria-invalid={!!errors.email}
+                className={`w-full bg-white border rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors ${errors.email ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
               />
+              {errors.email && <p className="text-rose-600 text-xs mt-1">{errors.email}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#0A0F1E] mb-1">Phone (optional)</label>
+              <label htmlFor="contact-phone" className="block text-sm font-medium text-[#0A0F1E] mb-1">Phone (optional)</label>
               <input
+                id="contact-phone"
                 type="tel"
                 value={phone}
-                onChange={e => setPhone(e.target.value)}
+                onChange={e => { setPhone(e.target.value); clearError('phone'); }}
                 placeholder="+234 803 000 0000"
-                className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors"
+                aria-invalid={!!errors.phone}
+                className={`w-full bg-white border rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors ${errors.phone ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
               />
+              {errors.phone && <p className="text-rose-600 text-xs mt-1">{errors.phone}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#0A0F1E] mb-1">Message *</label>
+              <label htmlFor="contact-message" className="block text-sm font-medium text-[#0A0F1E] mb-1">Message *</label>
               <textarea
+                id="contact-message"
                 value={message}
-                onChange={e => setMessage(e.target.value)}
+                onChange={e => { setMessage(e.target.value); clearError('message'); }}
                 placeholder="How can we help?"
                 rows={4}
-                className="w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors resize-none"
+                aria-invalid={!!errors.message}
+                className={`w-full bg-white border rounded-lg px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors resize-none ${errors.message ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
               />
+              {errors.message && <p className="text-rose-600 text-xs mt-1">{errors.message}</p>}
             </div>
 
             {status === 'error' && (
-              <p className="text-red-500 text-sm">Something went wrong, please try again.</p>
+              <div className="flex items-start gap-2 bg-rose-50 border border-rose-200 rounded-lg px-4 py-3">
+                <AlertTriangle className="w-4 h-4 text-rose-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-rose-700 text-sm">
+                  We couldn&apos;t send your message just now — that&apos;s on us, not you. Try again, or
+                  reach us on WhatsApp and we&apos;ll pick it up from there.
+                </p>
+              </div>
             )}
 
             <button
               type="submit"
-              disabled={!name.trim() || !email.trim() || !message.trim() || status === 'submitting'}
+              disabled={status === 'submitting'}
               className={`w-full py-3 rounded-lg font-heading font-bold text-base transition-colors ${
-                name.trim() && email.trim() && message.trim() && status !== 'submitting'
+                status !== 'submitting'
                   ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]'
                   : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
               }`}

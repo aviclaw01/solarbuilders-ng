@@ -123,6 +123,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
   const [customName, setCustomName] = useState('');
   const [customWatts, setCustomWatts] = useState('');
   const [customHours, setCustomHours] = useState('4');
+  const [customErrors, setCustomErrors] = useState<{ name?: string; watts?: string; hours?: string }>({});
   const [appliancesOpen, setAppliancesOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
@@ -191,21 +192,38 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
     setHours((prev) => ({ ...prev, [id]: Math.max(0.5, Math.min(24, Math.round(h * 2) / 2)) }));
 
   const addCustomAppliance = () => {
-    if (!customName.trim() || !customWatts) return;
+    // #24: bound every input. Watts below 1 are junk (a "0 W" appliance would
+    // silently vanish from the quote); above 20,000 W is out of household
+    // range and probably a typo (kW entered as W). Hours are clamped to the
+    // same 0.5–24 window the preset sliders use — "0 hours" used to fall
+    // through `|| 4` and become 4 h/day, silently inflating the quote.
+    const name = customName.trim().slice(0, 40);
+    const watts = Math.round(Number(customWatts));
+    const hours = Math.round(Number(customHours) * 2) / 2;
+    const nextErrors: typeof customErrors = {};
+    if (!name) nextErrors.name = 'Give it a name.';
+    if (!Number.isFinite(watts) || watts < 1) nextErrors.watts = 'Enter the wattage (e.g. 1200).';
+    else if (watts > 20000) nextErrors.watts = 'That looks like kW — enter watts (e.g. 1500, not 1.5).';
+    if (!Number.isFinite(hours) || hours < 0.5) nextErrors.hours = 'At least half an hour a day.';
+    else if (hours > 24) nextErrors.hours = 'At most 24 hours a day.';
+    setCustomErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     setCustomAppliances((prev) => [
       ...prev,
       {
         id: `custom_${Date.now()}`,
-        name: customName.trim(),
+        name,
         emoji: '⚙️',
-        watts: Number(customWatts),
+        watts,
         qty: 1,
-        hoursPerDay: Number(customHours) || 4,
+        hoursPerDay: hours,
       },
     ]);
     setCustomName('');
     setCustomWatts('');
     setCustomHours('4');
+    setCustomErrors({});
     setShowCustomForm(false);
   };
 
@@ -479,28 +497,57 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
               )}
               {showCustomForm ? (
                 <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4 space-y-3">
-                  <input
-                    type="text"
-                    placeholder="Appliance name"
-                    value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:border-[#F59E0B]"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Appliance name"
+                      aria-label="Appliance name"
+                      value={customName}
+                      onChange={(e) => {
+                        setCustomName(e.target.value);
+                        setCustomErrors((p) => (p.name ? { ...p, name: undefined } : p));
+                      }}
+                      aria-invalid={!!customErrors.name}
+                      className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-[#F59E0B] ${customErrors.name ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
+                    />
+                    {customErrors.name && <p className="text-rose-600 text-xs mt-1">{customErrors.name}</p>}
+                  </div>
                   <div className="flex gap-2">
-                    <input
-                      type="number"
-                      placeholder="Watts"
-                      value={customWatts}
-                      onChange={(e) => setCustomWatts(e.target.value)}
-                      className="flex-1 px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:border-[#F59E0B]"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Hours/day"
-                      value={customHours}
-                      onChange={(e) => setCustomHours(e.target.value)}
-                      className="flex-1 px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:border-[#F59E0B]"
-                    />
+                    <div className="flex-1">
+                      <input
+                        type="number"
+                        placeholder="Watts"
+                        aria-label="Watts"
+                        min={1}
+                        max={20000}
+                        value={customWatts}
+                        onChange={(e) => {
+                          setCustomWatts(e.target.value);
+                          setCustomErrors((p) => (p.watts ? { ...p, watts: undefined } : p));
+                        }}
+                        aria-invalid={!!customErrors.watts}
+                        className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-[#F59E0B] ${customErrors.watts ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
+                      />
+                      {customErrors.watts && <p className="text-rose-600 text-xs mt-1">{customErrors.watts}</p>}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="number"
+                        placeholder="Hours/day"
+                        aria-label="Hours per day"
+                        min={0.5}
+                        max={24}
+                        step={0.5}
+                        value={customHours}
+                        onChange={(e) => {
+                          setCustomHours(e.target.value);
+                          setCustomErrors((p) => (p.hours ? { ...p, hours: undefined } : p));
+                        }}
+                        aria-invalid={!!customErrors.hours}
+                        className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-[#F59E0B] ${customErrors.hours ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
+                      />
+                      {customErrors.hours && <p className="text-rose-600 text-xs mt-1">{customErrors.hours}</p>}
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <button onClick={addCustomAppliance} className="flex-1 bg-[#F59E0B] text-[#0A0F1E] py-2 rounded-full font-heading font-semibold text-sm hover:bg-[#D97706] transition-colors">
