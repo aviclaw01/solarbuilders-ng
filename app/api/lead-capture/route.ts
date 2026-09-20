@@ -14,12 +14,18 @@ import {
   type FieldErrors,
 } from "@/lib/validation";
 import { FROM_EMAIL, LEAD_EMAILS } from "@/lib/site";
+import { storeLead } from "@/lib/leads";
 
 /**
  * Calculator lead capture (the "want us to size it for you?" modal).
  *
- * Same contract as api/contact: rate-limited, honeypotted, validated per field
- * server-side, everything escaped before it reaches the email template.
+ * Two independent sinks, like api/quote-request: the row goes to Supabase
+ * `leads` AND the team's inbox, and the answer says which worked. This used to
+ * email only, so a Resend outage returned 500 and lost the lead outright —
+ * on the site's busiest capture point.
+ *
+ * Rate-limited, honeypotted, validated per field server-side, everything
+ * escaped before it reaches the email template.
  * The modal's system-size picker is a fixed list — enforced here, so a crafted
  * payload can't inject arbitrary text into the subject line.
  *
@@ -72,6 +78,16 @@ export async function POST(req: Request) {
   const state = String(parsed.data.state).trim();
   const systemSize = String(parsed.data.systemSize).trim();
 
+  // Store first. If the email then fails we still have the lead, which is the
+  // whole point — this is the only record for a visitor who never replies.
+  const stored = await storeLead({
+    kind: "lead_capture",
+    phone: whatsapp,
+    location: state,
+    payload: { state, systemSize },
+  });
+
+  let emailed = false;
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
     try {
@@ -83,15 +99,20 @@ export async function POST(req: Request) {
         subject: `[SolarBuilders] 🔥 New Lead — ${state} — ${systemSize}`,
         html: `<h2>New Lead from Calculator</h2><p><b>WhatsApp:</b> ${esc(whatsapp)}<br/><b>State:</b> ${esc(state)}<br/><b>System Size:</b> ${esc(systemSize)}</p>`,
       });
+      emailed = true;
     } catch (err) {
       console.error("[lead-capture] Resend failed:", err);
-      return fail("We couldn't send that just now. Please try again in a minute, or message us on WhatsApp.", 500);
     }
   } else {
     console.warn("[lead-capture] RESEND_API_KEY not set — lead NOT emailed");
-    return fail("We couldn't send that just now. Please try again in a minute, or message us on WhatsApp.", 500);
   }
 
-  return Response.json({ ok: true });
+  // Only a total failure is an error. If either sink took it, we have the lead
+  // and the visitor should not be asked to type it again.
+  if (!emailed && !stored) {
+    return fail("We couldn't record that just now. Please try again in a minute, or message us on WhatsApp.", 500);
+  }
+
+  return Response.json({ ok: true, emailed, stored });
 }
 

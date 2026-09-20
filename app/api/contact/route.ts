@@ -9,6 +9,7 @@ import {
 } from "@/lib/api";
 import { validateFields, requiredText, requiredEmail, optionalPhone, type FieldErrors } from "@/lib/validation";
 import { FROM_EMAIL, LEAD_EMAILS } from "@/lib/site";
+import { storeLead } from "@/lib/leads";
 
 /**
  * Contact form → email to the team.
@@ -61,6 +62,17 @@ export async function POST(req: Request) {
     message: String(message).trim().slice(0, 5000),
   };
 
+  // Store first, so a Resend outage does not lose the message. Someone who
+  // fills in a contact form and hears nothing does not fill it in again.
+  const stored = await storeLead({
+    kind: "contact",
+    name: clean.name,
+    email: clean.email,
+    phone: clean.phone || null,
+    message: clean.message,
+  });
+
+  let emailed = false;
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
     try {
@@ -73,15 +85,18 @@ export async function POST(req: Request) {
         subject: `[SolarBuilders] Contact: ${clean.name}`,
         html: `<h2>New Contact Message</h2><p><b>Name:</b> ${esc(clean.name)}<br/><b>Email:</b> ${esc(clean.email)}<br/><b>Phone:</b> ${clean.phone ? esc(clean.phone) : "Not provided"}<br/><b>Message:</b><br/>${esc(clean.message).replace(/\n/g, "<br/>")}</p>`,
       });
+      emailed = true;
     } catch (err) {
       console.error("[contact] Resend failed:", err);
-      return fail("We couldn't send your message just now. Please try again, or message us on WhatsApp.", 500);
     }
   } else {
     console.warn("[contact] RESEND_API_KEY not set — message NOT emailed");
+  }
+
+  if (!emailed && !stored) {
     return fail("We couldn't send your message just now. Please try again, or message us on WhatsApp.", 500);
   }
 
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, emailed, stored });
 }
 

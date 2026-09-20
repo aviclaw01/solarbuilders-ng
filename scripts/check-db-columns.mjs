@@ -40,13 +40,27 @@ const problems = [];
 
 const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
 
-/** Every route file under app/api, recursively. */
-function routeFiles(dir = path.join(APP_DIR, "app/api"), out = []) {
-  for (const e of readdirSync(dir, { withFileTypes: true })) {
-    const p = path.join(dir, e.name);
-    if (e.isDirectory()) routeFiles(p, out);
-    else if (e.name === "route.ts") out.push(p);
-  }
+/**
+ * Every file that might insert. Routes under app/api, plus lib/ and the server
+ * actions under app/ — an insert does not have to live in a route handler, and
+ * scoping this to route.ts was itself a blind spot: lib/leads.ts writes the
+ * `leads` table and the first version of this guard could not see it.
+ */
+function sourceFiles(out = []) {
+  const roots = [path.join(APP_DIR, "app"), path.join(APP_DIR, "lib")];
+  const walk = (dir) => {
+    if (!existsSync(dir)) return;
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) {
+        if (e.name === "node_modules" || e.name.startsWith(".")) continue;
+        walk(p);
+      } else if (e.name.endsWith(".ts") || e.name.endsWith(".tsx")) {
+        out.push(p);
+      }
+    }
+  };
+  roots.forEach(walk);
   return out;
 }
 
@@ -114,7 +128,7 @@ const env =
 if (LIVE && !env) warnings.push("--live requested but Supabase env is not set; checked the repo only.");
 
 let checked = 0;
-for (const file of routeFiles()) {
+for (const file of sourceFiles()) {
   const src = stripComments(readFileSync(file, "utf8"));
   const rel = path.relative(APP_DIR, file);
   for (const m of src.matchAll(/rest\/v1\/([a-z_]+)`[\s\S]{0,400}?body:\s*JSON\.stringify\(\s*\{/g)) {
