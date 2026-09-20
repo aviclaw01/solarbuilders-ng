@@ -2,14 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import {
+  Activity,
   BarChart3,
+  Banknote,
+  FlaskConical,
   Inbox,
   Lock,
+  MessageSquare,
   Route,
   ShieldCheck,
   ShoppingCart,
   Unlock,
 } from "lucide-react";
+import { readAdminMetrics, MOCK_METRICS, type AdminMetrics, type Metric } from "@/lib/admin-metrics";
 
 /**
  * The admin home.
@@ -74,10 +79,38 @@ const SECTIONS: Section[] = [
   },
 ];
 
-export default async function AdminHomePage() {
+/**
+ * Is the dev preview available on this request?
+ *
+ * Two independent conditions, and BOTH have to fail for it to show up on the
+ * live site:
+ *   - `next dev` (NODE_ENV is not production), or an explicit ADMIN_DEV_TOOLS=1
+ *   - AND the request is to localhost
+ *
+ * The host check is the one that matters. NODE_ENV alone would be enough for
+ * Vercel, but `next start` runs locally as production too, and an env var
+ * alone could be switched on in Vercel by mistake. Requiring a loopback host
+ * means the toggle cannot render on solarbuildersng.com under any
+ * configuration.
+ */
+function devToolsEnabled(host: string | null): boolean {
+  const allowedByEnv = process.env.NODE_ENV !== "production" || process.env.ADMIN_DEV_TOOLS === "1";
+  const h = (host ?? "").split(":")[0].toLowerCase();
+  const isLocal = h === "localhost" || h === "127.0.0.1" || h === "[::1]" || h === "0.0.0.0";
+  return allowedByEnv && isLocal;
+}
+
+type Props = { searchParams: Promise<{ mock?: string }> };
+
+export default async function AdminHomePage({ searchParams }: Props) {
   const h = await headers();
+  const { mock } = await searchParams;
   const isSuper = h.get("x-sb-role") === "superadmin";
   const superConfigured = h.get("x-sb-super-configured") === "1";
+
+  const devTools = devToolsEnabled(h.get("host"));
+  const mocking = devTools && mock === "1";
+  const metrics = mocking ? MOCK_METRICS : await readAdminMetrics();
 
   return (
     <>
@@ -95,7 +128,13 @@ export default async function AdminHomePage() {
             Signed in as {isSuper ? "superadmin" : "admin"}
           </span>
         </div>
-        <p className="text-slate-500 text-sm mb-8">Everything that runs the business, in one place.</p>
+        <p className="text-slate-500 text-sm mb-6">Everything that runs the business, in one place.</p>
+
+        <Metrics metrics={metrics} />
+
+        {devTools && <DevPreviewToggle mocking={mocking} />}
+
+        <h2 className="font-heading font-bold text-slate-900 mt-10 mb-3">Sections</h2>
 
         <div className="grid sm:grid-cols-2 gap-3">
           {SECTIONS.map((s) => {
@@ -138,6 +177,92 @@ export default async function AdminHomePage() {
 
         <TierExplainer isSuper={isSuper} superConfigured={superConfigured} />
     </>
+  );
+}
+
+/** The headline numbers. Row counts, never people — see lib/admin-metrics.ts. */
+function Metrics({ metrics }: { metrics: AdminMetrics }) {
+  if (metrics.unconfigured) {
+    return (
+      <div className="border border-amber-200 bg-amber-50 rounded-2xl px-4 py-3 text-sm text-amber-900">
+        Supabase is not configured on this deployment, so there are no numbers to show. Set{" "}
+        <code className="font-mono">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+        <code className="font-mono">SUPABASE_SERVICE_ROLE_KEY</code>.
+      </div>
+    );
+  }
+
+  const tiles: { label: string; metric: Metric; icon: React.ReactNode; href: string; unit?: string }[] = [
+    { label: "Quote requests", metric: metrics.quotes, icon: <Inbox className="w-4 h-4" />, href: "/admin/leads" },
+    { label: "Order requests", metric: metrics.orders, icon: <ShoppingCart className="w-4 h-4" />, href: "/admin/orders" },
+    { label: "Enquiries", metric: metrics.enquiries, icon: <MessageSquare className="w-4 h-4" />, href: "/admin/leads" },
+    { label: "Tracked events", metric: metrics.events, icon: <Activity className="w-4 h-4" />, href: "/admin/funnel" },
+    { label: "Partners", metric: metrics.partners, icon: <ShieldCheck className="w-4 h-4" />, href: "/admin/partners" },
+    { label: "Jobs routed", metric: metrics.jobs, icon: <Banknote className="w-4 h-4" />, href: "/admin/routing" },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      {tiles.map((t) => (
+        <Link
+          key={t.label}
+          href={t.href}
+          className="border border-slate-200 rounded-2xl p-4 bg-white hover:border-amber-300 transition-colors"
+        >
+          <div className="flex items-center gap-2 text-slate-400 mb-1.5">
+            {t.icon}
+            <span className="text-xs font-semibold uppercase tracking-wide">{t.label}</span>
+          </div>
+          {t.metric.total === null ? (
+            <>
+              <p className="font-heading font-extrabold text-slate-400 text-2xl">—</p>
+              <p className="text-xs text-rose-700 mt-0.5">Could not read this table</p>
+            </>
+          ) : (
+            <>
+              <p className="font-heading font-extrabold text-slate-900 text-2xl tabular-nums">
+                {t.metric.total.toLocaleString()}
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {t.metric.recent === null
+                  ? "all time"
+                  : t.metric.recent > 0
+                    ? `${t.metric.recent.toLocaleString()} in the last 7 days`
+                    : "none in the last 7 days"}
+              </p>
+            </>
+          )}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Local-only preview. Swaps the numbers for samples so the layout can be seen
+ * with data in it — every real table is currently empty.
+ *
+ * It renders fixtures and writes NOTHING. .env.local points at the production
+ * Supabase, so seeding "a few mock rows" locally would put fake leads in the
+ * real leads desk.
+ */
+function DevPreviewToggle({ mocking }: { mocking: boolean }) {
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-3 border border-dashed border-slate-300 rounded-2xl px-4 py-3 bg-slate-50">
+      <FlaskConical className="w-4 h-4 text-slate-400" aria-hidden="true" />
+      <span className="text-sm text-slate-600">
+        {mocking ? "Showing sample numbers." : "Local only — preview this with sample data."}
+      </span>
+      <Link
+        href={mocking ? "/admin" : "/admin?mock=1"}
+        className="ml-auto rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 hover:border-slate-900 transition-colors"
+      >
+        {mocking ? "Show real data" : "Preview with sample data"}
+      </Link>
+      <span className="w-full text-xs text-slate-400">
+        Renders fixtures only — nothing is written to the database, and this control never appears in production.
+      </span>
+    </div>
   );
 }
 
