@@ -28,6 +28,7 @@ import {
   type CartLine,
 } from '@/lib/cart';
 import { buildQuote, decodeQuotePayload, formatNaira, parseTierOptions, type TierKey } from '@/lib/quote';
+import { isEmail, isPhone } from '@/lib/validation';
 import { track } from '@/lib/track';
 
 /**
@@ -105,6 +106,8 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
 
   const [status, setStatus] = useState<Status>('idle');
   const [result, setResult] = useState<OrderResult | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [hp, setHp] = useState('');
 
   const filled = useRef(false);
 
@@ -154,16 +157,38 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
   const totals = cartTotals(resolved);
 
   const location = [area.trim(), state].filter(Boolean).join(', ');
+
+  /** Client twin of the server's per-field rules in the order-request route. */
+  function fieldErrors(): Record<string, string> {
+    const errors: Record<string, string> = {};
+    if (name.trim().length < 2) errors.name = 'Your name is required.';
+    if (!isPhone(phone)) errors.phone = 'That number looks short — e.g. 0803 000 0000.';
+    if (email.trim() && !isEmail(email.trim())) errors.email = "That email doesn't look right — check for typos.";
+    if (!state) errors.state = 'Pick your state.';
+    return errors;
+  }
+
   const canSubmit =
     resolved.length > 0 &&
-    name.trim().length > 1 &&
-    phone.trim().replace(/\D/g, '').length >= 10 &&
+    name.trim().length >= 2 &&
+    isPhone(phone) &&
     !!state &&
     status !== 'submitting';
 
+  function clearError(field: string) {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!canSubmit) return;
+    const next = fieldErrors();
+    setErrors(next);
+    if (Object.keys(next).length > 0 || !canSubmit) return;
     setStatus('submitting');
     try {
       const res = await fetch('/api/order-request', {
@@ -175,6 +200,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
           email: email.trim() || undefined,
           location,
           note: note.trim() || undefined,
+          hp,
           // brandSlug + model + qty only. The server re-prices from the
           // catalogue — we never send a figure it could trust.
           lines: resolved.map((l) => ({ brandSlug: l.brandSlug, model: l.model, qty: l.qty })),
@@ -183,7 +209,11 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data?.ok) throw new Error(data?.error || 'Request failed');
+      if (!res.ok || !data?.ok) {
+        // Server field errors are authoritative — surface them inline.
+        if (data?.fields && typeof data.fields === 'object') setErrors(data.fields as Record<string, string>);
+        throw new Error(data?.error || 'Request failed');
+      }
       setResult({
         reference: String(data.reference),
         emailed: !!data.emailed,
@@ -191,8 +221,14 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         totals: data.totals,
         lines: data.lines ?? [],
       });
-      writeCart([]); // it's with us now — don't let it be sent twice
-      setLines([]);
+      // #23: clear the basket only when the order reached at least one sink.
+      // If both Resend and Supabase failed, the reference exists nowhere — the
+      // amber warning on the done screen covers `emailed: false`, but wiping
+      // the cart then would destroy the only copy of the order.
+      if (data.emailed || data.stored) {
+        writeCart([]); // it's with us now — don't let it be sent twice
+        setLines([]);
+      }
       track('order_submit', { quoteCode: quoteCode ?? undefined, amount: data.totals?.best });
       setStatus('done');
     } catch {
@@ -484,26 +520,72 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
               <label htmlFor="ord-name" className="block text-xs font-semibold text-slate-900 mb-1">
                 Your name *
               </label>
-              <input id="ord-name" className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="Tunde Adeyemi" required />
+              <input
+                id="ord-name"
+                className={inputCls}
+                value={name}
+                onChange={(e) => { setName(e.target.value); clearError('name'); }}
+                placeholder="Tunde Adeyemi"
+                aria-invalid={!!errors.name}
+                required
+              />
+              {errors.name && <p className="text-rose-600 text-xs mt-1">{errors.name}</p>}
             </div>
             <div>
               <label htmlFor="ord-phone" className="block text-xs font-semibold text-slate-900 mb-1">
                 WhatsApp number *
               </label>
-              <input id="ord-phone" className={inputCls} type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0803 000 0000" required />
+              <input
+                id="ord-phone"
+                className={inputCls}
+                type="tel"
+                value={phone}
+                onChange={(e) => { setPhone(e.target.value); clearError('phone'); }}
+                placeholder="0803 000 0000"
+                aria-invalid={!!errors.phone}
+                required
+              />
+              {errors.phone && <p className="text-rose-600 text-xs mt-1">{errors.phone}</p>}
             </div>
             <div>
               <label htmlFor="ord-email" className="block text-xs font-semibold text-slate-900 mb-1">
                 Email (optional)
               </label>
-              <input id="ord-email" className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+              <input
+                id="ord-email"
+                className={inputCls}
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); clearError('email'); }}
+                placeholder="you@example.com"
+                aria-invalid={!!errors.email}
+              />
+              {errors.email && <p className="text-rose-600 text-xs mt-1">{errors.email}</p>}
             </div>
+            {/* Honeypot — hidden from humans, bait for scripts. */}
+            <input
+              type="text"
+              name="hp"
+              value={hp}
+              onChange={(e) => setHp(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="hidden"
+            />
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label htmlFor="ord-state" className="block text-xs font-semibold text-slate-900 mb-1">
                   State *
                 </label>
-                <select id="ord-state" className={inputCls} value={state} onChange={(e) => setState(e.target.value)} required>
+                <select
+                  id="ord-state"
+                  className={inputCls}
+                  value={state}
+                  onChange={(e) => { setState(e.target.value); clearError('state'); }}
+                  aria-invalid={!!errors.state}
+                  required
+                >
                   <option value="">Select</option>
                   {NIGERIAN_STATES.map((s) => (
                     <option key={s} value={s}>
@@ -511,6 +593,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
                     </option>
                   ))}
                 </select>
+                {errors.state && <p className="text-rose-600 text-xs mt-1">{errors.state}</p>}
               </div>
               <div>
                 <label htmlFor="ord-area" className="block text-xs font-semibold text-slate-900 mb-1">

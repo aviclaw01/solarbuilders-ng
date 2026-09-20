@@ -11,6 +11,17 @@ import { ShieldCheck, MapPin, Wrench, CheckCircle, ArrowRight, MessageCircle, Ca
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Unknown slugs are a hard 404, not a rendered page with 200 (#28): the slug
+ * space is small and set by us at approval, so crawlers must not treat it as
+ * open. The HTML body is unchanged — notFound() still renders the not-found
+ * page — only the status line and the caching headers differ.
+ */
+const NOT_FOUND_HEADERS = {
+  'Cache-Control': 'no-store',
+  'X-Robots-Tag': 'noindex',
+};
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
