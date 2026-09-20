@@ -85,6 +85,43 @@ export function fail(error: string, status: number, fields?: Record<string, stri
 }
 
 /**
+ * PostgREST insert into a Supabase table, with the env-check and error
+ * handling every intake route shares. Returns whether the row landed —
+ * callers surface that as `stored` so the user never gets a fake success.
+ *
+ * Service-role key only, same as api/quote-request. Tables live in
+ * supabase/leads_pipeline.sql.
+ */
+export async function insertLeadRow(
+  table: "contact_messages" | "lead_capture" | "notify_me" | "reviews",
+  row: Record<string, unknown>,
+): Promise<boolean> {
+  const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supaUrl || !supaKey || supaUrl.includes("your-project")) return false;
+  try {
+    const res = await fetch(`${supaUrl}/rest/v1/${table}`, {
+      method: "POST",
+      headers: {
+        apikey: supaKey,
+        Authorization: `Bearer ${supaKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(row),
+    });
+    if (!res.ok) {
+      console.error(`[lead-sink] insert into ${table} failed:`, res.status, await res.text().catch(() => ""));
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error(`[lead-sink] insert into ${table} threw:`, err);
+    return false;
+  }
+}
+
+/**
  * Escape a value for interpolation into HTML email templates. Every string
  * that originated from a visitor MUST pass through this — the same field
  * renders inside our inbox that renders in a browser.

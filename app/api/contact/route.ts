@@ -5,6 +5,7 @@ import {
   readJson,
   fail,
   esc,
+  insertLeadRow,
   isHoneypotFilled,
 } from "@/lib/api";
 import { validateFields, requiredText, requiredEmail, optionalPhone, type FieldErrors } from "@/lib/validation";
@@ -53,6 +54,9 @@ export async function POST(req: Request) {
     return fail("Please fix the highlighted fields.", 400, validated.errors as FieldErrors);
   }
 
+  // Email and database are independent sinks — email failing must not cost
+  // us the lead, and vice versa. Success = at least one sink got it; the
+  // response is honest about which.
   const { name, email, phone, message } = parsed.data;
   const clean = {
     name: String(name).trim().slice(0, 100),
@@ -60,6 +64,9 @@ export async function POST(req: Request) {
     phone: String(phone ?? "").trim().slice(0, 30),
     message: String(message).trim().slice(0, 5000),
   };
+
+  let emailed = false;
+  let stored = false;
 
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
@@ -73,15 +80,25 @@ export async function POST(req: Request) {
         subject: `[SolarBuilders] Contact: ${clean.name}`,
         html: `<h2>New Contact Message</h2><p><b>Name:</b> ${esc(clean.name)}<br/><b>Email:</b> ${esc(clean.email)}<br/><b>Phone:</b> ${clean.phone ? esc(clean.phone) : "Not provided"}<br/><b>Message:</b><br/>${esc(clean.message).replace(/\n/g, "<br/>")}</p>`,
       });
+      emailed = true;
     } catch (err) {
       console.error("[contact] Resend failed:", err);
-      return fail("We couldn't send your message just now. Please try again, or message us on WhatsApp.", 500);
     }
   } else {
-    console.warn("[contact] RESEND_API_KEY not set — message NOT emailed");
+    console.warn("[contact] RESEND_API_KEY not set — relying on the DB sink");
+  }
+
+  stored = await insertLeadRow("contact_messages", {
+    name: clean.name,
+    email: clean.email,
+    phone: clean.phone || null,
+    message: clean.message,
+  });
+
+  if (!emailed && !stored) {
     return fail("We couldn't send your message just now. Please try again, or message us on WhatsApp.", 500);
   }
 
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, emailed, stored });
 }
 

@@ -5,6 +5,7 @@ import {
   readJson,
   fail,
   esc,
+  insertLeadRow,
   isHoneypotFilled,
 } from "@/lib/api";
 import {
@@ -72,6 +73,9 @@ export async function POST(req: Request) {
   const state = String(parsed.data.state).trim();
   const systemSize = String(parsed.data.systemSize).trim();
 
+  let emailed = false;
+  let stored = false;
+
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
     try {
@@ -83,15 +87,24 @@ export async function POST(req: Request) {
         subject: `[SolarBuilders] 🔥 New Lead — ${state} — ${systemSize}`,
         html: `<h2>New Lead from Calculator</h2><p><b>WhatsApp:</b> ${esc(whatsapp)}<br/><b>State:</b> ${esc(state)}<br/><b>System Size:</b> ${esc(systemSize)}</p>`,
       });
+      emailed = true;
     } catch (err) {
       console.error("[lead-capture] Resend failed:", err);
-      return fail("We couldn't send that just now. Please try again in a minute, or message us on WhatsApp.", 500);
     }
   } else {
-    console.warn("[lead-capture] RESEND_API_KEY not set — lead NOT emailed");
+    console.warn("[lead-capture] RESEND_API_KEY not set — relying on the DB sink");
+  }
+
+  stored = await insertLeadRow("lead_capture", {
+    whatsapp,
+    state,
+    system_size: systemSize,
+  });
+
+  if (!emailed && !stored) {
     return fail("We couldn't send that just now. Please try again in a minute, or message us on WhatsApp.", 500);
   }
 
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, emailed, stored });
 }
 

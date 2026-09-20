@@ -5,6 +5,7 @@ import {
   readJson,
   fail,
   esc,
+  insertLeadRow,
   isHoneypotFilled,
 } from "@/lib/api";
 import { validateFields, requiredEmail, optionalText, cleanString, type FieldErrors } from "@/lib/validation";
@@ -53,6 +54,9 @@ export async function POST(req: Request) {
   const email = cleanString(parsed.data.email, 254);
   const location = cleanString(parsed.data.location, 80);
 
+  let emailed = false;
+  let stored = false;
+
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
     try {
@@ -65,14 +69,23 @@ export async function POST(req: Request) {
         subject: `[SolarBuilders] Notify Me — ${location || "location not given"}`,
         html: `<h2>Notify Me Request</h2><p><b>Email:</b> ${esc(email)}<br/><b>Location:</b> ${esc(location || "not given")}</p>`,
       });
+      emailed = true;
     } catch (err) {
       console.error("[notify-me] Resend failed:", err);
-      return fail("We couldn't save that just now. Please try again in a minute.", 500);
     }
   } else {
-    console.warn("[notify-me] RESEND_API_KEY not set — signup NOT emailed:", email);
+    console.warn("[notify-me] RESEND_API_KEY not set — relying on the DB sink");
   }
 
-  return Response.json({ ok: true });
+  stored = await insertLeadRow("notify_me", {
+    email,
+    location: location || null,
+  });
+
+  if (!emailed && !stored) {
+    return fail("We couldn't save that just now. Please try again in a minute.", 500);
+  }
+
+  return Response.json({ ok: true, emailed, stored });
 }
 
