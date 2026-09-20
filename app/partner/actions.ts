@@ -145,7 +145,7 @@ export async function declineOffer(formData: FormData): Promise<ActionResult> {
  * of re-routing through the one-live-job index.
  *
  * Until a confirmation action exists, neither this function nor the UI may
- * claim the customer confirms anything. See issue #44.
+ * claim the customer confirms anything. See issue #47.
  */
 export async function markComplete(formData: FormData): Promise<ActionResult> {
   const partner = await me();
