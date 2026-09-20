@@ -417,7 +417,18 @@ export function buildQuote(appliances: QuoteAppliance[], options: QuoteOptions =
   // Sort so the same appliances always produce the same code, regardless of
   // the order the UI hands them over (URL restore vs fresh selection).
   const selected = appliances
-    .filter((a) => a.qty > 0 && a.watts > 0)
+    // hoursPerDay was not guarded here, so a NaN from a corrupted ?q= payload
+    // propagated into dailyKwh, then battery sizing, then every figure on the
+    // card — the quote rendered as NaN rather than refusing to be built.
+    .filter(
+      (a) =>
+        Number.isFinite(a.qty) &&
+        a.qty > 0 &&
+        Number.isFinite(a.watts) &&
+        a.watts > 0 &&
+        Number.isFinite(a.hoursPerDay) &&
+        a.hoursPerDay >= 0,
+    )
     .slice()
     .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   const peakWatts = selected.reduce((s, a) => s + a.watts * a.qty, 0);
@@ -447,20 +458,45 @@ export function buildQuote(appliances: QuoteAppliance[], options: QuoteOptions =
   };
 }
 
-/** Rebuild appliances from a ?q= payload. Returns null if it can't be parsed. */
+/** Above any real household; a longer payload is not a home we are sizing. */
+const MAX_PAYLOAD_APPLIANCES = 50;
+const MAX_PAYLOAD_WATTS = 20_000;
+
+/**
+ * Rebuild appliances from a ?q= payload. Returns null if it can't be parsed.
+ *
+ * Every number is bounds-checked, not just coerced. `Number("abc")` is NaN and
+ * NaN passed straight through here into the pricing engine, so a truncated or
+ * hand-edited share link produced a confidently-rendered quote full of NaN.
+ * One bad row now invalidates the whole payload rather than half-decoding it:
+ * a partially restored quote is worse than none, because it still looks right.
+ */
 export function decodeQuotePayload(payload: string): QuoteAppliance[] | null {
   try {
     const arr = JSON.parse(fromBase64Url(payload)) as QuoteInput;
     if (!Array.isArray(arr)) return null;
-    return arr
-      .filter((r) => Array.isArray(r) && r.length === 5)
-      .map(([id, name, watts, qty, hoursPerDay]) => ({
-        id: String(id),
-        name: String(name),
-        watts: Number(watts),
-        qty: Number(qty),
-        hoursPerDay: Number(hoursPerDay),
-      }));
+    if (arr.length === 0 || arr.length > MAX_PAYLOAD_APPLIANCES) return null;
+
+    const out: QuoteAppliance[] = [];
+    for (const row of arr) {
+      if (!Array.isArray(row) || row.length !== 5) return null;
+      const [id, name, watts, qty, hoursPerDay] = row;
+      const w = Number(watts);
+      const q = Number(qty);
+      const h = Number(hoursPerDay);
+      if (typeof id !== "string" || !id) return null;
+      if (!Number.isFinite(w) || w <= 0 || w > MAX_PAYLOAD_WATTS) return null;
+      if (!Number.isFinite(q) || q <= 0 || q > 99) return null;
+      if (!Number.isFinite(h) || h < 0 || h > 24) return null;
+      out.push({
+        id,
+        name: String(name ?? "").slice(0, 60),
+        watts: Math.round(w),
+        qty: Math.round(q),
+        hoursPerDay: h,
+      });
+    }
+    return out;
   } catch {
     return null;
   }
