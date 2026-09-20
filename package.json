@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/dev.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "node scripts/partner-routing.test.mjs",
-    "smoke": "node scripts/partner-smoke.mjs"
+    "smoke": "node scripts/partner-smoke.mjs",
+    "dev:turbo": "next dev"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
