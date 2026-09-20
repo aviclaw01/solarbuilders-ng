@@ -59,6 +59,89 @@ const STEP3_APPLIANCES: Omit<ApplianceItem, 'qty'>[] = [
   { id: 'cctv', name: 'CCTV System', emoji: '📷', watts: 50, hoursPerDay: 24 },
 ];
 
+/**
+ * Bounds for a hand-entered appliance.
+ *
+ * These are the same limits the preset editor already enforces (setItemHours
+ * clamps 0.5-24). The custom form used to enforce nothing, so a negative
+ * wattage was accepted, stored, and then silently dropped by buildQuote's
+ * `watts > 0` filter — the appliance simply vanished from the quote with no
+ * explanation. 20kW is well above any single domestic load; anything larger is
+ * a typo, and a typo that lands in a price we put our name to.
+ */
+const WATTS_MIN = 1;
+const WATTS_MAX = 20_000;
+const HOURS_MIN = 0;
+const HOURS_MAX = 24;
+/** Well above a real home; a payload larger than this is not a household. */
+const MAX_APPLIANCES = 50;
+
+/** Snap to the half hour, the same granularity the preset sliders use. */
+function clampHours(h: number): number {
+  return Math.max(HOURS_MIN, Math.min(HOURS_MAX, Math.round(h * 2) / 2));
+}
+
+/**
+ * Validate one appliance coming back from storage.
+ *
+ * lib/cartStorage.ts validates every field it reads back; this did not, so a
+ * corrupt entry reached the quote engine unchecked. Anything that fails is
+ * dropped rather than repaired — a silently "fixed" wattage is a wrong price.
+ */
+function validAppliance(raw: unknown): ApplianceItem | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const a = raw as Record<string, unknown>;
+  const id = typeof a.id === 'string' ? a.id : '';
+  const name = typeof a.name === 'string' ? a.name.trim() : '';
+  const watts = Number(a.watts);
+  const qty = Number(a.qty);
+  const hoursPerDay = Number(a.hoursPerDay);
+  if (!id || !name) return null;
+  if (!Number.isFinite(watts) || watts < WATTS_MIN || watts > WATTS_MAX) return null;
+  if (!Number.isFinite(qty) || qty < 1 || qty > 99) return null;
+  if (!Number.isFinite(hoursPerDay) || hoursPerDay < HOURS_MIN || hoursPerDay > HOURS_MAX) return null;
+  return {
+    id,
+    name: name.slice(0, 60),
+    emoji: typeof a.emoji === 'string' && a.emoji ? a.emoji : '\u2699\ufe0f',
+    watts: Math.round(watts),
+    qty: Math.round(qty),
+    hoursPerDay: clampHours(hoursPerDay),
+  };
+}
+
+/** Everything localStorage gives back, filtered to what we can price. */
+function readSaved(data: unknown): {
+  quantities: Record<string, number>;
+  hours: Record<string, number>;
+  customAppliances: ApplianceItem[];
+} {
+  const d = (data && typeof data === 'object' ? data : {}) as Record<string, unknown>;
+
+  const quantities: Record<string, number> = {};
+  if (d.quantities && typeof d.quantities === 'object') {
+    for (const [id, v] of Object.entries(d.quantities as Record<string, unknown>)) {
+      const n = Number(v);
+      if (PRESET_IDS.has(id) && Number.isFinite(n) && n > 0) quantities[id] = Math.min(99, Math.round(n));
+    }
+  }
+
+  const hours: Record<string, number> = {};
+  if (d.hours && typeof d.hours === 'object') {
+    for (const [id, v] of Object.entries(d.hours as Record<string, unknown>)) {
+      const n = Number(v);
+      if (PRESET_IDS.has(id) && Number.isFinite(n)) hours[id] = clampHours(n);
+    }
+  }
+
+  const customAppliances = (Array.isArray(d.customAppliances) ? d.customAppliances : [])
+    .map(validAppliance)
+    .filter((a): a is ApplianceItem => a !== null)
+    .slice(0, MAX_APPLIANCES);
+
+  return { quantities, hours, customAppliances };
+}
+
 const ALL_PRESETS = [...STEP1_APPLIANCES, ...STEP2_APPLIANCES, ...STEP3_APPLIANCES];
 const PRESET_IDS = new Set(ALL_PRESETS.map((a) => a.id));
 
@@ -126,6 +209,13 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
   const [customErrors, setCustomErrors] = useState<{ name?: string; watts?: string; hours?: string }>({});
   const [appliancesOpen, setAppliancesOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  /**
+   * True when this view was rebuilt from a ?q= link rather than the visitor's
+   * own saved work. Someone else's quote must never be written over the
+   * visitor's saved calculator — opening a shared link used to silently
+   * replace it, custom appliances and all, with no undo.
+   */
+  const [fromSharedLink, setFromSharedLink] = useState(false);
 
   // Restore: ?q=<payload> (a shared / saved quote) wins over localStorage.
   useEffect(() => {
@@ -147,6 +237,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
 
     const fromUrl = q ? decodeQuotePayload(q) : null;
     if (fromUrl && fromUrl.length > 0) {
+      setFromSharedLink(true);
       setMode('appliances');
       const qs: Record<string, number> = {};
       const hs: Record<string, number> = {};
@@ -167,31 +258,53 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
       return;
     }
 
+    setFromSharedLink(false);
     try {
       const saved = localStorage.getItem('sb_calculator');
       if (saved) {
-        const data = JSON.parse(saved);
-        setQuantities(data.quantities || {});
-        setHours(data.hours || {});
-        setCustomAppliances(data.customAppliances || []);
+        const data = JSON.parse(saved) as unknown;
+        const restored = readSaved(data);
+        setQuantities(restored.quantities);
+        setHours(restored.hours);
+        setCustomAppliances(restored.customAppliances);
       }
-    } catch {}
+    } catch {
+      /* corrupt or unreadable — start empty rather than throw mid-render */
+    }
     setHydrated(true);
   }, [searchParams]);
 
   useEffect(() => {
     if (!hydrated) return;
+    // A ?q= view is read-only with respect to the visitor's own saved state.
+    // They are looking at someone else's build; it is not their work in
+    // progress, and overwriting the real one would be silent data loss.
+    if (fromSharedLink) return;
     try {
       localStorage.setItem('sb_calculator', JSON.stringify({ quantities, hours, customAppliances }));
-    } catch {}
-  }, [quantities, hours, customAppliances, hydrated]);
+    } catch {
+      /* private mode / storage disabled — the calculator just won't persist */
+    }
+  }, [quantities, hours, customAppliances, hydrated, fromSharedLink]);
 
   const setQty = (id: string, qty: number) => setQuantities((prev) => ({ ...prev, [id]: Math.max(0, qty) }));
   const getHours = (id: string, defaultHours: number) => hours[id] ?? defaultHours;
   const setItemHours = (id: string, h: number) =>
     setHours((prev) => ({ ...prev, [id]: Math.max(0.5, Math.min(24, Math.round(h * 2) / 2)) }));
 
+  /**
+   * Add a hand-entered appliance, or say why not.
+   *
+   * This used to `return` silently on empty input and accept anything numeric
+   * otherwise: negative watts were stored and then dropped by the quote engine
+   * without a word, `0` hours became 4, and there was no upper bound at all.
+   */
   const addCustomAppliance = () => {
+    if (customAppliances.length >= MAX_APPLIANCES) {
+      setCustomErrors({ name: `That is ${MAX_APPLIANCES} custom appliances — remove one before adding another.` });
+      return;
+    }
+
     // #24: bound every input. Watts below 1 are junk (a "0 W" appliance would
     // silently vanish from the quote); above 20,000 W is out of household
     // range and probably a typo (kW entered as W). Hours are clamped to the
@@ -553,7 +666,13 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
                     <button onClick={addCustomAppliance} className="flex-1 bg-[#F59E0B] text-[#0A0F1E] py-2 rounded-full font-heading font-semibold text-sm hover:bg-[#D97706] transition-colors">
                       Add
                     </button>
-                    <button onClick={() => setShowCustomForm(false)} className="px-4 py-2 text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors">
+                    <button
+                      onClick={() => {
+                        setCustomErrors({});
+                        setShowCustomForm(false);
+                      }}
+                      className="px-4 py-2 text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors"
+                    >
                       Cancel
                     </button>
                   </div>
