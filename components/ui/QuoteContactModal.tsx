@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { X, MessageCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { MessageCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
+import Modal from './Modal';
 import { type Quote, type TierKey, formatNaira, formatRange, quoteToText, quoteUrl } from '@/lib/quote';
 import { SITE_URL, whatsappLink } from '@/lib/site';
 import { track, withCampaign } from '@/lib/track';
@@ -123,12 +124,13 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
     'w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-3 text-[#0A0F1E] placeholder-[#94A3B8] focus:outline-none focus:border-[#F59E0B] transition-colors text-sm';
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-t-3xl sm:rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[92vh] overflow-y-auto">
-        <button onClick={onClose} className="absolute top-4 right-4 text-[#64748B] hover:text-[#0A0F1E]" aria-label="Close">
-          <X className="w-5 h-5" />
-        </button>
+    <Modal
+      labelledBy="quote-modal-title"
+      onClose={onClose}
+      canClose={status !== 'submitting'}
+      align="bottom"
+      panelClassName="rounded-t-3xl sm:rounded-2xl max-w-lg w-full p-6 max-h-[92vh] overflow-y-auto"
+    >
 
         {status === 'done' || status === 'error' ? (
           <div className="text-center py-2">
@@ -137,7 +139,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
             ) : (
               <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
             )}
-            <h2 className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">
+            <h2 id="quote-modal-title" className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">
               {status === 'done' ? 'Got it — one more tap' : 'Almost there'}
             </h2>
             {status === 'done' && delivery?.reference && (
@@ -173,7 +175,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <h2 className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">Get this system built</h2>
+              <h2 id="quote-modal-title" className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">Get this system built</h2>
               <p className="text-[#64748B] text-sm">
                 Quote <span className="font-mono font-semibold text-[#0A0F1E]">{quote.code}</span> · {t.label} ·{' '}
                 {formatRange(t.total)}. We&apos;ll confirm current prices, workmanship and anything missing, then
@@ -273,7 +275,6 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
             </p>
           </form>
         )}
-      </div>
-    </div>
+    </Modal>
   );
 }
