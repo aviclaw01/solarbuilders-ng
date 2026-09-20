@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { whatsappLink } from '@/lib/site';
+import { useToast } from '@/components/ui/Toast';
 import { CheckCircle, ArrowRight, ArrowLeft, MessageCircle, ShieldCheck, Wrench, Store, Users, Factory } from 'lucide-react';
 
 const STATES = [
@@ -142,8 +143,84 @@ const EMPTY: FormData = {
   agreements: { verification: false, commission: false, nonCircumvention: false, data: false },
 };
 
+// ── Draft persistence ───────────────────────────────────────────────────────
+// The application is ~30 fields across four steps; a refresh or an accidental
+// back-swipe must not cost an applicant their progress. We persist as they
+// type (debounced) and restore on mount. sessionStorage is deliberate: it is
+// per-tab, so two applicants sharing one laptop never write into each other's
+// forms. Cleared on success.
+const DRAFT_KEY = 'solar_partner_draft_v1';
+
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+  return v !== null && typeof v !== 'function' && typeof v === 'object' && !Array.isArray(v);
+}
+
+function str(v: unknown): string {
+  return typeof v === 'string' ? v.slice(0, 2000) : '';
+}
+
+/** Merge a saved draft into EMPTY, keeping only values shaped like the form. */
+function hydrateDraft(saved: unknown, base: FormData): FormData | null {
+  if (!isPlainObject(saved)) return null;
+  const draft = { ...base };
+  for (const key of Object.keys(base) as (keyof FormData)[]) {
+    if (key === 'installs' || key === 'refs' || key === 'agreements') continue;
+    const value = saved[key];
+    const cur = base[key];
+    if (Array.isArray(cur)) {
+      if (Array.isArray(value)) {
+        (draft as Record<string, unknown>)[key] = value.filter((v) => typeof v === 'string');
+      }
+    } else if (typeof cur === 'string' && typeof value === 'string') {
+      (draft as Record<string, unknown>)[key] = (value as string).slice(0, 2000);
+    }
+  }
+  if (Array.isArray(saved.installs)) {
+    const rows = saved.installs.filter(isPlainObject);
+    if (rows.length === base.installs.length) {
+      draft.installs = rows.map((r) => ({
+        site: str(r.site),
+        city: str(r.city),
+        size: str(r.size),
+        year: str(r.year),
+        photoUrl: str(r.photoUrl),
+      }));
+    }
+  }
+  if (Array.isArray(saved.refs)) {
+    const rows = saved.refs.filter(isPlainObject);
+    if (rows.length === base.refs.length) {
+      draft.refs = rows.map((r) => ({
+        name: str(r.name),
+        phone: str(r.phone),
+        project: str(r.project),
+      }));
+    }
+  }
+  if (isPlainObject(saved.agreements)) {
+    for (const k of ['verification', 'commission', 'nonCircumvention', 'data'] as const) {
+      if (typeof saved.agreements[k] === 'boolean') draft.agreements[k] = saved.agreements[k];
+    }
+  }
+  return draft;
+}
+
+function draftHasContent(f: FormData): boolean {
+  return (
+    f.kind !== '' ||
+    f.services.length > 0 ||
+    f.systemSizes.length > 0 ||
+    f.coverageStates.length > 0 ||
+    f.businessName.trim() !== '' ||
+    f.contactName.trim() !== '' ||
+    f.email.trim() !== '' ||
+    f.whatsapp.trim() !== '' ||
+    f.note.trim() !== ''
+  );
+}
+
 /** Build the JSON body the API expects (camelCase, exactly what validateApplication reads). */
-function toPayload(f: FormData) {
+function toPayload(f: FormData, hp = '') {
   const doesInstallWork = f.kind === 'installer' || f.kind === 'both';
   const doesSupply = f.kind === 'vendor' || f.kind === 'manufacturer' || f.kind === 'both';
   return {
@@ -186,7 +263,7 @@ function toPayload(f: FormData) {
     agreeCommission: f.agreements.commission,
     agreeNonCircumvention: f.agreements.nonCircumvention,
     agreeData: f.agreements.data,
-    hp: '',
+    hp,
   };
 }
 
@@ -209,7 +286,12 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
   const [sent, setSent] = useState<{ ref: string; stored: boolean; emailed: boolean } | null>(null);
   const [status, setStatus] = useState<'idle' | 'sending' | 'error'>('idle');
   const [serverError, setServerError] = useState('');
+  const [hp, setHp] = useState('');
   const [formData, setFormData] = useState<FormData>(EMPTY);
+  const { toast } = useToast();
+  // Guards draft restore: without it, a mount-effect refire after hydration
+  // would clobber whatever the applicant has typed since.
+  const draftLoaded = useRef(false);
 
   const updateForm = <K extends keyof FormData>(key: K, value: FormData[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -241,6 +323,41 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
   const kindIsInstaller = formData.kind === 'installer' || formData.kind === 'both';
   const kindIsVendor = formData.kind === 'vendor' || formData.kind === 'both';
 
+  // ── Draft persistence (sessionStorage) ────────────────────────────────
+  // Restore once on mount, then save as the applicant types (debounced).
+  // Cleared on successful submit. sessionStorage is deliberate: per-tab, so
+  // two applicants sharing one laptop never write into each other's forms.
+  useEffect(() => {
+    if (draftLoaded.current) return;
+    draftLoaded.current = true;
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as unknown;
+      const draft = hydrateDraft(saved, EMPTY);
+      if (draft && draftHasContent(draft)) {
+        setFormData(draft);
+        setActiveSection('signup');
+        toast('We restored your draft application.', 'info');
+      }
+    } catch {
+      // Corrupt or unusable draft — ignore, start clean.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (sent) return; // success clears the draft; don't immediately re-save it
+    const t = setTimeout(() => {
+      try {
+        if (draftHasContent(formData)) sessionStorage.setItem(DRAFT_KEY, JSON.stringify(formData));
+      } catch {
+        // Storage full/blocked — persistence is best-effort.
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [formData, sent]);
+
   const step1Valid =
     formData.kind && formData.businessName.trim() && formData.contactName.trim() && formData.email.trim() && formData.whatsapp.trim() && formData.city.trim() && formData.state && formData.yearsInBusiness;
   const step2Valid = formData.services.length > 0 && formData.systemSizes.length > 0;
@@ -255,7 +372,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
       const res = await fetch('/api/partner-apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(toPayload(formData)),
+        body: JSON.stringify(toPayload(formData, hp)),
       });
       const body = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
@@ -265,14 +382,21 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
         error?: string;
       };
       if (res.ok && body.ok) {
+        try {
+          sessionStorage.removeItem(DRAFT_KEY);
+        } catch {
+          // Best-effort cleanup.
+        }
         setSent({ ref: body.ref ?? '', stored: Boolean(body.stored), emailed: Boolean(body.emailed) });
         setStatus('idle');
         return;
       }
       setServerError(body.error || 'We could not send that. Try again, or message us on WhatsApp.');
+      toast('The application could not be sent — see what needs fixing below.', 'error');
       setStatus('error');
     } catch {
       setServerError('Network error. Check your connection and try again, or message us on WhatsApp.');
+      toast('Network error — check your connection and try again.', 'error');
       setStatus('error');
     }
   };
@@ -313,6 +437,19 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
             <StepChecks formData={formData} updateForm={updateForm} updateInstall={updateInstall} updateRef={updateRef} kindIsInstaller={kindIsInstaller} kindIsVendor={kindIsVendor} />
           )}
           {step === 4 && <StepTerms formData={formData} toggleAgreement={toggleAgreement} />}
+
+          {/* Honeypot — hidden from humans, bait for scripts. Never give it a
+              label or autocomplete; a filled field means bot. */}
+          <input
+            type="text"
+            name="hp"
+            value={hp}
+            onChange={(e) => setHp(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="hidden"
+          />
 
           {status === 'error' && serverError && (
             <div className="mt-6 bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">

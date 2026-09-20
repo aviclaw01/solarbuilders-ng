@@ -3,6 +3,9 @@ import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import "./globals.css";
 import PublicChrome from '@/components/ui/PublicChrome';
 import GoogleAnalytics from '@/components/ui/GoogleAnalytics';
+import MetaPixel from '@/components/ui/MetaPixel';
+import ToastProvider from '@/components/ui/Toast';
+import { claimedSocials } from '@/lib/site';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -127,7 +130,9 @@ const localBusinessSchema = {
     "closes": "18:00"
   },
   "sameAs": [
-    "https://wa.me/2349168394923"
+    "https://wa.me/2349168394923",
+    // Only claimed accounts — matches the footer, kept in sync via lib/site.ts.
+    ...claimedSocials().map((s) => s.url),
   ]
 };
 
@@ -187,7 +192,8 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} antialiased`} style={{ fontFamily: "'NairaBody', var(--font-body), sans-serif" }}>
         <GoogleAnalytics />
-        {children}
+        <MetaPixel />
+        <ToastProvider>{children}</ToastProvider>
         <PublicChrome />
       </body>
     </html>

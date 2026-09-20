@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Logo from '@/components/ui/Logo';
-import { Phone, MapPin, MessageCircle } from 'lucide-react';
-import { CONTACT_WHATSAPP, whatsappLink } from '@/lib/site';
+import { Phone, MapPin, MessageCircle, Instagram, Facebook, Twitter, Youtube, Linkedin } from 'lucide-react';
+import { CONTACT_WHATSAPP, whatsappLink, claimedSocials, type SocialAccount } from '@/lib/site';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { comparisonPairs } from '@/lib/brands';
 import { getScenario } from '@/lib/sizing';
@@ -34,6 +34,16 @@ const POPULAR_COMPARISONS = ['deye-vs-felicity', 'felicity-vs-growatt', 'jinko-v
 
 const linkCls =
   'text-slate-400 hover:text-white transition-colors underline-offset-4 hover:underline block py-1.5 min-h-[32px]';
+
+/** Footer renders claimed accounts only (see lib/site.ts). TikTok has no
+ * lucide mark — add one here the day that account is claimed. */
+const SOCIAL_ICONS: Partial<Record<SocialAccount['id'], typeof Instagram>> = {
+  instagram: Instagram,
+  facebook: Facebook,
+  twitter: Twitter,
+  youtube: Youtube,
+  linkedin: Linkedin,
+};
 
 function Column({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -81,6 +91,27 @@ export default function Footer() {
             >
               <MessageCircle className="w-4 h-4" /> Message us
             </a>
+            {claimedSocials().length > 0 && (
+              <div className="flex items-center gap-4 mt-5">
+                {claimedSocials().map((social) => {
+                  const Icon = SOCIAL_ICONS[social.id];
+                  if (!Icon) return null;
+                  return (
+                    <a
+                      key={social.id}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`SolarBuilders.ng on ${social.label}`}
+                      title={social.label}
+                      className="text-slate-400 hover:text-amber-400 transition-colors p-1 min-h-[32px] min-w-[32px] flex items-center justify-center"
+                    >
+                      <Icon className="w-5 h-5" aria-hidden="true" />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <Column title="Shop">

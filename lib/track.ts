@@ -53,6 +53,52 @@ function campaign(): Record<string, string> {
   return out;
 }
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
+/**
+ * Fan-out to GA4 and the Meta Pixel when their scripts are on the page.
+ *
+ * Both scripts only load after the cookie banner is accepted, so a missing
+ * global means the visitor declined (or analytics is unconfigured) — sending
+ * nothing is the consent mechanism working, not a bug.
+ *
+ * Pixel events map to Meta's standard events where one fits (so Ads Manager
+ * can optimise on them); everything else goes out as a custom event with the
+ * same name the funnel already uses.
+ */
+const PIXEL_STANDARD: Partial<Record<TrackEvent, string>> = {
+  whatsapp_click: "Contact",
+  cart_add: "AddToCart",
+  quote_form_open: "InitiateCheckout",
+  order_form_open: "InitiateCheckout",
+  quote_form_submit: "Lead",
+  order_submit: "Lead",
+  quote_generated: "ViewContent",
+};
+
+function fanOut(event: TrackEvent, payload: TrackPayload): void {
+  const value = typeof payload.amount === "number" && payload.amount > 0 ? payload.amount : undefined;
+  try {
+    window.gtag?.("event", event, { ...payload });
+  } catch {
+    /* analytics must never break the page */
+  }
+  try {
+    if (!window.fbq) return;
+    const standard = PIXEL_STANDARD[event];
+    const params = { ...payload, currency: "NGN", ...(value !== undefined ? { value } : {}) };
+    if (standard) window.fbq("track", standard, params);
+    else window.fbq("trackCustom", event, params);
+  } catch {
+    /* analytics must never break the page */
+  }
+}
+
 /**
  * Never throws, never blocks navigation. Uses sendBeacon so the request
  * survives the page being unloaded by a WhatsApp/app handoff.
@@ -72,6 +118,8 @@ export function track(event: TrackEvent, payload: TrackPayload = {}): void {
     } else {
       void fetch("/api/track", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });
     }
+    // GA4 / Pixel, only when their consent-gated scripts are actually loaded.
+    fanOut(event, payload);
   } catch {
     /* tracking must never break the page */
   }

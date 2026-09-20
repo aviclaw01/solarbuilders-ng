@@ -21,6 +21,7 @@ import { INVERTER_BRANDS, PRICES_LAST_UPDATED_LABEL, type InverterTier } from '@
 import { BRAND_SLUG_BY_NAME } from '@/lib/brand-slugs';
 import { SITE_URL } from '@/lib/site';
 import { track } from '@/lib/track';
+import { useToast } from '@/components/ui/Toast';
 import QuoteContactModal from './QuoteContactModal';
 import FinanceOptions from './FinanceOptions';
 
@@ -89,7 +90,7 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
   const [tier, setTier] = useState<TierKey>(initialTier);
   const [options, setOptions] = useState<QuoteOptions>(initialOptions);
   const [busy, setBusy] = useState<'pdf' | 'png' | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+  const { toast: showToast } = useToast();
   const [showContact, setShowContact] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -102,11 +103,6 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
   const setTierOption = (patch: TierOptions) =>
     setOptions((prev) => ({ ...prev, [tier]: { ...(prev[tier] ?? {}), ...patch } }));
   const resetTierOptions = () => setOptions((prev) => ({ ...prev, [tier]: {} }));
-
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2500);
-  };
 
   const renderCanvas = useCallback(async () => {
     const { default: html2canvas } = await import('html2canvas');
@@ -422,12 +418,6 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
       <FinanceOptions amount={t.total.best} quoteCode={quote.code} tier={t.label} />
 
       {showContact && <QuoteContactModal quote={quote} tier={tier} onClose={() => setShowContact(false)} />}
-
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0A0F1E] text-white px-5 py-3 rounded-full text-sm font-medium shadow-lg z-50">
-          {toast}
-        </div>
-      )}
     </div>
   );
 }

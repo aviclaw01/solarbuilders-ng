@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { CheckCircle, AlertCircle, Clock, ShieldCheck, Search, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { isEmail, type FieldErrors } from '@/lib/validation';
+import { useToast } from '@/components/ui/Toast';
 
 interface StatusData {
   businessName: string;
@@ -45,28 +47,61 @@ export default function StatusChecker() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [data, setData] = useState<StatusData | null>(null);
+  const { toast } = useToast();
+
+  function clearError(field: string) {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!ref.trim() || !email.trim() || loading) return;
+    if (loading) return;
+
+    // Per-field validation before anything leaves the browser.
+    const next: FieldErrors = {};
+    const r = ref.trim();
+    const em = email.trim();
+    if (!r) next.ref = 'Enter the reference from your confirmation email.';
+    if (!em) next.email = 'Enter the email address you applied with.';
+    else if (!isEmail(em)) next.email = "That email doesn't look right — check for typos.";
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
+
     setLoading(true);
     setError('');
     try {
       const res = await fetch('/api/partner-status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ref: ref.trim(), email: email.trim() }),
+        body: JSON.stringify({ ref: r, email: em }),
       });
-      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; data?: StatusData; error?: string };
+      const body = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        data?: StatusData;
+        error?: string;
+        fields?: FieldErrors;
+      };
       if (res.ok && body.ok && body.data) {
         setData(body.data);
         setError('');
+      } else if (res.status === 429) {
+        setError(body.error || 'Too many checks — wait a few minutes and try again.');
+        toast('Too many checks. Please wait a few minutes.', 'error');
+      } else if (body.fields && Object.keys(body.fields).length > 0) {
+        setErrors(body.fields);
       } else {
         setError(body.error || 'Something went wrong. Try again.');
       }
     } catch {
       setError('Network error. Check your connection and try again.');
+      toast('Network error — check your connection and try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -74,18 +109,20 @@ export default function StatusChecker() {
 
   return (
     <div>
-      <form onSubmit={submit} className="space-y-4">
+      <form onSubmit={submit} className="space-y-4" noValidate>
         <div>
           <label htmlFor="ref" className="block text-sm font-medium text-slate-900 mb-2">Reference</label>
           <input
             id="ref"
             type="text"
             value={ref}
-            onChange={(e) => setRef(e.target.value)}
+            onChange={(e) => { setRef(e.target.value); clearError('ref'); }}
             placeholder="e.g. SB-7K3F-9QZ"
             autoComplete="off"
-            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors min-h-[44px]"
+            aria-invalid={!!errors.ref}
+            className={`w-full bg-white border rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors min-h-[44px] ${errors.ref ? 'border-red-400' : 'border-slate-200'}`}
           />
+          {errors.ref && <p className="text-red-600 text-xs mt-1">{errors.ref}</p>}
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-slate-900 mb-2">Email</label>
@@ -93,10 +130,11 @@ export default function StatusChecker() {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => { setEmail(e.target.value); clearError('email'); }}
             placeholder="The email you applied with"
             autoComplete="email"
-            className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors min-h-[44px]"
+            aria-invalid={!!errors.email}
+            className={`w-full bg-white border rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors min-h-[44px] ${errors.email ? 'border-red-400' : 'border-slate-200'}`}
           />
         </div>
         <button

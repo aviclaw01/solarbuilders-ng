@@ -128,6 +128,29 @@ html {
 .delay-300 { transition-delay: 300ms; }
 .delay-450 { transition-delay: 450ms; }
 
+/* Toast notifications (components/ui/Toast.tsx). Kept here so reduced-motion
+ * preferences apply the same way as every other animation on the site. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-enter {
+  animation: toast-in 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast-enter {
+    animation: none;
+  }
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   html {
