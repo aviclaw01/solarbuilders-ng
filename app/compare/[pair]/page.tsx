@@ -36,6 +36,18 @@ export function generateStaticParams() {
   return comparisonPairs().map((p) => ({ pair: p.slug }));
 }
 
+/**
+ * These pages are generated from a fixed, code-defined set, so a param outside
+ * it is a 404 — not a page that might exist later.
+ *
+ * dynamicParams defaults to true, which makes Next render an unknown param on
+ * demand: notFound() swaps in the not-found body and the response still goes
+ * out as HTTP 200. A soft-404 across an unbounded crawlable URL space is the
+ * last thing an SEO-led site wants.
+ */
+export const dynamicParams = false;
+
+
 // ─────────────────────────────────────────────────────────
 // Formatting — every figure comes from lib/brands + lib/prices
 // ─────────────────────────────────────────────────────────

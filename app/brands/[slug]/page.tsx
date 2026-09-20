@@ -28,6 +28,17 @@ export function generateStaticParams() {
   return BRANDS.map((b) => ({ slug: b.slug }));
 }
 
+/**
+ * The brand catalogue is defined in code, so a slug outside it is not a page
+ * that might exist later — it is a 404.
+ *
+ * Without this, dynamicParams defaults to true: Next renders an unknown slug
+ * on demand, notFound() swaps in the not-found body, and the response still
+ * goes out as HTTP 200. That is a soft-404 across an unbounded, crawlable URL
+ * space on a site whose whole strategy is SEO.
+ */
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const brand = getBrand(slug);
