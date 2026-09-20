@@ -1,33 +1,66 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import VerifiedBadge from '@/components/ui/VerifiedBadge';
-import { supabaseEnv, getPublicPartnerBySlug, jobStatsForPartner } from '@/lib/partner-db';
-import { publicPartnerProfile, VERIFICATION_CHECKS } from '@/lib/partners';
+import { supabaseEnv, dbGetChecked, PUBLIC_PARTNER_COLUMNS, jobStatsForPartner } from '@/lib/partner-db';
+import { publicPartnerProfile, VERIFICATION_CHECKS, type PartnerRow } from '@/lib/partners';
 import { SITE_URL, whatsappLink } from '@/lib/site';
 import { ShieldCheck, MapPin, Wrench, CheckCircle, ArrowRight, MessageCircle, CalendarCheck } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * Unknown slugs are a hard 404, not a rendered page with 200 (#28): the slug
- * space is small and set by us at approval, so crawlers must not treat it as
- * open. The HTML body is unchanged — notFound() still renders the not-found
- * page — only the status line and the caching headers differ.
+ * KNOWN, UNFIXED: an unknown slug here still answers 200 with the not-found
+ * body — a soft-404. The four sibling routes in this commit were fixed with
+ * `dynamicParams = false`; that does not apply here, because this route is
+ * data-driven and has no generateStaticParams. notFound() in generateMetadata,
+ * dropping force-dynamic, and revalidate = 0 were all tried and none changed
+ * the status. Low urgency while `partners` has no rows, so there are no real
+ * profile URLs to crawl. See #28.
  */
-const NOT_FOUND_HEADERS = {
-  'Cache-Control': 'no-store',
-  'X-Robots-Tag': 'noindex',
-};
 
 type Props = { params: Promise<{ slug: string }> };
 
+/**
+ * One lookup per request, shared by generateMetadata and the page.
+ *
+ * Three outcomes kept distinct on purpose. getPublicPartnerBySlug goes through
+ * dbGet, which returns [] for a genuine miss AND for a network failure — so an
+ * outage would 404 a real partner's profile, un-publishing someone we vouched
+ * for. dbGetChecked keeps the difference.
+ */
+const lookup = cache(
+  async (
+    slug: string,
+  ): Promise<{ state: 'found'; row: PartnerRow } | { state: 'missing' } | { state: 'unavailable' }> => {
+    if (!supabaseEnv()) return { state: 'missing' };
+    const res = await dbGetChecked<PartnerRow>('partners', {
+      select: PUBLIC_PARTNER_COLUMNS,
+      slug: `eq.${slug}`,
+      status: 'eq.approved',
+      verified: 'eq.true',
+      listed: 'eq.true',
+      limit: '1',
+    });
+    if (!res.ok) return { state: 'unavailable' };
+    return res.data[0] ? { state: 'found', row: res.data[0] } : { state: 'missing' };
+  },
+);
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const row = supabaseEnv() ? await getPublicPartnerBySlug(slug) : null;
-  if (!row) return { title: 'Partner Not Found', robots: { index: false, follow: false } };
+  const found = await lookup(slug);
+  // notFound() HERE as well as in the component. Metadata resolves first, and
+  // returning a valid object for a missing row lets the response head go out
+  // as 200 — which is how this served a "not found" body under HTTP 200.
+  if (found.state === 'missing') notFound();
+  if (found.state === 'unavailable') {
+    return { title: 'Partner profile unavailable', robots: { index: false, follow: false } };
+  }
+  const row = found.row;
   const profile = publicPartnerProfile(row, 0);
   return {
     title: `${profile.name} — Verified ${profile.kindLabel} in ${profile.city}`,
@@ -38,8 +71,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PartnerProfilePage({ params }: Props) {
   const { slug } = await params;
-  const row = supabaseEnv() ? await getPublicPartnerBySlug(slug) : null;
-  if (!row) notFound();
+  const found = await lookup(slug);
+  if (found.state === 'missing') notFound();
+
+  // A read failure must NOT 404. A real partner's profile vanishing because
+  // Supabase blipped is worse than a soft-404: it tells a crawler the page is
+  // gone and tells a customer the partner is not real.
+  if (found.state === 'unavailable') {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <main className="max-w-3xl mx-auto px-6 py-20 text-center">
+          <h1 className="font-heading text-2xl font-extrabold text-slate-900 mb-3">
+            We could not load this profile just now
+          </h1>
+          <p className="text-slate-600 leading-relaxed">
+            This is a problem on our side, not a partner who has gone away. Try again in a moment, or{' '}
+            <Link href="/partners" className="underline underline-offset-4 hover:text-slate-900">
+              see every verified partner
+            </Link>
+            .
+          </p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  const row = found.row;
 
   const stats = await jobStatsForPartner(row.id);
   const p = publicPartnerProfile(row, stats.completedJobs);
