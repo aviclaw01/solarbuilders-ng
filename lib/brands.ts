@@ -109,6 +109,7 @@ const D = "2026-09-13";
 const MANUFACTURERS: Brand[] = [
   {
     slug: "felicity",
+    logo: "/brands/felicity.webp",
     name: "Felicity Solar",
     kind: "manufacturer",
     tier: "budget",
@@ -153,6 +154,7 @@ const MANUFACTURERS: Brand[] = [
   },
   {
     slug: "deye",
+    logo: "/brands/deye.webp",
     name: "Deye",
     kind: "manufacturer",
     tier: "premium",
@@ -185,6 +187,7 @@ const MANUFACTURERS: Brand[] = [
   },
   {
     slug: "growatt",
+    logo: "/brands/growatt.webp",
     name: "Growatt",
     kind: "manufacturer",
     tier: "mid",
@@ -212,6 +215,7 @@ const MANUFACTURERS: Brand[] = [
   },
   {
     slug: "luxpower",
+    logo: "/brands/luxpower.webp",
     name: "Luxpower",
     kind: "manufacturer",
     tier: "mid",
@@ -264,6 +268,7 @@ const MANUFACTURERS: Brand[] = [
   },
   {
     slug: "solis",
+    logo: "/brands/solis.webp",
     name: "Solis",
     kind: "manufacturer",
     tier: "mid",
@@ -290,6 +295,7 @@ const MANUFACTURERS: Brand[] = [
   },
   {
     slug: "must",
+    logo: "/brands/must.webp",
     name: "Must",
     kind: "manufacturer",
     tier: "mid",
@@ -358,6 +364,7 @@ const MANUFACTURERS: Brand[] = [
   },
   {
     slug: "pylontech",
+    logo: "/brands/pylontech.webp",
     name: "Pylontech",
     kind: "manufacturer",
     tier: "premium",
@@ -441,6 +448,7 @@ const MANUFACTURERS: Brand[] = [
   },
   {
     slug: "jinko",
+    logo: "/brands/jinko.webp",
     name: "Jinko Solar",
     kind: "manufacturer",
     tier: "mid",
@@ -487,6 +495,7 @@ const MANUFACTURERS: Brand[] = [
   },
   {
     slug: "longi",
+    logo: "/brands/longi.webp",
     name: "Longi",
     kind: "manufacturer",
     tier: "mid",
@@ -509,6 +518,7 @@ const MANUFACTURERS: Brand[] = [
   },
   {
     slug: "canadian-solar",
+    logo: "/brands/canadian-solar.webp",
     name: "Canadian Solar",
     kind: "manufacturer",
     tier: "mid",
@@ -572,6 +582,7 @@ const MANUFACTURERS: Brand[] = [
 const VENDORS: Brand[] = [
   {
     slug: "felicity-solar-ng",
+    logo: "/brands/felicity-solar-ng.webp",
     name: "Felicity Solar Nigeria",
     kind: "vendor",
     origin: "Amuwo-Odofin, Lagos",
@@ -600,6 +611,7 @@ const VENDORS: Brand[] = [
   },
   {
     slug: "nature-solar",
+    logo: "/brands/nature-solar.webp",
     name: "Nature Solar Global",
     kind: "vendor",
     origin: "Alaba International Market, Ojo, Lagos",
@@ -615,6 +627,7 @@ const VENDORS: Brand[] = [
   },
   {
     slug: "me3-energy",
+    logo: "/brands/me3-energy.webp",
     name: "Me3 Energy",
     kind: "vendor",
     origin: "Victoria Island, Lagos",
@@ -645,6 +658,7 @@ const VENDORS: Brand[] = [
   },
   {
     slug: "solar-depot-ng",
+    logo: "/brands/solar-depot-ng.webp",
     name: "Solar Depot Nigeria",
     kind: "vendor",
     origin: "Isheri, Lagos · Garki, Abuja · Alakia, Ibadan",
@@ -663,6 +677,7 @@ const VENDORS: Brand[] = [
   },
   {
     slug: "kasot-power",
+    logo: "/brands/kasot-power.webp",
     name: "Kasot Power",
     kind: "vendor",
     origin: "Shomolu, Lagos",
@@ -682,6 +697,7 @@ const VENDORS: Brand[] = [
   },
   {
     slug: "maypatronic",
+    logo: "/brands/maypatronic.webp",
     name: "Maypatronic",
     kind: "vendor",
     origin: "Lagos · Port Harcourt",
@@ -728,6 +744,7 @@ const VENDORS: Brand[] = [
   },
   {
     slug: "energymall",
+    logo: "/brands/energymall.webp",
     name: "EnergyMall",
     kind: "vendor",
     origin: "Lekki Phase 1, Lagos",
@@ -756,6 +773,7 @@ const VENDORS: Brand[] = [
   },
   {
     slug: "solar-village",
+    logo: "/brands/solar-village.webp",
     name: "Solar Village Africa",
     kind: "vendor",
     origin: "Lagos",
@@ -769,6 +787,7 @@ const VENDORS: Brand[] = [
   },
   {
     slug: "solarkobo",
+    logo: "/brands/solarkobo.webp",
     name: "SolarKobo",
     kind: "vendor",
     origin: "Lekki, Lagos · pickup in Isolo",
@@ -783,6 +802,7 @@ const VENDORS: Brand[] = [
   },
   {
     slug: "solarbuy",
+    logo: "/brands/solarbuy.webp",
     name: "SolarBuy (Herolinks)",
     kind: "vendor",
     origin: "Abeokuta, Ogun",

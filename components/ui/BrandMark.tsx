@@ -4,15 +4,14 @@ import type { Brand } from '@/lib/brands';
 /**
  * Visual mark for a brand or vendor.
  *
- * We do NOT ship manufacturer logo files: they are trademarks, and we have no
- * licence to redistribute them. Until a brand supplies artwork (or we get
- * written permission), every brand gets a generated monogram — deterministic
- * colour from the slug, so the same brand always looks the same.
- *
- * To use a real logo later: drop the file at `public/brands/<slug>.svg` (or
- * .png) and set `logo: "/brands/<slug>.svg"` on the brand in lib/brands.ts.
- * Nothing else needs to change.
+ * Real logos are fetched and self-hosted by `node scripts/fetch-brand-logos.ts`
+ * (→ public/brands/<slug>.webp, provenance in public/brands/manifest.json) and
+ * wired up via the `logo` field in lib/brands.ts. A brand without a fetched
+ * logo gets a generated monogram — deterministic colour from the slug, so the
+ * same brand always looks the same. Both are legitimate states: a wrong or
+ * stretched logo is worse than a clean monogram.
  */
+
 
 const PALETTE = [
   { bg: '#FEF3C7', fg: '#B45309' },
