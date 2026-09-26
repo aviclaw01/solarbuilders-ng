@@ -1,11 +1,12 @@
 'use client';
 
 import { track } from '@/lib/track';
+import { CONTACT_WHATSAPP } from '@/lib/site';
 
 export default function FloatingWhatsApp() {
   return (
     <a
-      href="https://wa.me/2349168394923?text=Hi%2C%20I%20need%20help%20finding%20a%20solar%20installer"
+      href={`https://wa.me/${CONTACT_WHATSAPP}?text=Hi%2C%20I%20need%20help%20finding%20a%20solar%20installer`}
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => track('whatsapp_click', { placement: 'floating' })}

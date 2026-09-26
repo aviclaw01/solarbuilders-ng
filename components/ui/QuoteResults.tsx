@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Download, Image as ImageIcon, Share2, MessageCircle, Info, SlidersHorizontal } from 'lucide-react';
 import {
@@ -93,9 +93,33 @@ export default function QuoteResults({ appliances, initialTier = 'standard', ini
   const { toast: showToast } = useToast();
   const [showContact, setShowContact] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  /**
+   * Top of funnel. Every conversion ratio this site reports divides by
+   * `quote_generated`, so it must count each quote once.
+   *
+   * A plain "last code" ref is not quite enough. `quote.code` embeds
+   * `tiers.standard.inverterKva` (lib/quote.ts:446), so editing the standard
+   * tier's inverter class mints a NEW code — a last-code guard would fire again
+   * and inflate the denominator. A Set counts each code once, and returning to
+   * a code already seen does not count it a second time.
+   *
+   * Tier switches do not change the code (it is always the standard tier), so
+   * switching tiers does not fire again — which is the case that mattered.
+   */
+  const trackedQuoteCodes = useRef<Set<string>>(new Set());
 
   const quote: Quote = useMemo(() => buildQuote(appliances, options), [appliances, options]);
   const t = quote.tiers[tier];
+
+  useEffect(() => {
+    if (trackedQuoteCodes.current.has(quote.code)) return;
+    trackedQuoteCodes.current.add(quote.code);
+    // Fires on a fresh calculation AND on a ?q= restore. Deliberate: a restore
+    // is a real quote card shown to a real person, and excluding it would make
+    // the top of the funnel smaller than the number of cards we served.
+    track('quote_generated', { quoteCode: quote.code, tier: t.label, amount: t.total.best });
+  }, [quote.code, t.label, t.total.best]);
+
   const canRun = whatYouCanRun(tier, quote.appliances, quote.peakWatts);
   const fileBase = `SolarBuilders-${quote.code}-${t.label}`;
   const customised = !!(t.options.inverterTier || t.options.battery);

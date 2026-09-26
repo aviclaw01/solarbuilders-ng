@@ -5,6 +5,7 @@ import {
   readJson,
   fail,
   esc,
+  insertLeadRow,
   isHoneypotFilled,
 } from "@/lib/api";
 import {
@@ -68,6 +69,9 @@ export async function POST(req: Request) {
     return fail("Please choose a star rating.", 400, { rating: "Pick a rating from 1 to 5 stars." } as FieldErrors);
   }
 
+  let emailed = false;
+  let stored = false;
+
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
     try {
@@ -79,15 +83,27 @@ export async function POST(req: Request) {
         subject: `New Review — ${builderName}`,
         html: `<p><b>Builder:</b> ${esc(builderName)} (${esc(builderSlug)})<br/><b>Author:</b> ${esc(authorName)}<br/><b>Location:</b> ${esc(location || "not given")}<br/><b>Rating:</b> ${rating}/5<br/><b>Review:</b><br/>${esc(reviewBody).replace(/\n/g, "<br/>")}</p>`,
       });
+      emailed = true;
     } catch (err) {
       console.error("[submit-review] Resend failed:", err);
-      return fail("We couldn't send your review just now. Please try again in a minute.", 500);
     }
   } else {
-    console.warn("[submit-review] RESEND_API_KEY not set — review NOT emailed");
+    console.warn("[submit-review] RESEND_API_KEY not set — relying on the DB sink");
+  }
+
+  stored = await insertLeadRow("reviews", {
+    builder_slug: builderSlug || null,
+    builder_name: builderName,
+    author_name: authorName,
+    location: location || null,
+    rating,
+    body: reviewBody,
+  });
+
+  if (!emailed && !stored) {
     return fail("We couldn't send your review just now. Please try again in a minute.", 500);
   }
 
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, emailed, stored });
 }
 

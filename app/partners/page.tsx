@@ -3,12 +3,71 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import VerifiedBadge from '@/components/ui/VerifiedBadge';
-import { supabaseEnv, listPublicPartners, jobStatsByPartner } from '@/lib/partner-db';
-import { publicPartnerProfile, type PublicPartnerProfile } from '@/lib/partners';
+import {
+  supabaseEnv,
+  dbGetChecked,
+  jobStatsByPartner,
+  PUBLIC_PARTNER_COLUMNS,
+} from '@/lib/partner-db';
+import { publicPartnerProfile, type PartnerRow, type PublicPartnerProfile } from '@/lib/partners';
 import { SITE_URL, whatsappLink } from '@/lib/site';
-import { ShieldCheck, MapPin, Wrench, ArrowRight, MessageCircle } from 'lucide-react';
+import { ShieldCheck, MapPin, Wrench, ArrowRight, MessageCircle, RefreshCw, AlertTriangle } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * Three outcomes, kept apart on purpose.
+ *
+ * "We could not read" is not "there is nothing to read". `listPublicPartners()`
+ * goes through `dbGet`, which returns [] for a genuine miss AND for a network
+ * failure alike — so a Supabase outage would make this page tell every visitor
+ * that the verified-partner programme has no partners. That is a public claim
+ * about the state of the business, produced by a transient fault.
+ *
+ * So we read through the exported checked primitive instead. The column set and
+ * filters mirror `listPublicPartners()` (partner-owned); if that function's
+ * filter changes, this must follow.
+ *
+ * Note: `force-dynamic` (above) means Next never caches this response, so a
+ * failure page cannot be served from cache as the canonical directory.
+ */
+type DirectoryState =
+  | { kind: 'unconfigured' }
+  | { kind: 'unavailable' }
+  | { kind: 'ready'; profiles: PublicPartnerProfile[] };
+
+async function loadDirectory(): Promise<DirectoryState> {
+  // A preview deployment with no env legitimately has no partners.
+  if (!supabaseEnv()) return { kind: 'unconfigured' };
+
+  const [res, stats] = await Promise.all([
+    dbGetChecked<PartnerRow>('partners', {
+      select: PUBLIC_PARTNER_COLUMNS,
+      status: 'eq.approved',
+      verified: 'eq.true',
+      listed: 'eq.true',
+      order: 'verified_at.desc.nullslast',
+      limit: 200,
+    }),
+    jobStatsByPartner(),
+  ]);
+
+  if (!res.ok) return { kind: 'unavailable' };
+
+  // `verified_until` cannot be filtered through PostgREST without an `or` over
+  // two timestamp formats, so the window is applied here, on verified rows only.
+  const now = Date.now();
+  const rows = res.data.filter((r) => {
+    if (!r.verified_until) return true;
+    const until = new Date(r.verified_until).getTime();
+    return Number.isNaN(until) ? true : until > now;
+  });
+
+  return {
+    kind: 'ready',
+    profiles: rows.map((row) => publicPartnerProfile(row, stats.get(row.id)?.completedJobs ?? 0)),
+  };
+}
 
 export const metadata: Metadata = {
   title: 'Verified Installers & Vendors',
@@ -18,13 +77,8 @@ export const metadata: Metadata = {
 };
 
 export default async function PartnersDirectoryPage() {
-  const env = supabaseEnv();
-  let profiles: PublicPartnerProfile[] = [];
-
-  if (env) {
-    const [rows, stats] = await Promise.all([listPublicPartners(200), jobStatsByPartner()]);
-    profiles = rows.map((row) => publicPartnerProfile(row, stats.get(row.id)?.completedJobs ?? 0));
-  }
+  const state = await loadDirectory();
+  const profiles: PublicPartnerProfile[] = state.kind === 'ready' ? state.profiles : [];
 
   const byState = new Map<string, PublicPartnerProfile[]>();
   for (const p of profiles) {
@@ -60,7 +114,35 @@ export default async function PartnersDirectoryPage() {
 
 
         <section className="max-w-6xl mx-auto px-6 pb-20">
-          {profiles.length === 0 ? (
+          {state.kind === 'unavailable' ? (
+            // Never a claim about how many partners exist — we simply could not look.
+            <div className="border border-amber-200 bg-amber-50 rounded-3xl p-10 text-center max-w-2xl mx-auto">
+              <AlertTriangle className="w-10 h-10 text-amber-600 mx-auto mb-4" />
+              <h2 className="font-heading font-bold text-slate-900 text-xl mb-2">
+                We could not load the directory just now
+              </h2>
+              <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                Something on our side is not responding. This says nothing about who is listed — please try again in a
+                moment, or ask us directly and we will match you with an installer by hand.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Link
+                  href="/partners"
+                  className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white rounded-full px-6 py-3 font-heading font-bold text-sm transition-colors min-h-[48px]"
+                >
+                  <RefreshCw className="w-4 h-4" /> Try again
+                </Link>
+                <a
+                  href={whatsappLink('Hi SolarBuilders, the partners page is not loading — can you match me with an installer?')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#22c55e] text-white rounded-full px-6 py-3 font-heading font-bold text-sm transition-colors min-h-[48px]"
+                >
+                  <MessageCircle className="w-4 h-4" /> Ask us on WhatsApp
+                </a>
+              </div>
+            </div>
+          ) : profiles.length === 0 ? (
             <div className="border border-slate-200 rounded-3xl p-10 text-center max-w-2xl mx-auto">
               <ShieldCheck className="w-10 h-10 text-amber-500 mx-auto mb-4" />
               <h2 className="font-heading font-bold text-slate-900 text-xl mb-2">No verified partners listed yet</h2>

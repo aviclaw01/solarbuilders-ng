@@ -88,9 +88,9 @@ export const EQUIPMENT_VAT = 0;
  * changing anything above. Rounded to nearest ₦50k.
  */
 export const HEADLINE_PACKAGES = [
-  { label: "1.5–2.5kVA · 5kWh lithium", powers: "Lights, fans, TV, fridge — no AC", low: 1_400_000, high: 2_000_000 },
-  { label: "3.5kVA · 5kWh lithium", powers: "Small home, 1 small AC part-time", low: 1_800_000, high: 2_600_000 },
-  { label: "5kVA · 10kWh lithium", powers: "Family home with 1 AC", low: 3_200_000, high: 4_800_000 },
-  { label: "8–10kVA · 15kWh lithium", powers: "Large home, 2–3 ACs", low: 6_000_000, high: 9_500_000 },
-  { label: "15–20kVA · 20–30kWh", powers: "Office / commercial", low: 11_000_000, high: 20_000_000 },
+  { label: "1.5–2.5kVA · 5kWh lithium", powers: "Lights, fans, TV, fridge — no AC", low: 1_500_000, high: 2_500_000 },
+  { label: "3.5kVA · 5kWh lithium", powers: "Small home, 1 small AC part-time", low: 2_850_000, high: 4_800_000 },
+  { label: "5kVA · 10kWh lithium", powers: "Family home with 1 AC", low: 4_400_000, high: 7_550_000 },
+  { label: "8–10kVA · 15kWh lithium", powers: "Large home, 2–3 ACs", low: 7_300_000, high: 12_450_000 },
+  { label: "15–20kVA · 20–30kWh", powers: "Office / commercial", low: 12_350_000, high: 21_100_000 },
 ] as const;

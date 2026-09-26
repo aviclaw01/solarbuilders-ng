@@ -54,6 +54,9 @@ export async function POST(req: Request) {
     return fail("Please fix the highlighted fields.", 400, validated.errors as FieldErrors);
   }
 
+  // Email and database are independent sinks — email failing must not cost
+  // us the lead, and vice versa. Success = at least one sink got it; the
+  // response is honest about which.
   const { name, email, phone, message } = parsed.data;
   const clean = {
     name: String(name).trim().slice(0, 100),

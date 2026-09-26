@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
+import Modal from './Modal';
 import { NIGERIAN_STATES, isPhone, type FieldErrors } from '@/lib/validation';
+import { CONTACT_WHATSAPP } from '@/lib/site';
 
 const SYSTEM_SIZES = [
   'Not sure yet',
@@ -103,26 +105,22 @@ export default function LeadCaptureModal() {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={dismiss} />
-      <div className="relative bg-white rounded-2xl max-w-md w-full p-6 shadow-xl" role="dialog" aria-modal="true" aria-label="Get sizing help">
-        <button
-          onClick={dismiss}
-          className="absolute top-4 right-4 text-[#64748B] hover:text-[#0A0F1E] transition-colors"
-          aria-label="Close"
-        >
-          <X className="w-5 h-5" />
-        </button>
+    <Modal
+      labelledBy="lead-modal-title"
+      onClose={dismiss}
+      canClose={status !== 'submitting'}
+      panelClassName="rounded-2xl max-w-md w-full p-6"
+    >
 
         {status === 'success' ? (
           <div className="text-center py-4">
-            <p className="text-[#059669] font-heading font-bold text-xl mb-2">Got it!</p>
+            <h2 id="lead-modal-title" className="text-[#059669] font-heading font-bold text-xl mb-2">Got it!</h2>
             <p className="text-[#64748B]">Check WhatsApp — we&apos;ll send you options shortly.</p>
           </div>
         ) : status === 'error' ? (
           <div className="text-center py-4">
             <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" aria-hidden="true" />
-            <p className="font-heading font-bold text-[#0A0F1E] text-xl mb-2">That didn&apos;t send</p>
+            <h2 id="lead-modal-title" className="font-heading font-bold text-[#0A0F1E] text-xl mb-2">That didn&apos;t send</h2>
             <p className="text-[#64748B] text-sm mb-5">
               We couldn&apos;t reach the server just now — that&apos;s on us, not you. Your details are still here.
             </p>
@@ -133,7 +131,7 @@ export default function LeadCaptureModal() {
               Try again
             </button>
             <a
-              href="https://wa.me/2349168394923"
+              href={`https://wa.me/${CONTACT_WHATSAPP}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block mt-3 text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors"
@@ -144,7 +142,7 @@ export default function LeadCaptureModal() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <h2 className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">
+              <h2 id="lead-modal-title" className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">
                 Want us to size it for you?
               </h2>
               <p className="text-[#64748B] text-sm">
@@ -229,7 +227,6 @@ export default function LeadCaptureModal() {
             </button>
           </form>
         )}
-      </div>
-    </div>
+    </Modal>
   );
 }

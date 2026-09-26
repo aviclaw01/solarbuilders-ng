@@ -156,6 +156,19 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
   const resolved = resolveCart(lines);
   const totals = cartTotals(resolved);
 
+  /**
+   * The shop path's missing middle step. `cart_add` and `order_submit` both
+   * fired, but not the step between them — so a drop-off at the order form was
+   * invisible. Fires once, the first time the form is genuinely on screen with
+   * something in the cart.
+   */
+  const orderFormOpened = useRef(false);
+  useEffect(() => {
+    if (orderFormOpened.current || !mounted || resolved.length === 0) return;
+    orderFormOpened.current = true;
+    track('order_form_open', { quoteCode: quoteCode ?? undefined });
+  }, [mounted, resolved.length, quoteCode]);
+
   const location = [area.trim(), state].filter(Boolean).join(', ');
 
   /** Client twin of the server's per-field rules in the order-request route. */

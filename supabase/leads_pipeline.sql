@@ -1,12 +1,16 @@
--- Leads pipeline tables for two shipped API routes that currently only email.
--- Run once in the Supabase SQL editor when those features go live; safe to re-run.
+-- Tables for the public intake routes that do not carry a priced quote.
+-- Run once in the Supabase SQL editor when those features go live; safe to
+-- re-run.
 --
---   notify_me  ← POST /api/notify-me     ("tell me when new prices land")
---   reviews    ← POST /api/submit-review (moderated before publishing)
+--   notify_me        ← POST /api/notify-me      ("tell me when new prices land")
+--   reviews          ← POST /api/submit-review  (moderated before publishing)
 --
--- Until the routes are wired to insert here, every submission still reaches
--- the team's inbox via Resend, so nothing is lost — this migration is the
--- upgrade from "email only" to "email + queryable record".
+-- Contact-form and calculator leads are NOT stored here: they already go to
+-- the unified `leads` table (supabase/leads.sql) via lib/leads.ts, and main's
+-- leads desk reads that. These routes write their row AND email the team
+-- independently — one sink failing never costs the entry. Inserts use the
+-- service-role key, and RLS is enabled with no policies, so these rows are
+-- readable only by us.
 
 -- ── notify_me ────────────────────────────────────────────────────────────
 -- One row per signup. No auth flow; the email is the contact point.
