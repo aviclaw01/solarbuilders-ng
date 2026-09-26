@@ -100,10 +100,17 @@ html {
 
 /* Scroll-triggered sections */
 /*
- * Scroll reveal. The hidden state is scoped to html.js, which is set by an
- * inline script in layout.tsx before first paint. Without JS — or if
- * IntersectionObserver never fires — content stays visible rather than
- * invisible. That matters for crawlers as much as for people.
+ * Scroll reveal, with three layers of "never hidden":
+ *   1. The hidden state is scoped to html.js, which an inline script in
+ *      layout.tsx sets before first paint. No JS at all → content renders
+ *      visible, so crawlers and failed scripts never meet a blank section.
+ *   2. AnimatedSection's IntersectionObserver (plus its own 1.5s failsafe)
+ *      adds .in-view once the page has hydrated.
+ *   3. The animation on the hidden state is a pure-CSS failsafe: if the
+ *      inline script ran but React never hydrates (failed chunk load,
+ *      stalled network), these keyframes reveal the content at 3s with no
+ *      JS involved. It starts late so it never races the observer, and
+ *      `forwards` pins the revealed state permanently.
  */
 .section-animate {
   opacity: 1;
@@ -114,6 +121,14 @@ html {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  animation: section-reveal 0.5s ease-out 3s forwards;
+}
+
+@keyframes section-reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .js .section-animate.in-view {
@@ -172,5 +187,10 @@ html {
     opacity: 1;
     transform: none;
     transition: none;
+    /* Kill the CSS failsafe animation too: reduced-motion users get the
+       statically visible state immediately (the declarations above), never
+       a 3s-delayed fade. animation:none also drops the forwards fill, so
+       the opacity:1 above is what applies. */
+    animation: none;
   }
 }
