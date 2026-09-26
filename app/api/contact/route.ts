@@ -5,11 +5,11 @@ import {
   readJson,
   fail,
   esc,
-  insertLeadRow,
   isHoneypotFilled,
 } from "@/lib/api";
 import { validateFields, requiredText, requiredEmail, optionalPhone, type FieldErrors } from "@/lib/validation";
 import { FROM_EMAIL, LEAD_EMAILS } from "@/lib/site";
+import { storeLead } from "@/lib/leads";
 
 /**
  * Contact form → email to the team.
@@ -65,9 +65,17 @@ export async function POST(req: Request) {
     message: String(message).trim().slice(0, 5000),
   };
 
-  let emailed = false;
-  let stored = false;
+  // Store first, so a Resend outage does not lose the message. Someone who
+  // fills in a contact form and hears nothing does not fill it in again.
+  const stored = await storeLead({
+    kind: "contact",
+    name: clean.name,
+    email: clean.email,
+    phone: clean.phone || null,
+    message: clean.message,
+  });
 
+  let emailed = false;
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
     try {
@@ -85,15 +93,8 @@ export async function POST(req: Request) {
       console.error("[contact] Resend failed:", err);
     }
   } else {
-    console.warn("[contact] RESEND_API_KEY not set — relying on the DB sink");
+    console.warn("[contact] RESEND_API_KEY not set — message NOT emailed");
   }
-
-  stored = await insertLeadRow("contact_messages", {
-    name: clean.name,
-    email: clean.email,
-    phone: clean.phone || null,
-    message: clean.message,
-  });
 
   if (!emailed && !stored) {
     return fail("We couldn't send your message just now. Please try again, or message us on WhatsApp.", 500);

@@ -13,7 +13,6 @@ import {
   Undo2,
   Zap,
 } from "lucide-react";
-import AdminNav from "@/components/ui/AdminNav";
 import { formatNaira } from "@/lib/quote";
 import {
   dbGetChecked,
@@ -423,12 +422,7 @@ function LiveOffers({ live, now }: { live: Map<string, PartnerJobRow>; now: Date
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white">
-      <main className="max-w-5xl mx-auto px-6 py-10">
-        <AdminNav active="routing" />
-        {children}
-      </main>
-    </div>
+    <>{children}</>
   );
 }
 

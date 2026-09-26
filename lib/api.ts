@@ -91,9 +91,14 @@ export function fail(error: string, status: number, fields?: Record<string, stri
  *
  * Service-role key only, same as api/quote-request. Tables live in
  * supabase/leads_pipeline.sql.
+ *
+ * Only notify-me and submit-review use this: the contact and lead-capture
+ * routes store through lib/leads.ts into the unified `leads` table the
+ * /admin/leads desk reads, so their tables from an earlier draft of this
+ * file were dropped from leads_pipeline.sql.
  */
 export async function insertLeadRow(
-  table: "contact_messages" | "lead_capture" | "notify_me" | "reviews",
+  table: "notify_me" | "reviews",
   row: Record<string, unknown>,
 ): Promise<boolean> {
   const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

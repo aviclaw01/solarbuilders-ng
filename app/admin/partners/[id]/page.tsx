@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   XCircle,
 } from "lucide-react";
-import AdminNav from "@/components/ui/AdminNav";
 import {
   MIN_COMMISSION_RATE,
   MAX_COMMISSION_RATE,
@@ -116,8 +115,7 @@ export default async function AdminPartnerDetailPage({ params }: { params: Promi
   const scopePreview = verificationScopeLabel(row);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <main className="max-w-5xl mx-auto px-6 py-10">
+    <>
         <Link
           href="/admin/partners"
           className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900 mb-4"
@@ -149,8 +147,6 @@ export default async function AdminPartnerDetailPage({ params }: { params: Promi
             )}
           </div>
         </div>
-
-        <AdminNav active="partners" />
 
         {!portalReady && (
           <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 p-4 flex items-start gap-3">
@@ -805,8 +801,7 @@ export default async function AdminPartnerDetailPage({ params }: { params: Promi
             </Card>
           </div>
         </div>
-      </main>
-    </div>
+    </>
   );
 }
 

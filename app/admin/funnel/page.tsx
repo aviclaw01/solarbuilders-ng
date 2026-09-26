@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PageHeader from "@/components/ui/AdminPageHeader";
 import {
   AlertTriangle,
   Activity,
@@ -12,7 +13,6 @@ import {
   MessageCircle,
   ShoppingCart,
 } from "lucide-react";
-import AdminNav from "@/components/ui/AdminNav";
 
 /**
  * Internal funnel dashboard — what `site_events` is telling us.
@@ -455,23 +455,11 @@ export default async function AdminFunnelPage({ searchParams }: PageProps) {
 
 function Shell({ children, days }: { children: React.ReactNode; days: Range }) {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-[#0A0F1E] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          <span className="text-[#F59E0B] text-xs font-semibold tracking-wide uppercase">
-            Internal · not indexed
-          </span>
-          <h1 className="font-heading font-extrabold text-2xl md:text-3xl mt-1">Funnel</h1>
-          <p className="text-slate-400 text-sm mt-1">
-            First-party events from the last {days} days. No cookies, no third-party tracker.
-          </p>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        <AdminNav active="funnel" />
+    <>
+      <PageHeader title="Funnel" subtitle={`First-party events from the last ${days} days. No cookies, no third-party tracker.`} />
+
         {children}
-      </main>
-    </div>
+    </>
   );
 }
 

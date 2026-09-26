@@ -1,47 +1,16 @@
--- Leads pipeline tables for the public intake routes. Run once in the
--- Supabase SQL editor when those features go live; safe to re-run.
+-- Tables for the public intake routes that do not carry a priced quote.
+-- Run once in the Supabase SQL editor when those features go live; safe to
+-- re-run.
 --
---   contact_messages ← POST /api/contact        (contact page form)
---   lead_capture     ← POST /api/lead-capture   (calculator sizing modal)
 --   notify_me        ← POST /api/notify-me      ("tell me when new prices land")
 --   reviews          ← POST /api/submit-review  (moderated before publishing)
 --
--- Each route now writes here AND emails the team independently — one sink
--- failing never costs the lead. Inserts use the service-role key, and RLS is
--- enabled with no policies, so these rows are readable only by us.
-
--- ── contact_messages ─────────────────────────────────────────────────────
-
-create table if not exists public.contact_messages (
-  id         bigint generated always as identity primary key,
-  created_at timestamptz not null default now(),
-  name       text not null,
-  email      text not null,
-  phone      text,
-  message    text not null,
-  status     text not null default 'new'  -- new | contacted | closed
-);
-
-create index if not exists contact_messages_created_at_idx on public.contact_messages (created_at desc);
-
-alter table public.contact_messages enable row level security;
-
--- ── lead_capture ─────────────────────────────────────────────────────────
--- Calculator sizing-modal leads: who to reach on WhatsApp, where they are,
--- and the size bucket they picked.
-
-create table if not exists public.lead_capture (
-  id          bigint generated always as identity primary key,
-  created_at  timestamptz not null default now(),
-  whatsapp    text not null,
-  state       text not null,
-  system_size text not null,
-  status      text not null default 'new'  -- new | contacted | won | lost
-);
-
-create index if not exists lead_capture_created_at_idx on public.lead_capture (created_at desc);
-
-alter table public.lead_capture enable row level security;
+-- Contact-form and calculator leads are NOT stored here: they already go to
+-- the unified `leads` table (supabase/leads.sql) via lib/leads.ts, and main's
+-- leads desk reads that. These routes write their row AND email the team
+-- independently — one sink failing never costs the entry. Inserts use the
+-- service-role key, and RLS is enabled with no policies, so these rows are
+-- readable only by us.
 
 -- ── notify_me ────────────────────────────────────────────────────────────
 -- One row per signup. No auth flow; the email is the contact point.

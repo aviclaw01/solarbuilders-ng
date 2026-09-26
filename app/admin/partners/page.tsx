@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { AlertTriangle, Clock, ShieldCheck, UserCheck, UserX, PauseCircle, ArrowRight } from "lucide-react";
-import AdminNav from "@/components/ui/AdminNav";
 import {
   PARTNER_STATUSES,
   PARTNER_STATUS_META,
@@ -89,8 +88,7 @@ export default async function AdminPartnersPage({ searchParams }: PageProps) {
   const needsDecision = rows.filter((r) => r.status === "submitted" || r.status === "under_review");
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <main className="max-w-6xl mx-auto px-6 py-10">
+    <>
         <div className="flex items-start justify-between gap-4 mb-2">
           <div>
             <h1 className="font-heading text-2xl font-extrabold text-slate-900">Partners</h1>
@@ -106,8 +104,6 @@ export default async function AdminPartnersPage({ searchParams }: PageProps) {
             Public directory <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
-
-        <AdminNav active="partners" />
 
         {!superConfigured && (
           <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-3">
@@ -166,8 +162,7 @@ export default async function AdminPartnersPage({ searchParams }: PageProps) {
           Approving a partner publishes a badge on /partners/{`{slug}`} and emails them a private portal link. The
           badge states exactly which of the four checks were done — it never claims more than we looked at.
         </p>
-      </main>
-    </div>
+    </>
   );
 }
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PageHeader from "@/components/ui/AdminPageHeader";
 import { revalidatePath } from "next/cache";
 import {
   AlertTriangle,
@@ -13,7 +14,6 @@ import {
   Users,
 } from "lucide-react";
 import { formatNaira } from "@/lib/quote";
-import AdminNav from "@/components/ui/AdminNav";
 
 /**
  * Internal leads dashboard — every "Get this system built" submission from
@@ -46,6 +46,53 @@ type Status = (typeof STATUSES)[number];
 const PIPELINE_STATUSES: readonly Status[] = ["new", "contacted"];
 
 const MAX_ROWS = 500;
+
+/**
+ * A row from `leads` — the homepage "size it for me" modal and the contact
+ * form. These are NOT priced requests: no quote, no total, and the homepage
+ * modal does not even collect a name. They live in their own table for that
+ * reason, and they are shown here rather than on a page of their own because
+ * AdminNav is owned elsewhere and a page nobody can navigate to is a page
+ * nobody reads.
+ */
+interface Enquiry {
+  id: number;
+  created_at: string;
+  kind: string;
+  name: string | null;
+  phone: string | null;
+  email: string | null;
+  location: string | null;
+  message: string | null;
+  payload: Record<string, unknown> | null;
+  status: string;
+}
+
+const ENQUIRY_KIND_LABEL: Record<string, string> = {
+  lead_capture: "Homepage — size it for me",
+  contact: "Contact form",
+};
+
+/** Newest enquiries. Failure is distinguished from empty by the caller. */
+async function fetchEnquiries(): Promise<{ ok: true; rows: Enquiry[] } | { ok: false; status: number }> {
+  const env = supabaseEnv();
+  if (!env) return { ok: false, status: 0 };
+  const params = new URLSearchParams({ select: "*", order: "created_at.desc", limit: "100" });
+  try {
+    const res = await fetch(`${env.url}/rest/v1/leads?${params.toString()}`, {
+      headers: { apikey: env.key, Authorization: `Bearer ${env.key}`, Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      console.error("[admin/leads] enquiries read failed:", res.status, (await res.text()).slice(0, 200));
+      return { ok: false, status: res.status };
+    }
+    return { ok: true, rows: (await res.json()) as Enquiry[] };
+  } catch (err) {
+    console.error("[admin/leads] enquiries fetch failed:", err);
+    return { ok: false, status: 502 };
+  }
+}
 
 interface Lead {
   id: number;
@@ -217,6 +264,7 @@ interface PageProps {
 
 export default async function AdminLeadsPage({ searchParams }: PageProps) {
   const sp = await searchParams;
+  const enquiries = await fetchEnquiries();
   const activeStatus = isStatus(sp.status) ? sp.status : "all";
   const rawQuery = (sp.q ?? "").trim();
   const searchTerm = sanitiseSearch(rawQuery);
@@ -444,7 +492,89 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
           )}
         </div>
       )}
+
+      <EnquiriesSection result={enquiries} />
     </Shell>
+  );
+}
+
+/**
+ * Enquiries that carry no quote. Separate from the table above on purpose:
+ * they have no quote code, no tier and no estimate, and forcing them into
+ * those columns would mean four empty cells and a row that reads as broken.
+ */
+function EnquiriesSection({
+  result,
+}: {
+  result: { ok: true; rows: Enquiry[] } | { ok: false; status: number };
+}) {
+  return (
+    <section className="mt-10">
+      <h2 className="font-heading font-bold text-slate-900 text-lg mb-1">Enquiries</h2>
+      <p className="text-slate-500 text-sm mb-4">
+        The homepage &ldquo;size it for me&rdquo; modal and the contact form. No quote attached &mdash; somebody asking
+        us to get in touch.
+      </p>
+
+      {!result.ok ? (
+        <div className="border border-rose-200 bg-rose-50 rounded-2xl px-4 py-3 text-sm text-rose-800">
+          {result.status === 0
+            ? "Supabase is not configured on this deployment, so enquiries cannot be shown."
+            : `Could not read the enquiries table (HTTP ${result.status}). This is a read failure, not an empty inbox — run supabase/leads.sql if the table is missing.`}
+        </div>
+      ) : result.rows.length === 0 ? (
+        <p className="border border-slate-200 rounded-2xl px-4 py-3 text-sm text-slate-500">
+          No enquiries yet. They arrive here as soon as somebody uses the homepage modal or the contact form.
+        </p>
+      ) : (
+        <ul className="border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden">
+          {result.rows.map((e) => {
+            const size = typeof e.payload?.systemSize === "string" ? e.payload.systemSize : null;
+            const digits = e.phone ? whatsappDigits(e.phone) : "";
+            return (
+              <li key={e.id} className="px-4 py-3">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="text-xs text-slate-400">{formatLagos(e.created_at)}</span>
+                  <span className="text-xs font-semibold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5">
+                    {ENQUIRY_KIND_LABEL[e.kind] ?? e.kind}
+                  </span>
+                  {e.name && <span className="font-heading font-semibold text-slate-900">{e.name}</span>}
+                  {e.location && <span className="text-sm text-slate-600">{e.location}</span>}
+                  {size && <span className="text-sm text-slate-600">{size}</span>}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                  {e.phone && (
+                    <>
+                      <a href={`tel:${e.phone}`} className="text-xs text-slate-600 hover:text-slate-900">
+                        {e.phone}
+                      </a>
+                      {digits && (
+                        <a
+                          href={`https://wa.me/${digits}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-emerald-600 font-semibold hover:underline"
+                        >
+                          WhatsApp
+                        </a>
+                      )}
+                    </>
+                  )}
+                  {e.email && (
+                    <a href={`mailto:${e.email}`} className="text-xs text-slate-500 hover:text-slate-800 truncate">
+                      {e.email}
+                    </a>
+                  )}
+                </div>
+
+                {e.message && <p className="text-sm text-slate-700 mt-2 whitespace-pre-wrap">{e.message}</p>}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
   );
 }
 
@@ -454,25 +584,10 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-[#0A0F1E] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <span className="text-[#F59E0B] text-xs font-semibold tracking-wide uppercase">
-              Internal · not indexed
-            </span>
-            <h1 className="font-heading font-extrabold text-2xl md:text-3xl mt-1">Quote requests</h1>
-          </div>
-          <Link href="/" className="text-sm text-slate-300 hover:text-white transition-colors">
-            ← Back to site
-          </Link>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        <AdminNav active="leads" />
-        {children}
-      </main>
-    </div>
+    <>
+      <PageHeader title="Quote requests" subtitle="Every 'Get this system built' submission from the calculator." />
+      {children}
+    </>
   );
 }
 
