@@ -42,10 +42,14 @@ export const metadata: Metadata = {
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"] as const;
 type Status = (typeof STATUSES)[number];
 
-/** Statuses that count toward the (very rough) pipeline number. */
-const PIPELINE_STATUSES: readonly Status[] = ["new", "contacted"];
+/** Rows per page on the quote-request list. */
+const PAGE_SIZE = 50;
 
-const MAX_ROWS = 500;
+/** Ceiling on the pipeline-value sum, in case the desk ever fills up. */
+const PIPELINE_ROWS_CAP = 500;
+
+/** Newest enquiry rows shown in the enquiries section below the list. */
+const ENQUIRY_LIMIT = 100;
 
 /**
  * A row from `leads` — the homepage "size it for me" modal and the contact
@@ -73,21 +77,28 @@ const ENQUIRY_KIND_LABEL: Record<string, string> = {
   contact: "Contact form",
 };
 
-/** Newest enquiries. Failure is distinguished from empty by the caller. */
-async function fetchEnquiries(): Promise<{ ok: true; rows: Enquiry[] } | { ok: false; status: number }> {
+/** Newest enquiry rows, plus the exact total so "newest 100 of N" is honest. */
+async function fetchEnquiries(): Promise<
+  { ok: true; rows: Enquiry[]; total: number | null } | { ok: false; status: number }
+> {
   const env = supabaseEnv();
   if (!env) return { ok: false, status: 0 };
-  const params = new URLSearchParams({ select: "*", order: "created_at.desc", limit: "100" });
+  const params = new URLSearchParams({ select: "*", order: "created_at.desc", limit: String(ENQUIRY_LIMIT) });
   try {
     const res = await fetch(`${env.url}/rest/v1/leads?${params.toString()}`, {
-      headers: { apikey: env.key, Authorization: `Bearer ${env.key}`, Accept: "application/json" },
+      headers: {
+        apikey: env.key,
+        Authorization: `Bearer ${env.key}`,
+        Accept: "application/json",
+        Prefer: "count=exact",
+      },
       cache: "no-store",
     });
     if (!res.ok) {
       console.error("[admin/leads] enquiries read failed:", res.status, (await res.text()).slice(0, 200));
       return { ok: false, status: res.status };
     }
-    return { ok: true, rows: (await res.json()) as Enquiry[] };
+    return { ok: true, rows: (await res.json()) as Enquiry[], total: exactCount(res) };
   } catch (err) {
     console.error("[admin/leads] enquiries fetch failed:", err);
     return { ok: false, status: 502 };
@@ -177,15 +188,33 @@ function supabaseEnv(): { url: string; key: string } | null {
 }
 
 type FetchResult =
-  | { ok: true; rows: Lead[] }
+  | { ok: true; rows: Lead[]; total: number | null }
   | { ok: false; kind: "env" }
   | { ok: false; kind: "http"; status: number }
   | { ok: false; kind: "network" };
 
-async function fetchLeads(params: URLSearchParams): Promise<FetchResult> {
+/**
+ * The exact total from a count=exact read's Content-Range ("0-49/183"), or
+ * null when the server could not count. null means "unknown", never 0 — the
+ * desk renders a dash rather than a confident wrong number.
+ */
+function exactCount(res: Response): number | null {
+  const tail = (res.headers.get("content-range") ?? "").split("/")[1];
+  const n = Number(tail);
+  return tail && tail !== "*" && Number.isFinite(n) ? n : null;
+}
+
+/**
+ * One window of the quote-request list: `page` is 1-based, PAGE_SIZE rows,
+ * `count=exact` so the pager knows the real total without pulling it. Params
+ * carry the ordering and any filters; the caller walks the page back if the
+ * URL pointed past the last row (PostgREST answers 416 there).
+ */
+async function fetchLeads(params: URLSearchParams, page: number): Promise<FetchResult> {
   const env = supabaseEnv();
   if (!env) return { ok: false, kind: "env" };
 
+  const from = (page - 1) * PAGE_SIZE;
   let res: Response;
   try {
     res = await fetch(`${env.url}/rest/v1/quote_requests?${params.toString()}`, {
@@ -193,6 +222,8 @@ async function fetchLeads(params: URLSearchParams): Promise<FetchResult> {
         apikey: env.key,
         Authorization: `Bearer ${env.key}`,
         Accept: "application/json",
+        Prefer: "count=exact",
+        Range: `${from}-${from + PAGE_SIZE - 1}`,
       },
       cache: "no-store",
     });
@@ -206,7 +237,85 @@ async function fetchLeads(params: URLSearchParams): Promise<FetchResult> {
     return { ok: false, kind: "http", status: res.status };
   }
 
-  return { ok: true, rows: (await res.json()) as Lead[] };
+  return { ok: true, rows: (await res.json()) as Lead[], total: exactCount(res) };
+}
+
+type StatusCounts = Record<Status, number>;
+
+/**
+ * Exact counts per status from one tiny count read per status. Aggregates
+ * (`count()`, `sum()`) are switched off on this Supabase project (PGRST123,
+ * verified live), so a group-by is not available; counting per status
+ * transfers no rows and stays correct as the table outgrows any page size.
+ */
+async function readStatusCounts(params: URLSearchParams): Promise<StatusCounts | null> {
+  const results = await Promise.all(
+    STATUSES.map(async (s) => {
+      const p = new URLSearchParams(params);
+      p.set("status", `eq.${s}`);
+      return [s, await readCount(p)] as const;
+    }),
+  );
+  if (results.some(([, n]) => n === null)) return null;
+  const out = {} as StatusCounts;
+  for (const [s, n] of results) out[s] = n as number;
+  return out;
+}
+
+/** One exact count; null when the read failed or the server could not count. */
+async function readCount(params: URLSearchParams): Promise<number | null> {
+  const env = supabaseEnv();
+  if (!env) return null;
+  try {
+    const res = await fetch(`${env.url}/rest/v1/quote_requests?${params.toString()}`, {
+      headers: {
+        apikey: env.key,
+        Authorization: `Bearer ${env.key}`,
+        Accept: "application/json",
+        Prefer: "count=exact",
+        Range: "0-0",
+      },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      console.error("[admin/leads] count read failed:", res.status);
+      return null;
+    }
+    return exactCount(res);
+  } catch (err) {
+    console.error("[admin/leads] count read failed:", err);
+    return null;
+  }
+}
+
+/**
+ * Pipeline estimate: the sum of mid-range totals over the newest open rows
+ * (new + contacted). There is no server-side sum on this project, so rows are
+ * fetched up to PIPELINE_ROWS_CAP and added here; `capped` lets the card say
+ * so instead of quietly pretending the number is the whole pipeline.
+ */
+async function readPipeline(params: URLSearchParams): Promise<{ value: number; capped: boolean } | null> {
+  const env = supabaseEnv();
+  if (!env) return null;
+  const cappedParams = new URLSearchParams(params);
+  cappedParams.set("limit", String(PIPELINE_ROWS_CAP + 1));
+  try {
+    const res = await fetch(`${env.url}/rest/v1/quote_requests?${cappedParams.toString()}`, {
+      headers: { apikey: env.key, Authorization: `Bearer ${env.key}`, Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      console.error("[admin/leads] pipeline read failed:", res.status);
+      return null;
+    }
+    const rows = (await res.json()) as { total_best: number | null }[];
+    const capped = rows.length > PIPELINE_ROWS_CAP;
+    const scoped = capped ? rows.slice(0, PIPELINE_ROWS_CAP) : rows;
+    return { value: scoped.reduce((sum, r) => sum + (r.total_best ?? 0), 0), capped };
+  } catch (err) {
+    console.error("[admin/leads] pipeline read failed:", err);
+    return null;
+  }
 }
 
 // ─────────────────────────────────────────────────────────
@@ -259,7 +368,7 @@ async function updateStatus(formData: FormData) {
 // ─────────────────────────────────────────────────────────
 
 interface PageProps {
-  searchParams: Promise<{ status?: string; q?: string }>;
+  searchParams: Promise<{ status?: string; q?: string; page?: string }>;
 }
 
 export default async function AdminLeadsPage({ searchParams }: PageProps) {
@@ -269,17 +378,27 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
   const rawQuery = (sp.q ?? "").trim();
   const searchTerm = sanitiseSearch(rawQuery);
 
-  // Unfiltered read powers the summary strip; the filtered read powers the list.
-  const statsParams = new URLSearchParams({
-    select: "status,total_best,created_at",
-    order: "created_at.desc",
-    limit: String(MAX_ROWS),
-  });
+  // Anything the URL mangles becomes page 1. A page past the end (a stale
+  // link after rows are deleted) fails the range read and walks back below.
+  const requestedPage = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
 
+  // Tiny count reads power the summary strip — exact totals, no row transfer,
+  // no ceiling. Summing estimates needs rows, so the pipeline is capped and
+  // labelled as such.
+  const statusParams = new URLSearchParams({ select: "id", order: "created_at.desc" });
+  const recentParams = new URLSearchParams({
+    select: "id",
+    created_at: `gte.${new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()}`,
+  });
+  const pipelineParams = new URLSearchParams({
+    select: "total_best",
+    status: "in.(new,contacted)",
+    order: "created_at.desc",
+  });
+  // The filtered read powers the list, one page at a time.
   const listParams = new URLSearchParams({
     select: "*",
     order: "created_at.desc",
-    limit: String(MAX_ROWS),
   });
   if (activeStatus !== "all") listParams.set("status", `eq.${activeStatus}`);
   if (searchTerm) {
@@ -290,7 +409,19 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
     );
   }
 
-  const [stats, list] = await Promise.all([fetchLeads(statsParams), fetchLeads(listParams)]);
+  let page = requestedPage;
+  let list: FetchResult = { ok: false, kind: "env" };
+  for (;;) {
+    list = await fetchLeads(listParams, page);
+    if (list.ok || page <= 1) break;
+    page -= 1;
+  }
+
+  const [statusCounts, recentCount, pipelineStats] = await Promise.all([
+    readStatusCounts(statusParams),
+    readCount(recentParams),
+    readPipeline(pipelineParams),
+  ]);
 
   // ── Error state ──────────────────────────────────────
   if (!list.ok) {
@@ -328,29 +459,40 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
     );
   }
 
-  const leads = list.rows;
-  const allRows = stats.ok ? stats.rows : leads;
+  const leads = list.ok ? list.rows : [];
+  const filteredTotal = list.ok ? list.total : null;
+  const pageTotal = leads.length;
+  const pageCount = filteredTotal !== null ? Math.max(1, Math.ceil(filteredTotal / PAGE_SIZE)) : 1;
+  const firstRow = (page - 1) * PAGE_SIZE + 1;
 
-  // ── Summary numbers ─────────────────────────────────
-  const total = allRows.length;
-  const byStatus = STATUSES.reduce<Record<Status, number>>(
-    (acc, s) => {
-      acc[s] = allRows.filter((r) => r.status === s).length;
-      return acc;
-    },
-    { new: 0, contacted: 0, quoted: 0, won: 0, lost: 0 },
-  );
-  const pipeline = allRows
-    .filter((r) => isStatus(r.status) && PIPELINE_STATUSES.includes(r.status))
-    .reduce((sum, r) => sum + (r.total_best ?? 0), 0);
-  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const last7 = allRows.filter((r) => new Date(r.created_at).getTime() >= sevenDaysAgo).length;
+  // ── Summary numbers (exact, counted server-side) ─────
+  const byStatus: Record<Status, number | null> = statusCounts ?? {
+    new: null,
+    contacted: null,
+    quoted: null,
+    won: null,
+    lost: null,
+  };
+  const statusValues = Object.values(byStatus);
+  const total: number | null = statusValues.every((n) => n === null)
+    ? null
+    : statusValues.reduce<number>((sum, n) => sum + (n ?? 0), 0);
+  const last7 = recentCount;
+
+  const pageHref = (p: number) => {
+    const params = new URLSearchParams();
+    if (activeStatus !== "all") params.set("status", activeStatus);
+    if (rawQuery) params.set("q", rawQuery);
+    if (p > 1) params.set("page", String(p));
+    const qs = params.toString();
+    return qs ? `/admin/leads?${qs}` : "/admin/leads";
+  };
 
   const filterHref = (status: string) => {
-    const p = new URLSearchParams();
-    if (status !== "all") p.set("status", status);
-    if (rawQuery) p.set("q", rawQuery);
-    const qs = p.toString();
+    const params = new URLSearchParams();
+    if (status !== "all") params.set("status", status);
+    if (rawQuery) params.set("q", rawQuery);
+    const qs = params.toString();
     return qs ? `/admin/leads?${qs}` : "/admin/leads";
   };
 
@@ -358,18 +500,29 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
     <Shell>
       {/* Summary strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <StatCard icon={<Users className="w-4 h-4" />} label="Total leads" value={String(total)} />
+        <StatCard
+          icon={<Users className="w-4 h-4" />}
+          label="Total leads"
+          value={total === null ? "—" : String(total)}
+          hint={total === null ? "the exact count read failed — a dash is not a zero" : undefined}
+        />
         <StatCard
           icon={<Clock className="w-4 h-4" />}
           label="Last 7 days"
-          value={String(last7)}
+          value={last7 === null ? "—" : String(last7)}
           tone="amber"
         />
         <StatCard
           icon={<TrendingUp className="w-4 h-4" />}
           label="Pipeline value, estimate only"
-          value={formatNaira(pipeline)}
-          hint="new + contacted, at the mid-range total"
+          value={pipelineStats === null ? "—" : formatNaira(pipelineStats.value)}
+          hint={
+            pipelineStats === null
+              ? "the estimate read failed — a dash is not a zero"
+              : pipelineStats.capped
+                ? `summed over the newest ${PIPELINE_ROWS_CAP} open leads`
+                : "new + contacted, at the mid-range total"
+          }
         />
         <div className="rounded-2xl border border-slate-100 bg-white p-4">
           <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">By status</div>
@@ -386,9 +539,9 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      {!stats.ok && (
+      {statusCounts === null && (
         <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-6">
-          Summary numbers are computed from the filtered rows only — the unfiltered read failed.
+          The summary strip could not be counted exactly, so its numbers show dashes — the list below is unaffected.
         </p>
       )}
 
@@ -448,17 +601,19 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
         <div className="rounded-2xl border border-slate-100 bg-white p-12 text-center">
           <Inbox className="w-8 h-8 text-slate-300 mx-auto mb-3" />
           <h2 className="font-heading font-bold text-slate-900 text-lg">
-            {total === 0 ? "No quote requests yet" : "Nothing matches this filter"}
+            {total === 0 && total !== null ? "No quote requests yet" : "Nothing matches this filter"}
           </h2>
           <p className="text-slate-500 text-sm mt-1 max-w-md mx-auto">
-            {total === 0 ? (
+            {total === 0 && total !== null ? (
               <>
                 When somebody sizes a system on the calculator and submits &ldquo;Get this system
                 built&rdquo;, the lead lands here.
               </>
             ) : (
               <>
-                {total} lead{total === 1 ? "" : "s"} in total.{" "}
+                {total === null
+                  ? "The exact total could not be counted."
+                  : `${total} lead${total === 1 ? "" : "s"} in total.`}{" "}
                 <Link href="/admin/leads" className="text-amber-600 font-semibold hover:underline">
                   Clear the filters
                 </Link>{" "}
@@ -485,11 +640,14 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
             ))}
           </ul>
 
-          {leads.length >= MAX_ROWS && (
-            <p className="px-4 py-3 text-xs text-slate-500 border-t border-slate-100 bg-slate-50">
-              Showing the newest {MAX_ROWS} rows. Narrow the filters to see older leads.
-            </p>
-          )}
+          <Pager
+            page={page}
+            pageCount={pageCount}
+            pageHref={pageHref}
+            shown={pageTotal}
+            total={filteredTotal}
+            firstRow={firstRow}
+          />
         </div>
       )}
 
@@ -506,7 +664,7 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
 function EnquiriesSection({
   result,
 }: {
-  result: { ok: true; rows: Enquiry[] } | { ok: false; status: number };
+  result: { ok: true; rows: Enquiry[]; total: number | null } | { ok: false; status: number };
 }) {
   return (
     <section className="mt-10">
@@ -514,6 +672,9 @@ function EnquiriesSection({
       <p className="text-slate-500 text-sm mb-4">
         The homepage &ldquo;size it for me&rdquo; modal and the contact form. No quote attached &mdash; somebody asking
         us to get in touch.
+        {result.ok && result.total !== null && result.total > result.rows.length && (
+          <> Showing the newest {result.rows.length} of {result.total}.</>
+        )}
       </p>
 
       {!result.ok ? (
@@ -768,5 +929,76 @@ function LeadRow({ lead }: { lead: Lead }) {
         </details>
       )}
     </li>
+  );
+}
+
+/**
+ * Server-rendered pager — no client JS. Links preserve the status and search
+ * filters, which is why pageHref exists instead of a bare `?page=`. The row
+ * range ("101–150 of 183") is what tells you whether going forward is worth
+ * it; on the last page Prev is the only live control.
+ */
+function Pager({
+  page,
+  pageCount,
+  pageHref,
+  shown,
+  total,
+  firstRow,
+}: {
+  page: number;
+  pageCount: number;
+  pageHref: (p: number) => string;
+  shown: number;
+  total: number | null;
+  firstRow: number;
+}) {
+  const linkCls =
+    "rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-slate-400 transition-colors";
+  const offCls = "rounded-full border border-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-300 select-none";
+
+  // Unknown total with an empty page: the pager cannot say whether older rows
+  // exist, so say so instead of showing a disabled control that implies "no".
+  if (total === null && shown === 0) {
+    return (
+      <p className="px-4 py-3 text-xs text-slate-500 border-t border-slate-100 bg-slate-50">
+        The exact total could not be counted. Rows past this page may still exist — narrow the
+        filters or use the search to reach them.
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-t border-slate-100 bg-slate-50">
+      <p className="text-xs text-slate-500">
+        {shown === 0
+          ? "No rows on this page."
+          : total !== null
+            ? `Showing ${firstRow}–${firstRow + shown - 1} of ${total}`
+            : `Showing ${shown} rows on this page`}
+      </p>
+      <div className="flex items-center gap-2">
+        {page > 1 ? (
+          <Link href={pageHref(page - 1)} prefetch={false} className={linkCls}>
+            ← Newer
+          </Link>
+        ) : (
+          <span className={offCls}>← Newer</span>
+        )}
+        <span className="text-xs text-slate-400 font-mono">
+          page {page}
+          {total !== null ? ` of ${pageCount}` : ""}
+        </span>
+        {total !== null && page < pageCount ? (
+          <Link href={pageHref(page + 1)} prefetch={false} className={linkCls}>
+            Older →
+          </Link>
+        ) : (
+          <span className={offCls} aria-hidden={total === null}>
+            Older →
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
