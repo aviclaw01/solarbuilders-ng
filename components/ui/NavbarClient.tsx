@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { X, Menu, Phone, ChevronDown, MessageCircle } from 'lucide-react';
+import { X, Menu, Phone, ChevronDown, MessageCircle, ArrowRight } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import CartButton from '@/components/ui/CartButton';
 import { CONTACT_WHATSAPP, whatsappLink } from '@/lib/site';
@@ -120,14 +120,15 @@ export default function NavbarClient({
     <>
       <nav
         aria-label="Primary"
-        className={`sticky top-0 z-50 transition-all duration-200 ${
-          scrolled ? 'backdrop-blur-sm bg-white/90 border-b border-slate-100' : 'bg-white border-b border-slate-100'
+        className={`sticky top-0 z-50 transition-[background-color,box-shadow,border-color] duration-200 border-b ${
+          scrolled ? 'backdrop-blur-md bg-white/85 border-line shadow-soft' : 'bg-white border-transparent'
         }`}
       >
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16" ref={navRef}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16 md:h-[72px]" ref={navRef}>
             <Link href="/" className="flex items-center min-h-[44px]" aria-label="SolarBuilders.ng home">
-              <Logo variant="horizontal" size="md" colorMode="light" />
+              <span className="md:hidden"><Logo variant="horizontal" size="sm" colorMode="light" /></span>
+              <span className="hidden md:inline-flex"><Logo variant="horizontal" size="md" colorMode="light" /></span>
             </Link>
 
             {/* Desktop: three grouped menus */}
@@ -146,8 +147,8 @@ export default function NavbarClient({
                       onMouseEnter={() => setOpenMenu(group.label)}
                       aria-expanded={expanded}
                       aria-controls={panelId}
-                      className={`flex items-center gap-1 px-3 h-11 rounded-full text-sm font-medium transition-colors ${
-                        isActive(group) || expanded ? 'text-slate-900 bg-slate-50' : 'text-slate-600 hover:text-slate-900'
+                      className={`focus-ring flex items-center gap-1 px-3.5 h-11 rounded-full text-[15px] font-medium transition-colors ${
+                        isActive(group) || expanded ? 'text-ink bg-sky' : 'text-ink-soft hover:text-ink hover:bg-sky'
                       }`}
                     >
                       {group.label}
@@ -156,39 +157,39 @@ export default function NavbarClient({
 
                     {expanded && (
                       <div id={panelId} className={`absolute top-full pt-2 w-[580px] max-w-[calc(100vw-3rem)] z-50 ${alignRight ? 'right-0' : 'left-0'}`}>
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-300/40 p-3 grid grid-cols-[1fr_1fr] gap-2">
+                        <div className="bg-white rounded-card border border-line shadow-lift p-3 grid grid-cols-[1fr_1fr] gap-2">
                           <div>
                             {group.items.map((item) => (
                               <Link
                                 key={item.href}
                                 href={item.href}
-                                className="block px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors"
+                                className="focus-ring block px-3 py-2.5 rounded-control hover:bg-sky transition-colors"
                               >
-                                <span className="block text-sm font-semibold text-slate-900">{item.label}</span>
-                                {item.hint && <span className="block text-xs text-slate-500 mt-0.5">{item.hint}</span>}
+                                <span className="block text-sm font-semibold text-ink">{item.label}</span>
+                                {item.hint && <span className="block text-xs text-muted mt-0.5">{item.hint}</span>}
                               </Link>
                             ))}
                           </div>
                           <Link
                             href={group.featured.href}
-                            className="group/card rounded-xl bg-gradient-to-br from-amber-50 to-white border border-amber-100 p-4 flex flex-col hover:border-amber-300 transition-colors"
+                            className="focus-ring group/card rounded-control bg-sun-wash p-4 flex flex-col hover:bg-amber-100/70 transition-colors"
                           >
-                            <span className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">
+                            <span className="text-xs font-semibold text-sun-ink">
                               {group.featured.eyebrow}
                             </span>
-                            <span className="font-heading font-bold text-slate-900 text-base mt-1">
+                            <span className="font-heading font-bold text-ink text-base mt-1">
                               {group.featured.title}
                             </span>
                             {group.featured.stat && (
-                              <span className="font-heading font-extrabold text-amber-700 text-lg mt-1.5">
+                              <span className="font-heading font-extrabold text-ink text-lg mt-1.5 tracking-tight">
                                 {group.featured.stat}
                               </span>
                             )}
-                            <span className="text-xs text-slate-500 leading-relaxed mt-1.5 flex-1">
+                            <span className="text-xs text-muted leading-relaxed mt-1.5 flex-1">
                               {group.featured.body}
                             </span>
-                            <span className="text-xs font-semibold text-slate-900 mt-3 group-hover/card:text-amber-600 transition-colors">
-                              Open →
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-ink mt-3">
+                              Open <ArrowRight className="w-3 h-3 transition-transform group-hover/card:translate-x-0.5" aria-hidden="true" />
                             </span>
                           </Link>
                         </div>
@@ -199,8 +200,8 @@ export default function NavbarClient({
               })}
               <Link
                 href={plainLink.href}
-                className={`flex items-center px-3 h-11 rounded-full text-sm font-medium transition-colors ${
-                  pathname === plainLink.href ? 'text-slate-900 bg-slate-50' : 'text-slate-600 hover:text-slate-900'
+                className={`focus-ring flex items-center px-3.5 h-11 rounded-full text-[15px] font-medium transition-colors ${
+                  pathname === plainLink.href ? 'text-ink bg-sky' : 'text-ink-soft hover:text-ink hover:bg-sky'
                 }`}
               >
                 {plainLink.label}
@@ -213,22 +214,24 @@ export default function NavbarClient({
                 href={whatsappLink('Hi SolarBuilders, I have a question about going solar.')}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden lg:flex items-center gap-1.5 text-slate-600 text-sm font-medium hover:text-slate-900 transition-colors h-11 px-3"
+                className="focus-ring hidden lg:flex items-center gap-1.5 text-ink-soft text-[15px] font-medium hover:text-ink transition-colors h-11 px-3 rounded-full"
               >
                 <MessageCircle className="w-4 h-4" />
                 Talk to us
               </a>
               <CartButton />
-              <Link
-                href="/calculator"
-                className="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 h-11 rounded-full text-sm font-semibold transition-all flex items-center whitespace-nowrap"
-              >
-                Size my system
+              <Link href="/calculator" className="btn btn-sun !min-h-[44px] !px-5 text-[15px]">
+                Get my quote
               </Link>
             </div>
 
             {/* Mobile actions */}
-            <div className="md:hidden flex items-center gap-1">
+            <div className="md:hidden flex items-center gap-0.5">
+              {!pathname?.startsWith('/calculator') && (
+                <Link href="/calculator" className="btn btn-sun !min-h-[40px] !px-4 text-sm !shadow-none mr-1">
+                  Get quote
+                </Link>
+              )}
               <CartButton />
               <button
                 ref={burgerRef}
@@ -255,7 +258,7 @@ export default function NavbarClient({
           aria-label="Site menu"
           className="fixed inset-0 bg-white z-[200] flex flex-col md:hidden"
         >
-          <div className="flex justify-between items-center px-6 h-16 border-b border-slate-100 flex-shrink-0">
+          <div className="flex justify-between items-center px-4 h-16 border-b border-line flex-shrink-0">
             <Link href="/" onClick={() => setOpen(false)} className="flex items-center">
               <Logo variant="horizontal" size="md" colorMode="light" />
             </Link>
@@ -271,47 +274,47 @@ export default function NavbarClient({
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 py-6">
+          <div className="flex-1 overflow-y-auto px-4 py-6">
             <Link
               href="/calculator"
               onClick={() => setOpen(false)}
-              className="flex items-center justify-center w-full bg-amber-400 hover:bg-amber-500 text-slate-900 py-4 rounded-full font-heading font-bold text-lg min-h-[56px] mb-8"
+              className="btn btn-sun btn-lg w-full mb-8"
             >
-              Size my system →
+              Get my solar quote <ArrowRight className="w-5 h-5" aria-hidden="true" />
             </Link>
 
             {menus.map((group) => (
               <div key={group.label} className="mb-7">
-                <p className="text-xs font-heading font-bold text-slate-500 uppercase tracking-widest mb-2">
+                <p className="text-sm font-heading font-bold text-muted mb-1">
                   {group.label}
                 </p>
                 <div className="space-y-1">
                   {group.items.map((item) => (
                     <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="block py-3 min-h-[48px]">
-                      <span className="block font-heading font-semibold text-slate-900 text-lg">{item.label}</span>
-                      {item.hint && <span className="block text-sm text-slate-500">{item.hint}</span>}
+                      <span className="block font-heading font-semibold text-ink text-lg">{item.label}</span>
+                      {item.hint && <span className="block text-sm text-muted">{item.hint}</span>}
                     </Link>
                   ))}
                 </div>
               </div>
             ))}
 
-            <div className="pt-2 border-t border-slate-100">
+            <div className="pt-2 border-t border-line">
               <Link
                 href={plainLink.href}
                 onClick={() => setOpen(false)}
-                className="block py-3 font-heading font-semibold text-slate-900 text-lg min-h-[48px]"
+                className="block py-3 font-heading font-semibold text-ink text-lg min-h-[48px]"
               >
                 {plainLink.label}
-                <span className="block text-sm text-slate-500 font-normal">Installers, vendors and distributors</span>
+                <span className="block text-sm text-muted font-normal">Installers, vendors and distributors</span>
               </Link>
             </div>
           </div>
 
-          <div className="px-6 pb-6 pt-4 border-t border-slate-100 flex-shrink-0 grid grid-cols-2 gap-3">
+          <div className="px-4 pb-6 pt-4 border-t border-line flex-shrink-0 grid grid-cols-2 gap-3">
             <a
               href={`tel:+${CONTACT_WHATSAPP}`}
-              className="flex items-center justify-center gap-2 border border-slate-200 text-slate-700 py-3.5 rounded-full font-semibold min-h-[52px]"
+              className="btn btn-outline"
             >
               <Phone className="w-4 h-4" /> Call
             </a>
@@ -319,7 +322,7 @@ export default function NavbarClient({
               href={whatsappLink('Hi SolarBuilders, I have a question about going solar.')}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white py-3.5 rounded-full font-semibold min-h-[52px]"
+              className="btn bg-[#0E7568] hover:bg-[#075E54] text-white"
             >
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </a>
