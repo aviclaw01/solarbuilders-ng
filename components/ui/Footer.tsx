@@ -33,7 +33,7 @@ const POPULAR_COMPARISONS = ['deye-vs-felicity', 'felicity-vs-growatt', 'jinko-v
   .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
 const linkCls =
-  'text-slate-400 hover:text-white transition-colors underline-offset-4 hover:underline block py-1.5 min-h-[32px]';
+  'focus-ring rounded-sm text-slate-400 hover:text-white transition-colors block py-1.5 min-h-[32px]';
 
 /** Footer renders claimed accounts only (see lib/site.ts). TikTok has no
  * lucide mark — add one here the day that account is claimed. */
@@ -48,7 +48,7 @@ const SOCIAL_ICONS: Partial<Record<SocialAccount['id'], typeof Instagram>> = {
 function Column({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="font-heading text-white font-semibold mb-3 text-sm">{title}</h2>
+      <h2 className="font-heading text-white font-bold mb-3 text-[15px] tracking-tight">{title}</h2>
       <ul className="space-y-0.5 text-sm">{children}</ul>
     </div>
   );
@@ -56,13 +56,13 @@ function Column({ title, children }: { title: string; children: React.ReactNode 
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-400 pt-14 pb-8 px-6">
+    <footer className="on-dark bg-night text-slate-400 pt-16 md:pt-20 pb-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         {/* Brand + contact */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] gap-10 mb-12">
-          <div>
+        <div className="grid grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr] gap-x-6 gap-y-10 lg:gap-10 mb-14">
+          <div className="col-span-2 lg:col-span-1">
             <Logo variant="horizontal" size="md" colorMode="dark" />
-            <p className="text-sm text-slate-400 leading-relaxed mt-4 mb-5">
+            <p className="text-sm text-slate-400 leading-relaxed mt-4 mb-5 max-w-xs">
               We publish what solar actually costs in Nigeria, then buy it for you at that price and put a vetted
               installer on the job.
             </p>
@@ -87,12 +87,12 @@ export default function Footer() {
               href={whatsappLink('Hi SolarBuilders, I have a question about going solar.')}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white text-sm font-semibold px-4 py-2.5 rounded-full mt-3 transition-colors"
+              className="btn !min-h-[44px] !px-5 text-sm bg-[#0E7568] hover:bg-[#075E54] text-white mt-3"
             >
               <MessageCircle className="w-4 h-4" /> Message us
             </a>
             {claimedSocials().length > 0 && (
-              <div className="flex items-center gap-4 mt-5">
+              <div className="flex items-center gap-2 mt-5">
                 {claimedSocials().map((social) => {
                   const Icon = SOCIAL_ICONS[social.id];
                   if (!Icon) return null;
@@ -104,9 +104,9 @@ export default function Footer() {
                       rel="noopener noreferrer"
                       aria-label={`SolarBuilders.ng on ${social.label}`}
                       title={social.label}
-                      className="text-slate-400 hover:text-amber-400 transition-colors p-1 min-h-[32px] min-w-[32px] flex items-center justify-center"
+                      className="focus-ring text-slate-300 hover:text-night hover:bg-sun border border-white/15 hover:border-sun transition-colors rounded-full w-10 h-10 flex items-center justify-center"
                     >
-                      <Icon className="w-5 h-5" aria-hidden="true" />
+                      <Icon className="w-[18px] h-[18px]" aria-hidden="true" />
                     </a>
                   );
                 })}
@@ -169,12 +169,12 @@ export default function Footer() {
         </div>
 
         {/* Honesty strip — the two things people most need to know */}
-        <div className="border-t border-white/10 pt-6 grid gap-3 sm:grid-cols-2 mb-6">
+        <div className="rounded-card bg-night-soft p-5 md:p-6 grid gap-3 sm:grid-cols-2 sm:gap-8 mb-8">
           <p className="text-sm text-slate-400">
             <span className="text-slate-300 font-medium">Prices checked {PRICES_LAST_UPDATED_LABEL}.</span>{' '}
             Every figure is a real Nigerian listing with the date we saw it. We re-confirm before you pay anyone.
           </p>
-          <p className="text-sm text-slate-400 sm:text-right">
+          <p className="text-sm text-slate-400">
             <span className="text-slate-300 font-medium">No card payments on this site.</span>{' '}
             You pay the market price; our margin comes from our trade terms, not a mark-up on you.
           </p>
