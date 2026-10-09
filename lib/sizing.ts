@@ -412,7 +412,6 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
       a("decoder"),
       a("led_bulb", 10),
       a("ceiling_fan", 2),
-      a("standing_fan", 2),
       a("laptop"),
       a("phone_charger", 3),
       a("wifi_router"),
@@ -428,11 +427,9 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
     [
       a("ac_1_5hp"),
       a("refrigerator"),
-      a("deep_freezer"),
       a("tv_32"),
       a("led_bulb", 8),
       a("ceiling_fan", 2),
-      a("standing_fan"),
       a("laptop"),
       a("decoder"),
       a("phone_charger", 3),
@@ -447,7 +444,6 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
     [
       a("ac_1_5hp", 2),
       a("refrigerator"),
-      a("deep_freezer"),
       a("tv_55"),
       a("led_bulb", 10),
       a("ceiling_fan", 2),
@@ -455,7 +451,6 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
       a("decoder"),
       a("phone_charger", 4),
       a("wifi_router"),
-      a("cctv"),
     ],
     "The most quoted system size in Nigeria. The load below is one representative set that lands on this inverter size — two 1.5HP ACs plus a normal family's electronics — and it is also the page to read if you are asking how many batteries a 5kVA inverter needs.",
     ["what-can-a-10kva-inverter-run", "how-many-solar-panels-for-2-bedroom-flat"],
@@ -465,18 +460,14 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
     10,
     [
       a("ac_2hp", 2),
-      a("ac_1_5hp"),
+      a("ac_1hp"),
       a("refrigerator"),
       a("deep_freezer"),
       a("water_pump"),
-      a("washing_machine"),
       a("tv_55"),
-      a("tv_32"),
       a("led_bulb", 16),
       a("ceiling_fan", 4),
-      a("standing_fan", 2),
       a("decoder", 2),
-      a("desktop_pc"),
       a("laptop", 2),
       a("cctv"),
       a("security_light", 2),
@@ -494,11 +485,16 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
  * the arithmetic actually happens. Keep them in step with that file.
  */
 export const SIZING_RULES = {
-  inverterHeadroom: 1.25,
+  // 1.2 growth allowance ÷ 0.8 max continuous loading
+  inverterHeadroom: 1.5,
   loadFactor: 0.6,
-  peakSunHours: 5.5,
-  systemEfficiency: 0.78,
-  lithiumUsableDoD: 0.9,
+  growthAllowance: 1.2,
+  // battery holds this share of the day's energy for a home with some grid (6–16h)
+  nightShare: 0.5,
+  peakSunHours: 4.5,
+  systemEfficiency: 0.75,
+  // 90% DoD × inverter losses and ageing
+  lithiumUsableDoD: 0.8,
 } as const;
 
 // ─────────────────────────────────────────────────────────

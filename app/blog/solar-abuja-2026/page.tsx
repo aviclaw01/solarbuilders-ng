@@ -18,7 +18,7 @@ import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Solar in Abuja: Prices and How to Get It Installed (2026)',
-  description: 'Solar in Abuja, Nigeria: September 2026 installed prices for 5kWh lithium starters to 10kVA homes, why the FCT is good for solar, and how to go from an itemised quote to a managed installation.',
+  description: 'Solar in Abuja, Nigeria: October 2026 prices (before installation) for 5kWh lithium starters to 10kVA homes, why the FCT is good for solar, and how to go from an itemised quote to a managed installation.',
   keywords: ['solar Abuja 2026', 'solar installer Abuja', 'solar panels Abuja price', 'best solar company Abuja Nigeria'],
   openGraph: {
     title: 'Solar in Abuja: Prices and How to Get It Installed (2026) | SolarBuilders.ng',
@@ -90,7 +90,7 @@ export default function SolarAbujaPage() {
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Solar Prices in Abuja ({PRICES_LAST_UPDATED_LABEL})</h2>
           <p className="text-[#64748B] leading-relaxed">
-            These are installed ranges — inverter, lithium battery, Tier-1 panels, mounting and protection, and labour — priced from Nigerian vendor listings as of {PRICES_LAST_UPDATED_LABEL}. Most equipment is imported through Lagos and trucked to Abuja, so expect Abuja quotes to land in the middle-to-upper part of each range rather than at the bottom.
+            These are ranges before installation — inverter, lithium battery, Tier-1 panels, mounting, protection and a contingency; installer labour is extra — priced from Nigerian vendor listings as of {PRICES_LAST_UPDATED_LABEL}. Most equipment is imported through Lagos and trucked to Abuja, so expect Abuja quotes to land in the middle-to-upper part of each range rather than at the bottom.
           </p>
           <div className="rounded-2xl border border-[#E2E8F0] overflow-hidden">
             <table className="w-full text-sm">
@@ -98,7 +98,7 @@ export default function SolarAbujaPage() {
                 <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
                   <th className="text-left p-4 font-heading font-semibold text-[#0A0F1E]">System</th>
                   <th className="text-left p-4 font-heading font-semibold text-[#0A0F1E]">Runs</th>
-                  <th className="text-left p-4 font-heading font-semibold text-[#0A0F1E]">Installed Price</th>
+                  <th className="text-left p-4 font-heading font-semibold text-[#0A0F1E]">Price (before installation)</th>
                 </tr>
               </thead>
               <tbody>

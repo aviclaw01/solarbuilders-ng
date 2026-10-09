@@ -202,7 +202,7 @@ export default function GeneratorVsSolarPage() {
                   </tr>
                 ))}
                 <tr className="bg-[#0A0F1E] text-white">
-                  <td className="p-4 font-heading font-bold" colSpan={2}>Installed total (best estimate)</td>
+                  <td className="p-4 font-heading font-bold" colSpan={2}>Total before installation (best estimate)</td>
                   <td className="p-4 text-right font-heading font-bold">{formatNaira(standard.total.best)}</td>
                 </tr>
               </tbody>

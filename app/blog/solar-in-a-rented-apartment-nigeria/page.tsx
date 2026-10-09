@@ -47,7 +47,7 @@ export default function SolarRentedApartmentPage() {
     },
     {
       q: 'What can I install as a tenant without touching the roof?',
-      a: `A ground-mounted or stand-mounted array in a compound, a balcony or a rear yard, feeding an inverter and battery that sit inside your flat and plug into your own distribution board through a changeover. Our costed renter’s build for lights, fans and a TV is ${formatRange(budget.total)} installed at ${PRICES_LAST_UPDATED_LABEL} prices.`,
+      a: `A ground-mounted or stand-mounted array in a compound, a balcony or a rear yard, feeding an inverter and battery that sit inside your flat and plug into your own distribution board through a changeover. Our costed renter’s build for lights, fans and a TV is ${formatRange(budget.total)} before installation at ${PRICES_LAST_UPDATED_LABEL} prices.`,
     },
     {
       q: 'Does a ground mount cost more than a roof mount?',

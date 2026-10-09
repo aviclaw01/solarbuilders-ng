@@ -2,9 +2,19 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown, ListChecks, Wallet } from 'lucide-react';
+import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown, ListChecks, Wallet, Clock } from 'lucide-react';
 import QuoteResults from '@/components/ui/QuoteResults';
-import { buildQuote, decodeQuotePayload, formatNairaShort, parseTierOptions, type QuoteOptions, type TierKey } from '@/lib/quote';
+import {
+  buildQuote,
+  decodeQuotePayload,
+  formatNairaShort,
+  parseGrid,
+  parseTierOptions,
+  type GridSupply,
+  type QuoteOptions,
+  type TierKey,
+} from '@/lib/quote';
+import { canSeePrices } from '@/lib/quote-access';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import type { BudgetLookupData, LookupBuild } from '@/lib/budget-lookup';
 import BudgetMode from './BudgetMode';
@@ -145,36 +155,102 @@ function readSaved(data: unknown): {
 const ALL_PRESETS = [...STEP1_APPLIANCES, ...STEP2_APPLIANCES, ...STEP3_APPLIANCES];
 const PRESET_IDS = new Set(ALL_PRESETS.map((a) => a.id));
 
-const TYPICAL_HOME_PRESET = [
-  { id: 'ac_1_5hp', qty: 1 },
-  { id: 'refrigerator', qty: 1 },
-  { id: 'deep_freezer', qty: 1 },
-  { id: 'tv_32', qty: 2 },
-  { id: 'standing_fan', qty: 2 },
-  { id: 'ceiling_fan', qty: 2 },
-  { id: 'led_bulb', qty: 8 },
-  { id: 'phone_charger', qty: 4 },
-  { id: 'wifi_router', qty: 1 },
+/** One tap fills a whole home — most visitors never need to touch a single stepper. */
+const QUICK_STARTS: { key: string; label: string; hint: string; items: { id: string; qty: number }[] }[] = [
+  {
+    key: 'flat',
+    label: '1–2 bed flat',
+    hint: 'No AC',
+    items: [
+      { id: 'refrigerator', qty: 1 },
+      { id: 'tv_32', qty: 1 },
+      { id: 'standing_fan', qty: 2 },
+      { id: 'led_bulb', qty: 6 },
+      { id: 'phone_charger', qty: 3 },
+      { id: 'wifi_router', qty: 1 },
+      { id: 'laptop', qty: 1 },
+    ],
+  },
+  {
+    key: 'family',
+    label: '3-bed home',
+    hint: '1 AC',
+    items: [
+      { id: 'ac_1_5hp', qty: 1 },
+      { id: 'refrigerator', qty: 1 },
+      { id: 'deep_freezer', qty: 1 },
+      { id: 'tv_32', qty: 2 },
+      { id: 'standing_fan', qty: 2 },
+      { id: 'ceiling_fan', qty: 2 },
+      { id: 'led_bulb', qty: 8 },
+      { id: 'phone_charger', qty: 4 },
+      { id: 'wifi_router', qty: 1 },
+    ],
+  },
+  {
+    key: 'large',
+    label: 'Large home',
+    hint: '2–3 ACs',
+    items: [
+      { id: 'ac_1_5hp', qty: 2 },
+      { id: 'ac_1hp', qty: 1 },
+      { id: 'refrigerator', qty: 1 },
+      { id: 'deep_freezer', qty: 1 },
+      { id: 'water_pump', qty: 1 },
+      { id: 'washing_machine', qty: 1 },
+      { id: 'tv_55', qty: 1 },
+      { id: 'tv_32', qty: 2 },
+      { id: 'ceiling_fan', qty: 4 },
+      { id: 'led_bulb', qty: 15 },
+      { id: 'security_light', qty: 4 },
+      { id: 'phone_charger', qty: 5 },
+      { id: 'wifi_router', qty: 1 },
+      { id: 'cctv', qty: 1 },
+    ],
+  },
+  {
+    key: 'office',
+    label: 'Shop / office',
+    hint: 'Daytime use',
+    items: [
+      { id: 'ac_1_5hp', qty: 1 },
+      { id: 'desktop_pc', qty: 3 },
+      { id: 'laptop', qty: 2 },
+      { id: 'led_bulb', qty: 10 },
+      { id: 'ceiling_fan', qty: 2 },
+      { id: 'wifi_router', qty: 1 },
+      { id: 'refrigerator', qty: 1 },
+      { id: 'cctv', qty: 1 },
+    ],
+  },
 ];
 
-function Stepper({ qty, onDecrement, onIncrement }: { qty: number; onDecrement: () => void; onIncrement: () => void }) {
+const SECTIONS: { title: string; items: Omit<ApplianceItem, 'qty'>[] }[] = [
+  { title: 'Cooling & heavy appliances', items: STEP1_APPLIANCES },
+  { title: 'Everyday electronics', items: STEP2_APPLIANCES },
+  { title: 'Lights & small loads', items: STEP3_APPLIANCES },
+];
+
+function Stepper({ qty, name, onDecrement, onIncrement }: { qty: number; name: string; onDecrement: () => void; onIncrement: () => void }) {
   return (
-    <div className="flex items-center justify-center gap-1 mt-3">
+    <div className="flex items-center gap-1">
       <button
         onClick={onDecrement}
         disabled={qty === 0}
-        aria-label="Remove one"
-        className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors font-bold text-lg ${
-          qty === 0 ? 'opacity-30 cursor-not-allowed text-[#64748B]' : 'bg-[#0A0F1E] text-white hover:bg-[#1E293B]'
+        aria-label={`One fewer ${name}`}
+        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+          qty === 0 ? 'opacity-30 cursor-not-allowed text-slate-500 border border-slate-200' : 'border border-slate-300 text-slate-900 hover:border-slate-900'
         }`}
       >
         <Minus className="w-4 h-4" />
       </button>
-      <span className="font-heading font-bold text-lg text-[#0A0F1E] min-w-[28px] text-center">{qty}</span>
+      <span className="font-heading font-bold text-base text-slate-900 min-w-[24px] text-center tabular-nums" aria-live="polite">
+        {qty}
+      </span>
       <button
         onClick={onIncrement}
-        aria-label="Add one"
-        className="w-9 h-9 rounded-full flex items-center justify-center bg-[#0A0F1E] text-white hover:bg-[#1E293B] transition-colors"
+        aria-label={`One more ${name}`}
+        className="w-8 h-8 rounded-full flex items-center justify-center bg-slate-900 text-white hover:bg-slate-700 transition-colors"
       >
         <Plus className="w-4 h-4" />
       </button>
@@ -195,11 +271,11 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
   const [budgetDigits, setBudgetDigits] = useState('');
   // Set when a budget build is opened as a quote, so the results view can offer the way back.
   const [returnBudget, setReturnBudget] = useState<string | null>(null);
-  const [step, setStep] = useState(1);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
   const [initialTier, setInitialTier] = useState<TierKey>('standard');
   const [initialOptions, setInitialOptions] = useState<QuoteOptions>({});
+  const [grid, setGrid] = useState<GridSupply>('some');
   const [hours, setHours] = useState<Record<string, number>>({});
   const [customAppliances, setCustomAppliances] = useState<ApplianceItem[]>([]);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -216,6 +292,8 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
    * replace it, custom appliances and all, with no undo.
    */
   const [fromSharedLink, setFromSharedLink] = useState(false);
+  /** ?view=brief — show the installer brief even to someone allowed to see prices */
+  const [briefRequested, setBriefRequested] = useState(false);
 
   // Restore: ?q=<payload> (a shared / saved quote) wins over localStorage.
   useEffect(() => {
@@ -226,6 +304,8 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
       const o = parseTierOptions(searchParams.get('inv'), searchParams.get('bat'));
       if (Object.keys(o).length) setInitialOptions({ [tierParam]: o });
     }
+    setGrid(parseGrid(searchParams.get('grid')));
+    setBriefRequested(searchParams.get('view') === 'brief');
 
     // ?budget=<naira> opens budget mode pre-filled. A ?q= quote still wins.
     const budget = searchParams.get('budget')?.replace(/\D/g, '').replace(/^0+/, '').slice(0, 11);
@@ -370,10 +450,23 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
 
   const removeCustomAppliance = (id: string) => setCustomAppliances((prev) => prev.filter((a) => a.id !== id));
 
-  const applyTypicalHome = () => {
+  const applyQuickStart = (items: { id: string; qty: number }[]) => {
     const preset: Record<string, number> = {};
-    TYPICAL_HOME_PRESET.forEach((item) => { preset[item.id] = item.qty; });
-    setQuantities((prev) => ({ ...prev, ...preset }));
+    items.forEach((item) => {
+      preset[item.id] = item.qty;
+    });
+    setQuantities(preset);
+  };
+
+  /** Leave a shared link for your own calculator — the quote is now yours. */
+  const editAsMine = () => {
+    setShowResults(false);
+    setReturnBudget(null);
+    if (fromSharedLink) {
+      setFromSharedLink(false);
+      setBriefRequested(false);
+      window.history.replaceState(null, '', '/calculator');
+    }
   };
 
   const allAppliances: ApplianceItem[] = [
@@ -382,86 +475,84 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
   ];
   const selectedAppliances = allAppliances.filter((a) => a.qty > 0);
   const totalWatts = selectedAppliances.reduce((sum, a) => sum + a.watts * a.qty, 0);
-  const currentStepAppliances = step === 1 ? STEP1_APPLIANCES : step === 2 ? STEP2_APPLIANCES : STEP3_APPLIANCES;
 
   if (showResults && selectedAppliances.length > 0) {
-    const quote = buildQuote(selectedAppliances);
+    const quote = buildQuote(selectedAppliances, initialOptions, grid);
+    // Prices: always for your own fresh quote; on a shared link only for the
+    // browser that generated it or an admin. Everyone else gets the brief.
+    const mayPrice = !fromSharedLink || canSeePrices(quote.code);
+    const priced = mayPrice && !briefRequested;
 
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-slate-50">
         {navbar}
         <main className="max-w-3xl mx-auto px-4 py-8 pb-16">
-          <h1 className="sr-only">Your solar system estimate, itemised and priced</h1>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-6">
-            <button
-              onClick={() => {
-                setShowResults(false);
-                setReturnBudget(null);
-              }}
-              className="text-[#64748B] hover:text-[#0A0F1E] flex items-center gap-1 text-sm font-medium"
-            >
-              <ArrowLeft className="w-4 h-4" /> Edit appliances
-            </button>
-            {returnBudget && (
-              <button
-                onClick={() => router.push(`/calculator?budget=${returnBudget}`)}
-                className="text-[#64748B] hover:text-[#0A0F1E] flex items-center gap-1 text-sm font-medium"
-              >
-                <Wallet className="w-4 h-4" /> Back to my {formatNairaShort(Number(returnBudget))} budget
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
+            {priced ? 'Your solar system, itemised' : 'Solar job brief'}
+          </h1>
+          <p className="text-slate-500 text-sm mt-1 mb-5">
+            {selectedAppliances.length} appliance types · {(totalWatts / 1000).toFixed(1)}kW peak · ~{quote.dailyKwh}kWh/day
+            {priced ? ` · prices as of ${PRICES_LAST_UPDATED_LABEL}` : ''}
+          </p>
+          {priced && (
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-5">
+              <button onClick={editAsMine} className="text-slate-600 hover:text-slate-900 flex items-center gap-1 text-sm font-medium">
+                <ArrowLeft className="w-4 h-4" /> Edit appliances
               </button>
-            )}
-          </div>
-
-          <div className="bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-2xl p-5 mb-6 flex items-start gap-3">
-            <span className="text-3xl">⚡</span>
-            <div>
-              <p className="font-heading font-semibold text-[#0A0F1E]">Your itemised estimate is ready</p>
-              <p className="text-[#64748B] text-sm">
-                {selectedAppliances.length} appliance types · {(totalWatts / 1000).toFixed(1)}kW peak · ~{quote.dailyKwh} kWh/day ·
-                prices as of {PRICES_LAST_UPDATED_LABEL}
-              </p>
+              {returnBudget && (
+                <button
+                  onClick={() => router.push(`/calculator?budget=${returnBudget}`)}
+                  className="text-slate-600 hover:text-slate-900 flex items-center gap-1 text-sm font-medium"
+                >
+                  <Wallet className="w-4 h-4" /> Back to my {formatNairaShort(Number(returnBudget))} budget
+                </button>
+              )}
             </div>
-          </div>
+          )}
 
-          <QuoteResults key={quote.code} appliances={selectedAppliances} initialTier={initialTier} initialOptions={initialOptions} />
+          <QuoteResults
+            key={String(priced)}
+            appliances={selectedAppliances}
+            initialTier={initialTier}
+            initialOptions={initialOptions}
+            grid={grid}
+            onGridChange={setGrid}
+            priced={priced}
+            owner={!fromSharedLink}
+            onShowPrices={mayPrice && briefRequested ? () => setBriefRequested(false) : undefined}
+          />
 
-          {/* Unique quote ID for lead follow-up */}
-          <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] mt-3 p-4 flex items-center gap-3">
-            <span className="text-sm text-[#64748B]">Quote ID: </span>
-            <span className="font-mono font-semibold text-[#1E293B]" id="quote-id">
-              {quote.code}
-            </span>
-          </div>
-
-          <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] mt-8">
-            <button onClick={() => setAppliancesOpen(!appliancesOpen)} className="w-full flex items-center justify-between p-5">
-              <h2 className="font-heading font-semibold text-[#64748B] text-xs uppercase tracking-widest">
-                Your selected appliances ({selectedAppliances.length})
-              </h2>
-              <ChevronDown className={`w-4 h-4 text-[#94A3B8] transition-transform ${appliancesOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {appliancesOpen && (
-              <div className="px-5 pb-5 space-y-2">
-                {selectedAppliances.map((appliance) => (
-                  <div key={appliance.id} className="flex items-center justify-between py-2 border-b border-[#E2E8F0] last:border-0">
-                    <span className="text-[#0A0F1E] text-sm">
-                      {appliance.qty}× {appliance.name}{' '}
-                      <span className="text-[#64748B] text-xs">· {appliance.watts}W · {appliance.hoursPerDay}h/day</span>
-                    </span>
-                    <button
-                      onClick={() =>
-                        appliance.id.startsWith('custom_') ? removeCustomAppliance(appliance.id) : setQty(appliance.id, 0)
-                      }
-                      className="text-[#64748B] hover:text-red-500 transition-colors p-1"
-                      aria-label={`Remove ${appliance.name}`}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {priced && (
+            <div className="bg-white rounded-2xl border border-slate-200 mt-6">
+              <button onClick={() => setAppliancesOpen(!appliancesOpen)} className="w-full flex items-center justify-between p-5">
+                <h2 className="font-heading font-semibold text-slate-500 text-xs uppercase tracking-widest">
+                  Your appliances ({selectedAppliances.length})
+                </h2>
+                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${appliancesOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {appliancesOpen && (
+                <div className="px-5 pb-5 space-y-2">
+                  {selectedAppliances.map((appliance) => (
+                    <div key={appliance.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                      <span className="text-slate-900 text-sm">
+                        {appliance.qty}× {appliance.name}{' '}
+                        <span className="text-slate-500 text-xs">· {appliance.watts}W · {appliance.hoursPerDay}h/day</span>
+                      </span>
+                      <button
+                        onClick={() =>
+                          appliance.id.startsWith('custom_') ? removeCustomAppliance(appliance.id) : setQty(appliance.id, 0)
+                        }
+                        className="text-slate-500 hover:text-red-600 transition-colors p-1"
+                        aria-label={`Remove ${appliance.name}`}
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </main>
         {footer}
       </div>
@@ -469,23 +560,26 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-50">
       {navbar}
 
-      <main className="max-w-2xl mx-auto px-4 py-10">
-        <h1 className="sr-only">Solar system size calculator for Nigerian homes and businesses</h1>
+      <main className="max-w-2xl mx-auto px-4 pt-8 pb-32">
+        <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">What do you want to power?</h1>
+        <p className="text-slate-500 text-sm mt-1 mb-6">
+          Pick a starting point, adjust if you like, and we&apos;ll size and price the whole system — breakers and all.
+        </p>
 
         {/* Native radios: arrow keys, focus and announcement come for free. */}
-        <fieldset className="mb-8">
+        <fieldset className="mb-6">
           <legend className="sr-only">How do you want to start?</legend>
-          <div className="grid grid-cols-2 gap-1 p-1 bg-[#F1F5F9] rounded-full">
+          <div className="grid grid-cols-2 gap-1 p-1 bg-slate-200/60 rounded-full">
             {MODES.map(({ key, label, icon: Icon }) => {
               const active = mode === key;
               return (
                 <label
                   key={key}
-                  className={`flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-sm font-heading font-semibold text-center cursor-pointer transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#0A0F1E] has-[:focus-visible]:ring-offset-2 ${
-                    active ? 'bg-white text-[#0A0F1E] shadow-sm' : 'text-[#64748B] hover:text-[#0A0F1E]'
+                  className={`flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-sm font-heading font-semibold text-center cursor-pointer transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-slate-900 has-[:focus-visible]:ring-offset-2 ${
+                    active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <input
@@ -508,100 +602,84 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
           <BudgetMode data={budgetData} digits={budgetDigits} onDigitsChange={changeBudget} onOpenQuote={openBudgetQuote} />
         ) : (
           <>
-          {/* Step progress indicator */}
-          <div className="mb-8">
-            <div className="flex items-center gap-0 mb-5">
-              {[
-                { n: 1, label: 'Heavy Appliances', emoji: '⚡' },
-                { n: 2, label: 'Medium Appliances', emoji: '📺' },
-                { n: 3, label: 'Light Appliances', emoji: '💡' },
-              ].map((s, i) => (
-                <div key={s.n} className="flex items-center flex-1">
-                  <div className={`flex items-center gap-2 flex-1 transition-all duration-300 ${step >= s.n ? 'opacity-100' : 'opacity-40'}`}>
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-heading font-bold flex-shrink-0 transition-all duration-300 ${
-                        step > s.n ? 'bg-[#10B981] text-white' : step === s.n ? 'bg-[#F59E0B] text-[#0F172A] shadow-md' : 'bg-[#E2E8F0] text-[#64748B]'
-                      }`}
-                    >
-                      {step > s.n ? '✓' : s.n}
-                    </div>
-                    <div className="hidden sm:block">
-                      <p className={`text-xs font-heading font-semibold leading-tight ${step === s.n ? 'text-[#0F172A]' : 'text-[#64748B]'}`}>
-                        {s.emoji} {s.label}
-                      </p>
-                    </div>
-                  </div>
-                  {i < 2 && <div className={`h-0.5 w-4 flex-shrink-0 mx-1 transition-all duration-500 ${step > s.n ? 'bg-[#10B981]' : 'bg-[#E2E8F0]'}`} />}
-                </div>
-              ))}
-            </div>
-            <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
-              <div className="h-full bg-[#F59E0B] rounded-full transition-all duration-500 ease-out" style={{ width: `${(step / 3) * 100}%` }} />
-            </div>
-          </div>
+            <section className="mb-8">
+              <h2 className="text-sm font-heading font-semibold text-slate-900 mb-2">Quick start</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {QUICK_STARTS.map((q) => (
+                  <button
+                    key={q.key}
+                    onClick={() => applyQuickStart(q.items)}
+                    className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-left hover:border-amber-400 hover:shadow-sm transition"
+                  >
+                    <span className="block text-sm font-semibold text-slate-900">{q.label}</span>
+                    <span className="block text-xs text-slate-500">{q.hint}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
 
-          {step === 1 && (
-            <button
-              onClick={applyTypicalHome}
-              className="mb-6 bg-[#0A0F1E] text-white text-sm font-heading font-semibold px-5 py-2.5 rounded-full hover:bg-[#1E293B] transition-colors"
-            >
-              🏠 Load typical 3-bedroom home
-            </button>
-          )}
+            {SECTIONS.map((section) => (
+              <section key={section.title} className="mb-6">
+                <h2 className="text-xs font-heading font-semibold text-slate-500 uppercase tracking-widest mb-2">{section.title}</h2>
+                <ul className="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100">
+                  {section.items.map((appliance) => {
+                    const qty = quantities[appliance.id] || 0;
+                    const h = getHours(appliance.id, appliance.hoursPerDay);
+                    return (
+                      <li key={appliance.id} className={`px-4 py-3 ${qty > 0 ? 'bg-amber-50/60' : ''}`}>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-slate-900">
+                              <span aria-hidden="true" className="mr-1.5">{appliance.emoji}</span>
+                              {appliance.name}
+                            </p>
+                            <p className="text-xs text-slate-500">{appliance.watts}W</p>
+                          </div>
+                          <Stepper
+                            qty={qty}
+                            name={appliance.name}
+                            onDecrement={() => setQty(appliance.id, qty - 1)}
+                            onIncrement={() => setQty(appliance.id, qty + 1)}
+                          />
+                        </div>
+                        {qty > 0 && (
+                          <div className="mt-2 flex items-center gap-2 text-xs text-slate-600">
+                            <Clock className="w-3.5 h-3.5" aria-hidden="true" />
+                            <span>Hours a day</span>
+                            <button
+                              onClick={() => setItemHours(appliance.id, h - 1)}
+                              aria-label={`Fewer hours for ${appliance.name}`}
+                              className="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center hover:border-slate-900"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <span className="font-semibold text-slate-900 min-w-[32px] text-center tabular-nums">{h}h</span>
+                            <button
+                              onClick={() => setItemHours(appliance.id, h + 1)}
+                              aria-label={`More hours for ${appliance.name}`}
+                              className="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center hover:border-slate-900"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            ))}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
-            {currentStepAppliances.map((appliance) => {
-              const qty = quantities[appliance.id] || 0;
-              const isSelected = qty > 0;
-              return (
-                <div
-                  key={appliance.id}
-                  className={`bg-white rounded-2xl p-5 transition-all ${
-                    isSelected ? 'border-2 border-[#F59E0B] bg-[#FEF3C7]' : 'border-2 border-[#E2E8F0] hover:border-[#F59E0B]/50'
-                  }`}
-                >
-                  <div className="text-3xl text-center mb-2">{appliance.emoji}</div>
-                  <p className="font-heading font-semibold text-[#0A0F1E] text-sm text-center leading-tight">{appliance.name}</p>
-                  <p className="text-[#64748B] text-xs text-center mb-1">{appliance.watts}W</p>
-                  <Stepper qty={qty} onDecrement={() => setQty(appliance.id, qty - 1)} onIncrement={() => setQty(appliance.id, qty + 1)} />
-                  {qty > 0 && (
-                    <div className="flex items-center justify-center gap-1.5 mt-2">
-                      <button
-                        onClick={() => setItemHours(appliance.id, getHours(appliance.id, appliance.hoursPerDay) - 1)}
-                        aria-label="Fewer hours"
-                        className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold hover:bg-amber-200 transition-colors"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="text-amber-700 text-xs font-semibold min-w-[52px] text-center">
-                        ⏱ {getHours(appliance.id, appliance.hoursPerDay)}h/day
-                      </span>
-                      <button
-                        onClick={() => setItemHours(appliance.id, getHours(appliance.id, appliance.hoursPerDay) + 1)}
-                        aria-label="More hours"
-                        className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold hover:bg-amber-200 transition-colors"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {step === 3 && (
-            <div className="mb-8">
-              <h2 className="font-heading font-semibold text-[#0A0F1E] text-sm mb-3">Custom Appliances</h2>
+            <section className="mb-8">
               {customAppliances.length > 0 && (
                 <div className="space-y-2 mb-3">
                   {customAppliances.map((ca) => (
-                    <div key={ca.id} className="flex items-center justify-between bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-xl px-4 py-3">
+                    <div key={ca.id} className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3">
                       <div>
-                        <span className="text-sm font-medium text-[#0A0F1E]">⚙️ {ca.name}</span>
-                        <span className="text-xs text-[#64748B] ml-2">{ca.watts}W · {ca.hoursPerDay}h/day</span>
+                        <span className="text-sm font-medium text-slate-900">{ca.name}</span>
+                        <span className="text-xs text-slate-500 ml-2">{ca.watts}W · {ca.hoursPerDay}h/day</span>
                       </div>
-                      <button onClick={() => removeCustomAppliance(ca.id)} className="text-[#64748B] hover:text-red-500 transition-colors p-1" aria-label={`Remove ${ca.name}`}>
+                      <button onClick={() => removeCustomAppliance(ca.id)} className="text-slate-500 hover:text-red-600 transition-colors p-1" aria-label={`Remove ${ca.name}`}>
                         <X className="w-4 h-4" />
                       </button>
                     </div>
@@ -609,7 +687,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
                 </div>
               )}
               {showCustomForm ? (
-                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4 space-y-3">
+                <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
                   <div>
                     <input
                       type="text"
@@ -621,7 +699,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
                         setCustomErrors((p) => (p.name ? { ...p, name: undefined } : p));
                       }}
                       aria-invalid={!!customErrors.name}
-                      className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-[#F59E0B] ${customErrors.name ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
+                      className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-amber-500 ${customErrors.name ? 'border-rose-400' : 'border-slate-200'}`}
                     />
                     {customErrors.name && <p className="text-rose-600 text-xs mt-1">{customErrors.name}</p>}
                   </div>
@@ -639,7 +717,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
                           setCustomErrors((p) => (p.watts ? { ...p, watts: undefined } : p));
                         }}
                         aria-invalid={!!customErrors.watts}
-                        className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-[#F59E0B] ${customErrors.watts ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
+                        className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-amber-500 ${customErrors.watts ? 'border-rose-400' : 'border-slate-200'}`}
                       />
                       {customErrors.watts && <p className="text-rose-600 text-xs mt-1">{customErrors.watts}</p>}
                     </div>
@@ -657,13 +735,13 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
                           setCustomErrors((p) => (p.hours ? { ...p, hours: undefined } : p));
                         }}
                         aria-invalid={!!customErrors.hours}
-                        className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-[#F59E0B] ${customErrors.hours ? 'border-rose-400' : 'border-[#E2E8F0]'}`}
+                        className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:border-amber-500 ${customErrors.hours ? 'border-rose-400' : 'border-slate-200'}`}
                       />
                       {customErrors.hours && <p className="text-rose-600 text-xs mt-1">{customErrors.hours}</p>}
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={addCustomAppliance} className="flex-1 bg-[#F59E0B] text-[#0A0F1E] py-2 rounded-full font-heading font-semibold text-sm hover:bg-[#D97706] transition-colors">
+                    <button onClick={addCustomAppliance} className="flex-1 bg-amber-500 text-slate-900 py-2 rounded-full font-heading font-semibold text-sm hover:bg-amber-600 transition-colors">
                       Add
                     </button>
                     <button
@@ -671,64 +749,52 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
                         setCustomErrors({});
                         setShowCustomForm(false);
                       }}
-                      className="px-4 py-2 text-[#64748B] text-sm hover:text-[#0A0F1E] transition-colors"
+                      className="px-4 py-2 text-slate-500 text-sm hover:text-slate-900 transition-colors"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : (
-                <button onClick={() => setShowCustomForm(true)} className="text-sm font-semibold text-[#B45309] hover:text-[#D97706] transition-colors">
-                  ＋ Add custom appliance
+                <button onClick={() => setShowCustomForm(true)} className="text-sm font-semibold text-amber-700 hover:text-amber-800 transition-colors">
+                  + Something not listed? Add it
                 </button>
               )}
-            </div>
-          )}
+            </section>
 
-          {totalWatts > 0 && (
-            <div className="bg-[#0A0F1E] rounded-2xl p-5 mb-6 flex items-center justify-between">
-              <div>
-                <p className="text-[#94A3B8] text-xs mb-1">Current load estimate</p>
-                <p className="font-heading font-extrabold text-[#F59E0B] text-2xl">{(totalWatts / 1000).toFixed(2)} kW</p>
-                <p className="text-[#94A3B8] text-xs">
-                  {selectedAppliances.length} appliance{selectedAppliances.length !== 1 ? 's' : ''} · Add more to refine
-                </p>
+            {/* Sticky summary — the one action on this page */}
+            <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+              <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-slate-500">Your load</p>
+                  <p className="font-heading font-extrabold text-slate-900 text-lg leading-tight tabular-nums">
+                    {(totalWatts / 1000).toFixed(2)} kW
+                    <span className="text-xs font-normal text-slate-500 ml-1.5">
+                      {selectedAppliances.length} item{selectedAppliances.length !== 1 ? 's' : ''}
+                    </span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowResults(true);
+                    window.scrollTo({ top: 0 });
+                  }}
+                  disabled={selectedAppliances.length === 0}
+                  className={`px-6 py-3 rounded-full font-heading font-bold text-sm sm:text-base flex items-center gap-2 transition-colors ${
+                    selectedAppliances.length > 0 ? 'bg-amber-500 text-slate-900 hover:bg-amber-600' : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  }`}
+                >
+                  <Zap className="w-4 h-4" fill={selectedAppliances.length > 0 ? 'currentColor' : 'none'} />
+                  See my system
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
-              <Zap className="w-8 h-8 text-[#F59E0B]" fill="currentColor" />
             </div>
-          )}
-
-          <div className="flex items-center gap-3">
-            {step > 1 && (
-              <button onClick={() => setStep(step - 1)} className="flex items-center gap-2 text-[#64748B] hover:text-[#0A0F1E] font-semibold py-4 px-4 transition-colors">
-                <ArrowLeft className="w-4 h-4" /> Back
-              </button>
-            )}
-            {step < 3 ? (
-              <button
-                onClick={() => setStep(step + 1)}
-                className="flex-1 bg-[#F59E0B] text-[#0A0F1E] py-4 rounded-full font-heading font-bold text-base hover:bg-[#D97706] transition-colors flex items-center justify-center gap-2"
-              >
-                Next: {step === 1 ? 'Medium Appliances' : 'Light Appliances'}
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowResults(true)}
-                disabled={selectedAppliances.length === 0}
-                className={`flex-1 py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors ${
-                  selectedAppliances.length > 0 ? 'bg-[#F59E0B] text-[#0A0F1E] hover:bg-[#D97706]' : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed'
-                }`}
-              >
-                <Zap className="w-5 h-5" fill={selectedAppliances.length > 0 ? 'currentColor' : 'none'} />
-                Calculate My System
-              </button>
-            )}
-          </div>
           </>
         )}
       </main>
       {footer}
+      {mode === 'appliances' && <div className="h-20" aria-hidden="true" />}
     </div>
   );
 }
@@ -740,7 +806,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
  */
 export default function CalculatorClient({ navbar, footer, budgetData }: ShellProps) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white">{navbar}</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-slate-50">{navbar}</div>}>
       <CalculatorInner navbar={navbar} footer={footer} budgetData={budgetData} />
     </Suspense>
   );

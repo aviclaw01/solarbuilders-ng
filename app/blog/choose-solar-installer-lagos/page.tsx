@@ -69,7 +69,7 @@ export default function ChooseSolarInstallerLagosPage() {
             Lagos has hundreds of solar companies — from established firms with years of track record to WhatsApp vendors who disappear after collecting a deposit. This is the checklist we apply before we let an installer anywhere near a customer build. Use it yourself, whoever ends up doing your installation.
           </p>
           <p className="text-[#64748B] leading-relaxed">
-            The stakes are real. A {starter.label} system costs {formatNaira(starter.low)}–{formatNaira(starter.high)} installed as of {PRICES_LAST_UPDATED_LABEL}, so a typical 50% deposit is {formatNaira(depositLow)}–{formatNaira(depositHigh)}. That is not money to hand over on a phone call.
+            The stakes are real. A {starter.label} system costs {formatNaira(starter.low)}–{formatNaira(starter.high)} before installation as of {PRICES_LAST_UPDATED_LABEL}, so a typical 50% deposit is {formatNaira(depositLow)}–{formatNaira(depositHigh)}. That is not money to hand over on a phone call.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">1. CAC Registration and a Physical Presence</h2>

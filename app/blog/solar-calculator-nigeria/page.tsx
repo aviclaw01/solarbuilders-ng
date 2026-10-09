@@ -113,7 +113,7 @@ export default function SolarCalculatorNigeriaPage() {
           </p>
           <p className="text-[#64748B] leading-relaxed">
             The inverter is sized from the full peak load with {Math.round((SIZING_RULES.inverterHeadroom - 1) * 100)}%
-            headroom, rounded up to a standard size: {(quote.peakWatts / 1000).toFixed(2)}kW ×{' '}
+            headroom (20% growth allowance, never above 80% loading), rounded up to a standard size: {(quote.peakWatts / 1000).toFixed(2)}kW ×{' '}
             {SIZING_RULES.inverterHeadroom} ≈ {((quote.peakWatts * SIZING_RULES.inverterHeadroom) / 1000).toFixed(2)}
             kW, which lands on a {standard.inverterKva}kVA inverter for the Standard tier. Banks above two lithium
             modules move to a 48V/5kVA-or-larger inverter, which is what installers actually fit.
@@ -122,16 +122,16 @@ export default function SolarCalculatorNigeriaPage() {
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Step 3: Battery Capacity (Lithium Modules)</h2>
           <p className="text-[#64748B] leading-relaxed">
             The calculator quotes lithium (LiFePO4) by default, in standard {LITHIUM_MODULE_KWH}kWh modules — the 48V
-            100Ah packs sold by Felicity, Growatt and Dyness. Backup energy = average running load (about{' '}
-            {Math.round(SIZING_RULES.loadFactor * 100)}% of peak) × the hours of backup you want, divided by{' '}
-            {Math.round(SIZING_RULES.lithiumUsableDoD * 100)}% usable depth of discharge, then rounded up to whole
-            modules. Budget tier plans for 4 hours of night backup, Standard for {standard.autonomyHours}, Premium for{' '}
-            {premium.autonomyHours}.
+            100Ah packs sold by Felicity, Growatt and Dyness. Battery energy = your daily kWh (plus a{' '}
+            {Math.round((SIZING_RULES.growthAllowance - 1) * 100)}% allowance) × the share used at night or without
+            grid — {Math.round(SIZING_RULES.nightShare * 100)}% for a home with some grid, more with less — divided by{' '}
+            {Math.round(SIZING_RULES.lithiumUsableDoD * 100)}% usable, then rounded up to whole modules. Budget carries
+            60% of that, Premium 150%. With everything on, Standard runs about {standard.autonomyHours}h and Premium
+            about {premium.autonomyHours}h.
           </p>
           <p className="text-[#64748B] leading-relaxed">
-            For the example above at Standard: {(quote.peakWatts / 1000).toFixed(2)}kW ×{' '}
-            {SIZING_RULES.loadFactor} × {standard.autonomyHours}h, divided by {SIZING_RULES.lithiumUsableDoD} usable
-            DoD, rounds up to {standard.batteryModules} module{standard.batteryModules > 1 ? 's' : ''} ={' '}
+            For the example above at Standard: {quote.dailyKwh}kWh × {SIZING_RULES.growthAllowance} ×{' '}
+            {SIZING_RULES.nightShare}, divided by {SIZING_RULES.lithiumUsableDoD} usable, rounds up to {standard.batteryModules} module{standard.batteryModules > 1 ? 's' : ''} ={' '}
             {standard.batteryKwh}kWh nominal. One {LITHIUM_MODULE_KWH}kWh module costs {formatNaira(lithiumUnitLow)}–
             {formatNaira(lithiumUnitHigh)} as of {PRICES_LAST_UPDATED_LABEL}, which is why battery is usually the
             largest line on the quote. Lithium lasts 10+ years (3,000–6,000 cycles) against 2–4 years for tubular
@@ -215,7 +215,7 @@ export default function SolarCalculatorNigeriaPage() {
             </table>
           </div>
           <p className="text-[#64748B] leading-relaxed">
-            For reference, these are the typical installed ranges the calculator produces for common Nigerian
+            For reference, these are the typical ranges before installation the calculator produces for common Nigerian
             household sizes:
           </p>
           <div className="rounded-2xl border border-[#E2E8F0] overflow-hidden my-4">

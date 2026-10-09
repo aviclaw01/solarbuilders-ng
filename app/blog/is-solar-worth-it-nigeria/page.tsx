@@ -21,7 +21,7 @@ import { SITE_URL } from '@/lib/site';
 export const metadata: Metadata = {
   title: 'Is Solar Worth It in Nigeria? The Payback Period, Calculated Properly',
   description:
-    'Published payback claims for Nigerian solar run from one year to five. We show the arithmetic instead: September 2026 installed prices against petrol at the pump and Band A at the current published tariff, with every assumption named.',
+    'Published payback claims for Nigerian solar run from one year to five. We show the arithmetic instead: October 2026 prices (before installation) against petrol at the pump and Band A at the current published tariff, with every assumption named.',
   keywords: [
     'is solar worth it in nigeria',
     'solar payback period nigeria',
@@ -72,7 +72,7 @@ export default function IsSolarWorthItPage() {
     '@type': 'BlogPosting',
     headline: 'Is Solar Worth It in Nigeria? The Payback Period, Calculated Properly',
     description:
-      'The solar payback period in Nigeria, computed from September 2026 installed prices against generator fuel and Band A tariffs.',
+      'The solar payback period in Nigeria, computed from October 2026 prices (before installation) against generator fuel and Band A tariffs.',
     author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
     publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
     datePublished: '2026-09-16',
@@ -174,7 +174,7 @@ export default function IsSolarWorthItPage() {
                   </tr>
                 ))}
                 <tr className="bg-[#0A0F1E] text-white">
-                  <td className="p-4 font-heading font-bold" colSpan={2}>Installed total (best estimate)</td>
+                  <td className="p-4 font-heading font-bold" colSpan={2}>Total before installation (best estimate)</td>
                   <td className="p-4 text-right font-heading font-bold">{formatNaira(main.standard.total.best)}</td>
                 </tr>
               </tbody>
@@ -328,7 +328,7 @@ export default function IsSolarWorthItPage() {
           <p className="text-[#64748B] leading-relaxed">
             The one input you should not take from us is the load. Pick your own appliances in the{' '}
             <Link href="/calculator" className="text-[#B45309] font-semibold hover:underline">calculator</Link>, get the
-            three itemised builds and the daily kWh, then divide your own installed price by your own displaced spend.
+            three itemised builds and the daily kWh, then divide your own price before installation by your own displaced spend.
             If you want the generator side of the sum in more detail, we costed it for Lagos in{' '}
             <Link href="/blog/generator-vs-solar-lagos" className="text-[#B45309] font-semibold hover:underline">generator versus solar</Link>,
             and the tariff side in{' '}

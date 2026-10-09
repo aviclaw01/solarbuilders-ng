@@ -42,7 +42,7 @@ const MENUS: MenuGroup[] = [
       href: '/calculator',
       eyebrow: 'Not sure what fits?',
       title: 'Size your system first',
-      body: `Tick your appliances and get an itemised list in two minutes. A family home with one AC runs about ${formatNairaShort(FAMILY.low)}–${formatNairaShort(FAMILY.high)} installed.`,
+      body: `Tick your appliances and get an itemised list in two minutes. A family home with one AC runs about ${formatNairaShort(FAMILY.low)}–${formatNairaShort(FAMILY.high)} before installation.`,
       stat: `${formatNairaShort(FAMILY.low)}–${formatNairaShort(FAMILY.high)}`,
     },
   },

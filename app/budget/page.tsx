@@ -106,7 +106,7 @@ export default function BudgetHubPage() {
               Every budget, side by side
             </h2>
             <p className="text-slate-500 mb-6 max-w-3xl">
-              The installed price shown is the realistic middle of the range, not the wholesale floor.
+              The price before installation shown is the realistic middle of the range, not the wholesale floor.
             </p>
 
             <div className="rounded-2xl border border-slate-100 overflow-hidden">
@@ -178,7 +178,7 @@ export default function BudgetHubPage() {
                         {a.build.tier.panelCount} panel{a.build.tier.panelCount === 1 ? '' : 's'}
                       </div>
                       <div className="text-slate-500 text-sm mt-1">
-                        {formatNaira(a.build.price)} installed · {formatRange(a.build.tier.total)}
+                        {formatNaira(a.build.price)} before installation · {formatRange(a.build.tier.total)}
                       </div>
                     </>
                   ) : (
@@ -210,7 +210,7 @@ export default function BudgetHubPage() {
                 We take a ladder of household loads, from lights and a fan up to three air conditioners, and run every
                 one of them through the same quote engine the calculator uses, at every combination of backup hours,
                 component class and battery chemistry the engine supports. Then we keep the most capable build whose
-                realistic installed price fits the budget. Nothing is rounded to a marketing number and nothing is
+                realistic price before installation fits the budget. Nothing is rounded to a marketing number and nothing is
                 written by hand: when the price table changes, these pages change with it — including when a budget that
                 used to work stops working.
               </p>

@@ -33,12 +33,15 @@ export function GET() {
   Nigerian seller and the date it was checked (last full refresh: ${PRICES_LAST_UPDATED_LABEL}).
 - ${manufacturers().length} manufacturer brands and ${vendors().length} Nigerian distributors tracked.
 - A quote engine that sizes inverter, battery and panel array from an appliance
-  list using documented assumptions (1.25 inverter headroom, motor startup
-  surge, 5.5 peak sun hours, 78% system efficiency, 90% lithium depth of discharge).
+  list the way an engineer would — the stated load is a minimum (+20% growth
+  allowance), inverters never loaded past 80%, motor startup surge, 4.5 peak sun
+  hours, 75% system efficiency, 80% usable lithium, backup sized to grid supply —
+  and prices breakers, surge protection, changeover, earthing and a fire
+  extinguisher line by line. Installation labour is excluded: installers price it.
 - ${SIZING_SCENARIOS.length} worked sizing answers and ${comparisonPairs().length} brand-vs-brand comparisons, all computed
   from that engine rather than written by hand.
 
-## Typical installed system costs in Nigeria (${PRICES_LAST_UPDATED_LABEL})
+## Typical system costs in Nigeria, before installation (${PRICES_LAST_UPDATED_LABEL})
 
 ${HEADLINE_PACKAGES.map((p) => `- ${p.label} — ${p.powers}: ${formatNairaShort(p.low)} to ${formatNairaShort(p.high)}`).join('\n')}
 

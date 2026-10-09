@@ -162,13 +162,13 @@ export const FAQS: FaqItem[] = [
   // ── Prices ───────────────────────────────────────────
   {
     q: "How much does a solar system cost in Nigeria?",
-    a: `At ${PRICES_LAST_UPDATED_LABEL} prices, a small system for lights, fans, a TV and a fridge — no air conditioning — runs ${formatNairaShort(STARTER.low)}–${formatNairaShort(STARTER.high)} installed. A family home with one AC (${ONE_AC.label}) is ${formatNairaShort(ONE_AC.low)}–${formatNairaShort(ONE_AC.high)}, a large home with two or three ACs is ${formatNairaShort(BIG_HOME.low)}–${formatNairaShort(BIG_HOME.high)}, and an office is ${formatNairaShort(OFFICE.low)}–${formatNairaShort(OFFICE.high)}. Where you land inside a range depends on brand tier, your roof and your city — the calculator gives you your own number instead of a bracket.`,
+    a: `At ${PRICES_LAST_UPDATED_LABEL} prices, a small system for lights, fans, a TV and a fridge — no air conditioning — runs ${formatNairaShort(STARTER.low)}–${formatNairaShort(STARTER.high)} before installation. A family home with one AC (${ONE_AC.label}) is ${formatNairaShort(ONE_AC.low)}–${formatNairaShort(ONE_AC.high)}, a large home with two or three ACs is ${formatNairaShort(BIG_HOME.low)}–${formatNairaShort(BIG_HOME.high)}, and an office is ${formatNairaShort(OFFICE.low)}–${formatNairaShort(OFFICE.high)}. Where you land inside a range depends on brand tier, your roof and your city — the calculator gives you your own number instead of a bracket.`,
     category: "prices",
     link: { href: "/calculator", label: "Price my own appliances" },
   },
   {
     q: "Do your prices include installation?",
-    a: `Yes. Every quote carries a labour and commissioning line of about ${formatNaira(LABOUR_PER_KVA.best)} per kVA, with a floor of ${formatNaira(LABOUR_FLOOR)} so a small job still gets a proper installer — on the ${REF_KVA}kVA system most families install that comes to ${formatNaira(twoBed.labour.best)} (range ${formatRange(twoBed.labour)}). Mounting rails, cable, breakers, surge protection and earthing are their own line too, so nothing appears at the end that wasn't on the sheet. Transport outside Lagos, Abuja or Port Harcourt is extra and we tell you what it is.`,
+    a: `No — and on purpose. We don't employ installers, so we don't guess their fee: installation is charged by the installer who does the job. For reference, Nigerian installers typically charge about ${formatNaira(LABOUR_PER_KVA.best)} per kVA with a floor near ${formatNaira(LABOUR_FLOOR)} — on the ${REF_KVA}kVA system most families install that is roughly ${formatRange(twoBed.labourRef)}. Everything else is on the sheet line by line: mounting, cable, breakers, surge protection, changeover, earthing, battery rack and a fire extinguisher, plus a small contingency.`,
     category: "prices",
   },
   {
@@ -203,13 +203,13 @@ export const FAQS: FaqItem[] = [
   // ── Sizing ───────────────────────────────────────────
   {
     q: "What size solar system do I need for a 2-bedroom flat?",
-    a: `For a two-bedroom flat with one 1HP AC, a fridge, a freezer, the washing machine and the ironing, our engine sizes a ${size(twoBed)} — about ${formatNairaShort(twoBed.total.best)} installed (range ${formatRange(twoBed.total)}). The AC and the iron barely touch your daily energy but they are what force the inverter up a size. A one-bedroom flat with the same fridge, fans and TV but no AC at all drops to a ${oneBed.inverterKva}kVA system at around ${formatNairaShort(oneBed.total.best)}.`,
+    a: `For a two-bedroom flat with one 1HP AC, a fridge, a freezer, the washing machine and the ironing, our engine sizes a ${size(twoBed)} — about ${formatNairaShort(twoBed.total.best)} before installation (range ${formatRange(twoBed.total)}). The AC and the iron barely touch your daily energy but they are what force the inverter up a size. A one-bedroom flat with the same fridge, fans and TV but no AC at all drops to a ${oneBed.inverterKva}kVA system at around ${formatNairaShort(oneBed.total.best)}.`,
     category: "sizing",
     link: { href: "/sizing/how-many-solar-panels-for-2-bedroom-flat", label: "Full working for a 2-bedroom flat" },
   },
   {
     q: "What about a 3-bedroom flat or a 4-bedroom house with two ACs?",
-    a: `A three-bedroom flat with one 1.5HP AC, two TVs, a fridge and a freezer sizes to a ${size(threeBed)}, about ${formatNairaShort(threeBed.total.best)} installed. A four-bedroom house with two 1.5HP ACs, a borehole pump and the full set of appliances goes to a ${size(fourBed)} — around ${formatNairaShort(fourBed.total.best)}. At that size roof space matters as much as budget, so check you have an unshaded plane before you commit.`,
+    a: `A three-bedroom flat with one 1.5HP AC, two TVs, a fridge and a freezer sizes to a ${size(threeBed)}, about ${formatNairaShort(threeBed.total.best)} before installation. A four-bedroom house with two 1.5HP ACs, a borehole pump and the full set of appliances goes to a ${size(fourBed)} — around ${formatNairaShort(fourBed.total.best)}. At that size roof space matters as much as budget, so check you have an unshaded plane before you commit.`,
     category: "sizing",
     link: { href: "/sizing", label: "Every sizing scenario we've worked out" },
   },
