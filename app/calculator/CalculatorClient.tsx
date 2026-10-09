@@ -484,7 +484,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
     const priced = mayPrice && !briefRequested;
 
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-sky">
         {navbar}
         <main className="max-w-3xl mx-auto px-4 py-8 pb-16">
           <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
@@ -560,7 +560,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-sky">
       {navbar}
 
       <main className="max-w-2xl mx-auto px-4 pt-8 pb-32">
@@ -741,7 +741,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={addCustomAppliance} className="flex-1 bg-amber-500 text-slate-900 py-2 rounded-full font-heading font-semibold text-sm hover:bg-amber-600 transition-colors">
+                    <button onClick={addCustomAppliance} className="flex-1 bg-sun text-ink py-2 rounded-full font-heading font-semibold text-sm hover:bg-sun-deep transition-colors">
                       Add
                     </button>
                     <button
@@ -781,7 +781,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
                   }}
                   disabled={selectedAppliances.length === 0}
                   className={`px-6 py-3 rounded-full font-heading font-bold text-sm sm:text-base flex items-center gap-2 transition-colors ${
-                    selectedAppliances.length > 0 ? 'bg-amber-500 text-slate-900 hover:bg-amber-600' : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                    selectedAppliances.length > 0 ? 'bg-sun text-ink hover:bg-sun-deep' : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                   }`}
                 >
                   <Zap className="w-4 h-4" fill={selectedAppliances.length > 0 ? 'currentColor' : 'none'} />
@@ -806,7 +806,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
  */
 export default function CalculatorClient({ navbar, footer, budgetData }: ShellProps) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50">{navbar}</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-sky">{navbar}</div>}>
       <CalculatorInner navbar={navbar} footer={footer} budgetData={budgetData} />
     </Suspense>
   );

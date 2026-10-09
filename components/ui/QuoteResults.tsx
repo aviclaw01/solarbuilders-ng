@@ -372,7 +372,7 @@ export default function QuoteResults({
             <ChevronDown className={`w-4 h-4 transition-transform ${customOpen ? 'rotate-180' : ''}`} />
           </button>
           {customOpen && (
-            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-2xl p-4">
+            <div className="mt-3 bg-sky border border-slate-200 rounded-2xl p-4">
               <div className="grid sm:grid-cols-2 gap-3">
                 <div>
                   <p className="text-[11px] text-slate-500 mb-1.5">Inverter class</p>
@@ -658,7 +658,7 @@ export default function QuoteResults({
           <button onClick={downloadPdf} disabled={busy !== null} className="flex items-center justify-center gap-1.5 border border-slate-200 hover:border-amber-400 text-slate-900 py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50">
             <Download className="w-4 h-4" /> {busy === 'pdf' ? 'Saving…' : 'Download PDF'}
           </button>
-          <Link href="/calculator" className="flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-slate-900 py-3 rounded-full text-sm font-semibold transition-colors">
+          <Link href="/calculator" className="flex items-center justify-center gap-1.5 bg-sun hover:bg-sun-deep text-ink py-3 rounded-full text-sm font-semibold transition-colors">
             Price my own home
           </Link>
         </div>
