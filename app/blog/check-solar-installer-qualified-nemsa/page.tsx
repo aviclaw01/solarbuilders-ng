@@ -35,12 +35,15 @@ export default function CheckInstallerNemsaPage() {
   const scenario = getScenario('how-many-solar-panels-for-3-bedroom-flat')!;
   const quote = scenarioQuote(scenario);
   const t = quote.tiers.standard;
-  const equipmentShare = pct(t.equipment.best, t.total.best);
-  const bosShare = pct(t.bos.best, t.total.best);
-  const labourShare = pct(t.labour.best, t.total.best);
+  // Our quote total excludes installation (the installer prices it), so the
+  // payment-schedule shares are of the whole job: quote + typical labour.
+  const job = t.total.best + t.labourRef.best;
+  const equipmentShare = pct(t.equipment.best, job);
+  const bosShare = pct(t.bos.best + t.contingency.best, job);
+  const labourShare = pct(t.labourRef.best, job);
   // Everything that happens on your roof rather than in a warehouse. This is the
   // portion there is never a reason to prepay.
-  const siteWorkShare = pct(t.bos.best + t.labour.best, t.total.best);
+  const siteWorkShare = pct(t.bos.best + t.contingency.best + t.labourRef.best, job);
 
   const faqs = [
     {
@@ -49,7 +52,7 @@ export default function CheckInstallerNemsaPage() {
     },
     {
       q: 'How much deposit should I pay a solar installer?',
-      a: `Enough to buy identified equipment, and not a naira more. On a typical build, equipment is about ${equipmentShare} of the installed price, mounting and protection about ${bosShare}, and labour about ${labourShare} — so about ${siteWorkShare} is site work that has not happened when the deposit is asked for. That portion should be paid on delivery and on commissioning, and the deposit itself should buy specific, model-numbered equipment delivered to your address, not a promise.`,
+      a: `Enough to buy identified equipment, and not a naira more. On a typical build, equipment is about ${equipmentShare} of the price before installation, mounting and protection about ${bosShare}, and labour about ${labourShare} — so about ${siteWorkShare} is site work that has not happened when the deposit is asked for. That portion should be paid on delivery and on commissioning, and the deposit itself should buy specific, model-numbered equipment delivered to your address, not a promise.`,
     },
     {
       q: 'What should be on a solar quote?',
@@ -167,8 +170,8 @@ export default function CheckInstallerNemsaPage() {
               <tbody>
                 {[
                   ['Equipment (inverter, battery, panels)', t.equipment.best, equipmentShare, 'On order, against an itemised list with model numbers'],
-                  ['Mounting, cables & protection', t.bos.best, bosShare, 'On delivery to site'],
-                  ['Installation & commissioning', t.labour.best, labourShare, 'On commissioning, after it is tested and working'],
+                  ['Mounting, cables & protection', t.bos.best + t.contingency.best, bosShare, 'On delivery to site'],
+                  ['Installation & commissioning (typical)', t.labourRef.best, labourShare, 'On commissioning, after it is tested and working'],
                 ].map(([label, cost, share, when], i) => (
                   <tr key={label as string} className={`border-b border-[#E2E8F0] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}>
                     <td className="p-4 font-heading font-semibold text-[#0A0F1E]">{label}</td>

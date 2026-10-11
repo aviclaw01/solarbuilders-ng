@@ -1,9 +1,12 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { track } from '@/lib/track';
 import { CONTACT_WHATSAPP } from '@/lib/site';
 
 export default function FloatingWhatsApp() {
+  // The calculator has its own sticky action bar; the bubble sat on top of it.
+  if (usePathname() === '/calculator') return null;
   return (
     <a
       href={`https://wa.me/${CONTACT_WHATSAPP}?text=Hi%2C%20I%20need%20help%20finding%20a%20solar%20installer`}

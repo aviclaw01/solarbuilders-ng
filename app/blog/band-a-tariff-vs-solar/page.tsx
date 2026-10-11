@@ -106,7 +106,7 @@ export default function BandAVsSolarPage() {
             A Band A household using {main.quote.dailyKwh}kWh a day spends{' '}
             {formatNairaShort(main.annual.low)}–{formatNairaShort(main.annual.high)} a year on electricity, or{' '}
             {formatNairaShort(main.fiveYear.low)}–{formatNairaShort(main.fiveYear.high)} over five years. A solar system
-            that covers that same load is {formatRange(main.standard.total)} installed, once.
+            that covers that same load is {formatRange(main.standard.total)} before installation, once.
           </p>
 
           <h2 className="font-heading font-bold text-2xl mt-10 mb-4">What Band A actually charges</h2>

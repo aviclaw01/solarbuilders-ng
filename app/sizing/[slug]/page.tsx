@@ -178,7 +178,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = quote.tiers.standard;
   const title = `${scenario.question} (${titleAnswer(scenario, t)})`;
   const description =
-    `${headlineAnswer(t)} — ${formatRange(t.total)} installed at ${PRICES_LAST_UPDATED_LABEL} Nigerian prices. ` +
+    `${headlineAnswer(t)} — ${formatRange(t.total)} before installation at ${PRICES_LAST_UPDATED_LABEL} Nigerian prices. ` +
     `Peak load ${num(quote.peakWatts)}W, ${kwh(quote.dailyKwh)} a day. Every figure computed, with the full bill of materials.`;
 
   return {
@@ -235,7 +235,7 @@ export default async function SizingScenarioPage({ params }: Props) {
     { icon: Zap, label: 'Inverter', value: `${num(standard.inverterKva)}kVA` },
     { icon: BatteryCharging, label: 'Battery', value: kwh(standard.batteryKwh) },
     { icon: Sun, label: 'Panels', value: `${standard.panelCount} × ${standard.panelWatts}W` },
-    { icon: Ruler, label: 'Installed', value: formatRange(standard.total) },
+    { icon: Ruler, label: 'Before installation', value: formatRange(standard.total) },
   ];
 
   return (
@@ -261,7 +261,7 @@ export default async function SizingScenarioPage({ params }: Props) {
           <p className="text-slate-700 text-lg md:text-xl max-w-3xl leading-relaxed">
             <strong className="font-semibold text-[#0A0F1E]">Short answer:</strong>{' '}
             a {num(standard.inverterKva)}kVA inverter, {kwh(standard.batteryKwh)} of lithium battery and{' '}
-            {standard.panelCount} × {standard.panelWatts}W panels — {formatRange(standard.total)} installed.
+            {standard.panelCount} × {standard.panelWatts}W panels — {formatRange(standard.total)} before installation.
           </p>
 
           <p className="text-slate-500 mt-4 max-w-3xl leading-relaxed">{scenario.intro}</p>
@@ -472,7 +472,7 @@ export default async function SizingScenarioPage({ params }: Props) {
                   ))}
                   <tr className="bg-slate-50">
                     <th scope="row" className="text-left font-heading font-bold text-[#0A0F1E] px-4 py-3">
-                      Installed total
+                      Total before installation
                     </th>
                     <td className="px-4 py-3" />
                     <td className="text-right font-heading font-bold text-[#0A0F1E] px-4 py-3 whitespace-nowrap">
@@ -489,7 +489,8 @@ export default async function SizingScenarioPage({ params }: Props) {
 
           <p className="text-slate-500 text-sm mt-4 max-w-3xl">
             Equipment {formatRange(standard.equipment)} · mounting, cables and protection {formatRange(standard.bos)} ·
-            labour {formatRange(standard.labour)}. Transport outside Lagos, Abuja or Port Harcourt is extra.
+            contingency {formatRange(standard.contingency)}. Installation is not included — installers typically charge{' '}
+            {formatRange(standard.labourRef)}.
           </p>
         </section>
 
@@ -502,7 +503,8 @@ export default async function SizingScenarioPage({ params }: Props) {
               <h3 className="font-heading font-bold text-[#0A0F1E] mb-2">The inverter comes from the worst moment</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
                 Add up every appliance as if it switched on together — {num(quote.peakWatts)}W here — then add{' '}
-                {Math.round((SIZING_RULES.inverterHeadroom - 1) * 100)}% headroom so the unit is never running flat out,
+                {Math.round((SIZING_RULES.inverterHeadroom - 1) * 100)}% (a 20% growth allowance, and never more than 80%
+                continuous loading) so the unit is never running flat out,
                 and round up to a size sold in Nigeria. That gives {num(standard.inverterKva)}kVA. Sizing the inverter on
                 an average instead of the peak is the single most common mistake in Nigerian quotes: the system works
                 until the day everything is on, then it trips. Motors — pumps, fridges, compressors — also pull several
@@ -511,15 +513,16 @@ export default async function SizingScenarioPage({ params }: Props) {
             </div>
 
             <div className="rounded-2xl border border-slate-100 p-6">
-              <h3 className="font-heading font-bold text-[#0A0F1E] mb-2">The battery comes from how long you want it</h3>
+              <h3 className="font-heading font-bold text-[#0A0F1E] mb-2">The battery comes from your night-time use</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Nothing runs at peak all night. We take {Math.round(SIZING_RULES.loadFactor * 100)}% of peak as the real
-                running load, multiply by the hours of backup you want, and allow for lithium only being safely emptied
-                to about {Math.round(SIZING_RULES.lithiumUsableDoD * 100)}%. At {standard.autonomyHours} hours that is{' '}
+                Daytime use runs off the panels; the battery carries what you use after dark or while the grid is off.
+                For a home with some grid that is about {Math.round(SIZING_RULES.nightShare * 100)}% of the day&apos;s
+                energy, plus a {Math.round((SIZING_RULES.growthAllowance - 1) * 100)}% allowance, and lithium is only
+                counted at {Math.round(SIZING_RULES.lithiumUsableDoD * 100)}% usable. That gives{' '}
                 {kwh(standard.batteryKwh)} — {standard.batteryModules} module
-                {standard.batteryModules === 1 ? '' : 's'} of {num(LITHIUM_MODULE_KWH)}kWh. Because Nigerian solar sits
-                alongside the grid rather than replacing it outright, buying backup for every possible hour is where
-                budgets get wasted; six hours covers the usual overnight outage.
+                {standard.batteryModules === 1 ? '' : 's'} of {num(LITHIUM_MODULE_KWH)}kWh, about{' '}
+                {standard.autonomyHours} hours with everything on. Little or no grid needs more; Band A needs less — the
+                calculator asks.
               </p>
             </div>
 

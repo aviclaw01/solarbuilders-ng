@@ -128,7 +128,7 @@ export default function NetBillingPage() {
             conditioners — and build it at our Premium tier, the one with extra panels for cloudy-day recharge. That is{' '}
             {premium.panelCount} × {premium.panelWatts}W panels, an array of{' '}
             <strong className="text-[#0A0F1E]">{premium.arrayKwp} kWp</strong>, costing{' '}
-            {formatRange(premium.total)} installed at {PRICES_LAST_UPDATED_LABEL} prices.
+            {formatRange(premium.total)} before installation at {PRICES_LAST_UPDATED_LABEL} prices.
           </p>
           <div className="rounded-2xl border border-[#E2E8F0] overflow-hidden">
             <table className="w-full text-sm">

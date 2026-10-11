@@ -7,7 +7,7 @@
  * This module inverts lib/quote.ts: given a naira ceiling, it searches the
  * dials the engine already has (how much load, how many hours of backup, which
  * component class, lithium or tubular) and returns the most capable build whose
- * realistic installed price fits.
+ * realistic price before installation fits.
  *
  * NO PRICE IS WRITTEN HERE. Every figure comes back out of buildQuote(), so a
  * change in lib/prices.ts moves these pages on the next build without anyone

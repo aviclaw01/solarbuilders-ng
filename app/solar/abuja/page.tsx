@@ -43,7 +43,7 @@ const FAQS: { q: string; a: string }[] = [
   {
     q: 'How much does solar cost in Abuja?',
     a:
-      `A ${SMALL.label} system typically costs ${span(SMALL.low, SMALL.high)} installed, and a ${COMMON.label} ` +
+      `A ${SMALL.label} system typically costs ${span(SMALL.low, SMALL.high)} before installation, and a ${COMMON.label} ` +
       `system ${span(COMMON.low, COMMON.high)}. These are national equipment prices — we track prices by product, ` +
       `not by city, so we cannot tell you an Abuja premium. Equipment for the FCT is generally trucked from Lagos, ` +
       `and any transport cost shows up in the installer's quote rather than in the equipment price.`,

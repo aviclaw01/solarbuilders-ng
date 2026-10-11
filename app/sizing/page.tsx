@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description:
     `What size inverter for a 1.5HP AC, how many panels for a 2 bedroom flat, what a 5kVA inverter really runs — ` +
     `${SIZING_SCENARIOS.length} sizing questions answered with a computed inverter size, battery, panel count and ` +
-    `installed price at ${PRICES_LAST_UPDATED_LABEL} Nigerian prices.`,
+    `price before installation at ${PRICES_LAST_UPDATED_LABEL} Nigerian prices.`,
   keywords: [
     'what size inverter do i need nigeria',
     'how many solar panels nigeria',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Solar & inverter sizing questions, answered with real Nigerian prices',
     description:
-      `${SIZING_SCENARIOS.length} sizing questions — each answered with a computed inverter size, battery, panel count and installed price.`,
+      `${SIZING_SCENARIOS.length} sizing questions — each answered with a computed inverter size, battery, panel count and price before installation.`,
     url: `${SITE_URL}/sizing`,
     type: 'website',
   },
@@ -53,7 +53,7 @@ export default function SizingHubPage() {
           <p className="text-slate-600 text-lg max-w-3xl leading-relaxed">
             {SIZING_SCENARIOS.length} of the questions Nigerians ask before buying — one air conditioner, a two-bedroom
             flat, a shop, a borehole pump — each answered with an inverter size, a battery size, a panel count and an
-            installed price. Nothing here is a guess or a round number copied from a vendor: every figure on every page
+            price before installation. Nothing here is a guess or a round number copied from a vendor: every figure on every page
             is produced by the same quote engine that powers our calculator, from equipment prices last checked{' '}
             {PRICES_LAST_UPDATED_LABEL}.
           </p>
@@ -97,7 +97,7 @@ export default function SizingHubPage() {
                       {t.panelCount === 1 ? '' : 's'}
                     </div>
                     <div className="text-slate-500 text-sm mt-1">
-                      from {formatNairaShort(t.total.low)} installed · {formatRange(t.total)}
+                      from {formatNairaShort(t.total.low)} before installation · {formatRange(t.total)}
                     </div>
                     <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#B45309] mt-4">
                       See the full answer <ArrowRight className="w-3.5 h-3.5" />

@@ -182,6 +182,42 @@ check("an AC sizes a bigger inverter than its running watts alone",
 check("prices are stamped with the catalogue date", typeof basic.pricesAsOf === "string" && basic.pricesAsOf.length >= 10);
 
 // ─────────────────────────────────────────────────────────────
+group("engineering allowances and an honest total");
+
+const home = [
+  appliance({ id: "ac_1_5hp", name: "Air Con (1.5HP)", watts: 1200, qty: 1, hoursPerDay: 4 }),
+  appliance({ id: "refrigerator", name: "Refrigerator", watts: 200, qty: 1, hoursPerDay: 8 }),
+  appliance({ id: "led_bulb", watts: 10, qty: 8, hoursPerDay: 8 }),
+];
+const hq = Q.buildQuote(home);
+const st = hq.tiers.standard;
+check("the stated load is a minimum — design load is 20% above it",
+  hq.designPeakWatts === Math.round(hq.peakWatts * 1.2), `${hq.designPeakWatts} vs ${hq.peakWatts}`);
+check("the inverter is never loaded above 80% of its rating",
+  hq.designPeakWatts <= st.inverterKva * 1000 * 0.8, `${hq.designPeakWatts}W on ${st.inverterKva}kVA`);
+const installLine = st.bom.find((l) => l.key === "installation");
+check("installation is listed but excluded from the total",
+  installLine && installLine.group === "excluded" && installLine.lineCost.best === 0);
+const sumIncluded = st.bom.filter((l) => l.group !== "excluded").reduce((n, l) => n + l.lineCost.best, 0);
+check("the total is exactly the sum of the priced lines", Math.abs(sumIncluded - st.total.best) <= 1, `${sumIncluded} vs ${st.total.best}`);
+check("installer labour is shown as a reference range only", st.labourRef.best > 0);
+for (const key of ["pv_combiner", "battery_protection", "ac_protection", "changeover", "earthing", "extinguisher"]) {
+  check(`BOM carries a ${key} line`, st.bom.some((l) => l.key === key));
+}
+check("a contingency line is priced", st.contingency.best > 0 && st.bom.some((l) => l.key === "contingency"));
+check("panels come in pairs", st.panelCount % 2 === 0, `${st.panelCount}`);
+
+group("grid supply drives storage");
+const good = Q.buildQuote(home, {}, "good").tiers.standard;
+const none = Q.buildQuote(home, {}, "none").tiers.standard;
+check("an off-grid home gets more battery than a Band-A home", none.batteryKwh > good.batteryKwh, `${none.batteryKwh} vs ${good.batteryKwh}`);
+check("an off-grid home gets more panels than a Band-A home", none.panelCount > good.panelCount, `${none.panelCount} vs ${good.panelCount}`);
+check("the default grid keeps the code of the appliance list alone", Q.buildQuote(home, {}, "some").code === hq.code);
+check("a different grid answer gives a different code", Q.buildQuote(home, {}, "none").code !== hq.code);
+check("parseGrid rejects junk", Q.parseGrid("lots") === "some" && Q.parseGrid("none") === "none");
+check("the share link carries a non-default grid", Q.quoteUrl(Q.buildQuote(home, {}, "poor"), "standard", "https://x").includes("grid=poor"));
+
+// ─────────────────────────────────────────────────────────────
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) {
   console.log("\nFailures:");

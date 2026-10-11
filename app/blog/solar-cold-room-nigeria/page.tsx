@@ -11,7 +11,7 @@ import { SITE_URL } from '@/lib/site';
 export const metadata: Metadata = {
   title: 'What It Costs to Solar-Power a Cold Room in Nigeria',
   description:
-    'A costed, itemised answer for a small cold room: the inverter, the battery bank, the array and the installed price at September 2026 Nigerian prices — plus the three things that make cold storage the hardest solar load in the country.',
+    'A costed, itemised answer for a small cold room: the inverter, the battery bank, the array and the price before installation at September 2026 Nigerian prices — plus the three things that make cold storage the hardest solar load in the country.',
   keywords: [
     'solar cold room nigeria cost',
     'solar for frozen food business',
@@ -51,7 +51,7 @@ export default function SolarColdRoomPage() {
   const faqs = [
     {
       q: 'What size solar system does a cold room need in Nigeria?',
-      a: `For the small cold room modelled here — a roughly 3HP condensing unit, evaporator fans and lighting, drawing ${(quote.peakWatts / 1000).toFixed(1)}kW at once and ${quote.dailyKwh}kWh a day — the computed build is a ${standard.inverterKva}kVA inverter, ${standard.batteryKwh}kWh of lithium and ${standard.panelCount} × ${standard.panelWatts}W panels, ${formatRange(standard.total)} installed at ${PRICES_LAST_UPDATED_LABEL} prices. Your own compressor rating will move all of those numbers, so check the nameplate before using this as a budget.`,
+      a: `For the small cold room modelled here — a roughly 3HP condensing unit, evaporator fans and lighting, drawing ${(quote.peakWatts / 1000).toFixed(1)}kW at once and ${quote.dailyKwh}kWh a day — the computed build is a ${standard.inverterKva}kVA inverter, ${standard.batteryKwh}kWh of lithium and ${standard.panelCount} × ${standard.panelWatts}W panels, ${formatRange(standard.total)} before installation at ${PRICES_LAST_UPDATED_LABEL} prices. Your own compressor rating will move all of those numbers, so check the nameplate before using this as a budget.`,
     },
     {
       q: 'Can solar run a cold room 24 hours a day?',
@@ -106,7 +106,7 @@ export default function SolarColdRoomPage() {
           <p className="text-xl text-[#64748B] leading-relaxed">
             A small cold room with a roughly 3HP condensing unit needs about a {standard.inverterKva}kVA inverter,{' '}
             {standard.batteryKwh}kWh of lithium and {standard.panelCount} × {standard.panelWatts}W panels —{' '}
-            {formatRange(standard.total)} installed at {PRICES_LAST_UPDATED_LABEL} prices. The battery, not the panels,
+            {formatRange(standard.total)} before installation at {PRICES_LAST_UPDATED_LABEL} prices. The battery, not the panels,
             is what makes it expensive.
           </p>
 
@@ -191,7 +191,7 @@ export default function SolarColdRoomPage() {
                   </tr>
                 ))}
                 <tr className="bg-[#0A0F1E] text-white">
-                  <td className="p-4 font-heading font-bold" colSpan={2}>Installed total (best estimate)</td>
+                  <td className="p-4 font-heading font-bold" colSpan={2}>Total before installation (best estimate)</td>
                   <td className="p-4 text-right font-heading font-bold">{formatNaira(standard.total.best)}</td>
                 </tr>
               </tbody>

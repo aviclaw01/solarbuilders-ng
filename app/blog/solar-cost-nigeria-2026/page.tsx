@@ -125,7 +125,7 @@ export default function SolarCostNigeriaPage() {
         <div className="space-y-6 text-[#0A0F1E]">
           <p className="text-xl text-[#64748B] leading-relaxed">
             A {familyHome.label} system — a family home with one AC — is{' '}
-            {formatNaira(familyHome.low)}–{formatNaira(familyHome.high)} installed, at prices last checked{' '}
+            {formatNaira(familyHome.low)}–{formatNaira(familyHome.high)} before installation, at prices last checked{' '}
             {PRICES_LAST_UPDATED_LABEL}. Below is every component that makes up that number, per kVA, per kWh and per
             watt, so you can check any quote you have been given against it.
           </p>
@@ -184,7 +184,7 @@ export default function SolarCostNigeriaPage() {
                   </tr>
                 ))}
                 <tr className="bg-[#0A0F1E] text-white">
-                  <td className="p-4 font-heading font-bold" colSpan={3}>Installed total</td>
+                  <td className="p-4 font-heading font-bold" colSpan={3}>Total before installation</td>
                   <td className="p-4 text-right font-heading font-bold">{formatNaira(t.total.best)}</td>
                 </tr>
               </tbody>
@@ -319,7 +319,7 @@ export default function SolarCostNigeriaPage() {
                 <strong className="text-[#0A0F1E]">Installation and commissioning</strong> —{' '}
                 {formatNaira(LABOUR_PER_KVA.low)}–{formatNaira(LABOUR_PER_KVA.high)} per kVA for a Lagos, Abuja or Port
                 Harcourt roof mount, with a floor of about {formatNaira(LABOUR_FLOOR)} because a small job still takes a
-                crew a day. On the build above, {formatNaira(t.labour.best)}. Transport outside the city is extra and
+                crew a day. On the build above, about {formatNaira(t.labourRef.best)} — charged by the installer, not part of our equipment quote. Transport outside the city is extra and
                 should be agreed before work starts, not discovered on the invoice.
               </span>
             </li>

@@ -39,7 +39,7 @@ const FAQS: { q: string; a: string }[] = [
     a:
       `Solar installation in Port Harcourt ranges from about ${formatNairaShort(STARTER.low)} for a ${STARTER.label} ` +
       `system (${STARTER.powers}) up to ${formatNairaShort(LARGE.high)} at the ${LARGE.label} end. The most common ` +
-      `package — ${COMMON.label} — costs ${span(COMMON.low, COMMON.high)} installed. These are national equipment ` +
+      `package — ${COMMON.label} — costs ${span(COMMON.low, COMMON.high)} before installation. These are national equipment ` +
       `prices — we track prices by product, not by city, so we cannot quote a Port Harcourt-specific premium.`,
   },
   {

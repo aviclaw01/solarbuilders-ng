@@ -97,7 +97,7 @@ export default function SolarLoansPage() {
           <p className="text-slate-600 text-lg leading-relaxed mb-6">
             The biggest barrier to solar in Nigeria isn&apos;t technology or availability — it&apos;s upfront cost. As
             of {PRICES_LAST_UPDATED_LABEL}, the Standard build for a {familyScenario.question.toLowerCase()} load
-            costs {formatNaira(family.total.best)} installed, and a {starterScenario.question.toLowerCase()} load —
+            costs {formatNaira(family.total.best)} before installation, and a {starterScenario.question.toLowerCase()} load —
             lights, fans, TV, no AC — is {formatNaira(starter.total.best)}. Most middle-class Nigerian families
             don&apos;t have that sitting in a savings account. The good news: the financing options have improved,
             and a proper itemised quote makes applying much easier.

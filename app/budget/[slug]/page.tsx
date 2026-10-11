@@ -155,7 +155,7 @@ function buildFaqs(answer: BudgetAnswer): Array<{ q: string; a: string }> {
       q: `I have ${point.label} set aside for solar. Kindly advise me if this is feasible.`,
       a:
         `Yes, at ${PRICES_LAST_UPDATED_LABEL} Nigerian prices. ${point.label} buys ${buildAnswer(build)} — ` +
-        `${formatNaira(build.price)} installed as a realistic middle estimate, with the whole range running ` +
+        `${formatNaira(build.price)} before installation as a realistic middle estimate, with the whole range running ` +
         `${formatRange(t.total)}. That build is designed to carry ${build.rung.summary}, with about ` +
         `${t.autonomyHours} hours of backup once the sun is down.`,
     });
@@ -223,7 +223,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const answer = budgetAnswer(point);
   const question = `What can ${point.label} of solar get you in Nigeria?`;
   const description = answer.build
-    ? `${point.label} buys ${buildAnswer(answer.build)} — ${formatNaira(answer.build.price)} installed ` +
+    ? `${point.label} buys ${buildAnswer(answer.build)} — ${formatNaira(answer.build.price)} before installation ` +
       `(${formatRange(answer.build.tier.total)}) at ${PRICES_LAST_UPDATED_LABEL} Nigerian prices. What it runs, what it ` +
       `will not run, and the itemised bill.`
     : `At ${PRICES_LAST_UPDATED_LABEL} Nigerian prices ${point.label} does not buy a complete solar system — the cheapest ` +
@@ -296,7 +296,7 @@ export default async function BudgetPage({ params }: Props) {
             {answer.build ? (
               <p className="text-slate-700 text-lg md:text-xl max-w-3xl leading-relaxed">
                 <strong className="font-semibold text-[#0A0F1E]">Short answer:</strong> {buildAnswer(answer.build)} —{' '}
-                {formatNaira(answer.build.price)} installed, which leaves about{' '}
+                {formatNaira(answer.build.price)} before installation, which leaves about{' '}
                 {formatNaira(answer.leftover)} of your {point.label}. It is built to carry {answer.build.rung.summary}.
               </p>
             ) : (
@@ -388,7 +388,7 @@ export default async function BudgetPage({ params }: Props) {
                       {other.build
                         ? `${num(other.build.tier.inverterKva)}kVA · ${kwh(other.build.tier.batteryKwh)} · ${
                             other.build.tier.panelCount
-                          } panels · ${formatNaira(other.build.price)} installed`
+                          } panels · ${formatNaira(other.build.price)} before installation`
                         : `Not a complete system — ${formatNaira(other.shortfall!.shortBy)} short of the cheapest install`}
                     </span>
                   </Link>
@@ -458,7 +458,7 @@ function AffordableSections({
     { icon: Zap, label: 'Inverter', value: `${num(t.inverterKva)}kVA` },
     { icon: BatteryCharging, label: 'Battery', value: kwh(t.batteryKwh) },
     { icon: Sun, label: 'Panels', value: `${t.panelCount} × ${t.panelWatts}W` },
-    { icon: Wallet, label: 'Installed', value: formatNaira(t.total.best) },
+    { icon: Wallet, label: 'Before installation', value: formatNaira(t.total.best) },
   ];
 
   return (
@@ -553,7 +553,7 @@ function AffordableSections({
                 ))}
                 <tr className="bg-slate-50">
                   <th scope="row" className="text-left font-heading font-bold text-[#0A0F1E] px-4 py-3">
-                    Installed total
+                    Total before installation
                   </th>
                   <td className="px-4 py-3" />
                   <td className="text-right font-heading font-bold text-[#0A0F1E] px-4 py-3 whitespace-nowrap">
@@ -569,8 +569,8 @@ function AffordableSections({
         </div>
 
         <p className="text-slate-500 text-sm mt-4 max-w-3xl">
-          Equipment {formatRange(t.equipment)} · mounting, cables and protection {formatRange(t.bos)} · labour{' '}
-          {formatRange(t.labour)}. Lagos, Abuja or Port Harcourt roof mount; transport outside those cities is extra.
+          Equipment {formatRange(t.equipment)} · mounting, cables and protection {formatRange(t.bos)} · contingency{' '}
+          {formatRange(t.contingency)}. Installation is not included — installers typically charge {formatRange(t.labourRef)}.
         </p>
       </section>
 
@@ -741,7 +741,7 @@ function AffordableSections({
                     ['Battery', `${kwh(t.batteryKwh)} ${batteryWord(build)}`, `${kwh(nextAnswer.build.tier.batteryKwh)} ${batteryWord(nextAnswer.build)}`],
                     ['Panels', `${t.panelCount} × ${t.panelWatts}W`, `${nextAnswer.build.tier.panelCount} × ${nextAnswer.build.tier.panelWatts}W`],
                     ['Daily load it carries', kwh(quote.dailyKwh), kwh(nextAnswer.build.quote.dailyKwh)],
-                    ['Installed', formatNaira(build.price), formatNaira(nextAnswer.build.price)],
+                    ['Before installation', formatNaira(build.price), formatNaira(nextAnswer.build.price)],
                   ].map(([label, mine, theirs]) => (
                     <tr key={label} className="border-b border-slate-100 last:border-0">
                       <th scope="row" className="text-left font-medium text-[#0A0F1E] px-4 py-3">{label}</th>

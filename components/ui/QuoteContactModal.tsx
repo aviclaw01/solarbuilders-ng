@@ -37,7 +37,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
 
   const waMessage =
     `Hi SolarBuilders, I'm ${name.trim()} from ${location}.\n` +
-    `I generated quote ${quote.code} on your website (${t.label} — est. ${formatNaira(t.total.best)}).\n` +
+    `I generated quote ${quote.code} on your website (${t.label} — est. ${formatNaira(t.total.best)} equipment & materials, before installation).\n` +
     `Please help me get this system built.` +
     (note.trim() ? `\n\nNote: ${note.trim()}` : '') +
     `\n\n${waUrl}`;
@@ -178,8 +178,8 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
               <h2 id="quote-modal-title" className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">Get this system built</h2>
               <p className="text-[#64748B] text-sm">
                 Quote <span className="font-mono font-semibold text-[#0A0F1E]">{quote.code}</span> · {t.label} ·{' '}
-                {formatRange(t.total)}. We&apos;ll confirm current prices, workmanship and anything missing, then
-                connect you with the right installer.
+                {formatRange(t.total)} before installation. We&apos;ll confirm current prices and anything missing, then
+                connect you with an installer who quotes their own labour.
               </p>
             </div>
 

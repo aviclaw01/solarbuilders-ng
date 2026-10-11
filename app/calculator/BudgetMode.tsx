@@ -130,7 +130,7 @@ export default function BudgetMode({ data, digits, onDigitsChange, onOpenQuote }
       {/* One short sentence for screen readers, rather than re-announcing the whole card on every keystroke. */}
       <p className="sr-only" aria-live="polite">
         {build
-          ? `${label} buys ${describe(build)}, ${formatNaira(build.price)} installed.`
+          ? `${label} buys ${describe(build)}, ${formatNaira(build.price)} before installation.`
           : shortfall
             ? `${label} is not a complete solar system yet. It is ${formatNaira(shortfall.shortBy)} short.`
             : ''}
@@ -188,7 +188,7 @@ function Affordable({
     { icon: Zap, label: 'Inverter', value: `${num(build.inverterKva)}kVA` },
     { icon: BatteryCharging, label: 'Battery', value: `${num(build.batteryKwh)}kWh ${build.battery}` },
     { icon: Sun, label: 'Panels', value: `${build.panelCount} × ${build.panelWatts}W` },
-    { icon: Wallet, label: 'Installed', value: formatNaira(build.price) },
+    { icon: Wallet, label: 'Before installation', value: formatNaira(build.price) },
   ];
 
   return (

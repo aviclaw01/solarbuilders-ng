@@ -38,7 +38,7 @@ const FAQS: { q: string; a: string }[] = [
     a:
       `A solar installation costs from about ${formatNairaShort(STARTER.low)} for a ${STARTER.label} starter ` +
       `system (${STARTER.powers}) up to ${formatNairaShort(LARGE.high)} at the ${LARGE.label} end. A typical ` +
-      `${COMMON.label} system is ${span(COMMON.low, COMMON.high)} installed. These are national equipment ` +
+      `${COMMON.label} system is ${span(COMMON.low, COMMON.high)} before installation. These are national equipment ` +
       `prices — we track prices by product, not by city. Equipment for Enugu is generally moved from Lagos, and ` +
       `that transport shows up in the installer's quote rather than in the equipment price.`,
   },

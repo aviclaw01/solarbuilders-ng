@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import AdminSidebar from "@/components/ui/AdminSidebar";
+import AdminViewerMark from "@/components/ui/AdminViewerMark";
 
 /**
  * The admin shell.
@@ -27,6 +28,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-screen bg-slate-50 lg:flex">
+      <AdminViewerMark />
       <AdminSidebar role={role} superConfigured={superConfigured} />
       <div className="flex-1 min-w-0">
         <main className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-7xl">{children}</main>

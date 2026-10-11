@@ -86,7 +86,7 @@ const FAQS = [
   },
   {
     q: 'What does a typical system cost?',
-    a: `As of ${PRICES_LAST_UPDATED_LABEL}, a no-AC home starts around ${formatNairaShort(HEADLINE_PACKAGES[0].low)}, a family home with one AC (5kVA, 10kWh lithium) runs ${formatNairaShort(HEADLINE_PACKAGES[2].low)}–${formatNairaShort(HEADLINE_PACKAGES[2].high)} installed, and an office with 20–30kWh of storage is ${formatNairaShort(HEADLINE_PACKAGES[4].low)}–${formatNairaShort(HEADLINE_PACKAGES[4].high)}. The calculator gives you your own number.`,
+    a: `As of ${PRICES_LAST_UPDATED_LABEL}, a no-AC home starts around ${formatNairaShort(HEADLINE_PACKAGES[0].low)}, a family home with one AC (5kVA, 10kWh lithium) runs ${formatNairaShort(HEADLINE_PACKAGES[2].low)}–${formatNairaShort(HEADLINE_PACKAGES[2].high)} before installation, and an office with 20–30kWh of storage is ${formatNairaShort(HEADLINE_PACKAGES[4].low)}–${formatNairaShort(HEADLINE_PACKAGES[4].high)}. The calculator gives you your own number.`,
   },
 ];
 
@@ -173,7 +173,7 @@ export default function HowItWorksPage() {
                   <tr>
                     <th className="px-5 py-3 font-semibold">System</th>
                     <th className="px-5 py-3 font-semibold">Runs</th>
-                    <th className="px-5 py-3 font-semibold text-right whitespace-nowrap">Installed (₦)</th>
+                    <th className="px-5 py-3 font-semibold text-right whitespace-nowrap">Before installation (₦)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white">
