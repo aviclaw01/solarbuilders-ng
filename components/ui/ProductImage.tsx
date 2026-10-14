@@ -140,13 +140,11 @@ interface Props {
 }
 
 export default function ProductImage({ product, className = '' }: Props) {
-  const tint = TINT[product.category] ?? TINT.inverter;
   const host = sourceHost(product.image, product.imageSource);
 
   return (
     <div
-      className={`relative flex items-center justify-center overflow-hidden rounded-xl ${className}`}
-      style={{ backgroundColor: tint.bg }}
+      className={`relative flex items-center justify-center overflow-hidden rounded-card bg-canvas ${className}`}
     >
       {product.image ? (
         <>
@@ -155,7 +153,7 @@ export default function ProductImage({ product, className = '' }: Props) {
             alt={`${product.model} — ${product.spec}`}
             fill
             sizes="(max-width: 640px) 100vw, 320px"
-            className="object-contain p-3"
+            className="object-contain p-[12%] mix-blend-multiply"
             // Manufacturer / vendor product shot. Credited on hover rather than
             // in a caption — a card is for reading the price, not the credits.
             title={host ? `${product.model} — manufacturer/vendor photo via ${host}` : undefined}
@@ -163,7 +161,7 @@ export default function ProductImage({ product, className = '' }: Props) {
           {host && <span className="sr-only">Product photo via {host}</span>}
         </>
       ) : (
-        <div className="w-full h-full p-3">
+        <div className="w-full h-full p-[14%]">
           <Illustration category={product.category} />
         </div>
       )}

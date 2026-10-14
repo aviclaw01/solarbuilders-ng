@@ -26,6 +26,8 @@
   --color-sun-ink: #B45309;
   --color-sun-wash: #FFF7E6;
   --color-sky: #F4F7FB;
+  /* canvas: the one tile colour every product photo sits on (Apple-store grid). */
+  --color-canvas: #F5F6F8;
   --color-line: #E3E8EF;
   --color-night: #0B1324;
   --color-night-soft: #16213A;
