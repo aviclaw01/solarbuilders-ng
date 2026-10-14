@@ -11,6 +11,21 @@
  *   node scripts/fetch-product-images.ts
  *   node scripts/fetch-product-images.ts --only=deye
  *   node scripts/fetch-product-images.ts --dry-run
+ *   node scripts/fetch-product-images.ts --curated --apply
+ *
+ * Two modes:
+ *
+ *   default    scrape each product's own `sourceUrl` (the price listing) and
+ *              accept an image only when it confidently identifies the model.
+ *   --curated  fetch the hand-verified photos listed in
+ *              scripts/product-image-sources.json — the manufacturer's own
+ *              product page wherever one exists. Every entry names the page
+ *              the photo appears on, the image URL, and what the photo shows
+ *              (exact model or the manufacturer's photo for that series). A
+ *              curated entry replaces whatever the scraper found for that row.
+ *
+ *   --apply    after a run, write each fetched entry's `image`, `imageSource`
+ *              and `imageFetchedOn` onto its row in lib/brands.ts.
  *
  * Politeness: robots.txt is honoured per host, requests to the same host are
  * spaced by at least 1.5s, every request has a 10s timeout, and a 403/429 makes
@@ -31,13 +46,14 @@
  *   public/products/attribution.json  (path → source site, imported by
  *                                      components/ui/ProductImage.tsx)
  *
- * After a run, copy the manifest onto the catalogue: every entry's `path`,
- * `sourceUrl` and `fetchedOn` belong on that product as `image`, `imageSource`
- * and `imageFetchedOn` in lib/brands.ts. Products with no entry keep the
- * category illustration — never fill one in by hand.
+ * After a run, the manifest is copied onto the catalogue (--apply does it):
+ * every entry's `path`, `sourceUrl` and `fetchedOn` belong on that product as
+ * `image`, `imageSource` and `imageFetchedOn` in lib/brands.ts. Products with no
+ * entry keep the category illustration — never fill one in by hand.
  */
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { register } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -67,6 +83,35 @@ const APP_ROOT = path.resolve(HERE, "..");
 const OUT_DIR = path.join(APP_ROOT, "public", "products");
 const MANIFEST_PATH = path.join(OUT_DIR, "manifest.json");
 const ATTRIBUTION_PATH = path.join(OUT_DIR, "attribution.json");
+const CURATED_PATH = path.join(HERE, "product-image-sources.json");
+const CATALOGUE_PATH = path.join(APP_ROOT, "lib", "brands.ts");
+
+/** One hand-verified photo in scripts/product-image-sources.json. */
+interface CuratedSource {
+  brand: string;
+  model: string;
+  /** the page the photo appears on — credited, and checked against robots.txt */
+  page: string;
+  /** the original image file */
+  image: string;
+  /** what the photo shows: the exact model, or the maker's photo for its series */
+  shows: string;
+}
+
+// lib/brands.ts imports "./brand-slugs" without an extension (the bundler
+// convention). Node's type stripping needs the ".ts", so add it for relative
+// specifiers that fail to resolve as written.
+register(
+  "data:text/javascript," +
+    encodeURIComponent(
+      `export async function resolve(s, c, next) {
+        try { return await next(s, c); } catch (e) {
+          if (e && e.code === "ERR_MODULE_NOT_FOUND" && /^\\.\\.?\\//.test(s) && !/\\.[cm]?[jt]sx?$/.test(s)) return next(s + ".ts", c);
+          throw e;
+        }
+      }`,
+    ),
+);
 
 // ── Catalogue types (structural — the catalogue is imported at runtime) ───────
 
@@ -104,6 +149,8 @@ interface Job {
   /** identifying tokens of OTHER models by the same brand — a photo naming one
    *  of these is that model's photo, not ours */
   rivalTokens: string[];
+  /** set in --curated mode: the hand-verified photo to fetch instead of scraping */
+  curated?: CuratedSource;
 }
 
 interface ManifestEntry {
@@ -117,7 +164,7 @@ interface ManifestEntry {
   bytes: number;
   width: number;
   height: number;
-  confidence: "page" | "high" | "medium";
+  confidence: "page" | "high" | "medium" | "curated";
   matchedOn: string;
 }
 
@@ -796,17 +843,23 @@ async function convert(input: Buffer): Promise<Converted> {
 interface Args {
   only: string[];
   dryRun: boolean;
+  curated: boolean;
+  apply: boolean;
 }
 
 function parseArgs(argv: string[]): Args {
   const only: string[] = [];
   let dryRun = false;
+  let curated = false;
+  let apply = false;
   for (const arg of argv) {
     if (arg === "--dry-run") dryRun = true;
+    else if (arg === "--curated") curated = true;
+    else if (arg === "--apply") apply = true;
     else if (arg.startsWith("--only=")) only.push(...arg.slice(7).split(",").map((s) => s.trim()).filter(Boolean));
-    else if (arg.startsWith("--")) throw new Error(`unknown flag: ${arg} (supported: --only=<brand-slug>, --dry-run)`);
+    else if (arg.startsWith("--")) throw new Error(`unknown flag: ${arg} (supported: --only=<brand-slug>, --dry-run, --curated, --apply)`);
   }
-  return { only, dryRun };
+  return { only, dryRun, curated, apply };
 }
 
 async function loadCatalogue(): Promise<CatalogueBrand[]> {
@@ -884,7 +937,19 @@ async function run(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const brands = await loadCatalogue();
   buildBrandIndex(brands);
-  const jobs = buildJobs(brands, args.only);
+  let jobs = buildJobs(brands, args.only);
+  if (args.curated) {
+    const sources = JSON.parse(await readFile(CURATED_PATH, "utf8")) as { sources: CuratedSource[] };
+    const byKey = new Map(jobs.map((j) => [`${j.brandSlug}|${j.model}`, j]));
+    const known = new Set(buildJobs(brands, []).map((j) => `${j.brandSlug}|${j.model}`));
+    for (const src of sources.sources) {
+      const key = `${src.brand}|${src.model}`;
+      if (!known.has(key)) throw new Error(`product-image-sources.json: no catalogue row ${key}`);
+      const job = byKey.get(key);
+      if (job) job.curated = src;
+    }
+    jobs = jobs.filter((j) => j.curated);
+  }
   if (!jobs.length) {
     console.error(`No products matched${args.only.length ? ` --only=${args.only.join(",")}` : ""}.`);
     process.exitCode = 1;
@@ -912,7 +977,7 @@ async function run(): Promise<void> {
   // Group by host so we can run hosts in parallel while each host stays serial.
   const byHost = new Map<string, Job[]>();
   for (const job of jobs) {
-    const host = hostOf(job.sourceUrl);
+    const host = hostOf(job.curated ? job.curated.image : job.sourceUrl);
     const list = byHost.get(host);
     if (list) list.push(job);
     else byHost.set(host, [job]);
@@ -931,6 +996,38 @@ async function run(): Promise<void> {
       note(host, "attempted");
       const label = `${job.brandSlug} · ${job.model}`;
       try {
+        if (job.curated) {
+          const src = job.curated;
+          const pageUrl = new URL(src.page);
+          if (!robotsAllows(await getRobots(pageUrl.origin), pageUrl)) throw new Error(`robots-disallowed:${pageUrl.host}${pageUrl.pathname}`);
+          const owner = claimedImages.get(src.image);
+          if (owner) throw new Error(`image already used for ${owner} — refusing to reuse one photo for two models`);
+          claimedImages.set(src.image, `${job.brandSlug}/${job.model}`);
+          if (args.dryRun) {
+            note(host, "succeeded");
+            console.log(`  would fetch ${label} [curated] ${src.image}`);
+            continue;
+          }
+          const converted = await convert(await downloadImage(src.image));
+          await writeFile(path.join(OUT_DIR, job.fileName), converted.buffer);
+          entries.push({
+            brand: job.brandSlug,
+            model: job.model,
+            path: job.publicPath,
+            sourceUrl: src.page,
+            imageUrl: src.image,
+            imageHost: hostOf(src.image),
+            fetchedOn: new Date().toISOString().slice(0, 10),
+            bytes: converted.bytes,
+            width: converted.width,
+            height: converted.height,
+            confidence: "curated",
+            matchedOn: `curated: ${src.shows}`,
+          });
+          note(host, "succeeded");
+          console.log(`  ok    ${label} [curated] ${converted.width}x${converted.height} ${(converted.bytes / 1024).toFixed(0)}KB`);
+          continue;
+        }
         let page = pages.get(job.sourceUrl);
         if (page === undefined) {
           try {
@@ -1099,6 +1196,42 @@ async function run(): Promise<void> {
   console.log(
     `\nmanifest → ${path.relative(APP_ROOT, MANIFEST_PATH)} (${allEntries.length} images on record, ${entries.length} written this run)`,
   );
+
+  if (args.apply) await applyToCatalogue(entries, brands);
+}
+
+/**
+ * Write `image`, `imageSource` and `imageFetchedOn` onto each fetched row of
+ * lib/brands.ts. Catalogue rows are one object literal per line; the row is the
+ * first `model: "<model>"` after its brand's `slug: "<brand>"`.
+ */
+async function applyToCatalogue(entries: ManifestEntry[], brands: CatalogueBrand[]): Promise<void> {
+  const lines = (await readFile(CATALOGUE_PATH, "utf8")).split("\n");
+  const slugOrder = brands.map((b) => b.slug);
+  let applied = 0;
+  for (const e of entries) {
+    const brandLine = lines.findIndex((l) => l.includes(`slug: "${e.brand}"`));
+    if (brandLine < 0) throw new Error(`apply: brand ${e.brand} not found in lib/brands.ts`);
+    const nextBrand = slugOrder[slugOrder.indexOf(e.brand) + 1];
+    const endLine = nextBrand ? lines.findIndex((l) => l.includes(`slug: "${nextBrand}"`)) : lines.length;
+    const modelNeedle = `model: ${JSON.stringify(e.model)},`;
+    let row = -1;
+    for (let i = brandLine; i < (endLine < 0 ? lines.length : endLine); i++) {
+      if (lines[i].includes(modelNeedle)) {
+        row = i;
+        break;
+      }
+    }
+    if (row < 0) throw new Error(`apply: ${e.brand} · ${e.model} not found in lib/brands.ts`);
+    const fields = `image: ${JSON.stringify(e.path)}, imageSource: ${JSON.stringify(e.sourceUrl)}, imageFetchedOn: ${JSON.stringify(e.fetchedOn)}`;
+    const stripped = lines[row].replace(/, (?:image|imageSource|imageFetchedOn): "[^"]*"/g, "");
+    const m = /^(.*?)( },?\s*)$/.exec(stripped);
+    if (!m) throw new Error(`apply: ${e.brand} · ${e.model} is not a one-line row`);
+    lines[row] = `${m[1]}, ${fields}${m[2]}`;
+    applied++;
+  }
+  await writeFile(CATALOGUE_PATH, lines.join("\n"));
+  console.log(`lib/brands.ts ← image fields on ${applied} rows`);
 }
 
 run().catch((err) => {

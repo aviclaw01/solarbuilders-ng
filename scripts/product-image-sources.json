@@ -1,0 +1,305 @@
+{
+  "sources": [
+    {
+      "brand": "deye",
+      "model": "SUN-12K-SG04LP3",
+      "page": "https://deye.com/product/sun-5-6-8-10-12k-sg04lp3-eu/",
+      "image": "https://deye.com/wp-content/uploads/2024/06/sun-5-12k-sg04lp3-eu-1-scaled.png",
+      "shows": "Deye's photo for the SUN-5/6/8/10/12K-SG04LP3-EU series"
+    },
+    {
+      "brand": "deye",
+      "model": "SUN-16K-SG01LP1-EU",
+      "page": "https://deye.com/product/sun-12-14-16k-sg01lp1-eu/",
+      "image": "https://deye.com/wp-content/uploads/2024/06/sun-12-16k-sg01lp1-1-scaled.png",
+      "shows": "Deye's photo for the SUN-12/14/16K-SG01LP1-EU series"
+    },
+    {
+      "brand": "deye",
+      "model": "51.2V 314Ah",
+      "page": "https://deye.com/product/se-f16/",
+      "image": "https://deye.com/wp-content/uploads/2025/07/%E5%9C%86%E5%B1%8F.jpg",
+      "shows": "Deye SE-F16 (16kWh, 51.2V 314Ah)"
+    },
+    {
+      "brand": "deye",
+      "model": "SUN-5K-SG 1-phase",
+      "page": "https://deye.com/product/sun-3-3-6-5-6k-sg04lp1-eu/",
+      "image": "https://deye.com/wp-content/uploads/2024/06/sun-3-6k-sg04lp1-eu-4-scaled.png",
+      "shows": "Deye's photo for the SUN-3/3.6/5/6K-SG04LP1-EU series"
+    },
+    {
+      "brand": "deye",
+      "model": "SUN-10K 1-phase",
+      "page": "https://www.deyeinverter.com/product/single-phase-low-voltage-hybrid-inverter/sun7-6-8-10-12ksg02lp1euam2-am3-7-612kw-single-phase-2-mppt-hybrid-inverter-lv-battery-supported.html",
+      "image": "https://www.deyeinverter.com/deyeinverter/2025/01/16/sun-7.6-12kk-sg02lp1-eu-am2-1.png",
+      "shows": "Deye's photo for the SUN-7.6/8/10/12K-SG02LP1-EU-AM2/AM3 series"
+    },
+    {
+      "brand": "deye",
+      "model": "SUN-6K OG01LP1",
+      "page": "https://web.archive.org/web/20251113135515/https://deye.com/product/sun-3-6-5-6k-og01lp1-eu-am2-single-phase-off-grid-inverter/",
+      "image": "https://deye.com/wp-content/uploads/2025/10/sun-3-6k-og01lp1-eu-am2.jpg",
+      "shows": "Deye's photo for the SUN-3.6/5/6K-OG01LP1-EU-AM2 series (product page since retired; archived copy credited, image still on deye.com)"
+    },
+    {
+      "brand": "deye",
+      "model": "SUN-8K-SG01LP1",
+      "page": "https://deye.com/product/sun-7-6-8k-sg01lp1-eu/",
+      "image": "https://deye.com/wp-content/uploads/2024/06/sun-7.6-8k-sg01lp1-eu-2-scaled.png",
+      "shows": "Deye's photo for the SUN-7.6/8K-SG01LP1-EU"
+    },
+    {
+      "brand": "growatt",
+      "model": "SPF 6000 ES",
+      "page": "https://en.growatt.com/products/spf-6000-es-plus",
+      "image": "https://en.growatt.com/upload/image/20221208/fa70b02c9448acc893e057afc225d606.png",
+      "shows": "Growatt SPF 6000 ES Plus (current version of the SPF 6000 ES)"
+    },
+    {
+      "brand": "growatt",
+      "model": "12kW hybrid",
+      "page": "https://en.growatt.com/products/spe-8000-12000-es",
+      "image": "https://en.growatt.com/upload/image/SPE%208-12K.png",
+      "shows": "Growatt's photo for the SPE 8000-12000 ES series (12kW single-phase LV hybrid)"
+    },
+    {
+      "brand": "growatt",
+      "model": "ARK / HOPE 5.12kWh",
+      "page": "https://en.growatt.com/products/hope-5.0l-lw-b1",
+      "image": "https://en.growatt.com/upload/image/5.0.png",
+      "shows": "Growatt HOPE 5.0L-B1 (5.12kWh 51.2V module)"
+    },
+    {
+      "brand": "luxpower",
+      "model": "2.5kW hybrid",
+      "page": "https://luxpowertek.com/off-grid-inverter-geta-lb-eu-1-6kw/",
+      "image": "https://luxpowertek.com/wp-content/uploads/2026/01/Off-grid-solar-inverter-Luxpower-GETA-LB-EU-1.5kw-2.5kW-3kW-6kW-scaled.webp",
+      "shows": "LuxPower's photo for the GETA-LB-EU 1.5-6kW series (its 2.5kW model)"
+    },
+    {
+      "brand": "luxpower",
+      "model": "5kW hybrid",
+      "page": "https://luxpowertek.com/products/",
+      "image": "https://luxpowertek.com/wp-content/uploads/2025/02/LXP-3-6K.jpg",
+      "shows": "LuxPower's photo for the LXP-LB-EU 3-6K hybrid series"
+    },
+    {
+      "brand": "itel-energy",
+      "model": "51.2V 100Ah wall/standing",
+      "page": "https://energy.itel-life.com/Ipw51100",
+      "image": "https://transsion-platform01.oss-accelerate.aliyuncs.com/app/packages/IPW-51100.png",
+      "shows": "itel Energy IPW-51100 (51.2V 100Ah)"
+    },
+    {
+      "brand": "itel-energy",
+      "model": "51.2V 10kWh",
+      "page": "https://energy.itel-life.com/Ipl51200h",
+      "image": "https://transsion-platform01.oss-accelerate.aliyuncs.com/app/packages/IPL-51200H.png",
+      "shows": "itel Energy IPL-51200H (51.2V 200Ah, 10kWh)"
+    },
+    {
+      "brand": "itel-energy",
+      "model": "51.2V 16kWh",
+      "page": "https://energy.itel-life.com/Ipl51314h",
+      "image": "https://transsion-platform01.oss-accelerate.aliyuncs.com/app/packages/menu-IPL-51314H-1.png",
+      "shows": "itel Energy IPL-51314H (51.2V 314Ah, 16kWh)"
+    },
+    {
+      "brand": "itel-energy",
+      "model": "3kW / 6kW hybrid",
+      "page": "https://energy.itel-life.com/Ip54",
+      "image": "https://transsion-platform01.oss-accelerate.aliyuncs.com/app/packages/menu-IPV-4K24UPRO%EF%BC%86IPV-6K48UPRO-1.png",
+      "shows": "itel Energy IPV-4K24UPRO / IPV-6K48UPRO hybrid inverter"
+    },
+    {
+      "brand": "must",
+      "model": "PV18-3048",
+      "page": "https://www.mustpower.com/product/pv1800-pro-series-26-2kw/",
+      "image": "https://www.mustsolar.com/wp-content/uploads/2024/04/PV1800-PRO-02-1.jpg",
+      "shows": "Must's photo for the PV1800 PRO 2-6.2kW series"
+    },
+    {
+      "brand": "must",
+      "model": "PV18-10048 PRO",
+      "page": "https://www.mustsolar.com/product/pv1800-pro-ii-series-6-2-12kw/",
+      "image": "https://www.mustsolar.com/wp-content/uploads/2025/06/pv18-pro-ii2-1.jpg",
+      "shows": "Must's photo for the PV1800 PRO II 6.2-12kW series (PV18-10048 PRO II)"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 5kW 48V hybrid",
+      "page": "https://www.solisinverters.com/global/energy_storage_inverters19/S6-EH1P(3-10)K-L-PLUS_gl.html",
+      "image": "https://cmsdata.solisinverters.com/upload/2024-12-09/1733736190635_00120a1f-11bc-4076-bece-603949e57e2a.png",
+      "shows": "Solis's photo for the S6-EH1P(3-10)K-L-PLUS series (front)"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 6kW LV",
+      "page": "https://www.solisinverters.com/global/energy_storage_inverters19/S6-EH1P(3-10)K-L-PLUS_gl.html",
+      "image": "https://cmsdata.solisinverters.com/upload/2024-12-09/1733736195421_00a4dd01-153f-4849-b55e-18d12c1f4669.png",
+      "shows": "Solis's photo for the S6-EH1P(3-10)K-L-PLUS series (angled)"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 12kW LV",
+      "page": "https://www.solisinverters.com/ng/energy_storage_inverters17/S6-EH1P(12-18)K03-NV-YD-L_ng.html",
+      "image": "https://cmsdata.solisinverters.com/upload/2024-05-25/2024-05-25-112325_1716607405102.png",
+      "shows": "Solis's photo for the S6-EH1P(12-18)K03-NV-YD-L series (front)"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 16kW LV",
+      "page": "https://www.solisinverters.com/ng/energy_storage_inverters17/S6-EH1P(12-18)K03-NV-YD-L_ng.html",
+      "image": "https://cmsdata.solisinverters.com/upload/2024-05-25/2024-05-25-112330_1716607410592.png",
+      "shows": "Solis's photo for the S6-EH1P(12-18)K03-NV-YD-L series (angled)"
+    },
+    {
+      "brand": "gennex",
+      "model": "5kVA / 10kWh all-in-one",
+      "page": "https://shop.gennextechnologies.com/product/all-in-one-solar-system-for-homes/",
+      "image": "https://shop.gennextechnologies.com/wp-content/uploads/2024/08/All-in-one-solar-power-system-2.webp",
+      "shows": "Gennex's own photo of its all-in-one home system"
+    },
+    {
+      "brand": "must",
+      "model": "PH1800 PRO 5.5kW",
+      "page": "https://www.mustsolar.com/product/ph1800-pro-series-3-5-5kw/",
+      "image": "https://www.mustsolar.com/wp-content/uploads/2024/04/PV1800-PRO-03-1.jpg",
+      "shows": "Must's photo of the PV1800/PH1800 PRO housing, from the PH1800 PRO 3-5.5kW page"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 8kW LV",
+      "page": "https://www.solisinverters.com/global/energy_storage_inverters19/S6-EH1P(3-10)K-L-PLUS_gl.html",
+      "image": "https://cmsdata.solisinverters.com/upload/2024-12-09/1733736205482_11711ad3-6878-4f2f-8ac4-c9aa3bd1d254.png",
+      "shows": "Solis's photo for the S6-EH1P(3-10)K-L-PLUS series (side view)"
+    },
+    {
+      "brand": "victron",
+      "model": "MultiPlus-II GX 48/5000",
+      "page": "https://www.victronenergy.com/inverters-chargers/multiplus-ii-gx",
+      "image": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FMultiplus-II%252048V%25205kVA%252050-70%2520230V%2520GX%2520%2528front%2529.png&w=640&q=70",
+      "shows": "Victron MultiPlus-II GX 48/5000 (exact model)"
+    },
+    {
+      "brand": "victron",
+      "model": "MultiPlus-II 48/10000",
+      "page": "https://www.victronenergy.com/inverters-chargers/multiplus-ii",
+      "image": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FMultiPlus-II%252048V%252010kVA%2520230V%2520%2528front%2529.png&w=640&q=70",
+      "shows": "Victron MultiPlus-II 48/10000 (exact model)"
+    },
+    {
+      "brand": "victron",
+      "model": "Quattro 48/8000",
+      "page": "https://www.victronenergy.com/inverters-chargers/quattro",
+      "image": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FQuattro%252048V%25208000VA%2520110A%2520230V%2520%2528front%2529.png&w=640&q=70",
+      "shows": "Victron Quattro 48/8000/110 (exact model)"
+    },
+    {
+      "brand": "victron",
+      "model": "Quattro 48/10000",
+      "page": "https://www.victronenergy.com/inverters-chargers/quattro",
+      "image": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FQuattro%252048V%252010000VA%2520140A%2520230V%2520%2528front%2529.png&w=640&q=70",
+      "shows": "Victron Quattro 48/10000/140 (exact model)"
+    },
+    {
+      "brand": "victron",
+      "model": "Quattro 48/15000",
+      "page": "https://www.victronenergy.com/inverters-chargers/quattro",
+      "image": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FQuattro%252048V%252015000VA%2520200A%2520%2528front%2529.png&w=640&q=70",
+      "shows": "Victron Quattro 48/15000/200 (exact model)"
+    },
+    {
+      "brand": "pylontech",
+      "model": "UF5000",
+      "page": "https://invertsolar.co.za/product/pylontech-uf5000-5-12kwh-51-2v-li-ion-solar-battery/",
+      "image": "https://invertsolar.co.za/wp-content/uploads/2026/01/PylonUF50005.12kWh51.2VLi-ionbattery_excl.brackets.webp",
+      "shows": "Pylontech UF5000 (exact model; distributor photo — pylontech.com.cn renders client-side)"
+    },
+    {
+      "brand": "pylontech",
+      "model": "US2000C",
+      "page": "https://ecowizard.co.uk/battery-storage/pylon-us2000c-2-4kwh-li-ion-solar-battery-excl-brackets/",
+      "image": "https://www.ecowizard.co.uk/image_resize/back/w800/h800/products/1172/US2new_ed707217-b5cd-4a52-8c8a-8aa93444adb4_1280x.jpg",
+      "shows": "Pylontech US2000C (exact model; distributor photo)"
+    },
+    {
+      "brand": "dyness",
+      "model": "PowerBrick 51.2V 280Ah",
+      "page": "https://www.dyness.com/powerbrick-plus-low-voltage-storage-batteries-for-household-use",
+      "image": "https://www.dyness.com/Public/Uploads/uploadfile/images/20251226/suoluetu7.png",
+      "shows": "Dyness PowerBrick Plus — the current PowerBrick family cabinet (original 280Ah page retired)"
+    },
+    {
+      "brand": "dyness",
+      "model": "Stack100 HV",
+      "page": "https://www.dyness.com/stack100-integrated-photovoltaic-storage-systems",
+      "image": "https://www.dyness.com/Public/Uploads/uploadfile/images/20251010/stack100HEI.webp",
+      "shows": "Dyness STACK100 (exact model)"
+    },
+    {
+      "brand": "felicity",
+      "model": "LPBF48200",
+      "page": "https://invertsolar.co.za/product/felicity-solar-10kwh-48v-lithium-iron-battery/",
+      "image": "https://invertsolar.co.za/wp-content/uploads/2025/04/3-4.png",
+      "shows": "Felicity LPBF48200-H 10kWh wall battery (distributor photo; not on felicitysolar.ng)"
+    },
+    {
+      "brand": "jinko",
+      "model": "450W mono",
+      "page": "https://www.jinkosolar.com/en/site/tigerneo",
+      "image": "https://jinkosolarcdn.shwebspace.com/uploads/665d7326/60-182x182%20V.jpg",
+      "shows": "Jinko Tiger Neo 60HL4-V family photo"
+    },
+    {
+      "brand": "jinko",
+      "model": "600W bifacial",
+      "page": "https://www.jinkosolar.com/en/site/tigerneo",
+      "image": "https://jinkosolarcdn.shwebspace.com/uploads/665d7237/72-182x182%20V.jpg",
+      "shows": "Jinko Tiger Neo 72HL4 family photo"
+    },
+    {
+      "brand": "jinko",
+      "model": "620W bifacial",
+      "page": "https://www.jinkosolar.com/en/site/tigerneo",
+      "image": "https://jinkosolarcdn.shwebspace.com/uploads/665d7173/78-182x182%20BDV.jpg",
+      "shows": "Jinko Tiger Neo 78HL4-BDV family photo"
+    },
+    {
+      "brand": "jinko",
+      "model": "650–700W bifacial",
+      "page": "https://www.jinkosolar.com/en/site/tigerneo_3",
+      "image": "https://jinkosolarcdn.shwebspace.com/themes/basic/skin/images/tigerneo_3/product-4.png",
+      "shows": "Jinko Tiger Neo 3.0 family photo"
+    },
+    {
+      "brand": "longi",
+      "model": "450W all-black",
+      "page": "https://www.longi.com/en/products/modules/hi-mo-x6-explorer/",
+      "image": "https://static.longi.com/Explorer_04_8b2c959558.png",
+      "shows": "LONGi Hi-MO X6 Explorer (54-cell, black frame)"
+    },
+    {
+      "brand": "canadian-solar",
+      "model": "590W HiKu",
+      "page": "https://www.vicoexport.com/en/home-en/solar-panels/canadian-solar/canadian-solar-hiku7/",
+      "image": "https://www.vicoexport.com/wp-content/uploads/2023/03/HiKu7_Canadian_Solar_Vico_Export_Solar_Energy.png",
+      "shows": "Canadian Solar HiKu7 Mono (distributor photo; csisolar.com retired the page)"
+    },
+    {
+      "brand": "canadian-solar",
+      "model": "600W all-black",
+      "page": "https://www.csisolar.com/all-black/",
+      "image": "https://static.csisolar.com/wp-content/uploads/2019/11/05153343/All-Black%E4%B8%80%E5%88%87%E4%B8%89-2-PNG-1.png",
+      "shows": "Canadian Solar All-Black family photo"
+    },
+    {
+      "brand": "trina",
+      "model": "Vertex 600W",
+      "page": "https://www.trinasolar.com/en-glb/VertexN/",
+      "image": "https://www-cdn.trinasolar.com/wwwstorage/sites/3/630W-TSM-NEG19RC20.png",
+      "shows": "Trina Vertex N family photo (TSM-NEG19RC.20)"
+    }
+  ]
+}
