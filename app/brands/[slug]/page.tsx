@@ -44,9 +44,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const brand = getBrand(slug);
   if (!brand) return { title: 'Brand not found' };
   const what = brand.kind === 'manufacturer' ? `${brand.name} prices in Nigeria` : `${brand.name} — solar vendor in ${brand.origin}`;
+  // Lead with the number a searcher wants. The old description opened with
+  // the tagline and was cut mid-sentence; it ranked 4–5 and got no clicks.
+  const from = brand.products.length ? Math.min(...brand.products.map((p) => p.priceLow)) : null;
+  const cats = [...new Set(brand.products.map((p) => CATEGORY_LABEL[p.category].toLowerCase()))].join(', ');
   return {
-    title: `${what} (${PRICES_LAST_UPDATED_LABEL})`,
-    description: `${brand.tagline}. ${brand.products.length ? `${brand.products.length} priced models with sources.` : ''} ${brand.description.slice(0, 120)}…`,
+    title: from ? `${what} — from ${formatNaira(from)} (${PRICES_LAST_UPDATED_LABEL})` : `${what} (${PRICES_LAST_UPDATED_LABEL})`,
+    description: from
+      ? `${brand.name} ${cats} in Nigeria from ${formatNaira(from)}. ${brand.products.length} models priced ${PRICES_LAST_UPDATED_LABEL}. ${brand.tagline}. Add it to your order and we source it.`
+      : `${brand.tagline}. ${brand.description.slice(0, 120)}…`,
     openGraph: { title: what, description: brand.tagline, url: `${SITE_URL}/brands/${brand.slug}`, type: 'website' },
     alternates: { canonical: `${SITE_URL}/brands/${brand.slug}` },
   };
