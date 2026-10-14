@@ -109,7 +109,7 @@ export default function HomePage() {
                 <ArrowRight className="w-5 h-5" aria-hidden="true" />
               </Link>
               <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
-                {['Free', 'No sign-up', 'No mark-up on equipment'].map((item) => (
+                {['Free', 'No sign-up', 'Real Nigerian prices'].map((item) => (
                   <li key={item} className="inline-flex items-center gap-1.5">
                     <Check className="w-4 h-4 text-leaf" aria-hidden="true" />
                     {item}
@@ -184,8 +184,7 @@ export default function HomePage() {
                 Every figure is a real listing with a date on it
               </h2>
               <p className="text-slate-300 leading-relaxed max-w-lg">
-                Not estimates, not a mark-up on a guess. You pay the brand&apos;s market price — the same number we
-                publish. Our margin comes from the trade terms we hold with distributors.
+                Not estimates. The price on your quote is the price you pay for the kit.
               </p>
             </div>
             <dl className="grid grid-cols-2 gap-px bg-white/10 rounded-card overflow-hidden">

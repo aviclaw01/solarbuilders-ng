@@ -126,8 +126,7 @@ export default function BrandsPage() {
           <h2 className="font-heading font-extrabold text-white text-2xl md:text-3xl mb-3">We do the buying</h2>
           <p className="text-slate-300 max-w-xl mx-auto mb-6">
             Size your system, get an itemised quote with a code, and send it to us. We confirm today&apos;s price, order the
-            equipment at the market rate, and put a vetted installer on the job. You pay what the brand charges — our
-            margin comes from our trade terms, not from a mark-up on you.
+            equipment at the market rate, and put a vetted installer on the job.
           </p>
           <Link href="/calculator" className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-8 py-4 font-heading font-bold transition-colors">
             Get my itemised quote →

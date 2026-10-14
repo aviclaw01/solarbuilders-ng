@@ -167,7 +167,7 @@ function ProductCard({ item }: { item: ShopItem }) {
           {sameLowHigh ? formatNaira(item.priceLow) : `${formatNaira(item.priceLow)} – ${formatNaira(item.priceHigh)}`}
         </p>
         <p className="text-xs text-slate-500 mt-0.5">
-          {sameLowHigh ? 'Listed price' : 'Range across the listings we checked'}
+          {sameLowHigh ? 'Price' : 'Price range'}
           {item.unitPrice && item.unit ? ` · ${formatNaira(item.unitPrice)} per ${item.unit}` : ''}
         </p>
         <p className="text-[11px] text-slate-500 mt-1">Price seen {formatSeenOn(item.seenOn)}</p>

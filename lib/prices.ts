@@ -15,6 +15,21 @@
  */
 
 export const PRICES_LAST_UPDATED = "2026-10-09";
+
+/**
+ * Our sourcing fee: every item we buy from a third-party seller is shown at the
+ * market price we found plus this fraction. It is applied once — in the quote
+ * engine's equipment/BOS lines and to the catalogue in lib/brands.ts — so every
+ * ₦ the site shows already includes it. The constants in this file stay as the
+ * raw market prices we observed.
+ */
+export const SOURCING_MARGIN = 0.05;
+export const SOURCING_MARGIN_LABEL = `${Math.round(SOURCING_MARGIN * 100)}%`;
+
+/** Market price → the price we charge, rounded to the nearest ₦100. */
+export function withSourcingMargin(amount: number): number {
+  return Math.round((amount * (1 + SOURCING_MARGIN)) / 100) * 100;
+}
 export const PRICES_LAST_UPDATED_LABEL = "October 2026";
 export const USD_NGN_RATE = 1385; // parallel sell, 11 Sep 2026
 
@@ -142,9 +157,9 @@ export const EQUIPMENT_VAT = 0;
  * changing anything above. Rounded to nearest ₦50k.
  */
 export const HEADLINE_PACKAGES = [
-  { label: "1.5–2.5kVA · 5kWh lithium", powers: "Lights, fans, TV, fridge — no AC", low: 2_000_000, high: 3_850_000 },
-  { label: "3.5kVA · 5kWh lithium", powers: "Small home, 1 small AC part-time", low: 3_550_000, high: 6_550_000 },
-  { label: "5kVA · 10kWh lithium", powers: "Family home with 1 AC", low: 4_350_000, high: 7_950_000 },
-  { label: "8–10kVA · 15kWh lithium", powers: "Large home, 2–3 ACs", low: 7_850_000, high: 14_450_000 },
-  { label: "15–20kVA · 20–30kWh", powers: "Office / commercial", low: 15_450_000, high: 27_750_000 },
+  { label: "1.5–2.5kVA · 5kWh lithium", powers: "Lights, fans, TV, fridge — no AC", low: 2_100_000, high: 4_000_000 },
+  { label: "3.5kVA · 5kWh lithium", powers: "Small home, 1 small AC part-time", low: 3_700_000, high: 6_850_000 },
+  { label: "5kVA · 10kWh lithium", powers: "Family home with 1 AC", low: 4_600_000, high: 8_350_000 },
+  { label: "8–10kVA · 15kWh lithium", powers: "Large home, 2–3 ACs", low: 8_250_000, high: 15_200_000 },
+  { label: "15–20kVA · 20–30kWh", powers: "Office / commercial", low: 17_700_000, high: 31_600_000 },
 ] as const;

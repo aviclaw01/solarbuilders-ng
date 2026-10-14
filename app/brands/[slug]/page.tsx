@@ -241,7 +241,7 @@ export default async function BrandPage({ params }: Props) {
             </ol>
             <p className="text-[11px] text-slate-500 mt-4">
               We compared {stockists.length > 0 ? `${stockists.length} Nigerian sellers` : 'the Nigerian market'} for this
-              brand. You pay the market price; our margin comes from the trade terms we hold, not from a mark-up on you.
+              brand.
             </p>
           </section>
 

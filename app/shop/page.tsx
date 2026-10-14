@@ -13,7 +13,7 @@ import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Solar Equipment Prices in Nigeria — Inverters, Batteries, Panels',
-  description: `Real Nigerian prices for solar inverters, lithium batteries, panels and complete packages, checked ${PRICES_LAST_UPDATED_LABEL}. Filter by brand, size and budget, then let us source it at the market price — you pay nothing until we confirm.`,
+  description: `Real Nigerian prices for solar inverters, lithium batteries, panels and complete packages, checked ${PRICES_LAST_UPDATED_LABEL}. Filter by brand, size and budget, then let us source it — you pay nothing until we confirm.`,
   keywords: [
     'solar inverter price Nigeria',
     'lithium battery price Nigeria',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'Solar Equipment Prices in Nigeria | SolarBuilders.ng',
-    description: `Real Nigerian listings for inverters, batteries and panels, checked ${PRICES_LAST_UPDATED_LABEL}. We source at the market price — nothing is paid until we confirm.`,
+    description: `Real Nigerian listings for inverters, batteries and panels, checked ${PRICES_LAST_UPDATED_LABEL}. We source it for you — nothing is paid until we confirm.`,
     url: 'https://solarbuildersng.com/shop',
     type: 'website',
   },
@@ -104,9 +104,9 @@ return (
             Solar equipment prices in Nigeria
           </h1>
           <p className="text-slate-500 text-lg max-w-2xl">
-            Every one of these {items.length} listings is a real Nigerian price, checked in{' '}
+            Prices for {items.length} products, checked in{' '}
             {PRICES_LAST_UPDATED_LABEL} — inverters, lithium batteries, panels, charge controllers and complete
-            packages. Add what you want to an order request and we source it at the brand&apos;s market price. We take
+            packages. Add what you want to an order request and we source it for you. We take
             no card payment: we confirm today&apos;s price with the distributor and come back to you with a final
             figure before you pay anyone.
           </p>

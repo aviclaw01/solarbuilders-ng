@@ -56,7 +56,7 @@ const STEPS = [
     icon: Wallet,
     title: 'We order it at the market price',
     description:
-      'You pay what the equipment sells for in Nigeria — the same figure we publish on the brand pages — and we place the order ourselves. We do not add a fee on top of your bill. Our margin comes from the trade terms we hold with distributors, so we earn on the buying, not on marking you up.',
+      'You pay the price on your quote and we place the order ourselves. Nothing is added at the end.',
     iconBg: 'bg-emerald-50',
     iconColor: 'text-emerald-600',
   },
@@ -74,7 +74,7 @@ const STEPS = [
 const FAQS = [
   {
     q: 'Do I pay SolarBuilders.ng?',
-    a: 'You pay the market price for the equipment — the same Nigerian price we publish on the brand pages — plus the installer’s labour. We do not add a fee on top of your bill. Our margin comes from the trade terms we hold with distributors, so we earn on the buying rather than by marking you up. The calculator and the quote are free.',
+    a: 'The equipment price on your quote, plus the installer’s labour. The calculator and the quote are free.',
   },
   {
     q: 'Can I buy the equipment myself?',
@@ -191,7 +191,7 @@ export default function HowItWorksPage() {
             </div>
             <p className="text-slate-500 text-sm mt-4">
               Estimates, not final prices. Equipment carries 0% import duty and is VAT-exempt in Nigeria; labour is included in these ranges.
-              We confirm today’s figure with the distributor before you pay, and you pay that market price — our margin sits in our trade terms, not on top of your bill.
+              We confirm today’s figure with the distributor before you pay.
             </p>
           </AnimatedSection>
         </div>
