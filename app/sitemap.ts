@@ -41,6 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/partners', 0.7, 'weekly', EDITORIAL),
     page('/changelog', 0.4, 'weekly', EDITORIAL),
     page('/contact', 0.5, 'monthly', EDITORIAL),
+    page('/privacy', 0.2, 'yearly', new Date('2026-10-14')),
     // /cart is deliberately absent — it is noindex and personal to the visitor.
     // /partners/status is deliberately absent — it is noindex (an applicant's
     // own lookup, not content a crawler should hold).

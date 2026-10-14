@@ -162,6 +162,7 @@ export default function Footer() {
             <li><Link href="/blog" className={linkCls}>Solar guides</Link></li>
             <li><Link href="/about" className={linkCls}>Our story</Link></li>
             <li><Link href="/contact" className={linkCls}>Contact</Link></li>
+            <li><Link href="/privacy" className={linkCls}>Privacy</Link></li>
             <li><Link href="/for-builders" className={linkCls}>Work with us</Link></li>
             <li><Link href="/partners/status" className={linkCls}>Check an application</Link></li>
             <li><Link href="/changelog" className={linkCls}>Changelog</Link></li>
