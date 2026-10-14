@@ -305,3 +305,23 @@ html {
     animation: none;
   }
 }
+
+/* /find — each screen fades in. 180ms, and nothing at all for reduced motion. */
+@keyframes find-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.find-step {
+  animation: find-step-in 0.18s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .find-step {
+    animation: none;
+  }
+}

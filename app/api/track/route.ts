@@ -18,6 +18,8 @@ const EVENTS = new Set([
   "cart_add",
   "order_form_open",
   "order_submit",
+  "find_persona",
+  "find_hours",
 ]);
 
 function str(v: unknown, max: number): string | null {

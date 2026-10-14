@@ -22,7 +22,9 @@ export type TrackEvent =
   | "finance_click"
   | "cart_add" // shop → "Add to order"
   | "order_form_open"
-  | "order_submit";
+  | "order_submit"
+  | "find_persona" // /find step 1 — placement is the persona key, or "pick"
+  | "find_hours"; // /find step 2 — placement is the hours-off tile, e.g. "12h"
 
 export interface TrackPayload {
   quoteCode?: string;
