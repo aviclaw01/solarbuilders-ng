@@ -1,526 +1,163 @@
 {
   "summary": {
-    "generatedOn": "2026-09-15T22:53:15.176Z",
-    "only": "all",
-    "attempted": 90,
-    "succeeded": 36,
-    "skippedByRobots": 3,
-    "failed": 49,
-    "totalBytes": 462512,
-    "hostsGivenUpOn": {
-      "www.solardepotng.com": "HTTP 403 on /image/cache/catalog/Website%20Pics/shunt/quattro-48-8000-110-front%20(1).jpg"
-    },
+    "generatedOn": "2026-10-14T00:46:20.804Z",
+    "only": [
+      "longi",
+      "solis"
+    ],
+    "attempted": 6,
+    "succeeded": 6,
+    "skippedByRobots": 0,
+    "failed": 0,
+    "totalBytes": 64028,
+    "hostsGivenUpOn": {},
     "robots": {
-      "https://solarvillage.africa": "no applicable group",
-      "https://www.felicitysolar.ng": "no robots.txt (404)",
-      "https://zit.ng": "group for *",
-      "https://www.stellarmart.ng": "robots.txt unreachable (This operation was aborted)",
-      "https://d21d281c1yd2en.cloudfront.net": "no robots.txt (403)",
-      "https://www.jumia.com.ng": "group for *",
-      "https://energymall.ng": "group for *",
-      "https://ng.jumia.is": "group for *",
-      "https://abujasolar.com": "group for *",
-      "https://me3energy.ng": "group for *",
-      "https://www.solardepotng.com": "no robots.txt (404)",
-      "https://gosolarmart.com": "group for *",
-      "https://shop.gennextechnologies.com": "group for *",
-      "https://fouanistore.com": "no applicable group",
-      "https://solarbuy.com.ng": "robots.txt unreachable (This operation was aborted)",
-      "https://solardepotng.com": "no robots.txt (404)",
-      "https://solarenergysupplystores.com": "group for *",
-      "https://naturesolar.ng": "group for *",
-      "https://www.swiftermall.com": "group for *",
-      "https://jiji.ng": "group for *",
-      "https://kasotpower.com": "group for *",
-      "https://maypatronic.com": "robots.txt unreachable (This operation was aborted)"
+      "https://www.solisinverters.com": "group for *",
+      "https://www.longi.com": "group for *",
+      "https://static.longi.com": "no robots.txt (403)",
+      "https://cmsdata.solisinverters.com": "group for *"
     },
     "perHost": {
-      "abujasolar.com": {
-        "attempted": 2,
-        "succeeded": 2,
-        "failed": 0
-      },
-      "energymall.ng": {
-        "attempted": 1,
-        "succeeded": 1,
-        "failed": 0
-      },
-      "fouanistore.com": {
-        "attempted": 1,
-        "succeeded": 0,
-        "failed": 1
-      },
-      "gosolarmart.com": {
-        "attempted": 1,
-        "succeeded": 1,
-        "failed": 0
-      },
-      "jiji.ng": {
-        "attempted": 2,
-        "succeeded": 0,
-        "failed": 2
-      },
-      "kasotpower.com": {
+      "cmsdata.solisinverters.com": {
         "attempted": 5,
-        "succeeded": 0,
-        "failed": 5
-      },
-      "maypatronic.com": {
-        "attempted": 4,
-        "succeeded": 0,
-        "failed": 4
-      },
-      "me3energy.ng": {
-        "attempted": 5,
-        "succeeded": 2,
-        "failed": 3
-      },
-      "naturesolar.ng": {
-        "attempted": 6,
         "succeeded": 5,
-        "failed": 1
-      },
-      "shop.gennextechnologies.com": {
-        "attempted": 3,
-        "succeeded": 0,
         "failed": 0
       },
-      "solarbuy.com.ng": {
-        "attempted": 4,
+      "static.longi.com": {
+        "attempted": 1,
         "succeeded": 1,
-        "failed": 3
-      },
-      "solardepotng.com": {
-        "attempted": 5,
-        "succeeded": 0,
-        "failed": 5
-      },
-      "solarenergysupplystores.com": {
-        "attempted": 3,
-        "succeeded": 0,
-        "failed": 3
-      },
-      "solarvillage.africa": {
-        "attempted": 2,
-        "succeeded": 1,
-        "failed": 1
-      },
-      "www.felicitysolar.ng": {
-        "attempted": 10,
-        "succeeded": 10,
         "failed": 0
-      },
-      "www.jumia.com.ng": {
-        "attempted": 5,
-        "succeeded": 3,
-        "failed": 2
-      },
-      "www.solardepotng.com": {
-        "attempted": 14,
-        "succeeded": 0,
-        "failed": 14
-      },
-      "www.stellarmart.ng": {
-        "attempted": 2,
-        "succeeded": 1,
-        "failed": 1
-      },
-      "www.swiftermall.com": {
-        "attempted": 3,
-        "succeeded": 3,
-        "failed": 0
-      },
-      "zit.ng": {
-        "attempted": 12,
-        "succeeded": 8,
-        "failed": 4
       }
     },
-    "failures": [
-      {
-        "brand": "felicity",
-        "model": "LPBF48200",
-        "sourceUrl": "https://zit.ng/products/felicity-10kwh-48v-100ah-lithium-phosphate-solar-batteries-pack-with-bms-lpbf-48100/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "blue-carbon",
-        "model": "48V 250Ah flat",
-        "sourceUrl": "https://solarvillage.africa/featured-brands/battery/deye/deye-bos-se-g5-1-lv-5-12kwh-lithium-battery-bos-se-g5-1-lv222.html",
-        "reason": "no confident image on page"
-      },
-      {
-        "brand": "growatt",
-        "model": "SPF 6000 ES",
-        "sourceUrl": "https://www.stellarmart.ng/product/5000va-48v-4000w-5kva-230v-48v-dc-to-ac-hybrid-off-grid-inverter/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "deye",
-        "model": "SUN-12K-SG04LP3",
-        "sourceUrl": "https://zit.ng/products/deye-8kw-hybrid-solar-inverter-8k-sg04lp3-eu/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "deye",
-        "model": "BOS-SE-G5.1 LV",
-        "sourceUrl": "https://zit.ng/products/deye-512kw-low-voltage-lithium-ion-solar-battery-bos-se-g51-lv/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "pylontech",
-        "model": "UF5000",
-        "sourceUrl": "https://zit.ng/products/deye-512kw-low-voltage-lithium-ion-solar-battery-bos-se-g51-lv/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "deye",
-        "model": "SUN-16K-SG01LP1-EU",
-        "sourceUrl": "https://me3energy.ng/16kw-deye-hybrid-inverter",
-        "reason": "no confident image on page"
-      },
-      {
-        "brand": "ja-solar",
-        "model": "550W mono PERC",
-        "sourceUrl": "https://me3energy.ng/580w-bifacial-monocrystalline-ja-solar-panels-ja-solar-580w-bifacial-monocrystalline-ja-solar-panels-ja-solar-390w-datasheet-ja-solar-250w-datasheet",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "ja-solar",
-        "model": "580W bifacial",
-        "sourceUrl": "https://me3energy.ng/580w-bifacial-monocrystalline-ja-solar-panels-ja-solar-580w-bifacial-monocrystalline-ja-solar-panels-ja-solar-390w-datasheet-ja-solar-250w-datasheet",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "jinko",
-        "model": "450W mono",
-        "sourceUrl": "https://www.jumia.com.ng/solar-panels/jinko/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "jinko",
-        "model": "620W bifacial",
-        "sourceUrl": "https://www.jumia.com.ng/solar-panels/jinko/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "deye",
-        "model": "51.2V 314Ah",
-        "sourceUrl": "https://www.solardepotng.com/lithium-deep-cycle",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "victron",
-        "model": "MultiPlus-II GX 48/5000",
-        "sourceUrl": "https://www.solardepotng.com/victron-energy-inverter",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "victron",
-        "model": "MultiPlus-II 48/10000",
-        "sourceUrl": "https://www.solardepotng.com/victron-energy-inverter",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "victron",
-        "model": "Quattro 48/8000",
-        "sourceUrl": "https://www.solardepotng.com/victron-energy-inverter",
-        "reason": "HTTP 403 \u2014 giving up on www.solardepotng.com"
-      },
-      {
-        "brand": "victron",
-        "model": "Quattro 48/10000",
-        "sourceUrl": "https://www.solardepotng.com/victron-energy-inverter",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "victron",
-        "model": "Quattro 48/15000",
-        "sourceUrl": "https://www.solardepotng.com/victron-energy-inverter",
-        "reason": "host given up on: HTTP 403 on /image/cache/catalog/Website%20Pics/shunt/quattro-48-8000-110-front%20(1).jpg"
-      },
-      {
-        "brand": "dyness",
-        "model": "PowerBrick 51.2V 280Ah",
-        "sourceUrl": "https://www.solardepotng.com/lithium-deep-cycle",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "dyness",
-        "model": "Stack100 HV",
-        "sourceUrl": "https://www.solardepotng.com/lithium-deep-cycle",
-        "reason": "host given up on: HTTP 403 on /image/cache/catalog/Website%20Pics/shunt/quattro-48-8000-110-front%20(1).jpg"
-      },
-      {
-        "brand": "itel-energy",
-        "model": "51.2V 100Ah wall/standing",
-        "sourceUrl": "https://www.solardepotng.com/lithium-deep-cycle",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "itel-energy",
-        "model": "51.2V 10kWh",
-        "sourceUrl": "https://www.solardepotng.com/lithium-deep-cycle",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "itel-energy",
-        "model": "51.2V 16kWh",
-        "sourceUrl": "https://www.solardepotng.com/lithium-deep-cycle",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "solar-depot-ng",
-        "model": "SunPower 1",
-        "sourceUrl": "https://www.solardepotng.com/solar-packages",
-        "reason": "host given up on: HTTP 403 on /image/cache/catalog/Website%20Pics/shunt/quattro-48-8000-110-front%20(1).jpg"
-      },
-      {
-        "brand": "solar-depot-ng",
-        "model": "SunPower 2",
-        "sourceUrl": "https://www.solardepotng.com/solar-packages",
-        "reason": "host given up on: HTTP 403 on /image/cache/catalog/Website%20Pics/shunt/quattro-48-8000-110-front%20(1).jpg"
-      },
-      {
-        "brand": "solar-depot-ng",
-        "model": "SunVault 1",
-        "sourceUrl": "https://www.solardepotng.com/solar-packages",
-        "reason": "host given up on: HTTP 403 on /image/cache/catalog/Website%20Pics/shunt/quattro-48-8000-110-front%20(1).jpg"
-      },
-      {
-        "brand": "growatt",
-        "model": "ARK / HOPE 5.12kWh",
-        "sourceUrl": "https://fouanistore.com/shop?category_id=105&category_name=growatt",
-        "reason": "no confident image on page"
-      },
-      {
-        "brand": "solis",
-        "model": "S6 5kW 48V hybrid",
-        "sourceUrl": "https://solardepotng.com/index.php?path=426&route=product%2Fcategory",
-        "reason": "host given up on: HTTP 403 on /image/cache/catalog/Website%20Pics/shunt/quattro-48-8000-110-front%20(1).jpg"
-      },
-      {
-        "brand": "solis",
-        "model": "S6 6kW LV",
-        "sourceUrl": "https://solardepotng.com/index.php?path=426&route=product%2Fcategory",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "solis",
-        "model": "S6 8kW LV",
-        "sourceUrl": "https://solardepotng.com/index.php?path=426&route=product%2Fcategory",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "solis",
-        "model": "S6 12kW LV",
-        "sourceUrl": "https://solardepotng.com/index.php?path=426&route=product%2Fcategory",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "solis",
-        "model": "S6 16kW LV",
-        "sourceUrl": "https://solardepotng.com/index.php?path=426&route=product%2Fcategory",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "must",
-        "model": "PV18-3048",
-        "sourceUrl": "https://solarenergysupplystores.com/must-inverter/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "must",
-        "model": "PH1800 PRO 5.5kW",
-        "sourceUrl": "https://solarenergysupplystores.com/must-inverter/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "must",
-        "model": "PV18-10048 PRO",
-        "sourceUrl": "https://solarenergysupplystores.com/must-inverter/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "jinko",
-        "model": "650\u2013700W bifacial",
-        "sourceUrl": "https://jiji.ng/272-solar-panels",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "ja-solar",
-        "model": "650\u2013700W bifacial",
-        "sourceUrl": "https://jiji.ng/272-solar-panels",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "luxpower",
-        "model": "2.5kW hybrid",
-        "sourceUrl": "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "luxpower",
-        "model": "5kW hybrid",
-        "sourceUrl": "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "itel-energy",
-        "model": "3kW / 6kW hybrid",
-        "sourceUrl": "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "kasot-power",
-        "model": "2.5kVA package",
-        "sourceUrl": "https://kasotpower.com/solar-packages",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "kasot-power",
-        "model": "3.5kVA package",
-        "sourceUrl": "https://kasotpower.com/solar-packages",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "kasot-power",
-        "model": "5kVA package",
-        "sourceUrl": "https://kasotpower.com/solar-packages",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "kasot-power",
-        "model": "10kVA package",
-        "sourceUrl": "https://kasotpower.com/solar-packages",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "kasot-power",
-        "model": "12kVA package",
-        "sourceUrl": "https://kasotpower.com/solar-packages",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "canadian-solar",
-        "model": "600W all-black",
-        "sourceUrl": "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "maypatronic",
-        "model": "3kVA / 5kWh bundle",
-        "sourceUrl": "https://maypatronic.com/product-category/lithium-battery-price-nigeria/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "maypatronic",
-        "model": "5kVA / 10kWh bundle",
-        "sourceUrl": "https://maypatronic.com/product-category/lithium-battery-price-nigeria/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "maypatronic",
-        "model": "7.5kVA / 15kWh bundle",
-        "sourceUrl": "https://maypatronic.com/product-category/lithium-battery-price-nigeria/",
-        "reason": "listing page \u2014 no image identifies this model"
-      },
-      {
-        "brand": "maypatronic",
-        "model": "10kVA / 20kWh bundle",
-        "sourceUrl": "https://maypatronic.com/product-category/lithium-battery-price-nigeria/",
-        "reason": "listing page \u2014 no image identifies this model"
-      }
-    ],
-    "robotsSkips": [
-      {
-        "brand": "growatt",
-        "model": "12kW hybrid",
-        "sourceUrl": "https://shop.gennextechnologies.com/",
-        "reason": "robots-disallowed:shop.gennextechnologies.com/wp-content/uploads/2025/07/growatt-inverter-12kw-300x300.png"
-      },
-      {
-        "brand": "canadian-solar",
-        "model": "590W HiKu",
-        "sourceUrl": "https://shop.gennextechnologies.com/",
-        "reason": "robots-disallowed:shop.gennextechnologies.com/wp-content/uploads/2026/07/590-Canadian-Solar-High-Power-300x300.jpg"
-      },
-      {
-        "brand": "gennex",
-        "model": "5kVA / 10kWh all-in-one",
-        "sourceUrl": "https://shop.gennextechnologies.com/",
-        "reason": "robots-disallowed:shop.gennextechnologies.com/wp-content/uploads/2022/02/Gennex-5KVA-Inverter-with-MPPT-charge-controller-300x300.jpg"
-      }
-    ],
-    "removedAfterReview": [
-      {
-        "brand": "trina",
-        "model": "Vertex 600W",
-        "reason": "competitor vendor watermark (ME3 Energy) on the image"
-      },
-      {
-        "brand": "longi",
-        "model": "550W black frame",
-        "reason": "warehouse floor snapshot, product unidentifiable"
-      }
-    ]
+    "failures": [],
+    "robotsSkips": []
   },
   "images": [
+    {
+      "brand": "canadian-solar",
+      "model": "590W HiKu",
+      "path": "/products/canadian-solar--590w-hiku.webp",
+      "sourceUrl": "https://www.vicoexport.com/en/home-en/solar-panels/canadian-solar/canadian-solar-hiku7/",
+      "imageUrl": "https://www.vicoexport.com/wp-content/uploads/2023/03/HiKu7_Canadian_Solar_Vico_Export_Solar_Energy.png",
+      "imageHost": "www.vicoexport.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 33940,
+      "width": 600,
+      "height": 700,
+      "confidence": "curated",
+      "matchedOn": "curated: Canadian Solar HiKu7 Mono (distributor photo; csisolar.com retired the page)"
+    },
+    {
+      "brand": "canadian-solar",
+      "model": "600W all-black",
+      "path": "/products/canadian-solar--600w-all-black.webp",
+      "sourceUrl": "https://www.csisolar.com/all-black/",
+      "imageUrl": "https://static.csisolar.com/wp-content/uploads/2019/11/05153343/All-Black%E4%B8%80%E5%88%87%E4%B8%89-2-PNG-1.png",
+      "imageHost": "static.csisolar.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 8064,
+      "width": 600,
+      "height": 700,
+      "confidence": "curated",
+      "matchedOn": "curated: Canadian Solar All-Black family photo"
+    },
+    {
+      "brand": "deye",
+      "model": "51.2V 314Ah",
+      "path": "/products/deye--51-2v-314ah.webp",
+      "sourceUrl": "https://deye.com/product/se-f16/",
+      "imageUrl": "https://deye.com/wp-content/uploads/2025/07/%E5%9C%86%E5%B1%8F.jpg",
+      "imageHost": "deye.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 3748,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Deye SE-F16 (16kWh, 51.2V 314Ah)"
+    },
     {
       "brand": "deye",
       "model": "SUN-10K 1-phase",
       "path": "/products/deye--sun-10k-1-phase.webp",
-      "sourceUrl": "https://abujasolar.com/product-category/deye-inverter/",
-      "imageUrl": "https://abujasolar.com/wp-content/uploads/2026/07/71.png",
-      "imageHost": "abujasolar.com",
-      "fetchedOn": "2026-09-15",
-      "bytes": 3758,
+      "sourceUrl": "https://www.deyeinverter.com/product/single-phase-low-voltage-hybrid-inverter/sun7-6-8-10-12ksg02lp1euam2-am3-7-612kw-single-phase-2-mppt-hybrid-inverter-lv-battery-supported.html",
+      "imageUrl": "https://www.deyeinverter.com/deyeinverter/2025/01/16/sun-7.6-12kk-sg02lp1-eu-am2-1.png",
+      "imageHost": "www.deyeinverter.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 9716,
+      "width": 720,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Deye's photo for the SUN-7.6/8/10/12K-SG02LP1-EU-AM2/AM3 series"
+    },
+    {
+      "brand": "deye",
+      "model": "SUN-12K-SG04LP3",
+      "path": "/products/deye--sun-12k-sg04lp3.webp",
+      "sourceUrl": "https://deye.com/product/sun-5-6-8-10-12k-sg04lp3-eu/",
+      "imageUrl": "https://deye.com/wp-content/uploads/2024/06/sun-5-12k-sg04lp3-eu-1-scaled.png",
+      "imageHost": "deye.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 12654,
       "width": 800,
-      "height": 566,
-      "confidence": "medium",
-      "matchedOn": "capacity:10kva, brand-named"
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Deye's photo for the SUN-5/6/8/10/12K-SG04LP3-EU series"
+    },
+    {
+      "brand": "deye",
+      "model": "SUN-16K-SG01LP1-EU",
+      "path": "/products/deye--sun-16k-sg01lp1-eu.webp",
+      "sourceUrl": "https://deye.com/product/sun-12-14-16k-sg01lp1-eu/",
+      "imageUrl": "https://deye.com/wp-content/uploads/2024/06/sun-12-16k-sg01lp1-1-scaled.png",
+      "imageHost": "deye.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 10508,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Deye's photo for the SUN-12/14/16K-SG01LP1-EU series"
     },
     {
       "brand": "deye",
       "model": "SUN-5K-SG 1-phase",
       "path": "/products/deye--sun-5k-sg-1-phase.webp",
-      "sourceUrl": "https://abujasolar.com/product-category/deye-inverter/",
-      "imageUrl": "https://abujasolar.com/wp-content/uploads/2025/01/7.png",
-      "imageHost": "abujasolar.com",
-      "fetchedOn": "2026-09-15",
-      "bytes": 5470,
+      "sourceUrl": "https://deye.com/product/sun-3-3-6-5-6k-sg04lp1-eu/",
+      "imageUrl": "https://deye.com/wp-content/uploads/2024/06/sun-3-6k-sg04lp1-eu-4-scaled.png",
+      "imageHost": "deye.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 16358,
       "width": 800,
-      "height": 566,
-      "confidence": "medium",
-      "matchedOn": "capacity:5kva, brand-named"
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Deye's photo for the SUN-3/3.6/5/6K-SG04LP1-EU series"
     },
     {
       "brand": "deye",
       "model": "SUN-6K OG01LP1",
       "path": "/products/deye--sun-6k-og01lp1.webp",
-      "sourceUrl": "https://www.jumia.com.ng/deye-6kw-single-phase-off-grid-hybrid-inverter-system-418281170.html",
-      "imageUrl": "https://ng.jumia.is/unsafe/fit-in/680x680/filters:fill(white)/product/07/1182814/1.jpg?2481",
-      "imageHost": "ng.jumia.is",
-      "fetchedOn": "2026-09-15",
-      "bytes": 17358,
-      "width": 680,
-      "height": 680,
-      "confidence": "page",
-      "matchedOn": "dedicated page (og)"
+      "sourceUrl": "https://web.archive.org/web/20251113135515/https://deye.com/product/sun-3-6-5-6k-og01lp1-eu-am2-single-phase-off-grid-inverter/",
+      "imageUrl": "https://deye.com/wp-content/uploads/2025/10/sun-3-6k-og01lp1-eu-am2.jpg",
+      "imageHost": "deye.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 5630,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Deye's photo for the SUN-3.6/5/6K-OG01LP1-EU-AM2 series (product page since retired; archived copy credited, image still on deye.com)"
     },
     {
       "brand": "deye",
       "model": "SUN-8K-SG01LP1",
       "path": "/products/deye--sun-8k-sg01lp1.webp",
-      "sourceUrl": "https://me3energy.ng/deye-8kw-pure-sine-wave-hybrid-solar-inverter-with-wifi",
-      "imageUrl": "https://me3energy.ng/media/catalog/product/cache/67b40ad19abdf9b566f26db2b5cdbcd9/d/e/deye_8kw_inverter.png",
-      "imageHost": "me3energy.ng",
-      "fetchedOn": "2026-09-15",
-      "bytes": 2330,
-      "width": 270,
-      "height": 300,
-      "confidence": "medium",
-      "matchedOn": "capacity:8kw, brand-named"
+      "sourceUrl": "https://deye.com/product/sun-7-6-8k-sg01lp1-eu/",
+      "imageUrl": "https://deye.com/wp-content/uploads/2024/06/sun-7.6-8k-sg01lp1-eu-2-scaled.png",
+      "imageHost": "deye.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 9980,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Deye's photo for the SUN-7.6/8K-SG01LP1-EU"
     },
     {
       "brand": "deye",
@@ -790,6 +427,20 @@
     },
     {
       "brand": "felicity",
+      "model": "LPBF48200",
+      "path": "/products/felicity--lpbf48200.webp",
+      "sourceUrl": "https://invertsolar.co.za/product/felicity-solar-10kwh-48v-lithium-iron-battery/",
+      "imageUrl": "https://invertsolar.co.za/wp-content/uploads/2025/04/3-4.png",
+      "imageHost": "invertsolar.co.za",
+      "fetchedOn": "2026-10-14",
+      "bytes": 9456,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Felicity LPBF48200-H 10kWh wall battery (distributor photo; not on felicitysolar.ng)"
+    },
+    {
+      "brand": "felicity",
       "model": "LPBF48300-II / FLA48300",
       "path": "/products/felicity--lpbf48300-ii-fla48300.webp",
       "sourceUrl": "https://www.felicitysolar.ng/products/felicity-solar-batteries",
@@ -831,32 +482,130 @@
       "matchedOn": "part:5000+spf5000, brand-named"
     },
     {
+      "brand": "itel-energy",
+      "model": "3kW / 6kW hybrid",
+      "path": "/products/itel-energy--3kw-6kw-hybrid.webp",
+      "sourceUrl": "https://energy.itel-life.com/Ip54",
+      "imageUrl": "https://transsion-platform01.oss-accelerate.aliyuncs.com/app/packages/menu-IPV-4K24UPRO%EF%BC%86IPV-6K48UPRO-1.png",
+      "imageHost": "transsion-platform01.oss-accelerate.aliyuncs.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 8964,
+      "width": 420,
+      "height": 420,
+      "confidence": "curated",
+      "matchedOn": "curated: itel Energy IPV-4K24UPRO / IPV-6K48UPRO hybrid inverter"
+    },
+    {
+      "brand": "itel-energy",
+      "model": "51.2V 100Ah wall/standing",
+      "path": "/products/itel-energy--51-2v-100ah-wall-standing.webp",
+      "sourceUrl": "https://energy.itel-life.com/Ipw51100",
+      "imageUrl": "https://transsion-platform01.oss-accelerate.aliyuncs.com/app/packages/IPW-51100.png",
+      "imageHost": "transsion-platform01.oss-accelerate.aliyuncs.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 13578,
+      "width": 601,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: itel Energy IPW-51100 (51.2V 100Ah)"
+    },
+    {
+      "brand": "itel-energy",
+      "model": "51.2V 10kWh",
+      "path": "/products/itel-energy--51-2v-10kwh.webp",
+      "sourceUrl": "https://energy.itel-life.com/Ipl51200h",
+      "imageUrl": "https://transsion-platform01.oss-accelerate.aliyuncs.com/app/packages/IPL-51200H.png",
+      "imageHost": "transsion-platform01.oss-accelerate.aliyuncs.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 4106,
+      "width": 420,
+      "height": 420,
+      "confidence": "curated",
+      "matchedOn": "curated: itel Energy IPL-51200H (51.2V 200Ah, 10kWh)"
+    },
+    {
+      "brand": "itel-energy",
+      "model": "51.2V 16kWh",
+      "path": "/products/itel-energy--51-2v-16kwh.webp",
+      "sourceUrl": "https://energy.itel-life.com/Ipl51314h",
+      "imageUrl": "https://transsion-platform01.oss-accelerate.aliyuncs.com/app/packages/menu-IPL-51314H-1.png",
+      "imageHost": "transsion-platform01.oss-accelerate.aliyuncs.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 3952,
+      "width": 420,
+      "height": 420,
+      "confidence": "curated",
+      "matchedOn": "curated: itel Energy IPL-51314H (51.2V 314Ah, 16kWh)"
+    },
+    {
+      "brand": "jinko",
+      "model": "450W mono",
+      "path": "/products/jinko--450w-mono.webp",
+      "sourceUrl": "https://www.jinkosolar.com/en/site/tigerneo",
+      "imageUrl": "https://jinkosolarcdn.shwebspace.com/uploads/665d7326/60-182x182%20V.jpg",
+      "imageHost": "jinkosolarcdn.shwebspace.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 14536,
+      "width": 629,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Jinko Tiger Neo 60HL4-V family photo"
+    },
+    {
       "brand": "jinko",
       "model": "600W bifacial",
       "path": "/products/jinko--600w-bifacial.webp",
-      "sourceUrl": "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/",
-      "imageUrl": "https://naturesolar.ng/wp-content/uploads/2026/01/IMG_6348.webp",
-      "imageHost": "naturesolar.ng",
-      "fetchedOn": "2026-09-15",
-      "bytes": 55928,
+      "sourceUrl": "https://www.jinkosolar.com/en/site/tigerneo",
+      "imageUrl": "https://jinkosolarcdn.shwebspace.com/uploads/665d7237/72-182x182%20V.jpg",
+      "imageHost": "jinkosolarcdn.shwebspace.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 15602,
+      "width": 629,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Jinko Tiger Neo 72HL4 family photo"
+    },
+    {
+      "brand": "jinko",
+      "model": "620W bifacial",
+      "path": "/products/jinko--620w-bifacial.webp",
+      "sourceUrl": "https://www.jinkosolar.com/en/site/tigerneo",
+      "imageUrl": "https://jinkosolarcdn.shwebspace.com/uploads/665d7173/78-182x182%20BDV.jpg",
+      "imageHost": "jinkosolarcdn.shwebspace.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 19806,
+      "width": 629,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Jinko Tiger Neo 78HL4-BDV family photo"
+    },
+    {
+      "brand": "jinko",
+      "model": "650–700W bifacial",
+      "path": "/products/jinko--650-700w-bifacial.webp",
+      "sourceUrl": "https://www.jinkosolar.com/en/site/tigerneo_3",
+      "imageUrl": "https://jinkosolarcdn.shwebspace.com/themes/basic/skin/images/tigerneo_3/product-4.png",
+      "imageHost": "jinkosolarcdn.shwebspace.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 26008,
       "width": 605,
       "height": 800,
-      "confidence": "medium",
-      "matchedOn": "capacity:600w, brand-named"
+      "confidence": "curated",
+      "matchedOn": "curated: Jinko Tiger Neo 3.0 family photo"
     },
     {
       "brand": "longi",
       "model": "450W all-black",
       "path": "/products/longi--450w-all-black.webp",
-      "sourceUrl": "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/",
-      "imageUrl": "https://naturesolar.ng/wp-content/uploads/2025/12/IMG_4604.webp",
-      "imageHost": "naturesolar.ng",
-      "fetchedOn": "2026-09-15",
-      "bytes": 52862,
-      "width": 720,
+      "sourceUrl": "https://www.longi.com/en/products/modules/hi-mo-x6-explorer/",
+      "imageUrl": "https://static.longi.com/Explorer_04_8b2c959558.png",
+      "imageHost": "static.longi.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 4160,
+      "width": 539,
       "height": 800,
-      "confidence": "medium",
-      "matchedOn": "capacity:450w, brand-named"
+      "confidence": "curated",
+      "matchedOn": "curated: LONGi Hi-MO X6 Explorer (54-cell, black frame)"
     },
     {
       "brand": "longi",
@@ -916,6 +665,20 @@
     },
     {
       "brand": "luxpower",
+      "model": "2.5kW hybrid",
+      "path": "/products/luxpower--2-5kw-hybrid.webp",
+      "sourceUrl": "https://luxpowertek.com/off-grid-inverter-geta-lb-eu-1-6kw/",
+      "imageUrl": "https://luxpowertek.com/wp-content/uploads/2026/01/Off-grid-solar-inverter-Luxpower-GETA-LB-EU-1.5kw-2.5kW-3kW-6kW-scaled.webp",
+      "imageHost": "luxpowertek.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 5302,
+      "width": 600,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: LuxPower's photo for the GETA-LB-EU 1.5-6kW series (its 2.5kW model)"
+    },
+    {
+      "brand": "luxpower",
       "model": "3.6kW hybrid",
       "path": "/products/luxpower--3-6kw-hybrid.webp",
       "sourceUrl": "https://solarbuy.com.ng/product/3-6kw-luxpower-solar-inverter/",
@@ -927,6 +690,76 @@
       "height": 672,
       "confidence": "medium",
       "matchedOn": "capacity:3.6kw, brand-named"
+    },
+    {
+      "brand": "luxpower",
+      "model": "5kW hybrid",
+      "path": "/products/luxpower--5kw-hybrid.webp",
+      "sourceUrl": "https://luxpowertek.com/products/",
+      "imageUrl": "https://luxpowertek.com/wp-content/uploads/2025/02/LXP-3-6K.jpg",
+      "imageHost": "luxpowertek.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 4928,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: LuxPower's photo for the LXP-LB-EU 3-6K hybrid series"
+    },
+    {
+      "brand": "must",
+      "model": "PH1800 PRO 5.5kW",
+      "path": "/products/must--ph1800-pro-5-5kw.webp",
+      "sourceUrl": "https://www.mustsolar.com/product/ph1800-pro-series-3-5-5kw/",
+      "imageUrl": "https://www.mustsolar.com/wp-content/uploads/2024/04/PV1800-PRO-03-1.jpg",
+      "imageHost": "www.mustsolar.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 18758,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Must's photo of the PV1800/PH1800 PRO housing, from the PH1800 PRO 3-5.5kW page"
+    },
+    {
+      "brand": "must",
+      "model": "PV18-10048 PRO",
+      "path": "/products/must--pv18-10048-pro.webp",
+      "sourceUrl": "https://www.mustsolar.com/product/pv1800-pro-ii-series-6-2-12kw/",
+      "imageUrl": "https://www.mustsolar.com/wp-content/uploads/2025/06/pv18-pro-ii2-1.jpg",
+      "imageHost": "www.mustsolar.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 10268,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Must's photo for the PV1800 PRO II 6.2-12kW series (PV18-10048 PRO II)"
+    },
+    {
+      "brand": "must",
+      "model": "PV18-3048",
+      "path": "/products/must--pv18-3048.webp",
+      "sourceUrl": "https://www.mustpower.com/product/pv1800-pro-series-26-2kw/",
+      "imageUrl": "https://www.mustsolar.com/wp-content/uploads/2024/04/PV1800-PRO-02-1.jpg",
+      "imageHost": "www.mustsolar.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 10726,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Must's photo for the PV1800 PRO 2-6.2kW series"
+    },
+    {
+      "brand": "pylontech",
+      "model": "UF5000",
+      "path": "/products/pylontech--uf5000.webp",
+      "sourceUrl": "https://invertsolar.co.za/product/pylontech-uf5000-5-12kwh-51-2v-li-ion-solar-battery/",
+      "imageUrl": "https://invertsolar.co.za/wp-content/uploads/2026/01/PylonUF50005.12kWh51.2VLi-ionbattery_excl.brackets.webp",
+      "imageHost": "invertsolar.co.za",
+      "fetchedOn": "2026-10-14",
+      "bytes": 6190,
+      "width": 713,
+      "height": 713,
+      "confidence": "curated",
+      "matchedOn": "curated: Pylontech UF5000 (exact model; distributor photo — pylontech.com.cn renders client-side)"
     },
     {
       "brand": "pylontech",
@@ -946,15 +779,15 @@
       "brand": "pylontech",
       "model": "US2000C",
       "path": "/products/pylontech--us2000c.webp",
-      "sourceUrl": "https://zit.ng/products/deye-512kw-low-voltage-lithium-ion-solar-battery-bos-se-g51-lv/",
-      "imageUrl": "https://d21d281c1yd2en.cloudfront.net/media/product_images/small/pylontech-2-4kwh-lithium-ion-battery-us2000c_1.0.webp",
-      "imageHost": "d21d281c1yd2en.cloudfront.net",
-      "fetchedOn": "2026-09-15",
-      "bytes": 2460,
-      "width": 320,
-      "height": 320,
-      "confidence": "high",
-      "matchedOn": "part:us2000c, capacity:2.4kwh, brand-named"
+      "sourceUrl": "https://ecowizard.co.uk/battery-storage/pylon-us2000c-2-4kwh-li-ion-solar-battery-excl-brackets/",
+      "imageUrl": "https://www.ecowizard.co.uk/image_resize/back/w800/h800/products/1172/US2new_ed707217-b5cd-4a52-8c8a-8aa93444adb4_1280x.jpg",
+      "imageHost": "www.ecowizard.co.uk",
+      "fetchedOn": "2026-10-14",
+      "bytes": 8072,
+      "width": 800,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Pylontech US2000C (exact model; distributor photo)"
     },
     {
       "brand": "sako",
@@ -969,6 +802,160 @@
       "height": 800,
       "confidence": "medium",
       "matchedOn": "capacity:6.2kva, brand-named"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 12kW LV",
+      "path": "/products/solis--s6-12kw-lv.webp",
+      "sourceUrl": "https://www.solisinverters.com/ng/energy_storage_inverters17/S6-EH1P(12-18)K03-NV-YD-L_ng.html",
+      "imageUrl": "https://cmsdata.solisinverters.com/upload/2024-05-25/2024-05-25-112325_1716607405102.png",
+      "imageHost": "cmsdata.solisinverters.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 11338,
+      "width": 720,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Solis's photo for the S6-EH1P(12-18)K03-NV-YD-L series (front)"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 16kW LV",
+      "path": "/products/solis--s6-16kw-lv.webp",
+      "sourceUrl": "https://www.solisinverters.com/ng/energy_storage_inverters17/S6-EH1P(12-18)K03-NV-YD-L_ng.html",
+      "imageUrl": "https://cmsdata.solisinverters.com/upload/2024-05-25/2024-05-25-112330_1716607410592.png",
+      "imageHost": "cmsdata.solisinverters.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 15232,
+      "width": 720,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Solis's photo for the S6-EH1P(12-18)K03-NV-YD-L series (angled)"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 5kW 48V hybrid",
+      "path": "/products/solis--s6-5kw-48v-hybrid.webp",
+      "sourceUrl": "https://www.solisinverters.com/global/energy_storage_inverters19/S6-EH1P(3-10)K-L-PLUS_gl.html",
+      "imageUrl": "https://cmsdata.solisinverters.com/upload/2024-12-09/1733736190635_00120a1f-11bc-4076-bece-603949e57e2a.png",
+      "imageHost": "cmsdata.solisinverters.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 12846,
+      "width": 720,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Solis's photo for the S6-EH1P(3-10)K-L-PLUS series (front)"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 6kW LV",
+      "path": "/products/solis--s6-6kw-lv.webp",
+      "sourceUrl": "https://www.solisinverters.com/global/energy_storage_inverters19/S6-EH1P(3-10)K-L-PLUS_gl.html",
+      "imageUrl": "https://cmsdata.solisinverters.com/upload/2024-12-09/1733736195421_00a4dd01-153f-4849-b55e-18d12c1f4669.png",
+      "imageHost": "cmsdata.solisinverters.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 11974,
+      "width": 720,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Solis's photo for the S6-EH1P(3-10)K-L-PLUS series (angled)"
+    },
+    {
+      "brand": "solis",
+      "model": "S6 8kW LV",
+      "path": "/products/solis--s6-8kw-lv.webp",
+      "sourceUrl": "https://www.solisinverters.com/global/energy_storage_inverters19/S6-EH1P(3-10)K-L-PLUS_gl.html",
+      "imageUrl": "https://cmsdata.solisinverters.com/upload/2024-12-09/1733736205482_11711ad3-6878-4f2f-8ac4-c9aa3bd1d254.png",
+      "imageHost": "cmsdata.solisinverters.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 8478,
+      "width": 720,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Solis's photo for the S6-EH1P(3-10)K-L-PLUS series (side view)"
+    },
+    {
+      "brand": "trina",
+      "model": "Vertex 600W",
+      "path": "/products/trina--vertex-600w.webp",
+      "sourceUrl": "https://www.trinasolar.com/en-glb/VertexN/",
+      "imageUrl": "https://www-cdn.trinasolar.com/wwwstorage/sites/3/630W-TSM-NEG19RC20.png",
+      "imageHost": "www-cdn.trinasolar.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 37798,
+      "width": 519,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Trina Vertex N family photo (TSM-NEG19RC.20)"
+    },
+    {
+      "brand": "victron",
+      "model": "MultiPlus-II 48/10000",
+      "path": "/products/victron--multiplus-ii-48-10000.webp",
+      "sourceUrl": "https://www.victronenergy.com/inverters-chargers/multiplus-ii",
+      "imageUrl": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FMultiPlus-II%252048V%252010kVA%2520230V%2520%2528front%2529.png&w=640&q=70",
+      "imageHost": "www.victronenergy.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 16570,
+      "width": 446,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Victron MultiPlus-II 48/10000 (exact model)"
+    },
+    {
+      "brand": "victron",
+      "model": "MultiPlus-II GX 48/5000",
+      "path": "/products/victron--multiplus-ii-gx-48-5000.webp",
+      "sourceUrl": "https://www.victronenergy.com/inverters-chargers/multiplus-ii-gx",
+      "imageUrl": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FMultiplus-II%252048V%25205kVA%252050-70%2520230V%2520GX%2520%2528front%2529.png&w=640&q=70",
+      "imageHost": "www.victronenergy.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 19474,
+      "width": 477,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Victron MultiPlus-II GX 48/5000 (exact model)"
+    },
+    {
+      "brand": "victron",
+      "model": "Quattro 48/10000",
+      "path": "/products/victron--quattro-48-10000.webp",
+      "sourceUrl": "https://www.victronenergy.com/inverters-chargers/quattro",
+      "imageUrl": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FQuattro%252048V%252010000VA%2520140A%2520230V%2520%2528front%2529.png&w=640&q=70",
+      "imageHost": "www.victronenergy.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 19354,
+      "width": 533,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Victron Quattro 48/10000/140 (exact model)"
+    },
+    {
+      "brand": "victron",
+      "model": "Quattro 48/15000",
+      "path": "/products/victron--quattro-48-15000.webp",
+      "sourceUrl": "https://www.victronenergy.com/inverters-chargers/quattro",
+      "imageUrl": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FQuattro%252048V%252015000VA%2520200A%2520%2528front%2529.png&w=640&q=70",
+      "imageHost": "www.victronenergy.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 19410,
+      "width": 640,
+      "height": 729,
+      "confidence": "curated",
+      "matchedOn": "curated: Victron Quattro 48/15000/200 (exact model)"
+    },
+    {
+      "brand": "victron",
+      "model": "Quattro 48/8000",
+      "path": "/products/victron--quattro-48-8000.webp",
+      "sourceUrl": "https://www.victronenergy.com/inverters-chargers/quattro",
+      "imageUrl": "https://www.victronenergy.com/_next/image?url=https%3A%2F%2Fwww.victronenergy.com%2Fupload%2Fdocuments%2FQuattro%252048V%25208000VA%2520110A%2520230V%2520%2528front%2529.png&w=640&q=70",
+      "imageHost": "www.victronenergy.com",
+      "fetchedOn": "2026-10-14",
+      "bytes": 19134,
+      "width": 533,
+      "height": 800,
+      "confidence": "curated",
+      "matchedOn": "curated: Victron Quattro 48/8000/110 (exact model)"
     }
   ]
 }
