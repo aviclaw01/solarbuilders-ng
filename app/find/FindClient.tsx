@@ -1,5 +1,7 @@
 'use client';
 
+import WhatsAppLink from '@/components/ui/WhatsAppLink';
+import { SITE_URL } from '@/lib/site';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import Link from 'next/link';
@@ -15,6 +17,7 @@ import {
   Home,
   KeyRound,
   Laptop,
+  MessageCircle,
   Minus,
   Package,
   Plus,
@@ -745,6 +748,18 @@ function ResultStep({
       </div>
 
       <div className="mt-6 grid gap-3">
+        {/* Most buyers here would rather talk on WhatsApp than fill a form, and
+            a message to us is the lead. Only 2 of ~130 quotes became a form
+            submission before this existed. */}
+        <WhatsAppLink
+          text={`Hi SolarBuilders, I'd like the ${kitName(baseName, tier)} kit: ${t.inverterKva}kVA + ${t.batteryKwh}kWh + ${t.panelCount} panels, ${formatNaira(t.total.best)}. ${SITE_URL}${exactHref}`}
+          placement="find_result"
+          quoteCode={quote.code}
+          className="btn w-full bg-[#25D366] text-ink hover:brightness-95"
+        >
+          <MessageCircle className="w-5 h-5" aria-hidden="true" />
+          Send me this kit on WhatsApp
+        </WhatsAppLink>
         <Link href={exactHref} className="btn btn-outline w-full">
           Get an exact quote for my house
         </Link>
