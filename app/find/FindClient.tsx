@@ -1,5 +1,6 @@
 'use client';
 
+import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -664,9 +665,7 @@ function ResultStep({
         <p className="font-heading font-extrabold text-[2.5rem] leading-none tracking-tight mt-1 tabular-nums">
           {formatNaira(t.total.best)}
         </p>
-        <p className="text-sm text-white/70 mt-2">
-          Range {formatRange(t.total)} · installation extra (typically {formatRange(t.labourRef)})
-        </p>
+        <p className="text-sm text-white/70 mt-2">+ installation, about {formatRange(t.labourRef)}</p>
         <div className="grid grid-cols-2 gap-3 mt-5">
           <div className="rounded-card bg-night-soft p-4">
             <p className="font-heading font-bold text-xl sm:text-2xl text-sun tabular-nums whitespace-nowrap">{t.inverterKva} kVA</p>
@@ -677,10 +676,14 @@ function ResultStep({
             <p className="text-xs text-white/70 mt-0.5">stored for the night</p>
           </div>
         </div>
-        <p className="mt-3 flex items-center gap-3 rounded-card bg-leaf px-4 py-3 text-sm font-semibold">
-          <Fuel className="w-5 h-5 shrink-0" aria-hidden="true" />
-          Replaces about {formatNaira(fuel)} a month of generator petrol
-        </p>
+        {/* The fuel figure is for a 3kVA generator (lib/energy-costs.ts) — only
+            honest for kits that would otherwise need one that size or bigger. */}
+        {t.inverterKva >= 3 && (
+          <p className="mt-3 flex items-center gap-3 rounded-card bg-leaf px-4 py-3 text-sm font-semibold">
+            <Fuel className="w-5 h-5 shrink-0" aria-hidden="true" />
+            Replaces about {formatNaira(fuel)} a month of generator petrol
+          </p>
+        )}
       </section>
 
       {/* Keeps these running */}
@@ -810,7 +813,7 @@ function InTheBox({
       </h2>
       {body}
       <p className="mt-4 pt-4 border-t border-line text-xs text-muted">
-        Prices as of {quote.pricesAsOf}. Installation is charged by your installer.
+        Prices checked {PRICES_LAST_UPDATED_LABEL}.
       </p>
     </section>
   );
