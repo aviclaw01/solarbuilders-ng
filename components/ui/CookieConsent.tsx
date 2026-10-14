@@ -1,8 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
+  // /find has a sticky bottom CTA; keep the card out of its way.
+  const atTop = usePathname()?.startsWith('/find');
 
   useEffect(() => {
     const consent = localStorage.getItem('cookie-consent');
@@ -27,7 +30,7 @@ export default function CookieConsent() {
     <div
       role="region"
       aria-label="Cookie consent"
-      className="fixed z-[300] bottom-3 left-3 right-3 sm:right-auto sm:max-w-sm bg-white border border-line rounded-card shadow-lift p-4"
+      className={`fixed z-[300] ${atTop ? 'top-3' : 'bottom-3'} left-3 right-3 sm:right-auto sm:max-w-sm bg-white border border-line rounded-card shadow-lift p-4`}
     >
       {/* /privacy does not exist yet — link it here once it does. */}
       <p className="text-ink-soft text-sm leading-snug">We use cookies to measure site traffic. OK?</p>
