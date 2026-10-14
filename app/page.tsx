@@ -22,7 +22,7 @@ const PRICED_PRODUCTS = BRANDS.reduce((n, b) => n + b.products.length, 0);
 
 export const metadata: Metadata = {
   title: "Real Nigerian Solar Prices — And We Buy It For You | SolarBuilders.ng",
-  description: `We publish what solar actually costs in Nigeria (Felicity, Deye, Growatt, Jinko — real listings, ${PRICES_LAST_UPDATED_LABEL}). Size your system free, then we order the equipment at that market price and put a vetted installer on the job in Lagos, Abuja, Port Harcourt and beyond.`,
+  description: `We publish what solar actually costs in Nigeria (Felicity, Deye, Growatt, Jinko — real listings, ${PRICES_LAST_UPDATED_LABEL}). Size your system free, then we order the equipment and put a vetted installer on the job in Lagos, Abuja, Port Harcourt and beyond.`,
   alternates: { canonical: 'https://solarbuildersng.com' },
 };
 
@@ -54,7 +54,7 @@ const STEPS = [
   {
     icon: Wrench,
     title: 'We buy it and build it',
-    body: 'We order at that market price, put a vetted installer on the job and get the warranty into your name.',
+    body: 'We order the kit, put a vetted installer on the job and get the warranty into your name.',
   },
 ];
 
@@ -67,7 +67,7 @@ const WITHOUT = [
 
 const WITH = [
   'Published prices, each with a source and date',
-  'Equipment bought at the market price',
+  'Equipment ordered for you at the quoted price',
   'A vetted installer we put on the job',
   'One company answerable to you',
 ];

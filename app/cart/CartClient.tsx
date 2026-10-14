@@ -374,7 +374,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         <ShoppingCart className="w-12 h-12 text-slate-300 mx-auto mb-4" />
         <h1 className="font-heading font-extrabold text-slate-900 text-3xl">Your order request is empty</h1>
         <p className="text-slate-500 mt-3">
-          Add equipment and we&apos;ll source it at the brand&apos;s market price. You pay nothing until we confirm
+          Add equipment and we&apos;ll source it for you. You pay nothing until we confirm
           today&apos;s price with the distributor.
         </p>
         <div className="flex flex-wrap gap-3 justify-center mt-6">

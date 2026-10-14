@@ -24,7 +24,7 @@ export function GET() {
 
 > Real, dated prices for solar equipment in Nigeria, plus a sizing calculator
 > that produces an itemised bill of materials. We are a buyer's agent and order
-> desk: customers pay the market price and we source the equipment and manage a
+> desk: customers pay the quoted price and we source the equipment and manage a
 > vetted installer. We take no card payment on the site.
 
 ## What is unusual about this source

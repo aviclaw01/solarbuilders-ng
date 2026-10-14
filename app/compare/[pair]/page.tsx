@@ -460,7 +460,7 @@ export default async function ComparePairPage({ params }: Props) {
         <section className="mb-16">
           <div className="rounded-2xl bg-[#0A0F1E] p-8 md:p-10">
             <h2 className="font-heading font-extrabold text-white text-2xl md:text-3xl mb-3">
-              We source either one at the market price
+              We source either one for you
             </h2>
             <p className="text-slate-400 max-w-2xl mb-6">
               You do not need to chase {a.name} or {b.name} around Alaba. Tell us what the house needs, we size it, buy

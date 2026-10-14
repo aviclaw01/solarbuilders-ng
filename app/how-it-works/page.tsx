@@ -11,7 +11,7 @@ import { Calculator, FileText, MessageCircle, ClipboardCheck, Wallet, Wrench, Ar
 
 export const metadata: Metadata = {
   title: 'How It Works — Itemised Quote, We Buy It, We Build It',
-  description: `Pick your appliances, get an itemised solar quote priced from live Nigerian listings (${PRICES_LAST_UPDATED_LABEL}), send us the quote code, and we order the equipment at the market price and put a vetted installer on the job until commissioning.`,
+  description: `Pick your appliances, get an itemised solar quote priced from live Nigerian listings (${PRICES_LAST_UPDATED_LABEL}), send us the quote code, and we order the equipment and put a vetted installer on the job until commissioning.`,
   alternates: { canonical: 'https://solarbuildersng.com/how-it-works' },
 };
 
@@ -54,7 +54,7 @@ const STEPS = [
   {
     step: '05',
     icon: Wallet,
-    title: 'We order it at the market price',
+    title: 'We order it for you',
     description:
       'You pay the price on your quote and we place the order ourselves. Nothing is added at the end.',
     iconBg: 'bg-emerald-50',
