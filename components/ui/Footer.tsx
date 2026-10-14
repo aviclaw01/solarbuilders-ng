@@ -63,7 +63,7 @@ export default function Footer() {
           <div className="col-span-2 lg:col-span-1">
             <Logo variant="horizontal" size="md" colorMode="dark" />
             <p className="text-sm text-slate-400 leading-relaxed mt-4 mb-5 max-w-xs">
-              We publish what solar actually costs in Nigeria, then buy it for you at that price and put a vetted
+              We publish what solar actually costs in Nigeria, then buy it for you and put a vetted
               installer on the job.
             </p>
             <address className="not-italic text-sm text-slate-400 leading-relaxed mb-3">
@@ -172,7 +172,7 @@ export default function Footer() {
         <div className="rounded-card bg-night-soft p-5 md:p-6 grid gap-3 sm:grid-cols-2 sm:gap-8 mb-8">
           <p className="text-sm text-slate-400">
             <span className="text-slate-300 font-medium">Prices checked {PRICES_LAST_UPDATED_LABEL}.</span>{' '}
-            Every figure is a real Nigerian listing with the date we saw it. We re-confirm before you pay anyone.
+            We re-confirm every price before you pay anyone.
           </p>
           <p className="text-sm text-slate-400">
             <span className="text-slate-300 font-medium">No card payments on this site.</span>{' '}

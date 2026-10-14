@@ -39,10 +39,10 @@ const MENUS: MenuGroup[] = [
       { href: '/cart', label: 'Your order' },
     ],
     featured: {
-      href: '/calculator',
+      href: '/find',
       eyebrow: 'Not sure what fits?',
-      title: 'Size your system first',
-      body: `Tick your appliances and get an itemised list in two minutes. A family home with one AC runs about ${formatNairaShort(FAMILY.low)}–${formatNairaShort(FAMILY.high)} before installation.`,
+      title: 'Find my kit in three taps',
+      body: 'Pick your home and how long light is off. You get a matched kit and its price.',
       stat: `${formatNairaShort(FAMILY.low)}–${formatNairaShort(FAMILY.high)}`,
     },
   },
@@ -65,7 +65,7 @@ const MENUS: MenuGroup[] = [
       : { href: '/compare', eyebrow: 'Compare', title: 'Brand comparisons', body: 'See what each brand costs.' },
   },
   {
-    label: 'Resources',
+    label: 'Guides',
     items: [
       { href: '/sizing', label: 'Sizing guides', hint: `${SIZING_SCENARIOS.length} worked answers` },
       { href: '/budget', label: 'What my budget buys', hint: `${BUDGET_POINTS.length} budgets, priced` },

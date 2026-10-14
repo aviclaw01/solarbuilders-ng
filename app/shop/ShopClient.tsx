@@ -4,7 +4,6 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, Info, Minus, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
-import BrandMark from '@/components/ui/BrandMark';
 import ProductImage from '@/components/ui/ProductImage';
 import { CATEGORY_LABEL, TIER_LABEL, type BrandTier, type ProductCategory } from '@/lib/brands';
 import { addLine, readCart, writeCart } from '@/lib/cart';
@@ -102,21 +101,6 @@ type SortKey = 'price-asc' | 'price-desc' | 'value';
 
 const inBand = (b: Band, v: number) => v > b.min && v <= b.max;
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-/**
- * "2026-09-13" → "13 Sep 2026". Formatted by hand rather than with
- * toLocaleDateString: Node and the browser can disagree on the abbreviation,
- * and a disagreement here is a hydration mismatch on every card.
- */
-function formatSeenOn(iso: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  if (!m) return iso;
-  const month = MONTHS[Number(m[2]) - 1];
-  if (!month) return iso;
-  return `${Number(m[3])} ${month} ${m[1]}`;
-}
-
 // ─────────────────────────────────────────────────────────
 // PRODUCT CARD
 // ─────────────────────────────────────────────────────────
@@ -141,86 +125,63 @@ function ProductCard({ item }: { item: ShopItem }) {
   const sameLowHigh = item.priceLow === item.priceHigh;
 
   return (
-    <div className="bg-white border border-slate-100 rounded-2xl p-5 flex flex-col hover:border-slate-200 transition-colors">
-      <ProductImage
-        product={{ category: item.category, model: item.model, spec: item.spec, image: item.image }}
-        className="h-32 w-full mb-4"
-      />
-      <div className="flex items-start gap-3">
-        <BrandMark brand={{ slug: item.brandSlug, name: item.brandName, logo: item.brandLogo }} size={36} />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <Link href={`/brands/${item.brandSlug}`} className="font-heading font-bold text-slate-900 text-sm hover:text-amber-600 transition-colors">
-              {item.brandName}
-            </Link>
-            {item.brandTier && (
-              <span className="text-[10px] uppercase tracking-wide font-semibold text-slate-500">{TIER_LABEL[item.brandTier]}</span>
-            )}
+    <div className="group flex flex-col">
+      <Link href={`/brands/${item.brandSlug}`} aria-label={`${item.brandName} ${item.model}`} className="block">
+        <ProductImage
+          product={{ category: item.category, model: item.model, spec: item.spec, image: item.image }}
+          className="aspect-square w-full transition-transform duration-200 group-hover:scale-[1.01] motion-reduce:transition-none"
+        />
+      </Link>
+      <div className="pt-4 flex flex-col flex-1">
+        <p className="text-xs font-medium text-muted">{item.brandName}</p>
+        <p className="font-heading font-bold text-ink text-[15px] sm:text-base leading-snug mt-0.5 break-words">{item.model}</p>
+        <p className="text-muted text-xs mt-1 line-clamp-1">{item.spec}</p>
+        <p className="font-heading font-extrabold text-ink text-lg sm:text-xl tabular-nums tracking-tight mt-3">
+          {sameLowHigh ? formatNaira(item.priceLow) : `From ${formatNaira(item.priceLow)}`}
+        </p>
+        {item.caveat && (
+          <p className="text-[11px] text-sun-ink mt-1 leading-snug flex gap-1">
+            <Info className="w-3.5 h-3.5 flex-shrink-0 mt-px" aria-hidden="true" />
+            <span>{item.caveat}</span>
+          </p>
+        )}
+        <div className="mt-auto pt-3 flex items-center gap-2">
+          <div className="hidden sm:flex items-center border border-line rounded-full">
+            <button
+              type="button"
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              disabled={qty <= 1}
+              aria-label={`Fewer ${item.model}`}
+              className="w-8 h-9 flex items-center justify-center text-muted disabled:opacity-30"
+            >
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+            <span className="w-5 text-center text-sm font-semibold text-ink tabular-nums" aria-live="polite">{qty}</span>
+            <button
+              type="button"
+              onClick={() => setQty((q) => Math.min(99, q + 1))}
+              aria-label={`More ${item.model}`}
+              className="w-8 h-9 flex items-center justify-center text-muted"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
           </div>
-          <p className="font-heading font-extrabold text-slate-900 text-base leading-tight mt-0.5 break-words">{item.model}</p>
-          <p className="text-slate-500 text-xs mt-1">{item.spec}</p>
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <p className="font-heading font-extrabold text-slate-900 text-lg">
-          {sameLowHigh ? formatNaira(item.priceLow) : `${formatNaira(item.priceLow)} – ${formatNaira(item.priceHigh)}`}
-        </p>
-        <p className="text-xs text-slate-500 mt-0.5">
-          {sameLowHigh ? 'Price' : 'Price range'}
-          {item.unitPrice && item.unit ? ` · ${formatNaira(item.unitPrice)} per ${item.unit}` : ''}
-        </p>
-        <p className="text-[11px] text-slate-500 mt-1">Price seen {formatSeenOn(item.seenOn)}</p>
-      </div>
-
-      {(item.note || item.caveat) && (
-        <div className="mt-3 space-y-1">
-          {item.note && <p className="text-[11px] text-slate-500 leading-snug">{item.note}</p>}
-          {item.caveat && (
-            <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-2.5 py-1.5 leading-snug flex gap-1.5">
-              <Info className="w-3.5 h-3.5 flex-shrink-0 mt-px" />
-              <span>{item.caveat}</span>
-            </p>
-          )}
-        </div>
-      )}
-
-      <div className="mt-auto pt-4 flex items-center gap-2">
-        <div className="flex items-center border border-slate-200 rounded-full">
           <button
             type="button"
-            onClick={() => setQty((q) => Math.max(1, q - 1))}
-            disabled={qty <= 1}
-            aria-label={`Fewer ${item.model}`}
-            className="w-8 h-8 flex items-center justify-center text-slate-500 disabled:opacity-30"
+            onClick={handleAdd}
+            className={`flex-1 min-h-10 rounded-full px-4 text-sm font-semibold transition-colors duration-150 flex items-center justify-center gap-1.5 ${
+              added ? 'bg-leaf text-white' : 'bg-ink text-white hover:bg-ink-soft'
+            }`}
           >
-            <Minus className="w-3.5 h-3.5" />
-          </button>
-          <span className="w-6 text-center text-sm font-semibold text-slate-900" aria-live="polite">{qty}</span>
-          <button
-            type="button"
-            onClick={() => setQty((q) => Math.min(99, q + 1))}
-            aria-label={`More ${item.model}`}
-            className="w-8 h-8 flex items-center justify-center text-slate-500"
-          >
-            <Plus className="w-3.5 h-3.5" />
+            {added ? (
+              <>
+                <Check className="w-4 h-4" aria-hidden="true" /> Added
+              </>
+            ) : (
+              'Add'
+            )}
           </button>
         </div>
-        <button
-          type="button"
-          onClick={handleAdd}
-          className={`flex-1 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-1.5 ${
-            added ? 'bg-emerald-500 text-white' : 'bg-[#0A0F1E] text-white hover:bg-slate-700'
-          }`}
-        >
-          {added ? (
-            <>
-              <Check className="w-4 h-4" /> On your order
-            </>
-          ) : (
-            'Add to order'
-          )}
-        </button>
       </div>
     </div>
   );
@@ -228,7 +189,7 @@ function ProductCard({ item }: { item: ShopItem }) {
 
 function Grid({ items }: { items: ShopItem[] }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 sm:gap-x-6">
       {items.map((item) => (
         <ProductCard key={item.id} item={item} />
       ))}
@@ -254,10 +215,8 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-full px-3 py-1.5 text-xs font-semibold border transition-colors ${
-        active
-          ? 'bg-[#0A0F1E] text-white border-[#0A0F1E]'
-          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+      className={`rounded-full px-3.5 py-2 text-[13px] font-semibold border whitespace-nowrap transition-colors duration-150 ${
+        active ? 'bg-ink text-white border-ink' : 'bg-white text-ink-soft border-line hover:border-ink-soft'
       }`}
     >
       {children}
@@ -395,14 +354,14 @@ function ShopInner({ items }: { items: ShopItem[] }) {
   }
 
   return (
-    <div className="grid lg:grid-cols-[260px_1fr] gap-6">
+    <div className="grid lg:grid-cols-[240px_1fr] gap-6 lg:gap-10">
       {/* ── Filters ─────────────────────────────── */}
       <div>
         <button
           type="button"
           onClick={() => setPanelOpen((o) => !o)}
           aria-expanded={panelOpen}
-          className="sm:hidden w-full flex items-center justify-between border border-slate-200 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-900"
+          className="lg:hidden w-full flex items-center justify-between border border-line rounded-full px-4 py-2.5 text-sm font-semibold text-ink"
         >
           <span className="flex items-center gap-2">
             <SlidersHorizontal className="w-4 h-4" /> Filters
@@ -413,7 +372,7 @@ function ShopInner({ items }: { items: ShopItem[] }) {
           <span className="text-slate-500 text-xs">{panelOpen ? 'Hide' : 'Show'}</span>
         </button>
 
-        <div className={`${panelOpen ? 'block' : 'hidden'} sm:block mt-3 sm:mt-0 space-y-5 border border-slate-100 rounded-2xl p-5`}>
+        <div className={`${panelOpen ? 'block' : 'hidden'} lg:block mt-3 lg:mt-0 space-y-6 lg:sticky lg:top-24`}>
           <div>
             <label htmlFor="shop-search" className="sr-only">
               Search equipment
@@ -430,17 +389,6 @@ function ShopInner({ items }: { items: ShopItem[] }) {
               />
             </div>
           </div>
-
-          <FilterGroup title="Category">
-            <Chip active={!cat} onClick={() => setCategory(null)}>
-              All
-            </Chip>
-            {CATEGORY_ORDER.map((c) => (
-              <Chip key={c} active={cat === c} onClick={() => setCategory(cat === c ? null : c)}>
-                {CATEGORY_LABEL[c]}
-              </Chip>
-            ))}
-          </FilterGroup>
 
           <FilterGroup title="Price">
             {PRICE_BANDS.map((b) => (
@@ -500,28 +448,38 @@ function ShopInner({ items }: { items: ShopItem[] }) {
       </div>
 
       {/* ── Results ─────────────────────────────── */}
-      <div>
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <div className="min-w-0">
+        <div role="group" aria-label="Category" className="-mx-4 px-4 sm:mx-0 sm:px-0 flex gap-2 overflow-x-auto pb-1 mb-5 [scrollbar-width:none]">
+          <Chip active={!cat} onClick={() => setCategory(null)}>
+            All
+          </Chip>
+          {CATEGORY_ORDER.map((c) => (
+            <Chip key={c} active={cat === c} onClick={() => setCategory(cat === c ? null : c)}>
+              {CATEGORY_LABEL[c]}
+            </Chip>
+          ))}
+        </div>
+        <div className="flex items-center justify-between gap-3 mb-6">
           <p className="text-sm text-slate-500">
             <span className="font-semibold text-slate-900">{results.length}</span>{' '}
             {results.length === 1 ? 'product' : 'products'}
             {cat ? ` in ${CATEGORY_LABEL[cat].toLowerCase()}` : ''}
           </p>
           <div className="flex items-center gap-3">
-            <label htmlFor="shop-sort" className="text-xs text-slate-500">
+            <label htmlFor="shop-sort" className="sr-only sm:not-sr-only text-xs text-muted">
               Sort
             </label>
             <select
               id="shop-sort"
               value={sort}
               onChange={(e) => update({ sort: e.target.value === 'price-asc' ? null : e.target.value })}
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-amber-500"
+              className="border border-line rounded-full px-3 py-2 text-sm text-ink bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sun-deep"
             >
               <option value="price-asc">Price: low to high</option>
               <option value="price-desc">Price: high to low</option>
               {cat && CATEGORY_UNIT[cat] && <option value="value">Best value (₦ per {CATEGORY_UNIT[cat]})</option>}
             </select>
-            <Link href="/cart" className="text-sm font-semibold text-amber-700 hover:text-amber-800 whitespace-nowrap">
+            <Link href="/cart" className="hidden sm:inline text-sm font-semibold text-ink hover:text-sun-ink whitespace-nowrap">
               Your order →
             </Link>
           </div>

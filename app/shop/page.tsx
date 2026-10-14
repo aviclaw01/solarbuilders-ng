@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import WhatsAppLink from '@/components/ui/WhatsAppLink';
-import { ArrowRight, Calculator, MessageCircle, ShieldCheck } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { catalogue, midPrice, productSize } from '@/lib/cart';
 import type { ProductCategory } from '@/lib/brands';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
@@ -97,48 +96,21 @@ return (
       <Navbar />
       <main>
 
-      <div className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
-        <div className="max-w-6xl mx-auto">
-          <span className="text-amber-700 text-sm font-semibold tracking-wide uppercase">Equipment &amp; prices</span>
-          <h1 className="font-heading font-extrabold text-slate-900 text-4xl md:text-5xl mt-3 mb-4">
-            Solar equipment prices in Nigeria
-          </h1>
-          <p className="text-slate-500 text-lg max-w-2xl">
-            Prices for {items.length} products, checked in{' '}
-            {PRICES_LAST_UPDATED_LABEL} — inverters, lithium batteries, panels, charge controllers and complete
-            packages. Add what you want to an order request and we source it for you. We take
-            no card payment: we confirm today&apos;s price with the distributor and come back to you with a final
-            figure before you pay anyone.
-          </p>
-
-          <div className="flex flex-wrap gap-3 mt-6">
-            <Link
-              href="/calculator"
-              className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-6 py-3 font-semibold text-sm transition-colors"
-            >
-              <Calculator className="w-4 h-4" /> Not sure what you need? Size it first
-            </Link>
-            <WhatsAppLink
-              text="Hi SolarBuilders, I was looking at your equipment prices and want help choosing."
-              placement="shop_header"
-              className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 font-semibold text-sm transition-colors"
-            >
-              <MessageCircle className="w-4 h-4" /> Ask us what fits
-            </WhatsAppLink>
+      <div className="px-4 sm:px-6 pt-12 pb-8 md:pt-16">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <h1 className="font-heading font-extrabold text-ink text-title">Shop solar equipment</h1>
+            <p className="text-muted mt-2">
+              {items.length} products · prices checked {PRICES_LAST_UPDATED_LABEL}
+            </p>
           </div>
-
-          <p className="flex items-start gap-2 text-xs text-slate-500 mt-6 max-w-2xl">
-            <ShieldCheck className="w-4 h-4 flex-shrink-0 mt-px" />
-            <span>
-              Prices are what sellers were asking when we checked, not a quote. Where a price shows a range, that is
-              the spread we saw across sellers for the same model. We don&apos;t hold stock, so we won&apos;t pretend
-              to know what is on the shelf today — we check before we confirm.
-            </span>
-          </p>
+          <Link href="/find" className="text-sm font-semibold text-ink hover:text-sun-ink inline-flex items-center gap-1">
+            Not sure what you need? Find my kit <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
         <ShopClient items={items} />
       </div>
 
