@@ -32,8 +32,10 @@ export default function CookieConsent() {
       aria-label="Cookie consent"
       className={`fixed z-[300] ${aboveCta ? 'bottom-24' : 'bottom-3'} left-3 right-3 sm:right-auto sm:max-w-sm bg-white border border-line rounded-card shadow-lift p-4`}
     >
-      {/* /privacy does not exist yet — link it here once it does. */}
-      <p className="text-ink-soft text-sm leading-snug">We use cookies to measure site traffic. OK?</p>
+      <p className="text-ink-soft text-sm leading-snug">
+        We use cookies to measure site traffic. OK?{' '}
+        <a href="/privacy" className="text-ink underline underline-offset-2">Privacy</a>
+      </p>
       <div className="flex gap-2 mt-3">
         <button
           onClick={decline}
