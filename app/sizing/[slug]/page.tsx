@@ -503,7 +503,7 @@ export default async function SizingScenarioPage({ params }: Props) {
               <h3 className="font-heading font-bold text-[#0A0F1E] mb-2">The inverter comes from the worst moment</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
                 Add up every appliance as if it switched on together — {num(quote.peakWatts)}W here — then add{' '}
-                {Math.round((SIZING_RULES.inverterHeadroom - 1) * 100)}% (a 20% growth allowance, and never more than 80%
+                {Math.round((SIZING_RULES.inverterHeadroom - 1) * 100)}% (a {Math.round((SIZING_RULES.growthAllowance - 1) * 100)}% growth allowance, and never more than 80%
                 continuous loading) so the unit is never running flat out,
                 and round up to a size sold in Nigeria. That gives {num(standard.inverterKva)}kVA. Sizing the inverter on
                 an average instead of the peak is the single most common mistake in Nigerian quotes: the system works

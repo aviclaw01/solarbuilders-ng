@@ -444,10 +444,10 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
     [
       a("ac_1_5hp", 2),
       a("refrigerator"),
-      a("tv_55"),
-      a("led_bulb", 10),
+      a("tv_32"),
+      a("led_bulb", 8),
       a("ceiling_fan", 2),
-      a("laptop", 2),
+      a("laptop"),
       a("decoder"),
       a("phone_charger", 4),
       a("wifi_router"),
@@ -465,12 +465,12 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
       a("deep_freezer"),
       a("water_pump"),
       a("tv_55"),
-      a("led_bulb", 16),
-      a("ceiling_fan", 4),
+      a("led_bulb", 12),
+      a("ceiling_fan", 3),
       a("decoder", 2),
-      a("laptop", 2),
+      a("laptop"),
       a("cctv"),
-      a("security_light", 2),
+      a("security_light"),
       a("wifi_router"),
     ],
     "Whole-house territory: three air conditioners, a borehole pump and everything else, all available at once. The list below is one representative load that lands on this inverter size, not the only one — at this size the battery bank and the roof, not the inverter, are what limit you.",
@@ -485,10 +485,10 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
  * the arithmetic actually happens. Keep them in step with that file.
  */
 export const SIZING_RULES = {
-  // 1.2 growth allowance ÷ 0.8 max continuous loading
-  inverterHeadroom: 1.5,
+  // 1.25 growth allowance ÷ 0.8 max continuous loading
+  inverterHeadroom: 1.5625,
   loadFactor: 0.6,
-  growthAllowance: 1.2,
+  growthAllowance: 1.25,
   // battery holds this share of the day's energy for a home with some grid (6–16h)
   nightShare: 0.5,
   peakSunHours: 4.5,

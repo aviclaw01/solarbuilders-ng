@@ -22,7 +22,7 @@ const PRICED_PRODUCTS = BRANDS.reduce((n, b) => n + b.products.length, 0);
 
 export const metadata: Metadata = {
   title: "Real Nigerian Solar Prices — And We Buy It For You | SolarBuilders.ng",
-  description: `We publish what solar actually costs in Nigeria (Felicity, Deye, Growatt, Jinko — real listings, ${PRICES_LAST_UPDATED_LABEL}). Size your system free, then we order the equipment at that market price and put a vetted installer on the job in Lagos, Abuja, Port Harcourt and beyond.`,
+  description: `We publish what solar actually costs in Nigeria (Felicity, Deye, Growatt, Jinko — real listings, ${PRICES_LAST_UPDATED_LABEL}). Size your system free, then we order the equipment and put a vetted installer on the job in Lagos, Abuja, Port Harcourt and beyond.`,
   alternates: { canonical: 'https://solarbuildersng.com' },
 };
 
@@ -54,7 +54,7 @@ const STEPS = [
   {
     icon: Wrench,
     title: 'We buy it and build it',
-    body: 'We order at that market price, put a vetted installer on the job and get the warranty into your name.',
+    body: 'We order the kit, put a vetted installer on the job and get the warranty into your name.',
   },
 ];
 
@@ -67,7 +67,7 @@ const WITHOUT = [
 
 const WITH = [
   'Published prices, each with a source and date',
-  'Equipment bought at the market price',
+  'Equipment ordered for you at the quoted price',
   'A vetted installer we put on the job',
   'One company answerable to you',
 ];
@@ -109,7 +109,7 @@ export default function HomePage() {
                 <ArrowRight className="w-5 h-5" aria-hidden="true" />
               </Link>
               <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
-                {['Free', 'No sign-up', 'No mark-up on equipment'].map((item) => (
+                {['Free', 'No sign-up', 'Real Nigerian prices'].map((item) => (
                   <li key={item} className="inline-flex items-center gap-1.5">
                     <Check className="w-4 h-4 text-leaf" aria-hidden="true" />
                     {item}
@@ -184,8 +184,7 @@ export default function HomePage() {
                 Every figure is a real listing with a date on it
               </h2>
               <p className="text-slate-300 leading-relaxed max-w-lg">
-                Not estimates, not a mark-up on a guess. You pay the brand&apos;s market price — the same number we
-                publish. Our margin comes from the trade terms we hold with distributors.
+                Not estimates. The price on your quote is the price you pay for the kit.
               </p>
             </div>
             <dl className="grid grid-cols-2 gap-px bg-white/10 rounded-card overflow-hidden">

@@ -13,8 +13,8 @@
  *  2. Nothing may claim stock levels, delivery dates, customer counts,
  *     installed-system counts or testimonials. We don't have them.
  *  3. Nothing may contradict the model: no card payment on this site, no
- *     mark-up on equipment, no vendor contacts published, no lender
- *     partnership.
+ *     vendor contacts published, no lender partnership. Don't talk about
+ *     margin or fees — just show the price.
  *  4. Answers are 2–4 sentences of plain Nigerian-practical English, honest
  *     about what we don't know.
  */
@@ -261,7 +261,7 @@ export const FAQS: FaqItem[] = [
   // ── Payment ──────────────────────────────────────────
   {
     q: "Do I pay SolarBuilders.ng anything?",
-    a: `You pay the market price for the equipment — the same Nigerian price we publish on the brand pages — plus the installer's labour. We do not add a fee on top of your bill, and the calculator, the quote and the advice are free. Our margin comes from the trade terms we hold with distributors, so we earn on the buying rather than by marking you up.`,
+    a: `The equipment price on your quote, plus the installer's labour. Nothing is added at the end, and the calculator, the quote and the advice are free.`,
     category: "payment",
     link: { href: "/how-it-works", label: "How the money works" },
   },
@@ -328,13 +328,13 @@ export const FAQS: FaqItem[] = [
   // ── About us ─────────────────────────────────────────
   {
     q: "Who are you — an installer, a vendor, or a marketplace?",
-    a: `None of the three. We are the buyer's agent and the order desk: we publish what solar equipment really costs in Nigeria, size your system, buy the equipment on your behalf at the market price, and manage a vetted installer through to commissioning. We don't own a warehouse, we don't own a van, and we don't sell you anything at a mark-up.`,
+    a: `None of the three. We are the buyer's agent and the order desk: we publish what solar equipment really costs in Nigeria, size your system, buy the equipment on your behalf, and manage a vetted installer through to commissioning. We don't own a warehouse and we don't own a van.`,
     category: "about-us",
     link: { href: "/how-it-works", label: "How it works" },
   },
   {
     q: "How do you make money if you don't mark anything up?",
-    a: `From the trade terms we hold with distributors — you pay the brand's market price and our margin sits in the spread between that and what we buy at, so it comes out of the supply chain rather than out of your bill. We also earn a placement fee from installers we route work to, which is why the vetting is ours to lose. We earn nothing from the lenders we list and have no arrangement with any of them.`,
+    a: `From sourcing the equipment for you — the price you see already covers it, so nothing is added later. We also earn a placement fee from installers we route work to, which is why the vetting is ours to lose. We earn nothing from the lenders we list and have no arrangement with any of them.`,
     category: "about-us",
   },
   {
@@ -370,7 +370,7 @@ const CATEGORY_BLURB: Record<FaqCategory, string> = {
   prices: `What things actually cost in Nigeria at ${PRICES_LAST_UPDATED_LABEL} prices, and why the same item differs so much between sellers.`,
   sizing: "How big a system your home or business needs, and what the battery really has to do overnight.",
   buying: "What happens when you send us an order request, and what you can do entirely without us.",
-  payment: "No card payment, no mark-up, no lender partnership. Here is where the money goes.",
+  payment: "No card payment, no lender partnership. Here is where the money goes.",
   installation: "Who does the work, what you are covered for, and what it costs to keep running.",
   "about-us": "Who we are, how we earn, and what we will not claim.",
 };

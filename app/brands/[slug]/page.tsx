@@ -218,9 +218,8 @@ export default async function BrandPage({ params }: Props) {
           <div className="flex gap-2 text-[11px] text-slate-500 border-t border-slate-100 pt-4">
             <Info className="w-4 h-4 flex-shrink-0 text-slate-400" />
             <p>
-              Every price here is a real Nigerian listing we checked on the date shown, and ranges span the sellers we
-              compared. Prices move, so we re-confirm before you pay anything. We buy on your behalf at the market price
-              and handle the warranty paperwork — you don&apos;t have to work out who is cheapest.
+              Every price here is based on real Nigerian listings we checked on the date shown, and ranges span the sellers
+              we compared. Prices move, so we re-confirm before you pay anything. We buy on your behalf and handle the warranty paperwork — you don&apos;t have to work out who is cheapest.
             </p>
           </div>
         </div>
@@ -234,7 +233,7 @@ export default async function BrandPage({ params }: Props) {
               {[
                 'Size your system in the calculator and get an itemised quote with a code.',
                 'Send us the code. We confirm today\u2019s price and stock before anything is paid.',
-                `We order the ${isMaker ? brand.name : ''} equipment at the market price and arrange delivery.`,
+                `We order the ${isMaker ? brand.name : ''} equipment and arrange delivery.`,
                 'A vetted installer fits and commissions it, with the warranty paperwork in your name.',
               ].map((step, i) => (
                 <li key={i} className="flex gap-3">
@@ -247,7 +246,7 @@ export default async function BrandPage({ params }: Props) {
             </ol>
             <p className="text-[11px] text-slate-500 mt-4">
               We compared {stockists.length > 0 ? `${stockists.length} Nigerian sellers` : 'the Nigerian market'} for this
-              brand. You pay the market price; our margin comes from the trade terms we hold, not from a mark-up on you.
+              brand.
             </p>
           </section>
 

@@ -8,7 +8,7 @@
  *
  * Engineering basis — the stated load is treated as a MINIMUM, the way an
  * installer's engineer would, not as the exact design point:
- *  - Growth allowance: every load figure × 1.2 (the appliance you forgot, the
+ *  - Growth allowance: every load figure × 1.25 (the appliance you forgot, the
  *    second fridge next year, nameplate optimism).
  *  - Inverter: never loaded above 80% continuous → design peak ÷ 0.8, and it
  *    must also carry the largest motor start at ~2× its rating. Next standard
@@ -31,6 +31,7 @@
 import {
   BOS_ITEMS,
   CONTINGENCY_FRACTION,
+  withSourcingMargin,
   INVERTER_BRANDS,
   INVERTER_PER_KVA,
   LABOUR_FLOOR,
@@ -156,8 +157,12 @@ export interface Quote {
 const PEAK_SUN_HOURS = 4.5;
 const SYSTEM_EFFICIENCY = 0.75;
 const LITHIUM_USABLE = 0.8;
-/** Stated load is a minimum — design for 20% more. */
-export const GROWTH_ALLOWANCE = 1.2;
+/**
+ * Stated load is a minimum — design for 25% more (engineering rule: headroom for
+ * overload and the appliance the client forgot). With INVERTER_MAX_LOADING the
+ * inverter ends up ~1.56× the stated running load.
+ */
+export const GROWTH_ALLOWANCE = 1.25;
 /** Inverters are not run above 80% of rating continuously. */
 const INVERTER_MAX_LOADING = 0.8;
 
@@ -315,6 +320,15 @@ function line(
   unitCost: PriceRange,
   group: BomLine["group"] = "bos",
 ): BomLine {
+  // Equipment and BOS are bought from third-party sellers, so they carry the
+  // sourcing fee. Contingency is derived from these lines and already scales.
+  if (group === "equipment" || group === "bos") {
+    unitCost = {
+      low: withSourcingMargin(unitCost.low),
+      best: withSourcingMargin(unitCost.best),
+      high: withSourcingMargin(unitCost.high),
+    };
+  }
   return { key, item, spec, qty, unit, unitCost, lineCost: scale(unitCost, qty), group };
 }
 

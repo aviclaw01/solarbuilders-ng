@@ -176,7 +176,6 @@ export default function Footer() {
           </p>
           <p className="text-sm text-slate-400">
             <span className="text-slate-300 font-medium">No card payments on this site.</span>{' '}
-            You pay the market price; our margin comes from our trade terms, not a mark-up on you.
           </p>
         </div>
 

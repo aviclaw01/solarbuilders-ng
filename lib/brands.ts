@@ -15,6 +15,7 @@
  */
 
 import { BRAND_SLUG_BY_NAME } from "./brand-slugs";
+import { withSourcingMargin } from "./prices";
 
 export type BrandKind = "manufacturer" | "vendor";
 export type BrandTier = "budget" | "mid" | "premium";
@@ -821,7 +822,18 @@ const VENDORS: Brand[] = [
 // ACCESSORS
 // ─────────────────────────────────────────────────────────
 
-export const BRANDS: Brand[] = [...MANUFACTURERS, ...VENDORS];
+/**
+ * Catalogue prices as we sell them: the listed market price plus our sourcing
+ * fee (lib/prices.ts SOURCING_MARGIN). The literals above stay as observed.
+ */
+export const BRANDS: Brand[] = [...MANUFACTURERS, ...VENDORS].map((brand) => ({
+  ...brand,
+  products: brand.products.map((p) => ({
+    ...p,
+    priceLow: withSourcingMargin(p.priceLow),
+    priceHigh: withSourcingMargin(p.priceHigh),
+  })),
+}));
 
 export const CATEGORY_LABEL: Record<ProductCategory, string> = {
   inverter: "Inverters",

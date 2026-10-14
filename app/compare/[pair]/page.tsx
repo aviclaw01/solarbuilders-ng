@@ -460,12 +460,11 @@ export default async function ComparePairPage({ params }: Props) {
         <section className="mb-16">
           <div className="rounded-2xl bg-[#0A0F1E] p-8 md:p-10">
             <h2 className="font-heading font-extrabold text-white text-2xl md:text-3xl mb-3">
-              We source either one at the market price
+              We source either one for you
             </h2>
             <p className="text-slate-400 max-w-2xl mb-6">
               You do not need to chase {a.name} or {b.name} around Alaba. Tell us what the house needs, we size it, buy
-              the equipment on your behalf and hand over a working system. You pay the brand&apos;s market price — our
-              margin comes from our distributor arrangements, not from a markup on your quote.
+              the equipment on your behalf and hand over a working system.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
@@ -593,7 +592,7 @@ function buildFaqs(pair: ComparisonPair, gap: Gap | null): Array<{ q: string; a:
 
   out.push({
     q: `Where do I buy ${a.name} or ${b.name} in Nigeria?`,
-    a: `Through us. SolarBuilders.ng sources either brand on your behalf at its Nigerian market price — you tell us the size, we buy it, and it arrives as part of a working system. Our margin comes from wholesale and distributor arrangements, not from a markup on your quote. Prices on this page were last verified in ${PRICES_LAST_UPDATED_LABEL}.`,
+    a: `Through us. SolarBuilders.ng sources either brand on your behalf — you tell us the size, we buy it, and it arrives as part of a working system. Prices on this page were last verified in ${PRICES_LAST_UPDATED_LABEL}.`,
   });
 
   return out.slice(0, 4);

@@ -191,8 +191,8 @@ const home = [
 ];
 const hq = Q.buildQuote(home);
 const st = hq.tiers.standard;
-check("the stated load is a minimum — design load is 20% above it",
-  hq.designPeakWatts === Math.round(hq.peakWatts * 1.2), `${hq.designPeakWatts} vs ${hq.peakWatts}`);
+check("the stated load is a minimum — design load is 25% above it",
+  hq.designPeakWatts === Math.round(hq.peakWatts * 1.25), `${hq.designPeakWatts} vs ${hq.peakWatts}`);
 check("the inverter is never loaded above 80% of its rating",
   hq.designPeakWatts <= st.inverterKva * 1000 * 0.8, `${hq.designPeakWatts}W on ${st.inverterKva}kVA`);
 const installLine = st.bom.find((l) => l.key === "installation");
@@ -216,6 +216,14 @@ check("the default grid keeps the code of the appliance list alone", Q.buildQuot
 check("a different grid answer gives a different code", Q.buildQuote(home, {}, "none").code !== hq.code);
 check("parseGrid rejects junk", Q.parseGrid("lots") === "some" && Q.parseGrid("none") === "none");
 check("the share link carries a non-default grid", Q.quoteUrl(Q.buildQuote(home, {}, "poor"), "standard", "https://x").includes("grid=poor"));
+
+// Sourcing fee: third-party equipment and BOS carry it; installation does not.
+const P = require(path.join(outDir, "prices.js"));
+const panelLine = st.bom.find((l) => l.key === "panels");
+check("panel unit price carries the sourcing fee",
+  panelLine && panelLine.unitCost.best === P.withSourcingMargin(P.PANEL_PER_WP.best * P.PANEL_WATTS),
+  panelLine && `${panelLine.unitCost.best}`);
+check("installation is not marked up", installLine.unitCost.best === 0 || installLine.group === "excluded");
 
 // ─────────────────────────────────────────────────────────────
 console.log(`\n${passed} passed, ${failed} failed`);
