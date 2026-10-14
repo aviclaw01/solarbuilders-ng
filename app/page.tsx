@@ -27,7 +27,8 @@ export const metadata: Metadata = {
 };
 
 /**
- * The homepage has one job: get someone into the calculator.
+ * The homepage has one job: get someone a kit. The hero CTA opens /find (three
+ * taps to a priced kit); the calculator stays the detailed path.
  *
  * It used to offer three "ways to use this site", a tabbed carousel, four
  * feature cards and five separate CTAs to four destinations. Every one of those
@@ -104,7 +105,7 @@ export default function HomePage() {
                 Tell us what you run. In two minutes you get an itemised quote at real Nigerian prices. Then we buy
                 the equipment at that price and put a vetted installer on the job.
               </p>
-              <Link href="/calculator" className="btn btn-sun btn-lg w-full sm:w-auto">
+              <Link href="/find" className="btn btn-sun btn-lg w-full sm:w-auto">
                 {PRIMARY_CTA}
                 <ArrowRight className="w-5 h-5" aria-hidden="true" />
               </Link>
