@@ -220,15 +220,15 @@ export default function NavbarClient({
                 Talk to us
               </a>
               <CartButton />
-              <Link href="/calculator" className="btn btn-sun !min-h-[44px] !px-5 text-[15px]">
+              <Link href="/find" className="btn btn-sun !min-h-[44px] !px-5 text-[15px]">
                 Get my quote
               </Link>
             </div>
 
             {/* Mobile actions */}
             <div className="md:hidden flex items-center gap-0.5">
-              {!pathname?.startsWith('/calculator') && (
-                <Link href="/calculator" className="btn btn-sun !min-h-[40px] !px-4 text-sm !shadow-none mr-1">
+              {!pathname?.startsWith('/calculator') && !pathname?.startsWith('/find') && (
+                <Link href="/find" className="btn btn-sun !min-h-[40px] !px-4 text-sm !shadow-none mr-1">
                   Get quote
                 </Link>
               )}
@@ -276,7 +276,7 @@ export default function NavbarClient({
 
           <div className="flex-1 overflow-y-auto px-4 py-6">
             <Link
-              href="/calculator"
+              href="/find"
               onClick={() => setOpen(false)}
               className="btn btn-sun btn-lg w-full mb-8"
             >

@@ -28,6 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const core = [
     page('', 1.0, 'weekly', PRICED),
     page('/shop', 0.95, 'weekly', PRICED),
+    page('/find', 0.9, 'monthly', PRICED),
     page('/calculator', 0.9, 'monthly', PRICED),
     page('/brands', 0.9, 'weekly', PRICED),
     page('/sizing', 0.85, 'monthly', PRICED),
