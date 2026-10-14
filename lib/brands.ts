@@ -513,7 +513,7 @@ const MANUFACTURERS: Brand[] = [
     products: [
       { category: "panel", model: "450W all-black", spec: "450W all-black mono", watts: 450, priceLow: 115_000, priceHigh: 115_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D, image: "/products/longi--450w-all-black.webp", imageSource: "https://www.longi.com/en/products/modules/hi-mo-x6-explorer/", imageFetchedOn: "2026-10-14" },
       { category: "panel", model: "550W black frame", spec: "550W black-frame mono", watts: 550, priceLow: 95_000, priceHigh: 95_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D },
-      { category: "panel", model: "600W all-black 144-cell", spec: "600W all-black mono, 144 cells", watts: 600, priceLow: 110_000, priceHigh: 110_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D, image: "/products/longi--600w-all-black-144-cell.webp", imageSource: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", imageFetchedOn: "2026-09-15" },
+      { category: "panel", model: "600W all-black 144-cell", spec: "600W all-black mono, 144 cells", watts: 600, priceLow: 110_000, priceHigh: 110_000, seenAt: ["nature-solar"], sourceUrl: "https://naturesolar.ng/product/600w-longi-all-black-solar-panel-144-cells/", seenOn: D },  // vendor photo was a watermarked phone shot of a pallet; drawn fallback until LONGi publishes an all-black image
     ],
   },
   {
