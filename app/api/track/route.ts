@@ -35,6 +35,13 @@ export async function POST(req: Request) {
     const event = str(body.event, 40);
     if (!event || !EVENTS.has(event)) return noContent;
 
+    // Local runs and preview deploys share the production database. Their
+    // clicks are test traffic and must not land in the funnel (on 14 Oct 2026
+    // agent test runs added ~125 events in one morning).
+    const host = new URL(req.url).hostname;
+    const isLocal = host === "localhost" || host === "::1" || host.startsWith("127.");
+    if (isLocal || (process.env.VERCEL_ENV && process.env.VERCEL_ENV !== "production")) return noContent;
+
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !key || url.includes("your-project")) return noContent;
