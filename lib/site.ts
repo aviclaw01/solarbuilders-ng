@@ -8,8 +8,8 @@ export const SITE_NAME = "SolarBuilders.ng";
 export const CONTACT_WHATSAPP = "2349168394923";
 
 /** Inboxes that receive quote-request emails */
-export const LEAD_EMAILS = ["solar@nexprove.com"];
-export const FROM_EMAIL = "SolarBuilders.ng <noreply@nexprove.com>";
+export const LEAD_EMAILS = ["hello@solarbuildersng.com", "solar@nexprove.com"];
+export const FROM_EMAIL = "SolarBuilders.ng <noreply@solarbuildersng.com>";
 
 export function whatsappLink(text: string, number: string = CONTACT_WHATSAPP): string {
   return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
