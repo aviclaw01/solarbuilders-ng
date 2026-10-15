@@ -1,11 +1,13 @@
 import Link from "next/link";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
+import NotFoundTracker from "@/components/ui/NotFoundTracker";
 
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
+      <NotFoundTracker />
       <main>
       <div className="flex-1 flex items-center justify-center px-6 py-20">
         <div className="text-center max-w-md">

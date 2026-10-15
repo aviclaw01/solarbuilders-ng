@@ -251,8 +251,17 @@ export default async function AdminFunnelPage({ searchParams }: PageProps) {
   const financeOpenRows = rows.filter((r) => r.event === "finance_open");
   const financeClickRows = rows.filter((r) => r.event === "finance_click");
 
+  const viewRows = rows.filter((r) => r.event === "page_view");
+  const landingRows = viewRows.filter((r) => r.placement === "landing");
+  const actionRows = rows.filter((r) => r.event !== "page_view");
+  const byView = tally(viewRows, (r) => r.path);
+  const byLanding = tally(landingRows, (r) => r.path);
+  const byLandingSource = tally(landingRows, (r) => r.referrer_host ?? r.utm_source ?? "direct / app");
+  const byNotFound = tally(rows.filter((r) => r.event === "not_found"), (r) => r.path);
+  const byCta = tally(rows.filter((r) => r.event === "cta_click"), (r) => r.placement);
+
   const byEvent = tally(rows, (r) => r.event);
-  const byPath = tally(rows, (r) => r.path);
+  const byPath = tally(actionRows, (r) => r.path);
   const byPlacement = tally(whatsappRows, (r) => r.placement);
   const byReferrer = tally(rows, (r) => r.referrer_host);
   const byItem = tally(cartAddRows, (r) => r.item);
@@ -370,6 +379,41 @@ export default async function AdminFunnelPage({ searchParams }: PageProps) {
           {/* Breakdowns */}
           <div className="grid gap-4 lg:grid-cols-2">
             <BarCard
+              icon={<Activity className="w-4 h-4" />}
+              title="Most viewed pages"
+              subtitle={`${viewRows.length} page view${viewRows.length === 1 ? "" : "s"}`}
+              buckets={byView}
+              empty="No page views yet — tracking started 16 Oct 2026."
+            />
+            <BarCard
+              icon={<ExternalLink className="w-4 h-4" />}
+              title="Entry pages"
+              subtitle={`${landingRows.length} visit${landingRows.length === 1 ? "" : "s"} — the page a tab opened on`}
+              buckets={byLanding}
+              empty="No landings recorded yet."
+            />
+            <BarCard
+              icon={<ExternalLink className="w-4 h-4" />}
+              title="Where visits come from"
+              subtitle="Referrer (or utm_source) on the entry page"
+              buckets={byLandingSource}
+              empty="No landings recorded yet."
+            />
+            <BarCard
+              icon={<BarChart3 className="w-4 h-4" />}
+              title="Call-to-action clicks"
+              subtitle="cta_click by placement"
+              buckets={byCta}
+              empty="No CTA clicks recorded in this range."
+            />
+            <BarCard
+              icon={<AlertTriangle className="w-4 h-4" />}
+              title="Dead links hit (404)"
+              subtitle="Redirect the ones that repeat"
+              buckets={byNotFound}
+              empty="No 404s recorded in this range."
+            />
+            <BarCard
               icon={<MessageCircle className="w-4 h-4" />}
               title="WhatsApp clicks by placement"
               subtitle={`${whatsappRows.length} click${whatsappRows.length === 1 ? "" : "s"} — which spot on the site actually starts conversations`}
@@ -379,7 +423,7 @@ export default async function AdminFunnelPage({ searchParams }: PageProps) {
             <BarCard
               icon={<BarChart3 className="w-4 h-4" />}
               title="Busiest paths"
-              subtitle="All event types, by the page they fired on"
+              subtitle="Actions (not page views), by the page they fired on"
               buckets={byPath}
               empty="No events carried a path."
             />
