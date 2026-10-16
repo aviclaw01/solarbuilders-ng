@@ -58,6 +58,8 @@ const PRICE_GUIDE_LINKS: [string, string][] = [
   ['5kva-solar-system-price-nigeria', '5kVA solar system price, itemised'],
   ['10kva-solar-system-price-nigeria', '10kVA solar system price, itemised'],
   ['inverter-price-nigeria', 'Inverter prices, 1.5kVA to 10kVA'],
+  ['5kw-hybrid-inverter-price-nigeria', '5kW inverter prices: Deye, Growatt, Felicity and more'],
+  ['lithium-battery-brands-nigeria', 'Lithium battery brands compared per kWh'],
   ['lithium-battery-price-nigeria', 'Lithium battery prices: 5kWh, 10kWh, 15kWh'],
   ['how-many-batteries-for-5kva-inverter', 'How many batteries for a 5kVA inverter'],
   ['solar-panel-price-nigeria', 'Solar panel price per watt and per panel'],
