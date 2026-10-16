@@ -83,6 +83,9 @@ export default function HomePage() {
               Find my kit
               <ArrowRight className="w-5 h-5" aria-hidden="true" />
             </Link>
+            <Link href="/calculator" className="font-heading font-bold text-ink hover:text-sun-ink inline-flex items-center gap-1.5 min-h-12">
+              Size it from my appliances <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
             <Link href="/shop" className="font-heading font-bold text-ink hover:text-sun-ink inline-flex items-center gap-1.5 min-h-12">
               Shop equipment <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
@@ -107,7 +110,7 @@ export default function HomePage() {
             })}
             <li>
               <Link
-                href="/find?p=pick&s=pick"
+                href="/calculator"
                 className="flex items-center gap-3 rounded-card border border-line px-4 py-4 font-semibold text-ink hover:border-ink-soft transition-colors duration-150"
               >
                 <ListChecks className="w-5 h-5 text-ink-soft shrink-0" aria-hidden="true" />

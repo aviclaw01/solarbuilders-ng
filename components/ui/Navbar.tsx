@@ -25,10 +25,11 @@ const FAMILY = HEADLINE_PACKAGES[2];
 const TOP_COMPARISON = comparisonPairs()[0];
 
 /*
- * No plain top-level link for now. "Work with us" (/for-builders) recruits
- * installers, not buyers, so it moved to the footer's "Work with us" column.
- * NavbarClient still accepts a `plainLink` if one is needed again.
+ * The appliance calculator is the one tool that sizes a home from what it
+ * actually runs, so it sits in the bar itself rather than under a menu.
+ * "Work with us" (/for-builders) recruits installers, not buyers — footer.
  */
+const CALCULATOR_LINK = { href: '/calculator', label: 'Load calculator', hint: 'Your appliances → inverter, battery, panels, breakers' };
 
 const MENUS: MenuGroup[] = [
   {
@@ -91,5 +92,5 @@ const MENUS: MenuGroup[] = [
 ];
 
 export default function Navbar() {
-  return <NavbarClient menus={MENUS} />;
+  return <NavbarClient menus={MENUS} plainLink={CALCULATOR_LINK} />;
 }
