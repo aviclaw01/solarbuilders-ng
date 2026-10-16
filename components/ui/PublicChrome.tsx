@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import FloatingWhatsApp from './FloatingWhatsApp';
-import CookieConsent from './CookieConsent';
 
 /**
  * Site-wide floating chrome (WhatsApp bubble + cookie banner).
@@ -18,7 +17,6 @@ export default function PublicChrome() {
   return (
     <>
       {!focused && <FloatingWhatsApp />}
-      <CookieConsent />
     </>
   );
 }
