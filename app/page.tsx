@@ -119,7 +119,7 @@ export default function HomePage() {
 
         {/* ──────────────── TELL US WHAT YOU NEED ──────────────── */}
         <section aria-labelledby="need-home-title" className="px-4 sm:px-6 pb-16 md:pb-24">
-          <div className="on-dark max-w-5xl mx-auto bg-night rounded-panel px-5 py-10 sm:px-10 md:px-14 md:py-14 grid md:grid-cols-[1fr_1.35fr] gap-8 md:gap-12 items-start">
+          <div className="max-w-5xl mx-auto bg-night rounded-panel px-5 py-10 sm:px-10 md:px-14 md:py-14 grid md:grid-cols-[1fr_1.35fr] gap-8 md:gap-12 items-start">
             <div className="text-left">
               <p className="text-sm font-semibold text-sun">Not sure what to pick?</p>
               <h2 id="need-home-title" className="font-heading font-extrabold text-white text-title mt-3">
