@@ -14,61 +14,66 @@ import { SITE_URL } from '@/lib/site';
  *
  *  - PRICED: pages whose content is derived from the price catalogue.
  *  - EDITORIAL: prose we revised by hand; bump when the copy is rewritten.
+ *  - A blog post's own `updated` date (app/blog/articles.ts), when it has one.
+ *
+ * No changeFrequency or priority: Google ignores both, and the hand-set
+ * priorities said nothing a crawler could use.
+ *
+ * Deliberately absent, though still crawlable and linked from the footer:
+ * /changelog, /privacy, /contact (low-value on a low-authority site — they
+ * dilute crawl), /partners and /partners/[slug] (noindex while no partner is
+ * approved), /partners/status and /for-builders (noindex), /cart (noindex,
+ * personal to the visitor).
  */
 const PRICED = new Date(PRICES_LAST_UPDATED);
 const EDITORIAL = new Date('2026-09-15');
 
-type Freq = 'daily' | 'weekly' | 'monthly' | 'yearly';
-
-function page(path: string, priority: number, changeFrequency: Freq, lastModified: Date) {
-  return { url: `${SITE_URL}${path}`, lastModified, changeFrequency, priority };
+function page(path: string, lastModified: Date): MetadataRoute.Sitemap[number] {
+  return { url: `${SITE_URL}${path}`, lastModified };
 }
+
+/** Strip the legacy changeFrequency/priority fields the section helpers still emit. */
+function bare(entry: { url: string; lastModified: Date }): MetadataRoute.Sitemap[number] {
+  return { url: entry.url, lastModified: entry.lastModified };
+}
+
+const CITY_PATHS = [
+  '/solar/lagos',
+  '/solar/abuja',
+  '/solar/port-harcourt',
+  '/solar/kano',
+  '/solar/enugu',
+] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const core = [
-    page('', 1.0, 'weekly', PRICED),
-    page('/shop', 0.95, 'weekly', PRICED),
-    page('/find', 0.9, 'monthly', PRICED),
-    page('/calculator', 0.9, 'monthly', PRICED),
-    page('/brands', 0.9, 'weekly', PRICED),
-    page('/sizing', 0.85, 'monthly', PRICED),
-    page('/compare', 0.8, 'monthly', PRICED),
-    page('/blog', 0.8, 'weekly', EDITORIAL),
-    page('/how-it-works', 0.7, 'monthly', EDITORIAL),
-    page('/for-builders', 0.7, 'monthly', EDITORIAL),
-    page('/about', 0.6, 'monthly', EDITORIAL),
-    page('/verified', 0.6, 'monthly', EDITORIAL),
-    page('/partners', 0.7, 'weekly', EDITORIAL),
-    page('/changelog', 0.4, 'weekly', EDITORIAL),
-    page('/contact', 0.5, 'monthly', EDITORIAL),
-    page('/privacy', 0.2, 'yearly', new Date('2026-10-14')),
-    // /cart is deliberately absent — it is noindex and personal to the visitor.
-    // /partners/status is deliberately absent — it is noindex (an applicant's
-    // own lookup, not content a crawler should hold).
+    page('', PRICED),
+    page('/shop', PRICED),
+    page('/find', PRICED),
+    page('/calculator', PRICED),
+    page('/brands', PRICED),
+    page('/compare', PRICED),
+    page('/solar', PRICED),
+    page('/blog', EDITORIAL),
+    page('/how-it-works', EDITORIAL),
+    page('/about', EDITORIAL),
+    page('/verified', EDITORIAL),
   ];
-
-  const locations = [
-    ['/solar/lagos', 0.85],
-    ['/solar/abuja', 0.85],
-    ['/solar/port-harcourt', 0.85],
-    ['/solar/kano', 0.8],
-    ['/solar/enugu', 0.8],
-  ] as const;
 
   // Derived from the blog registry so a new post cannot be published without a
   // sitemap row. Two posts (solar-abuja-2026, solar-calculator-nigeria) were
   // live but absent from both this list and the blog index, which is what
   // happens when the same set of posts is maintained by hand in two places.
-  const articles = ARTICLES.map((a) => [`/blog/${a.slug}`, a.priority ?? (a.featured ? 0.75 : 0.7)] as const);
+  const articles = ARTICLES.map((a) => page(`/blog/${a.slug}`, a.updated ? new Date(a.updated) : EDITORIAL));
 
   return [
     ...core,
-    ...locations.map(([path, p]) => page(path, p, 'weekly', PRICED)),
-    ...articles.map(([path, p]) => page(path, p, 'monthly', EDITORIAL)),
-    ...BRANDS.map((brand) => page(`/brands/${brand.slug}`, 0.75, 'monthly', PRICED)),
-    ...comparisonPairs().map((pair) => page(`/compare/${pair.slug}`, 0.8, 'monthly', PRICED)),
-    ...sizingSitemapEntries(SITE_URL),
-    ...budgetSitemapEntries(SITE_URL),
-    faqSitemapEntry(SITE_URL),
+    ...CITY_PATHS.map((path) => page(path, PRICED)),
+    ...articles,
+    ...BRANDS.map((brand) => page(`/brands/${brand.slug}`, PRICED)),
+    ...comparisonPairs().map((pair) => page(`/compare/${pair.slug}`, PRICED)),
+    ...sizingSitemapEntries(SITE_URL).map(bare),
+    ...budgetSitemapEntries(SITE_URL).map(bare),
+    bare(faqSitemapEntry(SITE_URL)),
   ];
 }

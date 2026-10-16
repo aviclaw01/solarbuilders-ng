@@ -1,5 +1,5 @@
 import NavbarClient from '@/components/ui/NavbarClient';
-import type { MenuGroup, MenuItem } from '@/components/ui/navTypes';
+import type { MenuGroup } from '@/components/ui/navTypes';
 import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { comparisonPairs } from '@/lib/brands';
 import { SIZING_SCENARIOS } from '@/lib/sizing';
@@ -24,8 +24,11 @@ import { formatNairaShort } from '@/lib/quote';
 const FAMILY = HEADLINE_PACKAGES[2];
 const TOP_COMPARISON = comparisonPairs()[0];
 
-/** Sits beside the menus as a plain link — no dropdown, like Beam's "Our Customers". */
-const PLAIN_LINK: MenuItem = { href: '/for-builders', label: 'Work with us' };
+/*
+ * No plain top-level link for now. "Work with us" (/for-builders) recruits
+ * installers, not buyers, so it moved to the footer's "Work with us" column.
+ * NavbarClient still accepts a `plainLink` if one is needed again.
+ */
 
 const MENUS: MenuGroup[] = [
   {
@@ -73,7 +76,8 @@ const MENUS: MenuGroup[] = [
       { href: '/faq', label: 'FAQs', hint: 'Straight answers, no sales pitch' },
       { href: '/how-it-works', label: 'How it works' },
       { href: '/verified', label: 'How we vet installers' },
-      { href: '/partners', label: 'Verified partners', hint: 'The directory, and each partner\'s checks' },
+      // 'Verified partners' (/partners) returns once a partner is approved;
+      // an empty directory in the nav reads like the old fake marketplace.
       { href: '/blog/solar-loans-nigeria', label: 'Paying for it' },
     ],
     featured: {
@@ -87,5 +91,5 @@ const MENUS: MenuGroup[] = [
 ];
 
 export default function Navbar() {
-  return <NavbarClient menus={MENUS} plainLink={PLAIN_LINK} />;
+  return <NavbarClient menus={MENUS} />;
 }

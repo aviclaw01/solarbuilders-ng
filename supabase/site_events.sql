@@ -29,6 +29,13 @@ create table if not exists public.site_events (
 -- missing `item` here does not drop one field — it drops the whole event.
 alter table public.site_events add column if not exists item text;
 
+-- Session attribution (lib/track.ts attribution()): the first page of the visit
+-- and the external host it came from, attached to every event in that tab so a
+-- WhatsApp click or quote can be tied back to Bing / ChatGPT / a campaign.
+-- /api/track only sends these once ATTRIBUTION_COLUMNS_LIVE is true there.
+alter table public.site_events add column if not exists landing_path text;
+alter table public.site_events add column if not exists entry_ref text;
+
 create index if not exists site_events_created_at_idx on public.site_events (created_at desc);
 create index if not exists site_events_event_idx on public.site_events (event);
 create index if not exists site_events_quote_code_idx on public.site_events (quote_code);

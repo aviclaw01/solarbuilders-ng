@@ -19,18 +19,26 @@ import { getScenario } from '@/lib/sizing';
  * must therefore also appear here, or search engines will never find it.
  */
 
+// Each column is held to about six links so none of them turns into a wall.
 const POPULAR_SIZING: { slug: string; label: string }[] = [
   { slug: 'what-size-inverter-for-1-5hp-ac', label: 'For a 1.5HP AC' },
-  { slug: 'what-size-inverter-for-2hp-ac', label: 'For a 2HP AC' },
-  { slug: 'how-many-solar-panels-for-2-bedroom-flat', label: 'For a 2-bedroom flat' },
   { slug: 'how-many-solar-panels-for-3-bedroom-flat', label: 'For a 3-bedroom flat' },
   { slug: 'what-can-a-5kva-inverter-run', label: 'What 5kVA runs' },
-  { slug: 'solar-for-a-shop-in-nigeria', label: 'For a shop' },
+  { slug: 'what-size-solar-for-a-borehole-pump', label: 'For a borehole pump' },
 ].filter((entry) => getScenario(entry.slug));
 
-const POPULAR_COMPARISONS = ['deye-vs-felicity', 'felicity-vs-growatt', 'jinko-vs-longi']
+const POPULAR_COMPARISONS = ['growatt-vs-luxpower', 'deye-vs-growatt', 'deye-vs-felicity']
   .map((slug) => comparisonPairs().find((p) => p.slug === slug))
   .filter((p): p is NonNullable<typeof p> => Boolean(p));
+
+/** Only cities that have a page under app/solar/ — do not add one here first. */
+const CITIES: { href: string; label: string }[] = [
+  { href: '/solar/lagos', label: 'Lagos' },
+  { href: '/solar/abuja', label: 'Abuja' },
+  { href: '/solar/port-harcourt', label: 'Port Harcourt' },
+  { href: '/solar/kano', label: 'Kano' },
+  { href: '/solar/enugu', label: 'Enugu' },
+];
 
 const linkCls =
   'focus-ring rounded-sm text-slate-400 hover:text-white transition-colors block py-1.5 min-h-[32px]';
@@ -59,12 +67,12 @@ export default function Footer() {
     <footer className="on-dark bg-night text-slate-400 pt-16 md:pt-20 pb-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         {/* Brand + contact */}
-        <div className="grid grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr] gap-x-6 gap-y-10 lg:gap-10 mb-14">
-          <div className="col-span-2 lg:col-span-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-x-6 gap-y-10 lg:gap-10 mb-14">
+          <div className="col-span-2 sm:col-span-3 lg:col-span-1 lg:row-span-2">
             <Logo variant="horizontal" size="md" colorMode="dark" />
             <p className="text-sm text-slate-400 leading-relaxed mt-4 mb-5 max-w-xs">
-              We publish what solar actually costs in Nigeria, then buy it for you and put a vetted
-              installer on the job.
+              We publish what solar actually costs in Nigeria, then buy it for you and connect you with an
+              installer we have checked (CAC, past installs, references).
             </p>
             <address className="not-italic text-sm text-slate-400 leading-relaxed mb-3">
               <span className="flex items-start gap-2">
@@ -154,18 +162,29 @@ export default function Footer() {
             <li><Link href="/blog/solar-cost-nigeria-2026" className={linkCls}>What a system costs</Link></li>
           </Column>
 
+          <Column title="Solar by city">
+            <li><Link href="/solar" className={linkCls}>All cities</Link></li>
+            {CITIES.map((c) => (
+              <li key={c.href}>
+                <Link href={c.href} className={linkCls}>{c.label}</Link>
+              </li>
+            ))}
+          </Column>
+
           <Column title="Company">
             <li><Link href="/how-it-works" className={linkCls}>How it works</Link></li>
             <li><Link href="/faq" className={linkCls}>FAQs</Link></li>
             <li><Link href="/verified" className={linkCls}>How we vet installers</Link></li>
-            <li><Link href="/partners" className={linkCls}>Verified partners</Link></li>
             <li><Link href="/blog" className={linkCls}>Solar guides</Link></li>
             <li><Link href="/about" className={linkCls}>Our story</Link></li>
             <li><Link href="/contact" className={linkCls}>Contact</Link></li>
-            <li><Link href="/privacy" className={linkCls}>Privacy</Link></li>
-            <li><Link href="/for-builders" className={linkCls}>Work with us</Link></li>
+          </Column>
+
+          {/* Recruitment, not buying — out of the main nav. "Verified partners"
+              (/partners) comes back here once a partner is approved. */}
+          <Column title="Work with us">
+            <li><Link href="/for-builders" className={linkCls}>Installers &amp; vendors</Link></li>
             <li><Link href="/partners/status" className={linkCls}>Check an application</Link></li>
-            <li><Link href="/changelog" className={linkCls}>Changelog</Link></li>
           </Column>
         </div>
 
@@ -192,7 +211,11 @@ export default function Footer() {
               Nexprove
             </a>
           </p>
-          <p className="text-sm text-slate-400">Real solar prices &amp; quotes for Nigeria</p>
+          <p className="text-sm text-slate-400 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+            <Link href="/privacy" className="focus-ring rounded-sm hover:text-white transition-colors py-1.5">Privacy</Link>
+            <Link href="/changelog" className="focus-ring rounded-sm hover:text-white transition-colors py-1.5">Changelog</Link>
+            <span>Real solar prices &amp; quotes for Nigeria</span>
+          </p>
         </div>
       </div>
     </footer>

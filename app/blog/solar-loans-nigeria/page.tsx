@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNaira, formatNairaShort } from '@/lib/quote';
 import { getScenario, scenarioQuote } from '@/lib/sizing';
@@ -60,22 +61,9 @@ export default function SolarLoansPage() {
     { label: `Fintech personal loan, 18 months`, ...flatLoan(starter.total.best, ILLUSTRATIVE_FLAT_RATE_PCT.low, 18) },
   ];
 
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: 'Carbon, FairMoney, or Renmoney: Best Solar Loans in Nigeria 2026',
-    description:
-      'Solar financing options in Nigeria compared, with repayment maths run against two real, computed system prices.',
-    author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    datePublished: '2026-03-01',
-    dateModified: '2026-09-16',
-    url: `${SITE_URL}/blog/solar-loans-nigeria`,
-  };
-
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="solar-loans-nigeria" datePublished="2026-03-01" dateModified="2026-09-16" />
       <Navbar />
       <main>
       <article className="max-w-3xl mx-auto px-6 py-16">

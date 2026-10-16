@@ -258,7 +258,7 @@ export default function FindClient() {
   function chooseKit() {
     if (!quote) return;
     const t = quote.tiers[state.tier];
-    track('cart_add', { quoteCode: quote.code, tier: t.label, amount: t.total.best, placement: 'find' });
+    track('kit_chosen', { quoteCode: quote.code, tier: t.label, amount: t.total.best, placement: 'find' });
     router.push(`/cart?q=${quote.payload}&tier=${state.tier}&grid=${quote.grid}`);
   }
 

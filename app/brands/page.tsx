@@ -13,6 +13,7 @@ import {
   PANEL_WATTS,
 } from '@/lib/prices';
 import { formatNaira, formatNairaShort } from '@/lib/quote';
+import { SITE_URL } from '@/lib/site';
 
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import { Zap, MessageCircle } from 'lucide-react';
@@ -69,8 +70,26 @@ export default function BrandsPage() {
   const makers = manufacturers();
   const sellers = vendors();
 
+  // ItemList of every brand card on the page, in render order.
+  const listed = [
+    ...SECTIONS.flatMap((s) => makers.filter((b) => b.categories[0] === s.key)),
+    ...sellers,
+  ];
+  const itemList = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Solar brands and vendors priced in Nigeria',
+    itemListElement: listed.map((b, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: b.name,
+      url: `${SITE_URL}/brands/${b.slug}`,
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }} />
       <Navbar />
       <main>
 
@@ -126,7 +145,7 @@ export default function BrandsPage() {
           <h2 className="font-heading font-extrabold text-white text-2xl md:text-3xl mb-3">We do the buying</h2>
           <p className="text-slate-300 max-w-xl mx-auto mb-6">
             Size your system, get an itemised quote with a code, and send it to us. We confirm today&apos;s price, order the
-            equipment, and put a vetted installer on the job.
+            equipment, and connect you with an installer we have checked (CAC, past installs, references).
           </p>
           <Link href="/calculator" className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-full px-8 py-4 font-heading font-bold transition-colors">
             Get my itemised quote →

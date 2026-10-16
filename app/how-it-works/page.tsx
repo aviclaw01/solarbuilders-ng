@@ -3,8 +3,14 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import AnimatedSection from '@/components/ui/AnimatedSection';
-import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
-import { formatNairaShort } from '@/lib/quote';
+import {
+  HEADLINE_PACKAGES,
+  LABOUR_FLOOR,
+  LABOUR_PER_KVA,
+  PRICES_LAST_UPDATED_LABEL,
+  SOURCING_MARGIN_LABEL,
+} from '@/lib/prices';
+import { formatNaira, formatNairaShort } from '@/lib/quote';
 
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import { Calculator, FileText, MessageCircle, ClipboardCheck, Wallet, Wrench, ArrowRight } from 'lucide-react';
@@ -100,6 +106,28 @@ const faqJsonLd = {
   })),
 };
 
+/** Named in lib/prices.ts as the sellers whose live listings the constants were built from. */
+const PRICE_SOURCES = ['Felicity NG', 'Zit', 'Jumia', 'Jiji', 'Me3', 'Gennex', 'Solar Depot', 'Kasot', 'EnergyMall', 'Nature Solar', 'GoSolarMart', 'Abuja Solar', 'Solar Village'];
+
+const PRICING_POINTS = [
+  {
+    title: 'Prices come from Nigerian sellers, by name',
+    body: `Every figure is built from live listings we checked in ${PRICES_LAST_UPDATED_LABEL} at ${PRICE_SOURCES.join(', ')} and others. A range runs from the Alaba/Jiji bulk floor to the showroom price; the middle figure is what a buyer can actually get in Lagos or Abuja.`,
+  },
+  {
+    title: `Our fee is ${SOURCING_MARGIN_LABEL}, already inside the price`,
+    body: `We buy the equipment for you, and for that we add ${SOURCING_MARGIN_LABEL} to the market price we found. Every equipment price on the site already includes it, and it is not added again at checkout. Transport and installation are not part of it — they are quoted as their own lines.`,
+  },
+  {
+    title: 'Installation is not in the total',
+    body: `We don't employ installers, so we can't promise what one will charge. Your quote shows labour separately as a typical range — about ${formatNaira(LABOUR_PER_KVA.low)}–${formatNaira(LABOUR_PER_KVA.high)} per kVA, and from about ${formatNaira(LABOUR_FLOOR)} for a small job — so the installer's bill is not a surprise.`,
+  },
+  {
+    title: 'Prices move, so we confirm before you pay',
+    body: 'The naira and stock levels change prices week to week. Before anything is agreed we check today’s figure with the seller and tell you if it moved.',
+  },
+];
+
 const DELAYS = [75, 150, 225, 300, 450, 450] as const;
 
 export default function HowItWorksPage() {
@@ -162,7 +190,7 @@ export default function HowItWorksPage() {
               What it costs
             </h2>
             <p className="text-slate-500 text-lg mb-10 max-w-2xl">
-              Installed ranges from our quote engine, using vendor listings as of {PRICES_LAST_UPDATED_LABEL}.
+              Equipment ranges from our quote engine, using vendor listings as of {PRICES_LAST_UPDATED_LABEL}.
               Where you land inside a range depends on brand tier (Felicity vs Growatt vs Deye), your roof and your city.
             </p>
           </AnimatedSection>
@@ -190,9 +218,28 @@ export default function HowItWorksPage() {
               </table>
             </div>
             <p className="text-slate-500 text-sm mt-4">
-              Estimates, not final prices. Equipment carries 0% import duty and is VAT-exempt in Nigeria; labour is included in these ranges.
+              Estimates, not final prices. Equipment carries 0% import duty and is VAT-exempt in Nigeria. Installation labour is not included — see how we price below.
               We confirm today’s figure with the distributor before you pay.
             </p>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* How we price */}
+      <section id="pricing" className="scroll-mt-24 py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <AnimatedSection>
+            <h2 className="font-heading font-extrabold text-[#0F172A] text-3xl md:text-4xl mb-10">How we price</h2>
+          </AnimatedSection>
+          <AnimatedSection delay={150}>
+            <dl className="grid md:grid-cols-2 gap-4">
+              {PRICING_POINTS.map((p) => (
+                <div key={p.title} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                  <dt className="font-heading font-bold text-[#0F172A] text-lg">{p.title}</dt>
+                  <dd className="text-slate-500 leading-relaxed mt-2">{p.body}</dd>
+                </div>
+              ))}
+            </dl>
           </AnimatedSection>
         </div>
       </section>

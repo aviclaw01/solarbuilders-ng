@@ -38,6 +38,12 @@ export interface Article {
   featured?: boolean;
   /** Sitemap priority; defaults to 0.7 for posts without a stated one. */
   priority?: number;
+  /**
+   * ISO date (YYYY-MM-DD) the post's content was last materially revised.
+   * Drives the sitemap lastmod and the Article JSON-LD dateModified; leave it
+   * unset rather than bumping it for a typo.
+   */
+  updated?: string;
 }
 
 const PRICE_GUIDES: Article[] = [
@@ -166,7 +172,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: 'best-solar-inverter-nigeria',
-    title: 'The Best Solar Inverter in Nigeria, Ranked by What It Costs per kVA',
+    title: 'The Best Solar Inverters in Nigeria and Their Prices, Ranked by Cost per kVA',
     excerpt: 'Not an opinion piece. Every brand we track, ranked on measured ₦ per kVA, with how many Nigerian sellers carry it and what the manufacturer actually publishes.',
     readTime: '9 min read',
     date: 'September 2026',
@@ -216,7 +222,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: 'sell-solar-power-to-nepa-net-billing',
-    title: 'No, You Cannot Sell Solar Power to NEPA Yet',
+    title: 'Net Metering in Nigeria: Can You Sell Solar Power to NEPA?',
     excerpt: 'Net billing is real and starts at 50 kWp — around ten times a large home array. Who the 2026 regulations actually cover, and what homeowners should do instead.',
     readTime: '7 min read',
     date: 'September 2026',

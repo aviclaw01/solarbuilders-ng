@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNaira, formatNairaShort, formatRange } from '@/lib/quote';
 import { getScenario, scenarioQuote } from '@/lib/sizing';
@@ -63,22 +64,9 @@ export default function BandAVsSolarPage() {
 
   const main = rows[2];
 
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: TITLE,
-    description:
-      'The five-year cost of a Band A electricity bill in Nigeria, set against September 2026 solar system prices.',
-    author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    datePublished: '2026-09-16',
-    dateModified: '2026-09-16',
-    url: `${SITE_URL}/blog/band-a-tariff-vs-solar`,
-  };
-
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="band-a-tariff-vs-solar" datePublished="2026-09-16" dateModified="2026-09-16" />
       <Navbar />
       <main>
 

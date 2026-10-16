@@ -149,7 +149,7 @@ function capacityScenario(
   return {
     slug,
     question: `What can a ${kva}kVA inverter run in Nigeria?`,
-    h1: `What Can a ${kva}kVA Inverter Run?`,
+    h1: `What Can a ${kva}kVA Inverter Power? Appliances, Batteries & Price`,
     intro,
     appliances,
     category: "capacity",
@@ -183,7 +183,7 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
   {
     slug: "solar-for-fridge-and-freezer-only",
     question: "What size inverter and solar do I need for a fridge and a deep freezer?",
-    h1: "Solar for a Fridge and Deep Freezer Only",
+    h1: "Solar for a Deep Freezer in Nigeria: Size and Price",
     intro:
       "Plenty of Nigerian households want exactly one thing from solar: food that does not spoil when NEPA takes light for two days. A fridge and a freezer are small in watts but they run around the clock, so the battery matters far more than the inverter.",
     appliances: [a("refrigerator"), a("deep_freezer")],
@@ -193,7 +193,7 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
   {
     slug: "what-size-solar-for-a-borehole-pump",
     question: "What size solar and inverter do I need for a borehole pump?",
-    h1: "What Size Solar System for a Borehole Pump?",
+    h1: "What Size Solar System and Price for a Borehole Pump?",
     intro:
       "A borehole pump only runs long enough to fill the tank, so its daily energy is small — but it is a motor, and motors ask for several times their running watts in the first second. That surge, not the daily kWh, is what an undersized inverter fails on.",
     appliances: [a("water_pump")],
@@ -265,7 +265,7 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
   {
     slug: "how-many-solar-panels-for-3-bedroom-flat",
     question: "How many solar panels do I need for a 3 bedroom flat in Nigeria?",
-    h1: "How Many Solar Panels for a 3 Bedroom Flat?",
+    h1: "How Many Solar Panels for a 3 Bedroom Flat? Cost of Solar for a 3 Bedroom House",
     intro:
       "Three bedrooms, one 1.5HP AC in the master, two TVs, a fridge and a freezer, plus the laundry and ironing a family actually does. This is the size where roof space starts to matter as much as budget.",
     appliances: [

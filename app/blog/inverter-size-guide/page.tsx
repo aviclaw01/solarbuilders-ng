@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { INVERTER_BRANDS, LITHIUM_MODULE_KWH, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { buildQuote, formatNaira, type QuoteAppliance } from '@/lib/quote';
 import { getScenario, presetWatts, scenarioQuote, SIZING_RULES } from '@/lib/sizing';
@@ -19,18 +20,6 @@ export const metadata: Metadata = {
     type: 'article',
   },
   alternates: { canonical: `${SITE_URL}/blog/inverter-size-guide` },
-};
-
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: 'What Size Inverter Do I Need? A Nigerian Guide',
-  description: 'Step-by-step guide to choosing the right inverter size for your Nigerian home, priced from the same engine as the calculator.',
-  author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  datePublished: '2026-02-15',
-  dateModified: '2026-09-16',
-  url: `${SITE_URL}/blog/inverter-size-guide`,
 };
 
 // Appliance ids from lib/sizing.ts APPLIANCE_PRESETS — the exact wattages the
@@ -94,7 +83,7 @@ export default function InverterSizeGuidePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="inverter-size-guide" datePublished="2026-02-15" dateModified="2026-09-16" />
       <Navbar />
       <main>
       <article className="max-w-3xl mx-auto px-6 py-16">

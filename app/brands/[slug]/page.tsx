@@ -7,6 +7,7 @@ import {
   BRANDS,
   CATEGORY_LABEL,
   TIER_LABEL,
+  comparisonsFor,
   getBrand,
   vendorsFor,
   type Product,
@@ -15,10 +16,12 @@ import {
 import { formatNaira } from '@/lib/quote';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { SITE_URL } from '@/lib/site';
+import { getScenario } from '@/lib/sizing';
+import { slugify } from '@/lib/utils';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import BrandMark from '@/components/ui/BrandMark';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import { CheckCircle2, MessageCircle, Zap, Info, MapPin } from 'lucide-react';
+import { ArrowRight, CheckCircle2, MessageCircle, Zap, Info, MapPin } from 'lucide-react';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -71,6 +74,33 @@ function unitPrice(p: Product): string | null {
   return null;
 }
 
+/** "9 Oct 2026" from an ISO date, fixed to UTC so the static build is stable. */
+function checkedOn(iso: string): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  return Number.isNaN(d.getTime())
+    ? iso
+    : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
+/**
+ * The per-row WhatsApp prefill. Every figure comes from the row itself
+ * (lib/brands.ts, priced per lib/prices.ts) — nothing is added or rounded.
+ */
+function modelAsk(brandName: string, p: Product): string {
+  const listed = p.priceLow === p.priceHigh ? formatNaira(p.priceLow) : `${formatNaira(p.priceLow)}-${formatNaira(p.priceHigh)}`;
+  const n = p.seenAt.length;
+  return `Hi SolarBuilders, price check: ${brandName} ${p.model}, listed ${listed} at ${n} ${n === 1 ? 'seller' : 'sellers'} (checked ${checkedOn(p.seenOn)}). Is it in stock?`;
+}
+
+/** Sizing guides that answer the question a buyer of this category asks next. */
+const SIZING_FOR: Record<ProductCategory, string[]> = {
+  inverter: ['what-size-inverter-for-1-5hp-ac', 'what-size-inverter-for-2hp-ac'],
+  battery: ['solar-for-fridge-and-freezer-only', 'solar-for-lights-fans-and-tv-only'],
+  panel: ['how-many-solar-panels-for-1-bedroom-flat', 'how-many-solar-panels-for-3-bedroom-flat'],
+  controller: ['what-size-solar-for-a-borehole-pump'],
+  package: ['solar-for-lights-fans-and-tv-only', 'how-many-solar-panels-for-2-bedroom-flat'],
+};
+
 export default async function BrandPage({ params }: Props) {
   const { slug } = await params;
   const brand = getBrand(slug);
@@ -82,6 +112,12 @@ export default async function BrandPage({ params }: Props) {
   const byCategory = (['inverter', 'battery', 'panel', 'controller', 'package'] as ProductCategory[])
     .map((c) => ({ c, items: brand.products.filter((p) => p.category === c) }))
     .filter((g) => g.items.length > 0);
+
+  const comparisons = comparisonsFor(brand.slug);
+  const sizingLinks = [...new Set(byCategory.flatMap(({ c }) => SIZING_FOR[c]))]
+    .map(getScenario)
+    .filter((sc): sc is NonNullable<typeof sc> => !!sc)
+    .slice(0, 3);
 
   const waText = `Hi SolarBuilders, I'm interested in ${brand.name}${isMaker ? ' equipment' : ''}. Can you help me get a system built with it? ${SITE_URL}/brands/${brand.slug}`;
 
@@ -185,6 +221,13 @@ export default async function BrandPage({ params }: Props) {
                             <p className="font-semibold text-slate-900">{p.model}</p>
                             <p className="text-xs text-slate-500">{p.spec}</p>
                             {p.note && <p className="text-[11px] text-amber-700 mt-0.5">{p.note}</p>}
+                            <WhatsAppLink
+                              text={modelAsk(brand.name, p)}
+                              placement={`brand:${brand.slug}:${slugify(p.model).slice(0, 40)}`}
+                              className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#0E7568] hover:text-[#075E54] py-1"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5" aria-hidden="true" /> Ask about this model
+                            </WhatsAppLink>
                           </td>
                           <td className="p-3 text-right">
                             <p className="font-semibold text-slate-900 text-xs sm:text-sm">{priceCell(p)}</p>
@@ -212,6 +255,41 @@ export default async function BrandPage({ params }: Props) {
               {brand.pricesPublic
                 ? `${brand.name} doesn't list its own products here yet — see the brands it stocks on the right, or ask us.`
                 : `${brand.name} sells on quote only. Send us your system size and we'll get a price from them for you.`}
+            </section>
+          )}
+
+          {(comparisons.length > 0 || sizingLinks.length > 0) && (
+            <section>
+              <h2 className="font-heading font-bold text-slate-900 text-xl mb-3">
+                {comparisons.length > 0 ? 'Compared with' : 'Sizing guides'}
+              </h2>
+              {comparisons.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {comparisons.map((cmp) => (
+                    <Link
+                      key={cmp.slug}
+                      href={`/compare/${cmp.slug}`}
+                      className="text-sm bg-white border border-slate-200 hover:border-amber-400 rounded-full px-3 py-1.5 text-slate-700"
+                    >
+                      {cmp.a.name} vs {cmp.b.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {sizingLinks.length > 0 && (
+                <ul className="space-y-2">
+                  {sizingLinks.map((sc) => (
+                    <li key={sc.slug}>
+                      <Link
+                        href={`/sizing/${sc.slug}`}
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-amber-700"
+                      >
+                        {sc.h1} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
           )}
 
@@ -274,6 +352,18 @@ export default async function BrandPage({ params }: Props) {
       </div>
       </main>
       <Footer />
+
+      {/* Phones only. FloatingWhatsApp hides itself on phones on /brands/* so the two never stack. */}
+      <div className="md:hidden h-20" aria-hidden="true" />
+      <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-100 bg-white/95 backdrop-blur px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))]">
+        <WhatsAppLink
+          text={waText}
+          placement={`brand:${brand.slug}:sticky`}
+          className="w-full min-h-11 rounded-full bg-[#0E7568] hover:bg-[#075E54] text-white text-sm font-semibold flex items-center justify-center gap-2 px-4 transition-colors"
+        >
+          <MessageCircle className="w-4 h-4" aria-hidden="true" /> Price check on WhatsApp
+        </WhatsAppLink>
+      </div>
     </div>
   );
 }

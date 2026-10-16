@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { PANEL_WATTS, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatRange } from '@/lib/quote';
 import { getScenario, scenarioQuote } from '@/lib/sizing';
@@ -14,17 +15,18 @@ import {
 import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'No, You Cannot Sell Solar Power to NEPA Yet — Who Net Billing 2026 Actually Covers',
+  title: 'Net Metering in Nigeria: Can You Sell Solar Power to NEPA? (Net Billing 2026)',
   description:
     'NERC’s Net Billing Regulations 2026 let prosumers export surplus solar for credit — but only systems from 50 kWp to 1.5 MWp, several times the array on a large Nigerian home. Here is who qualifies, and what homeowners should do instead.',
   keywords: [
+    'net metering nigeria',
     'net billing nigeria',
     'sell solar power to disco',
     'can i sell electricity back to the grid nigeria',
     'nerc net billing regulations 2026',
   ],
   openGraph: {
-    title: 'No, You Cannot Sell Solar Power to NEPA Yet',
+    title: 'Net Metering in Nigeria: Can You Sell Solar Power to NEPA?',
     description: 'What the NERC Net Billing Regulations 2026 actually cover, and who they exclude.',
     url: `${SITE_URL}/blog/sell-solar-power-to-nepa-net-billing`,
     type: 'article',
@@ -74,6 +76,7 @@ export default function NetBillingPage() {
   return (
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <ArticleSchema slug="sell-solar-power-to-nepa-net-billing" datePublished="2026-09-16" />
       <Navbar />
       <main>
 

@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     type: 'website',
   },
   alternates: { canonical: 'https://solarbuildersng.com/for-builders' },
+  // A recruitment page for installers and vendors, not something a buyer
+  // searches for. Reached from the footer; kept out of the index and sitemap.
+  robots: { index: false, follow: true },
 };
 
 export default function ForBuildersPage() {

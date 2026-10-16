@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import {
   BOS_FRACTION,
   EQUIPMENT_VAT,
@@ -96,22 +97,9 @@ export default function SolarCostNigeriaPage() {
   const moduleUnit = LITHIUM_PER_KWH.mid.best * LITHIUM_MODULE_KWH;
   const spreadPct = Math.round(((PANEL_PER_WP.high - PANEL_PER_WP.low) / PANEL_PER_WP.low) * 100);
 
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: 'What a Nigerian Solar System Actually Costs — Every Component, Every Price',
-    description:
-      'Component-by-component Nigerian solar prices, dated and sourced: inverters per kVA, lithium per kWh, panels per Wp, plus balance of system and labour.',
-    author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    datePublished: '2026-03-01',
-    dateModified: PRICES_LAST_UPDATED,
-    url: `${SITE_URL}/blog/solar-cost-nigeria-2026`,
-  };
-
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="solar-cost-nigeria-2026" datePublished="2026-03-01" dateModified={PRICES_LAST_UPDATED} />
       <Navbar />
       <main>
 

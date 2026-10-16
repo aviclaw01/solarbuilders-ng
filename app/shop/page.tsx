@@ -158,6 +158,8 @@ return (
 
       </main>
       <Footer />
+      {/* room for the phone-only order bar in ShopClient, so it never covers the footer */}
+      <div className="md:hidden h-20" aria-hidden="true" />
     </div>
   );
 }

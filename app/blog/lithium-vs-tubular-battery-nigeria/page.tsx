@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { LITHIUM_MODULE_KWH, LITHIUM_PER_KWH, PRICES_LAST_UPDATED_LABEL, TUBULAR_200AH } from '@/lib/prices';
 import { buildQuote, formatNaira, formatNairaShort, formatRange } from '@/lib/quote';
 import { getScenario } from '@/lib/sizing';
@@ -96,6 +97,7 @@ export default function LithiumVsTubularPage() {
   return (
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <ArticleSchema slug="lithium-vs-tubular-battery-nigeria" datePublished="2026-09-16" />
       <Navbar />
       <main>
 

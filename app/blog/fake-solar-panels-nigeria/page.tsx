@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import {
   EQUIPMENT_VAT,
   INVERTER_PER_KVA,
@@ -101,6 +102,7 @@ export default function FakeSolarPanelsPage() {
   return (
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <ArticleSchema slug="fake-solar-panels-nigeria" datePublished="2026-09-16" />
       <Navbar />
       <main>
 
