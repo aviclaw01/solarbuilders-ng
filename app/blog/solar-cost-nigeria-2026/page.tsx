@@ -52,6 +52,18 @@ export const metadata: Metadata = {
 
 const TIERS: InverterTier[] = ['budget', 'mid', 'premium'];
 
+/** The computed price guides, linked from here so this hub page passes authority to each one. */
+const PRICE_GUIDE_LINKS: [string, string][] = [
+  ['3-5kva-solar-system-price-nigeria', '3.5kVA solar system price, itemised'],
+  ['5kva-solar-system-price-nigeria', '5kVA solar system price, itemised'],
+  ['10kva-solar-system-price-nigeria', '10kVA solar system price, itemised'],
+  ['inverter-price-nigeria', 'Inverter prices, 1.5kVA to 10kVA'],
+  ['lithium-battery-price-nigeria', 'Lithium battery prices: 5kWh, 10kWh, 15kWh'],
+  ['how-many-batteries-for-5kva-inverter', 'How many batteries for a 5kVA inverter'],
+  ['solar-panel-price-nigeria', 'Solar panel price per watt and per panel'],
+  ['solar-installation-cost-nigeria', 'Solar installation cost, and what a quote must show'],
+];
+
 /** Link a brand name to its page where we have one — a name with no page is still a real name. */
 function BrandList({ names }: { names: string[] }) {
   return (
@@ -383,6 +395,18 @@ export default function SolarCostNigeriaPage() {
               how to check your installer is qualified
             </Link>.
           </p>
+
+          <h2 className="font-heading font-bold text-2xl mt-10 mb-4">Price guides by size and by component</h2>
+          <p className="text-[#64748B] leading-relaxed">
+            The same numbers, worked through for the questions people actually search for:
+          </p>
+          <ul className="space-y-2 text-[#64748B] list-disc pl-5">
+            {PRICE_GUIDE_LINKS.map(([slug, label]) => (
+              <li key={slug}>
+                <Link href={`/blog/${slug}`} className="text-[#B45309] font-semibold hover:underline">{label}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="mt-12 bg-[#FEF3C7] rounded-2xl p-8">

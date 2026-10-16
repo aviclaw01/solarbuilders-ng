@@ -7,10 +7,25 @@
  * sitemap kept its own copy. Add a post here and it appears in both.
  */
 import { BAND_A_TARIFF } from '@/lib/energy-costs';
-import { formatNaira } from '@/lib/quote';
+import { formatNaira, formatNairaShort } from '@/lib/quote';
+import { HEADLINE_PACKAGES, LITHIUM_MODULE_KWH, LITHIUM_PER_KWH, PANEL_PER_WP } from '@/lib/prices';
+import { PRICE_GUIDE_TITLES, PRICE_MONTH, type PriceGuideSlug } from './_lib/price-guides';
 
 /** Rendered once so both excerpts quoting the tariff move with the source. */
 const BAND_A = `${formatNaira(BAND_A_TARIFF.low)}\u2013${formatNaira(BAND_A_TARIFF.high)} per kWh`;
+
+const pkg = (prefix: string) => HEADLINE_PACKAGES.find((p) => p.label.startsWith(prefix));
+const pkgRange = (prefix: string) => {
+  const p = pkg(prefix);
+  return p ? `${formatNairaShort(p.low)}\u2013${formatNairaShort(p.high)}` : 'a dated, itemised range';
+};
+
+const PRICING_TAG = { tag: 'Costs & Pricing', tagColor: 'bg-blue-50 text-blue-700 border-blue-200' };
+
+/** The computed price guides. Titles come from one map so the post and the index agree. */
+function priceGuide(slug: PriceGuideSlug, excerpt: string, readTime: string): Article {
+  return { slug, title: PRICE_GUIDE_TITLES[slug], excerpt, readTime, date: PRICE_MONTH, ...PRICING_TAG, featured: false };
+}
 
 export interface Article {
   slug: string;
@@ -30,6 +45,49 @@ export interface Article {
    */
   updated?: string;
 }
+
+const PRICE_GUIDES: Article[] = [
+  priceGuide(
+    '5kva-solar-system-price-nigeria',
+    `${pkgRange('5kVA')} before installation, then every line of it: inverter, lithium, panels, protection, contingency and the installer's labour, at three brand classes.`,
+    '8 min read',
+  ),
+  priceGuide(
+    'solar-panel-price-nigeria',
+    `${formatNaira(PANEL_PER_WP.low)}\u2013${formatNaira(PANEL_PER_WP.high)} per watt for Tier-1 mono panels, and what that makes a 450W, 550W, 600W or 650W panel cost.`,
+    '7 min read',
+  ),
+  priceGuide(
+    'lithium-battery-price-nigeria',
+    `One, two and three 48V modules at every brand class — from ${formatNairaShort(LITHIUM_PER_KWH.budget.low * LITHIUM_MODULE_KWH)} for a single budget module — and the cost per usable kWh against tubular.`,
+    '8 min read',
+  ),
+  priceGuide(
+    'how-many-batteries-for-5kva-inverter',
+    'A table you can read across: your load, the hours you want, the kWh that needs, and how many lithium modules or tubular batteries that is — costed.',
+    '7 min read',
+  ),
+  priceGuide(
+    '3-5kva-solar-system-price-nigeria',
+    'The smallest system that runs one AC, priced line by line at three brand classes, and why small inverters cost more per kVA.',
+    '7 min read',
+  ),
+  priceGuide(
+    '10kva-solar-system-price-nigeria',
+    `${pkgRange('8\u201310kVA')} before installation for a large home with two or three ACs, itemised — plus one 10kVA against two 5kVAs in parallel.`,
+    '8 min read',
+  ),
+  priceGuide(
+    'inverter-price-nigeria',
+    'Hybrid inverter prices from 1.5kVA to 10kVA at budget, mid and premium class, computed per kVA, with the small-inverter premium shown.',
+    '7 min read',
+  ),
+  priceGuide(
+    'solar-installation-cost-nigeria',
+    'What installers charge per kVA, the protection gear a proper install needs, the contingency line, and the eight things a quote must itemise.',
+    '8 min read',
+  ),
+];
 
 export const ARTICLES: Article[] = [
   {
@@ -210,4 +268,5 @@ export const ARTICLES: Article[] = [
     tag: 'Sizing',
     tagColor: 'bg-amber-50 text-amber-800 border-amber-200',
   },
+  ...PRICE_GUIDES,
 ];
