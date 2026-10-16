@@ -12,6 +12,10 @@
  */
 
 export type TrackEvent =
+  | "page_view" // every route change; placement "landing" on a tab's first view
+  | "not_found" // a 404 was rendered — path is the dead URL
+  | "cta_click" // a primary call-to-action; placement names which one
+  | "need_submit" // homepage "tell us what you need" form sent
   | "whatsapp_click" // any WhatsApp button, anywhere on the site
   | "quote_generated" // calculator produced a quote card
   | "quote_download" // PDF or image saved

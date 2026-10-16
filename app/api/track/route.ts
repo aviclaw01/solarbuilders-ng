@@ -7,6 +7,10 @@
  */
 
 const EVENTS = new Set([
+  "page_view",
+  "not_found",
+  "cta_click",
+  "need_submit",
   "whatsapp_click",
   "quote_generated",
   "quote_download",
