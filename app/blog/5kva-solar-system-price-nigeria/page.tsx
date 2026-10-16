@@ -39,7 +39,9 @@ import {
 const SLUG = '5kva-solar-system-price-nigeria';
 const TITLE = PRICE_GUIDE_TITLES[SLUG];
 const PKG = headlinePackage('5kVA');
-const DESCRIPTION = `A 5kVA solar system with 10kWh of lithium costs ${formatNairaShort(PKG.low)}–${formatNairaShort(PKG.high)} in Nigeria before installation. Inverter, battery, panels, protection and labour priced line by line, checked ${PRICES_LAST_UPDATED_LABEL}.`;
+/** The engine's battery for this load, so the description and the answer cannot disagree. */
+const BATTERY_KWH = num(buildFor(tierBuilds(LOAD_5KVA, 5), 'mid').t.batteryKwh);
+const DESCRIPTION = `A 5kVA solar system with ${BATTERY_KWH}kWh of lithium costs ${formatNairaShort(PKG.low)}–${formatNairaShort(PKG.high)} in Nigeria before installation. Inverter, battery, panels, protection and labour priced line by line, checked ${PRICES_LAST_UPDATED_LABEL}.`;
 
 export const metadata: Metadata = {
   title: TITLE,

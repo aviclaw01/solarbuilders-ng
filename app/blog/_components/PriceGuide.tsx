@@ -209,7 +209,8 @@ export function PriceGuideShell({
     author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
     publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
     datePublished,
-    dateModified: PRICES_LAST_UPDATED,
+    // A guide published after the last price check was not modified before it was published.
+    dateModified: PRICES_LAST_UPDATED > datePublished ? PRICES_LAST_UPDATED : datePublished,
     url,
   };
   const faqSchema = {

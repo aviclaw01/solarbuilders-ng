@@ -16,6 +16,9 @@ const TITLE = PRICE_GUIDE_TITLES[SLUG];
 
 const SIZES = [1.5, 2.5, 3.5, 5, 8, 10];
 
+/** "Growatt, Luxpower, Must and Solis" — read from the catalogue so the copy moves with it. */
+const MID_BRANDS = new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(INVERTER_BRANDS.mid);
+
 /** Inverter price at a size and class: per-kVA price × kVA × the small-inverter factor. */
 function inverterPrice(tier: (typeof TIERS)[number], kva: number) {
   return scaleRange(INVERTER_PER_KVA[tier], kva * inverterSizeFactor(kva));
@@ -38,7 +41,7 @@ export default function InverterPricePage() {
   const faqs: Faq[] = [
     {
       q: 'How much is a 5kVA inverter in Nigeria?',
-      a: `${formatNaira(FIVE_MID.low)}–${formatNaira(FIVE_MID.high)} for a mid-class hybrid (Growatt, Luxpower, Must, Solis class), typically ${formatNaira(FIVE_MID.best)}. Budget class is typically ${formatNaira(inverterPrice('budget', 5).best)}, premium ${formatNaira(inverterPrice('premium', 5).best)}.`,
+      a: `${formatNaira(FIVE_MID.low)}–${formatNaira(FIVE_MID.high)} for a mid-class hybrid (${MID_BRANDS} class), typically ${formatNaira(FIVE_MID.best)}. Budget class is typically ${formatNaira(inverterPrice('budget', 5).best)}, premium ${formatNaira(inverterPrice('premium', 5).best)}.`,
     },
     {
       q: 'Hybrid or off-grid inverter?',
@@ -91,7 +94,7 @@ export default function InverterPricePage() {
       <H2>Mid-class hybrid inverter prices, 1.5kVA to 10kVA</H2>
       <P>
         Each row is the per-kVA price for the class times the size, with the small-inverter premium applied below 5kVA.
-        Mid class is Growatt, Luxpower, Must and Solis — the class most Nigerian homes buy.
+        Mid class is {MID_BRANDS} — the class most Nigerian homes buy.
       </P>
       <PriceTable
         itemHeader="Mid-class hybrid"
