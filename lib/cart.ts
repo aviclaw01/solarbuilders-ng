@@ -189,7 +189,10 @@ export function cartFromQuoteTier(tier: TierQuote): QuoteMatch {
   const unmatched: string[] = [];
 
   // Inverter — one unit, matched on kVA within the tier's brand class
-  const inverterPool = inCategory("inverter", tier.inverterTier);
+  // A brand the buyer chose on the quote card is the only pool for that line.
+  const own = (category: ProductCategory, slug?: string) => (slug ? inCategory(category).filter((i) => i.brand.slug === slug) : []);
+  const chosenInverters = own("inverter", tier.options.inverterBrand);
+  const inverterPool = chosenInverters.length ? chosenInverters : inCategory("inverter", tier.inverterTier);
   const inverter = bestFit(inverterPool.length ? inverterPool : inCategory("inverter"), tier.inverterKva);
   if (inverter) lines.push({ brandSlug: inverter.brand.slug, model: inverter.product.model, qty: 1 });
   else unmatched.push(`${tier.inverterKva}kVA hybrid inverter`);
@@ -200,9 +203,10 @@ export function cartFromQuoteTier(tier: TierQuote): QuoteMatch {
     // separate purchases. Try the tier's own brands first, but fall back to the
     // whole catalogue rather than forcing a 14kWh pack onto a 10kWh requirement.
     const MODULE_KWH = 5;
+    const chosenPick = bestFit(own("battery", tier.options.batteryBrand), MODULE_KWH);
     const tierPick = bestFit(inCategory("battery", tier.inverterTier), MODULE_KWH);
     const oversized = tierPick && (tierPick.product.kwh ?? 0) > MODULE_KWH * 1.5;
-    const battery = !tierPick || oversized ? bestFit(inCategory("battery"), MODULE_KWH) ?? tierPick : tierPick;
+    const battery = chosenPick ?? (!tierPick || oversized ? bestFit(inCategory("battery"), MODULE_KWH) ?? tierPick : tierPick);
     if (battery) {
       const each = battery.product.kwh ?? 5;
       lines.push({
@@ -219,7 +223,7 @@ export function cartFromQuoteTier(tier: TierQuote): QuoteMatch {
   }
 
   // Panels — match on watts, then scale the count so total Wp still lands
-  const panel = bestFit(inCategory("panel"), tier.panelWatts);
+  const panel = bestFit(own("panel", tier.options.panelBrand), tier.panelWatts) ?? bestFit(inCategory("panel"), tier.panelWatts);
   if (panel) {
     const each = panel.product.watts ?? tier.panelWatts;
     const totalWp = tier.panelCount * tier.panelWatts;

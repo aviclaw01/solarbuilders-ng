@@ -4,6 +4,7 @@ import Footer from '@/components/ui/Footer';
 import CalculatorClient from './CalculatorClient';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { budgetLookupData } from '@/lib/budget';
+import { liteCatalogue } from '@/lib/catalogue-lite';
 
 export const metadata: Metadata = {
   title: 'Solar System Size Calculator for Nigeria — Free, No Sign-up',
@@ -29,5 +30,5 @@ export const metadata: Metadata = {
  * prices dozens of quotes, none of which the visitor needs to download.
  */
 export default function CalculatorPage() {
-  return <CalculatorClient navbar={<Navbar />} footer={<Footer />} budgetData={budgetLookupData()} />;
+  return <CalculatorClient navbar={<Navbar />} footer={<Footer />} budgetData={budgetLookupData()} catalogue={liteCatalogue()} />;
 }
