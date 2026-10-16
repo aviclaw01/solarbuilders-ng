@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import LeadButton from '@/components/ui/LeadButton';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
@@ -79,13 +80,13 @@ export default function HomePage() {
           </h1>
           <p className="text-lead text-muted max-w-2xl mx-auto mt-6">Pick your home, see your kit and the price. Free, no sign-up.</p>
           <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
-            <Link href="/find" className="btn btn-sun btn-lg w-full sm:w-auto">
-              Find my kit
+            <LeadButton kind="chooser" placement="hero" className="btn btn-sun btn-lg w-full sm:w-auto">
+              Get a quote
               <ArrowRight className="w-5 h-5" aria-hidden="true" />
-            </Link>
-            <Link href="/calculator" className="font-heading font-bold text-ink hover:text-sun-ink inline-flex items-center gap-1.5 min-h-12">
-              Size it from my appliances <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
+            </LeadButton>
+            <LeadButton kind="contact" placement="hero" className="btn btn-outline btn-lg w-full sm:w-auto">
+              Contact us now
+            </LeadButton>
             <Link href="/shop" className="font-heading font-bold text-ink hover:text-sun-ink inline-flex items-center gap-1.5 min-h-12">
               Shop equipment <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
@@ -246,10 +247,10 @@ export default function HomePage() {
               ))}
             </ul>
             <div className="mt-10 text-center">
-              <Link href="/find" className="btn btn-sun btn-lg w-full sm:w-auto">
-                Find my kit
+              <LeadButton kind="chooser" placement="home_packages" className="btn btn-sun btn-lg w-full sm:w-auto">
+                Get a quote
                 <ArrowRight className="w-5 h-5" aria-hidden="true" />
-              </Link>
+              </LeadButton>
             </div>
           </div>
         </section>

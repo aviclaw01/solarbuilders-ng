@@ -1,3 +1,4 @@
+import { appendToSheet } from "@/lib/sheets";
 import {
   rateLimit,
   clientIp,
@@ -93,6 +94,8 @@ export async function POST(req: Request) {
     payload: { page, placement, utm },
   });
 
+  const sheet = await appendToSheet({ type: "need", phone, location: state, details: message, page });
+
   let emailed = false;
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
@@ -113,7 +116,7 @@ export async function POST(req: Request) {
     console.warn("[need] RESEND_API_KEY not set — message NOT emailed");
   }
 
-  if (!emailed && !stored) {
+  if (!emailed && !stored && !sheet) {
     return fail("We couldn't record that just now. Please try again in a minute, or message us on WhatsApp.", 500);
   }
 

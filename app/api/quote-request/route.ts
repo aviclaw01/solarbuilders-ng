@@ -1,3 +1,4 @@
+import { appendToSheet } from "@/lib/sheets";
 import {
   rateLimit,
   clientIp,
@@ -177,5 +178,17 @@ export async function POST(req: Request) {
     }
   }
 
-  return Response.json({ ok: true, emailed, stored, reference: ref });
+  const sheet = await appendToSheet({
+    type: "quote_request",
+    ref: `${ref} / ${quoteCode}`,
+    name,
+    phone,
+    email: email ?? null,
+    location,
+    details: [tier, note].filter(Boolean).join(" · ") || null,
+    amount: totalBest,
+    page: quoteUrl,
+  });
+
+  return Response.json({ ok: true, emailed, stored, sheet, reference: ref });
 }

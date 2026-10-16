@@ -112,6 +112,9 @@ async function fetchEvents(sinceIso: string): Promise<FetchResult> {
     limit: String(MAX_ROWS),
   });
   params.set("created_at", `gte.${sinceIso}`);
+  // Raw clicks and page exits belong to /admin/journeys; here they would crowd
+  // the funnel events out of the row cap.
+  params.set("event", "not.in.(click,page_exit)");
 
   let res: Response;
   try {

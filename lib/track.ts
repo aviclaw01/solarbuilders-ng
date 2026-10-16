@@ -6,9 +6,11 @@
  * quotes get downloaded — the numbers we need before claiming anything about
  * lead volume.
  *
- * Deliberately minimal: no cookies, no third-party script, no device or
- * personal identifiers. Only the event name, the page it happened on, the
- * quote code/tier if relevant, and campaign params already in the URL.
+ * No cookies, no third-party script, nothing personal. To follow a visit from
+ * page to page (where people drop off) each event carries two random ids made
+ * here in the browser: a session id (this tab, sessionStorage) and a visitor id
+ * (this browser, localStorage, so a return visit counts as the same person).
+ * Neither is linked to a name, phone or device.
  */
 
 export type TrackEvent =
@@ -29,7 +31,13 @@ export type TrackEvent =
   | "order_form_open"
   | "order_submit"
   | "find_persona" // /find step 1 — placement is the persona key, or "pick"
-  | "find_hours"; // /find step 2 — placement is the hours-off tile, e.g. "12h"
+  | "find_hours" // /find step 2 — placement is the hours-off tile, e.g. "12h"
+  | "click" // any link or button; label = its text, target = where it goes
+  | "page_exit" // leaving a page; value = seconds on it, placement = "scroll:NN" max depth
+  | "prompt_shown" // the "setting up solar?" prompt appeared
+  | "chooser_open" // "Get a quote" chooser opened; placement = which button
+  | "contact_open" // "Contact us now" form opened
+  | "contact_submit"; // contact form sent → WhatsApp opened
 
 export interface TrackPayload {
   quoteCode?: string;
@@ -41,6 +49,13 @@ export interface TrackPayload {
   /** where the click happened, e.g. "floating", "quote_card", "brand:deye" */
   placement?: string;
   format?: string;
+  /** visible text of what was clicked */
+  label?: string;
+  /** where the click goes: a path, an external host, or "button" */
+  target?: string;
+  value?: number;
+  /** page the event belongs to, when it is no longer the current one (page_exit) */
+  path?: string;
 }
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign"] as const;
@@ -54,6 +69,52 @@ interface Attribution {
 }
 
 const ATTR_KEY = "sb_attr";
+const SESSION_KEY = "sb_sid";
+const VISITOR_KEY = "sb_vid";
+/** A visit ends after 30 minutes with no event, even if the tab stays open. */
+const SESSION_IDLE_MS = 30 * 60 * 1000;
+
+function randomId(): string {
+  try {
+    return crypto.randomUUID().replace(/-/g, "").slice(0, 16);
+  } catch {
+    return Math.random().toString(36).slice(2, 18);
+  }
+}
+
+/** Visit and browser ids; null when storage is blocked (private mode). */
+function ids(): { session_id: string | null; visitor_id: string | null } {
+  let session_id: string | null = null;
+  let visitor_id: string | null = null;
+  try {
+    const now = Date.now();
+    const raw = window.sessionStorage.getItem(SESSION_KEY);
+    const [sid, at] = raw ? raw.split(":") : [];
+    session_id = sid && now - Number(at) < SESSION_IDLE_MS ? sid : randomId();
+    window.sessionStorage.setItem(SESSION_KEY, `${session_id}:${now}`);
+  } catch {
+    /* storage blocked */
+  }
+  try {
+    visitor_id = window.localStorage.getItem(VISITOR_KEY);
+    if (!visitor_id) {
+      visitor_id = randomId();
+      window.localStorage.setItem(VISITOR_KEY, visitor_id);
+    }
+  } catch {
+    /* storage blocked */
+  }
+  return { session_id, visitor_id };
+}
+
+/** Staff browsers (anyone who opened /admin) are left out of the numbers. */
+function isStaff(): boolean {
+  try {
+    return window.localStorage.getItem("sb_admin_viewer") !== null;
+  } catch {
+    return false;
+  }
+}
 
 function urlCampaign(): Partial<Record<UtmKey, string>> {
   const out: Partial<Record<UtmKey, string>> = {};
@@ -124,6 +185,7 @@ function campaign(attr: Attribution): Partial<Record<UtmKey, string>> {
 export function track(event: TrackEvent, payload: TrackPayload = {}): void {
   if (typeof window === "undefined") return;
   try {
+    if (isStaff()) return;
     const attr = attribution();
     const body = JSON.stringify({
       event,
@@ -131,6 +193,7 @@ export function track(event: TrackEvent, payload: TrackPayload = {}): void {
       referrer: referrerHost() ?? undefined,
       landing_path: attr.landing_path ?? undefined,
       entry_ref: attr.entry_ref ?? undefined,
+      ...ids(),
       ...campaign(attr),
       ...payload,
     });
