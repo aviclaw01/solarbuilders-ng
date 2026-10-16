@@ -48,21 +48,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // the tagline and was cut mid-sentence; it ranked 4–5 and got no clicks.
   const from = brand.products.length ? Math.min(...brand.products.map((p) => p.priceLow)) : null;
   const cats = [...new Set(brand.products.map((p) => CATEGORY_LABEL[p.category].toLowerCase()))].join(', ');
-  // Titles follow the query wording observed in search,
-  // keyed off the maker's primary category — the same one /brands groups by.
-  const primary = brand.kind === 'manufacturer' ? brand.categories[0] : undefined;
-  const title =
-    primary === 'inverter'
-      ? `${brand.name} Inverter Price in Nigeria (${PRICES_LAST_UPDATED_LABEL})`
-      : primary === 'panel'
-        ? `${brand.name} Solar Panel Price in Nigeria, per Watt (${PRICES_LAST_UPDATED_LABEL})`
-        : primary === 'battery'
-          ? `${brand.name} Lithium Battery Price in Nigeria`
-          : from
-            ? `${what} — from ${formatNaira(from)} (${PRICES_LAST_UPDATED_LABEL})`
-            : `${what} (${PRICES_LAST_UPDATED_LABEL})`;
   return {
-    title,
+    title: from ? `${what} — from ${formatNaira(from)} (${PRICES_LAST_UPDATED_LABEL})` : `${what} (${PRICES_LAST_UPDATED_LABEL})`,
     description: from
       ? `${brand.name} ${cats} in Nigeria from ${formatNaira(from)}. ${brand.products.length} models priced ${PRICES_LAST_UPDATED_LABEL}. ${brand.tagline}. Add it to your order and we source it.`
       : `${brand.tagline}. ${brand.description.slice(0, 120)}…`,
