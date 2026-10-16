@@ -28,13 +28,11 @@ const EVENTS = new Set([
 ]);
 
 /**
- * site_events.landing_path / entry_ref are declared in supabase/site_events.sql
- * but the ALTER has NOT been applied to the live table yet. PostgREST rejects a
- * payload naming an unknown column and drops the whole event, so these stay
- * out of the insert until the migration is run. Flip to true in the same
- * commit as confirming the columns exist (node scripts/check-db-columns.mjs --live).
+ * site_events.landing_path / entry_ref exist on the live table (applied 2026-10-16).
+ * PostgREST drops the whole event if a payload names an unknown column, so set
+ * this back to false if those columns are ever removed.
  */
-const ATTRIBUTION_COLUMNS_LIVE = false;
+const ATTRIBUTION_COLUMNS_LIVE = true;
 
 /** Only the real site may write events; anything else is a script or a scraper. */
 const ALLOWED_HOSTS = new Set(["solarbuildersng.com", "www.solarbuildersng.com"]);
