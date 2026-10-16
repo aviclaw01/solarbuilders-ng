@@ -369,9 +369,15 @@ function listing(p: LiteProduct): PriceRange {
   return { low: p.low, best: Math.round((p.low + p.high) / 2 / 100) * 100, high: p.high };
 }
 
-/** That brand's smallest inverter that covers the size; else its largest. */
+/**
+ * That brand's smallest inverter that covers the size; else its largest. The
+ * line is a hybrid inverter, so at each size a model sold as a hybrid beats a
+ * cheaper plain off-grid one; those are used only when the brand lists no hybrid.
+ */
 function pickInverter(c: LiteCatalogue, slug: string, kva: number): LiteProduct | null {
-  const own = c.inverter.filter((p) => p.slug === slug).sort((a, b) => a.size - b.size || a.low - b.low);
+  const all = c.inverter.filter((p) => p.slug === slug);
+  const hybrids = all.filter((p) => /hybrid/i.test(p.spec));
+  const own = (hybrids.length ? hybrids : all).sort((a, b) => a.size - b.size || a.low - b.low);
   return own.find((p) => p.size >= kva) ?? own[own.length - 1] ?? null;
 }
 
