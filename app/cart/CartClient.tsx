@@ -554,7 +554,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
           <ol className="grid grid-cols-3 gap-2 text-[11px] leading-snug text-slate-600" aria-label="What happens next">
             {[
               'You send it',
-              'We confirm today\u2019s price with the seller in writing',
+              'We confirm today\u2019s price with the seller',
               'You decide, nothing to pay now',
             ].map((step, i) => (
               <li key={step} className="border border-slate-100 rounded-xl p-2.5">
