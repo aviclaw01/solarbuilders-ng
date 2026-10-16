@@ -5,15 +5,19 @@ import { track } from '@/lib/track';
 import { CONTACT_WHATSAPP } from '@/lib/site';
 
 export default function FloatingWhatsApp() {
+  const pathname = usePathname();
   // The calculator has its own sticky action bar; the bubble sat on top of it.
-  if (usePathname() === '/calculator') return null;
+  // Brand pages carry per-model WhatsApp links plus their own sticky bar.
+  if (pathname === '/calculator' || pathname.startsWith('/brands/')) return null;
+  // /shop has a phone-only order bar with its own WhatsApp button.
+  const phoneHidden = pathname === '/shop' ? ' max-md:hidden' : '';
   return (
     <a
       href={`https://wa.me/${CONTACT_WHATSAPP}?text=Hi%2C%20I%20need%20help%20finding%20a%20solar%20installer`}
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => track('whatsapp_click', { placement: 'floating' })}
-      className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-[#0E7568] hover:bg-[#075E54] text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+      className={`fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-[#0E7568] hover:bg-[#075E54] text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200${phoneHidden}`}
       aria-label="Chat on WhatsApp"
     >
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">

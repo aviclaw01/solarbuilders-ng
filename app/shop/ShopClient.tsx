@@ -3,10 +3,12 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, Info, Minus, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
+import { Check, Info, MessageCircle, Minus, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
 import ProductImage from '@/components/ui/ProductImage';
+import WhatsAppLink from '@/components/ui/WhatsAppLink';
+import { useToast } from '@/components/ui/Toast';
 import { CATEGORY_LABEL, TIER_LABEL, type BrandTier, type ProductCategory } from '@/lib/brands';
-import { addLine, readCart, writeCart } from '@/lib/cart';
+import { addLine, readCart, writeCart, type CartLine } from '@/lib/cartStorage';
 import { track } from '@/lib/track';
 import { formatNaira } from '@/lib/quote';
 
@@ -108,6 +110,7 @@ const inBand = (b: Band, v: number) => v > b.min && v <= b.max;
 function ProductCard({ item }: { item: ShopItem }) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!added) return;
@@ -120,6 +123,7 @@ function ProductCard({ item }: { item: ShopItem }) {
     track('cart_add', { item: `${item.brandSlug}::${item.model}`, placement: 'shop' });
     setAdded(true);
     setQty(1);
+    toast(`Added ${item.model}. View order under "Your order".`, 'success');
   }
 
   const sameLowHigh = item.priceLow === item.priceHigh;
@@ -479,7 +483,7 @@ function ShopInner({ items }: { items: ShopItem[] }) {
               <option value="price-desc">Price: high to low</option>
               {cat && CATEGORY_UNIT[cat] && <option value="value">Best value (₦ per {CATEGORY_UNIT[cat]})</option>}
             </select>
-            <Link href="/cart" className="hidden sm:inline text-sm font-semibold text-ink hover:text-sun-ink whitespace-nowrap">
+            <Link href="/cart" className="text-sm font-semibold text-ink hover:text-sun-ink whitespace-nowrap">
               Your order →
             </Link>
           </div>
@@ -508,6 +512,70 @@ function ShopInner({ items }: { items: ShopItem[] }) {
   );
 }
 
+// ─────────────────────────────────────────────────────────
+// MOBILE ORDER BAR
+// ─────────────────────────────────────────────────────────
+
+/**
+ * Phones only. After an add the customer needs to see that something happened
+ * and where it went; before this, "Add" flipped its label and the /cart link
+ * was hidden below sm. The bar shows the item count, a link to the order and
+ * a WhatsApp handoff with the list already written out. With an empty cart it
+ * stays a plain price-check button (it replaces the floating bubble here).
+ */
+function OrderBar({ items }: { items: ShopItem[] }) {
+  const [lines, setLines] = useState<CartLine[] | null>(null);
+
+  useEffect(() => {
+    const sync = () => setLines(readCart());
+    sync();
+    window.addEventListener('sb-cart-change', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('sb-cart-change', sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
+
+  const byId = useMemo(() => new Map(items.map((i) => [i.id, i])), [items]);
+  if (lines === null) return null;
+
+  const count = lines.reduce((s, l) => s + l.qty, 0);
+  const listed = lines
+    .map((l) => {
+      const it = byId.get(`${l.brandSlug}::${l.model}`);
+      return it ? `• ${l.qty}× ${it.brandName} ${it.model}` : null;
+    })
+    .filter(Boolean)
+    .join('\n');
+  const waText = listed
+    ? `Hi SolarBuilders, please check today's price for:\n${listed}\n\nI found these on your shop page.`
+    : `Hi SolarBuilders, I'm looking at your equipment prices. Can you check today's price for me?`;
+
+  return (
+    <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 backdrop-blur px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))]">
+        <div className="flex items-center gap-3">
+          {count > 0 && (
+            <Link href="/cart" className="flex-shrink-0 text-sm font-semibold text-ink leading-tight">
+              <span className="block tabular-nums">
+                {count} {count === 1 ? 'item' : 'items'}
+              </span>
+              <span className="block text-xs text-muted">View order →</span>
+            </Link>
+          )}
+          <WhatsAppLink
+            text={waText}
+            placement={count > 0 ? 'shop_bar' : 'shop_bar_empty'}
+            className="flex-1 min-h-11 rounded-full bg-[#0E7568] hover:bg-[#075E54] text-white text-sm font-semibold flex items-center justify-center gap-2 px-4 transition-colors"
+          >
+            <MessageCircle className="w-4 h-4" aria-hidden="true" />
+            {count > 0 ? 'Request price on WhatsApp' : 'Price check on WhatsApp'}
+          </WhatsAppLink>
+        </div>
+    </div>
+  );
+}
+
 /**
  * The fallback renders the complete, unfiltered catalogue. `useSearchParams`
  * makes the inner tree client-rendered on a statically prerendered route, so
@@ -516,6 +584,7 @@ function ShopInner({ items }: { items: ShopItem[] }) {
  */
 export default function ShopClient({ items }: { items: ShopItem[] }) {
   return (
+    <>
     <Suspense
       fallback={
         <div>
@@ -528,5 +597,7 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
     >
       <ShopInner items={items} />
     </Suspense>
+    <OrderBar items={items} />
+    </>
   );
 }
