@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNaira, formatNairaShort, formatRange } from '@/lib/quote';
 import { getScenario, scenarioQuote } from '@/lib/sizing';
@@ -67,22 +68,9 @@ export default function IsSolarWorthItPage() {
   const genAnnual = { low: gen.low * 365, high: gen.high * 365 };
   const bothAnnualLow = genAnnual.low + main.grid.low;
 
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: 'Is Solar Worth It in Nigeria? The Payback Period, Calculated Properly',
-    description:
-      'The solar payback period in Nigeria, computed from October 2026 prices (before installation) against generator fuel and Band A tariffs.',
-    author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    datePublished: '2026-09-16',
-    dateModified: '2026-09-16',
-    url: `${SITE_URL}/blog/is-solar-worth-it-nigeria`,
-  };
-
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="is-solar-worth-it-nigeria" datePublished="2026-09-16" dateModified="2026-09-16" />
       <Navbar />
       <main>
 

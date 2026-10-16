@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import {
   HEADLINE_PACKAGES,
   INVERTER_PER_KVA,
@@ -29,18 +30,6 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE_URL}/blog/solar-abuja-2026` },
 };
 
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: 'Solar in Abuja: Prices and How to Get It Installed (2026)',
-  description: 'What solar costs in Abuja and how to get it installed, priced from Nigerian vendor listings.',
-  author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  datePublished: '2026-09-16',
-  dateModified: '2026-09-16',
-  url: `${SITE_URL}/blog/solar-abuja-2026`,
-};
-
 // Every figure in the "where the money goes" paragraph below is read off
 // lib/prices.ts at render time — the three figures used to happen to match
 // what was hand-typed here, which was a coincidence, not a guarantee.
@@ -54,7 +43,7 @@ const inverter5kvaHigh = Math.round(INVERTER_PER_KVA.mid.high * 5);
 export default function SolarAbujaPage() {
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="solar-abuja-2026" datePublished="2026-09-16" dateModified="2026-09-16" />
       <Navbar />
       <main>
 

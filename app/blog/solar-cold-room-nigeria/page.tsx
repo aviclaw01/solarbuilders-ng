@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { LITHIUM_MODULE_KWH, LITHIUM_PER_KWH, OPTIONAL_ITEMS, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { buildQuote, formatNaira, formatRange, type QuoteAppliance } from '@/lib/quote';
 import { NET_BILLING_MIN_KWP } from '@/lib/energy-costs';
@@ -80,6 +81,7 @@ export default function SolarColdRoomPage() {
   return (
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <ArticleSchema slug="solar-cold-room-nigeria" datePublished="2026-09-16" />
       <Navbar />
       <main>
 

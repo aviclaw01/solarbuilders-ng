@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { HEADLINE_PACKAGES, LITHIUM_MODULE_KWH, PANEL_WATTS, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { buildQuote, formatNaira, formatRange, type QuoteAppliance } from '@/lib/quote';
 import { SIZING_RULES } from '@/lib/sizing';
@@ -34,18 +35,6 @@ const EXAMPLE_APPLIANCES: QuoteAppliance[] = [
   { id: 'tv_32', name: 'TV (32")', watts: 60, qty: 1, hoursPerDay: 5 },
 ];
 
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: 'Solar Calculator Nigeria: What Size System Do I Need?',
-  description: 'How solar sizing works in Nigeria, worked through the same engine that powers the calculator.',
-  author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  datePublished: '2026-09-16',
-  dateModified: '2026-09-16',
-  url: `${SITE_URL}/blog/solar-calculator-nigeria`,
-};
-
 export default function SolarCalculatorNigeriaPage() {
   const quote = buildQuote(EXAMPLE_APPLIANCES);
   const { budget, standard, premium } = quote.tiers;
@@ -58,7 +47,7 @@ export default function SolarCalculatorNigeriaPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="solar-calculator-nigeria" datePublished="2026-09-16" dateModified="2026-09-16" />
       <Navbar />
       <main>
 

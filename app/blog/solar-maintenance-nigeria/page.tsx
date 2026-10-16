@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { LITHIUM_MODULE_KWH, LITHIUM_PER_KWH, PRICES_LAST_UPDATED_LABEL, TUBULAR_200AH } from '@/lib/prices';
 import { formatNaira } from '@/lib/quote';
 import { SOILING_LOSS_PCT } from '@/lib/energy-costs';
@@ -30,22 +31,10 @@ const lithiumPackHigh = Math.round(LITHIUM_PER_KWH.mid.high * LITHIUM_MODULE_KWH
 const tubularBankLow = TUBULAR_200AH.low * 4;
 const tubularBankHigh = TUBULAR_200AH.high * 4;
 
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: 'Solar Panel Maintenance: What Nigerian Homeowners Need to Know',
-  description: 'What Nigerian solar owners actually need to do, and the real ten-year cost of battery replacement, computed from vendor pricing.',
-  author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  datePublished: '2026-03-01',
-  dateModified: '2026-09-16',
-  url: `${SITE_URL}/blog/solar-maintenance-nigeria`,
-};
-
 export default function SolarMaintenancePage() {
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="solar-maintenance-nigeria" datePublished="2026-03-01" dateModified="2026-09-16" />
       <Navbar />
       <main>
       <article className="max-w-3xl mx-auto px-6 py-16">

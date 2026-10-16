@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNaira } from '@/lib/quote';
 import { getScenario, scenarioQuote } from '@/lib/sizing';
@@ -90,6 +91,7 @@ export default function HarmattanCleaningPage() {
   return (
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <ArticleSchema slug="harmattan-solar-panel-cleaning" datePublished="2026-09-16" />
       <Navbar />
       <main>
 

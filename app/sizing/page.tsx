@@ -38,10 +38,19 @@ export const metadata: Metadata = {
 
 export default function SizingHubPage() {
   const groups = scenariosByCategory();
+  const itemList = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Solar sizing questions, answered with Nigerian prices',
+    itemListElement: groups
+      .flatMap((g) => g.scenarios)
+      .map((s, i) => ({ '@type': 'ListItem', position: i + 1, name: s.h1, url: `${SITE_URL}/sizing/${s.slug}` })),
+  };
   const waText = `Hi SolarBuilders, I'm trying to size a system and I'm not sure which of your sizing guides matches my place. Can you help? ${SITE_URL}/sizing`;
 
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }} />
       <Navbar />
       <main>
 
