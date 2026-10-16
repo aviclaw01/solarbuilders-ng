@@ -116,7 +116,7 @@ const PRICING_POINTS = [
   },
   {
     title: `Our fee is ${SOURCING_MARGIN_LABEL}, already inside the price`,
-    body: `We buy the equipment for you, and for that we add ${SOURCING_MARGIN_LABEL} to the market price we found. Every ₦ figure on the site already includes it. Nothing is added at checkout.`,
+    body: `We buy the equipment for you, and for that we add ${SOURCING_MARGIN_LABEL} to the market price we found. Every equipment price on the site already includes it, and it is not added again at checkout. Transport and installation are not part of it — they are quoted as their own lines.`,
   },
   {
     title: 'Installation is not in the total',
@@ -190,7 +190,7 @@ export default function HowItWorksPage() {
               What it costs
             </h2>
             <p className="text-slate-500 text-lg mb-10 max-w-2xl">
-              Installed ranges from our quote engine, using vendor listings as of {PRICES_LAST_UPDATED_LABEL}.
+              Equipment ranges from our quote engine, using vendor listings as of {PRICES_LAST_UPDATED_LABEL}.
               Where you land inside a range depends on brand tier (Felicity vs Growatt vs Deye), your roof and your city.
             </p>
           </AnimatedSection>
