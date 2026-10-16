@@ -3,13 +3,14 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { TIER_LABEL, brandsInCategory, unitPriceStats, vendorReach } from '@/lib/brands';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNaira } from '@/lib/quote';
 import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'The Best Solar Inverter in Nigeria in 2026, Ranked by What It Costs per kVA',
+  title: 'The Best Solar Inverters in Nigeria and Their Prices (2026), Ranked per kVA',
   description:
     'Not an opinion piece. Every inverter brand we track, ranked on measured ₦ per kVA from real Nigerian listings, with how many Nigerian sellers carry it, the published warranty, and whether the monitoring app exists.',
   keywords: [
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     'solar inverter price per kva nigeria',
   ],
   openGraph: {
-    title: 'The Best Solar Inverter in Nigeria in 2026, Ranked by ₦ per kVA',
+    title: 'The Best Solar Inverters in Nigeria and Their Prices, Ranked by ₦ per kVA',
     description: 'Ranked on measured price and measured vendor reach, not on who is paying for placement.',
     url: `${SITE_URL}/blog/best-solar-inverter-nigeria`,
     type: 'article',
@@ -74,6 +75,7 @@ export default function BestInverterPage() {
   return (
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <ArticleSchema slug="best-solar-inverter-nigeria" datePublished="2026-09-16" />
       <Navbar />
       <main>
 

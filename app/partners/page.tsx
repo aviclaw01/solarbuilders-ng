@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
@@ -36,7 +37,7 @@ type DirectoryState =
   | { kind: 'unavailable' }
   | { kind: 'ready'; profiles: PublicPartnerProfile[] };
 
-async function loadDirectory(): Promise<DirectoryState> {
+const loadDirectory = cache(async (): Promise<DirectoryState> => {
   // A preview deployment with no env legitimately has no partners.
   if (!supabaseEnv()) return { kind: 'unconfigured' };
 
@@ -67,14 +68,26 @@ async function loadDirectory(): Promise<DirectoryState> {
     kind: 'ready',
     profiles: rows.map((row) => publicPartnerProfile(row, stats.get(row.id)?.completedJobs ?? 0)),
   };
-}
+});
 
-export const metadata: Metadata = {
-  title: 'Verified Installers & Vendors',
-  description:
-    'Every partner here passed the same checks: CAC registration, past installs we have seen photos of, references we called, and a written warranty. Find one in your state.',
-  alternates: { canonical: `${SITE_URL}/partners` },
-};
+/**
+ * noindex until at least one approved partner is listed. An empty "verified
+ * partners" directory in search results reads like the fake marketplace the
+ * pivot removed. `follow` stays on so the links out of the page still count.
+ * An outage ('unavailable') is also noindex: never let a crawler snapshot it.
+ * The same per-request lookup feeds the page, via React cache().
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const state = await loadDirectory();
+  const listed = state.kind === 'ready' && state.profiles.length > 0;
+  return {
+    title: 'Verified Installers & Vendors',
+    description:
+      'Every partner here passed the same checks: CAC registration, past installs we have seen photos of, references we called, and a written warranty. Find one in your state.',
+    alternates: { canonical: `${SITE_URL}/partners` },
+    ...(listed ? {} : { robots: { index: false, follow: true } }),
+  };
+}
 
 export default async function PartnersDirectoryPage() {
   const state = await loadDirectory();

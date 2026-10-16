@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNaira, formatNairaShort, formatRange } from '@/lib/quote';
 import { getScenario, scenarioQuote } from '@/lib/sizing';
@@ -62,22 +63,9 @@ export default function GeneratorVsSolarPage() {
   const assumedGen = generatorCostPerDay();
   const assumedAnnual = { low: assumedGen.low * 365, high: assumedGen.high * 365 };
 
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: 'The True Cost of Generator vs Solar in Lagos (2026)',
-    description:
-      'A petrol generator priced at the pump against a solar system priced from Nigerian vendor research, computed at four different generator-hours assumptions.',
-    author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-    datePublished: '2026-03-01',
-    dateModified: '2026-09-16',
-    url: `${SITE_URL}/blog/generator-vs-solar-lagos`,
-  };
-
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="generator-vs-solar-lagos" datePublished="2026-03-01" dateModified="2026-09-16" />
       <Navbar />
       <main>
 

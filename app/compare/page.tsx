@@ -7,6 +7,7 @@ import { CheckCircle, ArrowRight } from 'lucide-react';
 import BrandMark from '@/components/ui/BrandMark';
 import { CATEGORY_LABEL, comparisonPairs, type ProductCategory } from '@/lib/brands';
 import { PRICES_LAST_UPDATED_LABEL, HEADLINE_PACKAGES } from '@/lib/prices';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Solar System Comparison Nigeria — Budget vs Standard vs Premium',
@@ -70,8 +71,25 @@ const TIERS = [
 ];
 
 export default function ComparePage() {
+  // ItemList of the head-to-head pages listed below, in the order they render.
+  const listed = (['inverter', 'battery', 'panel'] as ProductCategory[])
+    .flatMap((category) => comparisonPairs().filter((p) => p.categories.includes(category)))
+    .filter((p, i, arr) => arr.findIndex((x) => x.slug === p.slug) === i);
+  const itemList = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Solar brand comparisons for Nigeria',
+    itemListElement: listed.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: `${p.a.name} vs ${p.b.name}`,
+      url: `${SITE_URL}/compare/${p.slug}`,
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }} />
       <Navbar />
       <main>
 

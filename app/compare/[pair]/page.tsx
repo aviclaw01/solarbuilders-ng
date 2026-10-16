@@ -24,6 +24,7 @@ import {
 import { formatNaira, formatNairaShort } from '@/lib/quote';
 import { PRICES_LAST_UPDATED, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { SITE_URL } from '@/lib/site';
+import { getScenario } from '@/lib/sizing';
 import { ArrowRight, AlertTriangle, MessageCircle, Zap, Scale } from 'lucide-react';
 
 interface Props {
@@ -157,6 +158,26 @@ function vendorReachLabel(brand: Brand): string {
   return `${n} seller${n === 1 ? '' : 's'} in our catalogue`;
 }
 
+/**
+ * Two sizing answers worth reading before picking a brand, keyed off the
+ * pair's main category. Slugs are checked against lib/sizing so a renamed
+ * scenario drops out instead of becoming a dead link.
+ */
+const SIZING_FOR: Record<ProductCategory, string[]> = {
+  inverter: ['what-can-a-5kva-inverter-run', 'what-size-inverter-for-1-5hp-ac'],
+  battery: ['solar-for-fridge-and-freezer-only', 'how-many-solar-panels-for-2-bedroom-flat'],
+  panel: ['how-many-solar-panels-for-2-bedroom-flat', 'how-many-solar-panels-for-3-bedroom-flat'],
+  controller: [],
+  package: [],
+};
+
+function sizingFor(pair: ComparisonPair) {
+  const category = pair.categories[0];
+  return (category ? SIZING_FOR[category] : [])
+    .map((slug) => getScenario(slug))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s));
+}
+
 function attrRows(brand: Brand): Array<[string, string]> {
   const a = brand.attributes;
   return [
@@ -225,6 +246,8 @@ export default async function ComparePairPage({ params }: Props) {
     .filter((p) => p.slug !== pair.slug)
     .filter((p, i, arr) => arr.findIndex((x) => x.slug === p.slug) === i);
 
+  const sizing = sizingFor(pair);
+
   const faqs = buildFaqs(pair, gap);
   const faqSchema = {
     '@context': 'https://schema.org',
@@ -245,11 +268,7 @@ export default async function ComparePairPage({ params }: Props) {
       {/* Hero */}
       <header className="bg-white border-b border-slate-100 px-6 py-14 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <nav className="text-sm text-slate-500 mb-6">
-            <Breadcrumbs trail={[{ href: '/compare', label: 'Compare' }, { label: `${pair.a.name} vs ${pair.b.name}` }]} className="mb-6" />
-            <span className="mx-2">/</span>
-            <span className="text-slate-600">{a.name} vs {b.name}</span>
-          </nav>
+          <Breadcrumbs trail={[{ href: '/compare', label: 'Compare' }, { label: `${pair.a.name} vs ${pair.b.name}` }]} className="mb-6" />
 
           <div className="flex items-center gap-4 mb-6">
             <BrandMark brand={a} size={56} />
@@ -271,6 +290,19 @@ export default async function ComparePairPage({ params }: Props) {
             Prices last checked {PRICES_LAST_UPDATED_LABEL} at Nigerian retailers. We publish the price we can verify —
             and then source the equipment for you at it.
           </p>
+
+          {/* Each brand's own price page — the next click for most readers. */}
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 mt-6">
+            {[a, b].map((brand) => (
+              <Link
+                key={brand.slug}
+                href={`/brands/${brand.slug}`}
+                className="inline-flex items-center justify-center gap-2 border border-slate-200 hover:border-amber-400 text-slate-900 rounded-full px-5 py-3 text-sm font-semibold transition-colors min-h-[48px]"
+              >
+                <BrandMark brand={brand} size={22} /> Every {brand.name} price <ArrowRight className="w-4 h-4" />
+              </Link>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -498,6 +530,28 @@ export default async function ComparePairPage({ params }: Props) {
             ))}
           </div>
         </section>
+
+        {/* Size first — a brand only matters once the size is right */}
+        {sizing.length > 0 && (
+          <section className="mb-16">
+            <h2 className="font-heading font-extrabold text-slate-900 text-2xl mb-5">What size do you need?</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {sizing.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/sizing/${s.slug}`}
+                  className="group rounded-2xl border border-slate-100 hover:border-slate-300 p-4 transition-colors"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="font-semibold text-slate-900 text-sm">{s.h1}</span>
+                    <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-amber-500 ml-auto flex-shrink-0" />
+                  </span>
+                  <span className="block text-slate-500 text-xs mt-2">{s.question}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Cross-links */}
         <section>

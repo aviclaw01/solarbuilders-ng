@@ -22,7 +22,8 @@ export default function NavbarClient({
   plainLink,
 }: {
   menus: MenuGroup[];
-  plainLink: MenuItem;
+  /** optional top-level link beside the menus; none at the moment */
+  plainLink?: MenuItem;
 }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -198,14 +199,16 @@ export default function NavbarClient({
                   </div>
                 );
               })}
-              <Link
-                href={plainLink.href}
-                className={`focus-ring flex items-center px-3.5 h-11 rounded-full text-[15px] font-medium transition-colors ${
-                  pathname === plainLink.href ? 'text-ink bg-sky' : 'text-ink-soft hover:text-ink hover:bg-sky'
-                }`}
-              >
-                {plainLink.label}
-              </Link>
+              {plainLink && (
+                <Link
+                  href={plainLink.href}
+                  className={`focus-ring flex items-center px-3.5 h-11 rounded-full text-[15px] font-medium transition-colors ${
+                    pathname === plainLink.href ? 'text-ink bg-sky' : 'text-ink-soft hover:text-ink hover:bg-sky'
+                  }`}
+                >
+                  {plainLink.label}
+                </Link>
+              )}
             </div>
 
             {/* Desktop actions */}
@@ -299,16 +302,18 @@ export default function NavbarClient({
               </div>
             ))}
 
-            <div className="pt-2 border-t border-line">
-              <Link
-                href={plainLink.href}
-                onClick={() => setOpen(false)}
-                className="block py-3 font-heading font-semibold text-ink text-lg min-h-[48px]"
-              >
-                {plainLink.label}
-                <span className="block text-sm text-muted font-normal">Installers, vendors and distributors</span>
-              </Link>
-            </div>
+            {plainLink && (
+              <div className="pt-2 border-t border-line">
+                <Link
+                  href={plainLink.href}
+                  onClick={() => setOpen(false)}
+                  className="block py-3 font-heading font-semibold text-ink text-lg min-h-[48px]"
+                >
+                  {plainLink.label}
+                  {plainLink.hint && <span className="block text-sm text-muted font-normal">{plainLink.hint}</span>}
+                </Link>
+              </div>
+            )}
           </div>
 
           <div className="px-4 pb-6 pt-4 border-t border-line flex-shrink-0 grid grid-cols-2 gap-3">

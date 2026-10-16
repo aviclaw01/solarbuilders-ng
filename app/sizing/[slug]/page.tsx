@@ -30,9 +30,9 @@ import {
   type TierKey,
   type TierQuote,
 } from '@/lib/quote';
-import { LITHIUM_MODULE_KWH, PANEL_WATTS, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
+import { LITHIUM_MODULE_KWH, PANEL_BRANDS, PANEL_WATTS, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { SITE_URL } from '@/lib/site';
-import { comparisonPairs, type ProductCategory } from '@/lib/brands';
+import { brandSlugByName, comparisonPairs, getBrand, headlineUnitPrice, type Brand, type ProductCategory } from '@/lib/brands';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 interface Props {
@@ -118,6 +118,27 @@ function relatedComparisons(slug: string) {
     out.push({ slug: pair.slug, label: `${pair.a.name} vs ${pair.b.name}`, note: note[category] });
   });
   return out;
+}
+
+/**
+ * Brands the quote engine itself names for this build's Standard tier
+ * (lib/prices tier lists): two inverter brands, one battery, one panel.
+ * Names without a brand page are skipped rather than linked dead.
+ */
+function brandsForBuild(t: TierQuote): Array<{ brand: Brand; role: string }> {
+  const pick = (names: readonly string[], n: number, role: string) =>
+    names
+      .map((name) => brandSlugByName(name))
+      .map((slug) => (slug ? getBrand(slug) : undefined))
+      .filter((b): b is Brand => Boolean(b))
+      .slice(0, n)
+      .map((brand) => ({ brand, role }));
+  const out = [
+    ...pick(t.inverterBrands, 2, 'Inverter'),
+    ...pick(t.batteryBrands, 1, 'Lithium battery'),
+    ...pick(PANEL_BRANDS, 1, 'Solar panels'),
+  ];
+  return out.filter((x, i) => out.findIndex((y) => y.brand.slug === x.brand.slug) === i);
 }
 
 // ─────────────────────────────────────────────────────────
@@ -215,6 +236,7 @@ export default async function SizingScenarioPage({ params }: Props) {
   const faqs = buildFaqs(scenario, quote);
   const related = relatedScenarios(scenario, 4);
   const comparisons = relatedComparisons(scenario.slug);
+  const buildBrands = brandsForBuild(standard);
   const calcUrl = quoteUrl(quote, 'standard', SITE_URL);
 
   const waText =
@@ -594,6 +616,34 @@ export default async function SizingScenarioPage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        {/* Brands for this build */}
+        {buildBrands.length > 0 && (
+          <section className="mb-16">
+            <h2 className="font-heading font-extrabold text-[#0A0F1E] text-2xl md:text-3xl mb-3">
+              Brands we price for this
+            </h2>
+            <p className="text-slate-500 mb-6 max-w-3xl">
+              The Standard build above is priced on these brands. Each page lists every model we track, with the
+              Nigerian price and the date it was checked.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {buildBrands.map(({ brand, role }) => (
+                <Link
+                  key={brand.slug}
+                  href={`/brands/${brand.slug}`}
+                  className="rounded-2xl border border-slate-100 p-5 hover:border-slate-300 transition-colors"
+                >
+                  <span className="text-slate-500 text-xs uppercase tracking-wide block mb-1">{role}</span>
+                  <span className="font-heading font-bold text-[#0A0F1E] block mb-1">{brand.name} prices</span>
+                  {headlineUnitPrice(brand) && (
+                    <span className="text-slate-500 text-sm">{headlineUnitPrice(brand)}</span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Cross-links */}
         <section>

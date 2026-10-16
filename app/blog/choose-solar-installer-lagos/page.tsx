@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ArticleSchema from '../article-schema';
 import { HEADLINE_PACKAGES, LABOUR_FLOOR, LABOUR_PER_KVA, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { formatNaira } from '@/lib/quote';
 import { SITE_URL } from '@/lib/site';
@@ -20,18 +21,6 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE_URL}/blog/choose-solar-installer-lagos` },
 };
 
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: 'How to Choose a Solar Installer in Lagos',
-  description: 'What to look for, red flags to avoid, and the checklist we use when we vet installers.',
-  author: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  publisher: { '@type': 'Organization', name: 'SolarBuilders.ng' },
-  datePublished: '2026-03-01',
-  dateModified: '2026-09-16',
-  url: `${SITE_URL}/blog/choose-solar-installer-lagos`,
-};
-
 const starter = HEADLINE_PACKAGES[1]; // 3.5kVA · 5kWh lithium
 // A 50% deposit on the starter system's own range, not a single invented figure.
 const depositLow = Math.round(starter.low * 0.5);
@@ -43,7 +32,7 @@ const labour5kvaHigh = LABOUR_PER_KVA.high * 5;
 export default function ChooseSolarInstallerLagosPage() {
   return (
     <div className="min-h-screen bg-white">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ArticleSchema slug="choose-solar-installer-lagos" datePublished="2026-03-01" dateModified="2026-09-16" />
       <Navbar />
       <main>
 

@@ -11,8 +11,10 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       { source: "/marketplace", destination: "/brands", permanent: true },
-      { source: "/builders/:slug", destination: "/brands", permanent: true },
-      { source: "/company/:slug", destination: "/brands", permanent: true },
+      // /company/:slug and /builders/:slug were the fake installer marketplace.
+      // They used to 308 to /brands, which Search Console read as a soft 404.
+      // They now answer 410 Gone from app/company/[slug]/route.ts and
+      // app/builders/[slug]/route.ts so they drop out of the index.
     ];
   },
 };

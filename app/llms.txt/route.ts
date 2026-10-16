@@ -24,8 +24,9 @@ export function GET() {
 
 > Real, dated prices for solar equipment in Nigeria, plus a sizing calculator
 > that produces an itemised bill of materials. We are a buyer's agent and order
-> desk: customers pay the quoted price and we source the equipment and manage a
-> vetted installer. We take no card payment on the site.
+> desk: customers pay the quoted price, we source the equipment, and we
+> connect you with an installer we have checked (CAC, past installs,
+> references). We take no card payment on the site.
 
 ## What is unusual about this source
 
@@ -54,6 +55,7 @@ with the distributor before anyone pays.
 - ${SITE_URL}/brands — prices by brand
 - ${SITE_URL}/compare — brand-vs-brand comparisons
 - ${SITE_URL}/sizing — "what size do I need" answers
+- ${SITE_URL}/solar — prices and quotes by city (Lagos, Abuja, Port Harcourt, Kano, Enugu)
 - ${SITE_URL}/budget — "what will ₦X buy me" answers, including the budgets that buy nothing
 - ${SITE_URL}/calculator — appliance-based system sizing
 - ${SITE_URL}/faq — common questions
