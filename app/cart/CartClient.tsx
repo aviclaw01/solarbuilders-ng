@@ -103,6 +103,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
   const [area, setArea] = useState('');
   const [note, setNote] = useState('');
   const [needsInstall, setNeedsInstall] = useState(true);
+  const [showDetails, setShowDetails] = useState(false);
 
   const [status, setStatus] = useState<Status>('idle');
   const [result, setResult] = useState<OrderResult | null>(null);
@@ -110,6 +111,11 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
   const [hp, setHp] = useState('');
 
   const filled = useRef(false);
+
+  // An email error lives inside the optional details; open them so it shows.
+  useEffect(() => {
+    if (errors.email) setShowDetails(true);
+  }, [errors.email]);
 
   // Load the cart after mount (localStorage doesn't exist on the server), and
   // fold in a quote from ?q= / ?tier= if we arrived from the calculator.
@@ -173,10 +179,20 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
 
   const location = [area.trim(), state].filter(Boolean).join(', ');
 
+  /** "this is Tunde from Lekki, Lagos" — only the parts the customer gave us. */
+  const whoLine = `${name.trim() ? `, this is ${name.trim()}` : ''}${location ? `${name.trim() ? '' : ', I am'} in ${location}` : ''}`;
+
+  /** The order written out for WhatsApp: one line per item, then install + note. */
+  const itemList =
+    resolved.map((l) => `• ${l.qty}× ${l.brand.name} ${l.product.model}`).join('\n') +
+    (needsInstall ? '\nI also want installation.' : '\nSupply only, no installation.') +
+    (note.trim() ? `\n\nNote: ${note.trim()}` : '');
+
   /** Client twin of the server's per-field rules in the order-request route. */
   function fieldErrors(): Record<string, string> {
     const errors: Record<string, string> = {};
-    if (name.trim().length < 2) errors.name = 'Your name is required.';
+    // Name is optional; if typed it must be a real one.
+    if (name.trim() && name.trim().length < 2) errors.name = 'That name looks too short.';
     if (!isPhone(phone)) errors.phone = 'That number looks short — e.g. 0803 000 0000.';
     if (email.trim() && !isEmail(email.trim())) errors.email = "That email doesn't look right — check for typos.";
     if (!state) errors.state = 'Pick your state.';
@@ -185,7 +201,6 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
 
   const canSubmit =
     resolved.length > 0 &&
-    name.trim().length >= 2 &&
     isPhone(phone) &&
     !!state &&
     status !== 'submitting';
@@ -210,7 +225,9 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name.trim(),
+          // Optional. Omitted when blank; /api/order-request is being relaxed
+          // to match (phone + state required, name optional).
+          name: name.trim() || undefined,
           phone: phone.trim(),
           email: email.trim() || undefined,
           location,
@@ -225,8 +242,19 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data?.ok) {
-        // Server field errors are authoritative — surface them inline.
-        if (data?.fields && typeof data.fields === 'object') setErrors(data.fields as Record<string, string>);
+        // Server field errors are authoritative — surface them inline and keep
+        // the form, rather than sending the customer to the failure screen for
+        // something they can fix. `location` is our area + state pair.
+        if (data?.fields && typeof data.fields === 'object') {
+          const f = { ...(data.fields as Record<string, string>) };
+          if (f.location) {
+            f.state = f.location;
+            delete f.location;
+          }
+          setErrors(f);
+          setStatus('idle');
+          return;
+        }
         throw new Error(data?.error || 'Request failed');
       }
       setResult({
@@ -257,7 +285,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
 
   if (status === 'done' && result) {
     const waText =
-      `Hi SolarBuilders, this is ${name.trim()}${location ? ` from ${location}` : ''}.\n` +
+      `Hi SolarBuilders${whoLine}.\n` +
       `I just sent order request ${result.reference} on your website ` +
       `(${result.totals.items} item${result.totals.items === 1 ? '' : 's'}, about ${formatNaira(result.totals.best)} at your listed prices).\n` +
       (needsInstall ? 'I also want installation.\n' : 'Supply only, no installation.\n') +
@@ -324,11 +352,9 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
 
   if (status === 'error') {
     const waText =
-      `Hi SolarBuilders, this is ${name.trim()}${location ? ` from ${location}` : ''}.\n` +
+      `Hi SolarBuilders${whoLine}.\n` +
       `Your website couldn't send my order request, so here it is:\n` +
-      resolved.map((l) => `• ${l.qty}× ${l.brand.name} ${l.product.model}`).join('\n') +
-      (needsInstall ? '\nI also want installation.' : '\nSupply only, no installation.') +
-      (note.trim() ? `\n\nNote: ${note.trim()}` : '') +
+      itemList +
       `\n\nPlease confirm the price.`;
 
     return (
@@ -525,15 +551,50 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
             </p>
           </div>
 
+          <ol className="grid grid-cols-3 gap-2 text-[11px] leading-snug text-slate-600" aria-label="What happens next">
+            {[
+              'You send it',
+              'We confirm today\u2019s price with the seller',
+              'You decide, nothing to pay now',
+            ].map((step, i) => (
+              <li key={step} className="border border-slate-100 rounded-xl p-2.5">
+                <span className="w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-bold flex items-center justify-center mb-1.5">
+                  {i + 1}
+                </span>
+                {step}
+              </li>
+            ))}
+          </ol>
+
+          <div className="border border-slate-100 rounded-2xl p-5 space-y-3">
+            <div>
+              <h2 className="font-heading font-extrabold text-slate-900 text-xl">Get today&apos;s price</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Quickest: send the list on WhatsApp. Or leave your number below and we message you.
+              </p>
+            </div>
+            <WhatsAppLink
+              text={`Hi SolarBuilders${whoLine}. Please check today's price for:\n${itemList}\n\nPlease confirm the price.`}
+              placement="cart"
+              quoteCode={quoteCode ?? undefined}
+              className="w-full bg-[#0E7568] hover:bg-[#075E54] text-white py-4 rounded-full font-heading font-bold text-base flex items-center justify-center gap-2 transition-colors"
+            >
+              <MessageCircle className="w-5 h-5" /> Ask on WhatsApp
+            </WhatsAppLink>
+            <p className="text-[11px] text-slate-500 text-center">
+              Prices checked {pricesAsOfLabel} from named Nigerian sellers; we confirm before you pay anyone.
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit} className="border border-slate-100 rounded-2xl p-5 space-y-3">
             <div>
-              <h2 className="font-heading font-extrabold text-slate-900 text-xl">Where do we send the price?</h2>
+              <h2 className="font-heading font-extrabold text-slate-900 text-lg">Or we message you</h2>
               <p className="text-xs text-slate-500 mt-1">We reply on WhatsApp. No card details, ever.</p>
             </div>
 
             <div>
               <label htmlFor="ord-name" className="block text-xs font-semibold text-slate-900 mb-1">
-                Your name *
+                Your name (optional)
               </label>
               <input
                 id="ord-name"
@@ -541,8 +602,8 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
                 value={name}
                 onChange={(e) => { setName(e.target.value); clearError('name'); }}
                 placeholder="Tunde Adeyemi"
+                autoComplete="name"
                 aria-invalid={!!errors.name}
-                required
               />
               {errors.name && <p className="text-rose-600 text-xs mt-1">{errors.name}</p>}
             </div>
@@ -563,19 +624,25 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
               {errors.phone && <p className="text-rose-600 text-xs mt-1">{errors.phone}</p>}
             </div>
             <div>
-              <label htmlFor="ord-email" className="block text-xs font-semibold text-slate-900 mb-1">
-                Email (optional)
+              <label htmlFor="ord-state" className="block text-xs font-semibold text-slate-900 mb-1">
+                State *
               </label>
-              <input
-                id="ord-email"
+              <select
+                id="ord-state"
                 className={inputCls}
-                type="email"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); clearError('email'); }}
-                placeholder="you@example.com"
-                aria-invalid={!!errors.email}
-              />
-              {errors.email && <p className="text-rose-600 text-xs mt-1">{errors.email}</p>}
+                value={state}
+                onChange={(e) => { setState(e.target.value); clearError('state'); }}
+                aria-invalid={!!errors.state}
+                required
+              >
+                <option value="">Select</option>
+                {NIGERIAN_STATES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+              {errors.state && <p className="text-rose-600 text-xs mt-1">{errors.state}</p>}
             </div>
             {/* Honeypot — hidden from humans, bait for scripts. */}
             <input
@@ -588,56 +655,60 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
               aria-hidden="true"
               className="hidden"
             />
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label htmlFor="ord-state" className="block text-xs font-semibold text-slate-900 mb-1">
-                  State *
-                </label>
-                <select
-                  id="ord-state"
-                  className={inputCls}
-                  value={state}
-                  onChange={(e) => { setState(e.target.value); clearError('state'); }}
-                  aria-invalid={!!errors.state}
-                  required
-                >
-                  <option value="">Select</option>
-                  {NIGERIAN_STATES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                {errors.state && <p className="text-rose-600 text-xs mt-1">{errors.state}</p>}
-              </div>
-              <div>
-                <label htmlFor="ord-area" className="block text-xs font-semibold text-slate-900 mb-1">
-                  Area / town
-                </label>
-                <input id="ord-area" className={inputCls} value={area} onChange={(e) => setArea(e.target.value)} placeholder="Lekki Phase 1" />
-              </div>
-            </div>
-            <div>
-              <label htmlFor="ord-note" className="block text-xs font-semibold text-slate-900 mb-1">
-                Anything we should know?
-              </label>
-              <textarea id="ord-note" className={inputCls} rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. corrugated roof, need it before December, I already have panels…" />
-            </div>
 
-            <label className="flex items-start gap-2.5 cursor-pointer pt-1">
-              <input
-                type="checkbox"
-                checked={needsInstall}
-                onChange={(e) => setNeedsInstall(e.target.checked)}
-                className="mt-0.5 w-4 h-4 accent-amber-500"
-              />
-              <span className="text-sm text-slate-700">
-                I also want installation
-                <span className="block text-xs text-slate-500">
-                  Quoted per job once we know the site. Untick for supply only.
-                </span>
-              </span>
-            </label>
+            <details
+              open={showDetails}
+              onToggle={(e) => setShowDetails(e.currentTarget.open)}
+              className="group border-t border-slate-100 pt-3"
+            >
+              <summary className="cursor-pointer list-none text-sm font-semibold text-slate-700 hover:text-slate-900 flex items-center justify-between min-h-[44px]">
+                Add details (optional)
+                <Plus className="w-4 h-4 text-slate-400 transition-transform group-open:rotate-45" aria-hidden="true" />
+              </summary>
+              <div className="space-y-3 pt-2">
+                <div>
+                  <label htmlFor="ord-email" className="block text-xs font-semibold text-slate-900 mb-1">
+                    Email
+                  </label>
+                  <input
+                    id="ord-email"
+                    className={inputCls}
+                    type="email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); clearError('email'); }}
+                    placeholder="you@example.com"
+                    aria-invalid={!!errors.email}
+                  />
+                  {errors.email && <p className="text-rose-600 text-xs mt-1">{errors.email}</p>}
+                </div>
+                <div>
+                  <label htmlFor="ord-area" className="block text-xs font-semibold text-slate-900 mb-1">
+                    Area / town
+                  </label>
+                  <input id="ord-area" className={inputCls} value={area} onChange={(e) => setArea(e.target.value)} placeholder="Lekki Phase 1" />
+                </div>
+                <div>
+                  <label htmlFor="ord-note" className="block text-xs font-semibold text-slate-900 mb-1">
+                    Anything we should know?
+                  </label>
+                  <textarea id="ord-note" className={inputCls} rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. corrugated roof, need it before December, I already have panels…" />
+                </div>
+                <label className="flex items-start gap-2.5 cursor-pointer pt-1">
+                  <input
+                    type="checkbox"
+                    checked={needsInstall}
+                    onChange={(e) => setNeedsInstall(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 accent-amber-500"
+                  />
+                  <span className="text-sm text-slate-700">
+                    I also want installation
+                    <span className="block text-xs text-slate-500">
+                      Quoted per job once we know the site. Untick for supply only.
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </details>
 
             <button
               type="submit"
@@ -646,7 +717,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
                 canSubmit ? 'bg-[#0A0F1E] text-white hover:bg-slate-700' : 'bg-slate-100 text-slate-400 cursor-not-allowed'
               }`}
             >
-              {status === 'submitting' ? 'Sending…' : 'Request this order'}
+              {status === 'submitting' ? 'Sending…' : 'Get today\'s price'}
             </button>
             <p className="text-[11px] text-slate-500 text-center">
               Sending this costs nothing and commits you to nothing. We confirm the price before you pay anyone.
