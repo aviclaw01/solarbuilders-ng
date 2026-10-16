@@ -60,7 +60,13 @@ const SECTIONS: Section[] = [
   {
     href: "/admin/funnel",
     label: "Funnel",
-    blurb: "What site_events is telling us. Event counts, not people — no visitor id is stored.",
+    blurb: "What site_events is telling us: quotes, forms, WhatsApp clicks, landing pages and sources.",
+    icon: <BarChart3 className="w-5 h-5" />,
+  },
+  {
+    href: "/admin/journeys",
+    label: "Journeys",
+    blurb: "Visits and people: the pages each visit went through, what they clicked, and where they left.",
     icon: <BarChart3 className="w-5 h-5" />,
   },
   {

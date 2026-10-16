@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { openChooser, openContact } from './LeadModals';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { X, Menu, Phone, ChevronDown, MessageCircle, ArrowRight } from 'lucide-react';
@@ -213,27 +214,30 @@ export default function NavbarClient({
 
             {/* Desktop actions */}
             <div className="hidden md:flex items-center gap-2">
-              <a
-                href={whatsappLink('Hi SolarBuilders, I have a question about going solar.')}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => openContact('nav')}
                 className="focus-ring hidden lg:flex items-center gap-1.5 text-ink-soft text-[15px] font-medium hover:text-ink transition-colors h-11 px-3 rounded-full"
               >
                 <MessageCircle className="w-4 h-4" />
-                Talk to us
-              </a>
+                Contact us now
+              </button>
               <CartButton />
-              <Link href="/find" className="btn btn-sun !min-h-[44px] !px-5 text-[15px]">
-                Get my quote
-              </Link>
+              <button type="button" onClick={() => openChooser('nav')} className="btn btn-sun !min-h-[44px] !px-5 text-[15px]">
+                Get a quote
+              </button>
             </div>
 
             {/* Mobile actions */}
             <div className="md:hidden flex items-center gap-0.5">
               {!pathname?.startsWith('/calculator') && !pathname?.startsWith('/find') && (
-                <Link href="/find" className="btn btn-sun !min-h-[40px] !px-4 text-sm !shadow-none mr-1">
+                <button
+                  type="button"
+                  onClick={() => openChooser('nav_mobile')}
+                  className="btn btn-sun !min-h-[40px] !px-4 text-sm !shadow-none mr-1"
+                >
                   Get quote
-                </Link>
+                </button>
               )}
               <CartButton />
               <button
@@ -278,13 +282,26 @@ export default function NavbarClient({
           </div>
 
           <div className="flex-1 overflow-y-auto px-4 py-6">
-            <Link
-              href="/find"
-              onClick={() => setOpen(false)}
-              className="btn btn-sun btn-lg w-full mb-8"
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                openChooser('nav_sheet');
+              }}
+              className="btn btn-sun btn-lg w-full mb-3"
             >
-              Get my solar quote <ArrowRight className="w-5 h-5" aria-hidden="true" />
-            </Link>
+              Get a quote <ArrowRight className="w-5 h-5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                openContact('nav_sheet');
+              }}
+              className="btn btn-outline w-full mb-8"
+            >
+              <MessageCircle className="w-4 h-4" aria-hidden="true" /> Contact us now
+            </button>
 
             {menus.map((group) => (
               <div key={group.label} className="mb-7">

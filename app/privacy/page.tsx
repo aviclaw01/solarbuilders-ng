@@ -97,7 +97,7 @@ const SECTIONS: { h: string; body: React.ReactNode }[] = [
           </li>
           <li>
             <strong>Service providers who run the site for us:</strong> Vercel (hosting), Supabase (database), Resend
-            (email). We use no advertising or third-party analytics trackers, and set no tracking cookies.
+            (email). We use no advertising or third-party analytics trackers and set no cookies. To see which pages help people, our own site records page visits and clicks with a random visit id kept in your browser; it is not linked to your name, number or device.
           </li>
           <li>Authorities, when the law requires it.</li>
         </ul>

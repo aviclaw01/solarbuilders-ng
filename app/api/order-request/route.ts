@@ -1,3 +1,4 @@
+import { appendToSheet } from "@/lib/sheets";
 import {
   rateLimit,
   clientIp,
@@ -218,5 +219,18 @@ export async function POST(req: Request) {
     }
   }
 
-  return Response.json({ ok: true, reference: ref, emailed, stored, totals, lines: priced });
+  const sheet = await appendToSheet({
+    type: "order_request",
+    ref: quoteCode ? `${ref} / ${quoteCode}` : ref,
+    name,
+    phone,
+    email: email ?? null,
+    location,
+    details: [priced.map((l) => `${l.qty}× ${l.brandName} ${l.model}`).join("; "), needsInstall ? "install wanted" : "supply only", note]
+      .filter(Boolean)
+      .join(" · "),
+    amount: totals.best,
+  });
+
+  return Response.json({ ok: true, reference: ref, emailed, stored, sheet, totals, lines: priced });
 }
