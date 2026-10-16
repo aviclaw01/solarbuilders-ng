@@ -25,6 +25,7 @@ export type TrackEvent =
   | "finance_open"
   | "finance_click"
   | "cart_add" // shop → "Add to order"
+  | "kit_chosen" // /find → "Choose this kit" (hands off to /cart; not a cart_add)
   | "order_form_open"
   | "order_submit"
   | "find_persona" // /find step 1 — placement is the persona key, or "pick"
@@ -43,10 +44,19 @@ export interface TrackPayload {
 }
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign"] as const;
+type UtmKey = (typeof UTM_KEYS)[number];
 
-function campaign(): Record<string, string> {
-  if (typeof window === "undefined") return {};
-  const out: Record<string, string> = {};
+/** Session-scoped first-touch attribution. Tab-local, cleared when the tab closes. */
+interface Attribution {
+  landing_path: string | null;
+  entry_ref: string | null;
+  utm: Partial<Record<UtmKey, string>>;
+}
+
+const ATTR_KEY = "sb_attr";
+
+function urlCampaign(): Partial<Record<UtmKey, string>> {
+  const out: Partial<Record<UtmKey, string>> = {};
   try {
     const p = new URLSearchParams(window.location.search);
     for (const k of UTM_KEYS) {
@@ -59,6 +69,54 @@ function campaign(): Record<string, string> {
   return out;
 }
 
+function referrerHost(): string | null {
+  try {
+    return document.referrer ? new URL(document.referrer).host.slice(0, 120) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Where this visit started: the first page seen in the tab, the external
+ * referrer it came from, and its utm_* params. Written once, on the first
+ * event of the session (the landing page_view), and read back on every later
+ * event so a WhatsApp click three pages in still carries "utm_source=bing".
+ * sessionStorage can throw (private mode, blocked storage) — then every field
+ * is null and events fall back to the current URL's params only.
+ */
+function attribution(): Attribution {
+  const empty: Attribution = { landing_path: null, entry_ref: null, utm: {} };
+  try {
+    const raw = window.sessionStorage.getItem(ATTR_KEY);
+    if (raw) {
+      const a = JSON.parse(raw) as Partial<Attribution>;
+      return {
+        landing_path: typeof a.landing_path === "string" ? a.landing_path : null,
+        entry_ref: typeof a.entry_ref === "string" ? a.entry_ref : null,
+        utm: a.utm && typeof a.utm === "object" ? a.utm : {},
+      };
+    }
+    const ref = referrerHost();
+    const first: Attribution = {
+      landing_path: window.location.pathname.slice(0, 200),
+      // A same-site referrer is a reload or a tab restore, not an entry source.
+      entry_ref: ref && ref !== window.location.host ? ref : null,
+      utm: urlCampaign(),
+    };
+    window.sessionStorage.setItem(ATTR_KEY, JSON.stringify(first));
+    return first;
+  } catch {
+    return empty;
+  }
+}
+
+/** UTM on the current URL wins; otherwise the session's landing UTM sticks. */
+function campaign(attr: Attribution): Partial<Record<UtmKey, string>> {
+  const now = urlCampaign();
+  return Object.keys(now).length > 0 ? now : attr.utm;
+}
+
 /**
  * Never throws, never blocks navigation. Uses sendBeacon so the request
  * survives the page being unloaded by a WhatsApp/app handoff.
@@ -66,11 +124,14 @@ function campaign(): Record<string, string> {
 export function track(event: TrackEvent, payload: TrackPayload = {}): void {
   if (typeof window === "undefined") return;
   try {
+    const attr = attribution();
     const body = JSON.stringify({
       event,
       path: window.location.pathname.slice(0, 200),
-      referrer: document.referrer ? new URL(document.referrer).host.slice(0, 120) : undefined,
-      ...campaign(),
+      referrer: referrerHost() ?? undefined,
+      landing_path: attr.landing_path ?? undefined,
+      entry_ref: attr.entry_ref ?? undefined,
+      ...campaign(attr),
       ...payload,
     });
     if (navigator.sendBeacon) {
