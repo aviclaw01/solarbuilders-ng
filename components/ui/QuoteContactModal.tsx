@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { MessageCircle, CheckCircle2, AlertTriangle, ChevronDown } from 'lucide-react';
 import Modal from './Modal';
 import { type Quote, type TierKey, formatNaira, formatRange, quoteToText, quoteUrl } from '@/lib/quote';
 import { SITE_URL, whatsappLink } from '@/lib/site';
@@ -29,14 +29,16 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState('');
   const [hp, setHp] = useState('');
+  const [moreOpen, setMoreOpen] = useState(false);
 
   const location = [area.trim(), state].filter(Boolean).join(', ');
   const url = quoteUrl(quote, tier, SITE_URL);
   const waUrl = withCampaign(url, 'quote_handoff');
-  const canSubmit = name.trim() && phone.trim().replace(/\D/g, '').length >= 10 && state && status !== 'submitting';
+  // Phone + state only: every extra required field cost us submits.
+  const canSubmit = phone.trim().replace(/\D/g, '').length >= 10 && state && status !== 'submitting';
 
   const waMessage =
-    `Hi SolarBuilders, I'm ${name.trim()} from ${location}.\n` +
+    `Hi SolarBuilders, ${name.trim() ? `I'm ${name.trim()} ` : ''}from ${location}.\n` +
     `I generated quote ${quote.code} on your website (${t.label} — est. ${formatNaira(t.total.best)} equipment & materials, before installation).\n` +
     `Please help me get this system built.` +
     (note.trim() ? `\n\nNote: ${note.trim()}` : '') +
@@ -57,7 +59,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
     const n = name.trim();
     const p = phone.trim();
     const em = email.trim();
-    if (n.length < 2) next.name = n ? 'Name must be at least 2 characters.' : 'Your name is required.';
+    if (n && n.length < 2) next.name = 'Name must be at least 2 characters.';
     if (!p) next.phone = 'WhatsApp number is required.';
     else if (!isPhone(p)) next.phone = 'That number looks short — e.g. 0803 000 0000.';
     if (em && !isEmail(em)) next.email = "That email doesn't look right — check for typos.";
@@ -78,7 +80,7 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name.trim(),
+          name: name.trim() || undefined,
           phone: phone.trim(),
           email: email.trim() || undefined,
           location,
@@ -175,11 +177,10 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <h2 id="quote-modal-title" className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">Get this system built</h2>
+              <h2 id="quote-modal-title" className="font-heading font-extrabold text-[#0A0F1E] text-2xl mb-1">Get a call back</h2>
               <p className="text-[#64748B] text-sm">
                 Quote <span className="font-mono font-semibold text-[#0A0F1E]">{quote.code}</span> · {t.label} ·{' '}
-                {formatRange(t.total)} before installation. We&apos;ll confirm current prices and anything missing, then
-                connect you with an installer who quotes their own labour.
+                {formatRange(t.total)} before installation. Leave your number and state — that&apos;s all we need.
               </p>
             </div>
 
@@ -196,43 +197,20 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="sm:col-span-2">
-                <label htmlFor="qc-name" className="block text-xs font-semibold text-[#0A0F1E] mb-1">Your name *</label>
-                <input
-                  id="qc-name"
-                  className={`${inputCls} ${errors.name ? 'border-rose-400' : ''}`}
-                  value={name}
-                  onChange={(e) => { setName(e.target.value); clearError('name'); }}
-                  placeholder="Tunde Adeyemi"
-                  aria-invalid={!!errors.name}
-                />
-                {errors.name && <p className="text-rose-600 text-xs mt-1">{errors.name}</p>}
-              </div>
               <div>
                 <label htmlFor="qc-phone" className="block text-xs font-semibold text-[#0A0F1E] mb-1">WhatsApp number *</label>
                 <input
                   id="qc-phone"
                   className={`${inputCls} ${errors.phone ? 'border-rose-400' : ''}`}
                   type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
                   value={phone}
                   onChange={(e) => { setPhone(e.target.value); clearError('phone'); }}
                   placeholder="0803 000 0000"
                   aria-invalid={!!errors.phone}
                 />
                 {errors.phone && <p className="text-rose-600 text-xs mt-1">{errors.phone}</p>}
-              </div>
-              <div>
-                <label htmlFor="qc-email" className="block text-xs font-semibold text-[#0A0F1E] mb-1">Email (optional)</label>
-                <input
-                  id="qc-email"
-                  className={`${inputCls} ${errors.email ? 'border-rose-400' : ''}`}
-                  type="email"
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); clearError('email'); }}
-                  placeholder="you@example.com"
-                  aria-invalid={!!errors.email}
-                />
-                {errors.email && <p className="text-rose-600 text-xs mt-1">{errors.email}</p>}
               </div>
               <div>
                 <label htmlFor="qc-state" className="block text-xs font-semibold text-[#0A0F1E] mb-1">State *</label>
@@ -250,14 +228,58 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
                 </select>
                 {errors.state && <p className="text-rose-600 text-xs mt-1">{errors.state}</p>}
               </div>
-              <div>
-                <label htmlFor="qc-area" className="block text-xs font-semibold text-[#0A0F1E] mb-1">Area / town</label>
-                <input id="qc-area" className={inputCls} value={area} onChange={(e) => setArea(e.target.value)} placeholder="Lekki Phase 1" maxLength={80} />
-              </div>
-              <div className="sm:col-span-2">
-                <label htmlFor="qc-note" className="block text-xs font-semibold text-[#0A0F1E] mb-1">Anything we should know?</label>
-                <textarea id="qc-note" className={inputCls} rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={2000} placeholder="e.g. I already have panels, roof is corrugated, want it done before December…" />
-              </div>
+            </div>
+
+            <div>
+              <button
+                type="button"
+                onClick={() => setMoreOpen((o) => !o)}
+                aria-expanded={moreOpen || !!errors.name || !!errors.email}
+                aria-controls="qc-more"
+                className="inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#0A0F1E] min-h-[44px]"
+              >
+                Add details (optional)
+                <ChevronDown className={`w-4 h-4 transition-transform ${moreOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+              </button>
+              {(moreOpen || !!errors.name || !!errors.email) && (
+                <div id="qc-more" className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+                  <div>
+                    <label htmlFor="qc-name" className="block text-xs font-semibold text-[#0A0F1E] mb-1">Your name</label>
+                    <input
+                      id="qc-name"
+                      className={`${inputCls} ${errors.name ? 'border-rose-400' : ''}`}
+                      value={name}
+                      autoComplete="name"
+                      onChange={(e) => { setName(e.target.value); clearError('name'); }}
+                      placeholder="Tunde Adeyemi"
+                      aria-invalid={!!errors.name}
+                    />
+                    {errors.name && <p className="text-rose-600 text-xs mt-1">{errors.name}</p>}
+                  </div>
+                  <div>
+                    <label htmlFor="qc-email" className="block text-xs font-semibold text-[#0A0F1E] mb-1">Email</label>
+                    <input
+                      id="qc-email"
+                      className={`${inputCls} ${errors.email ? 'border-rose-400' : ''}`}
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); clearError('email'); }}
+                      placeholder="you@example.com"
+                      aria-invalid={!!errors.email}
+                    />
+                    {errors.email && <p className="text-rose-600 text-xs mt-1">{errors.email}</p>}
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label htmlFor="qc-area" className="block text-xs font-semibold text-[#0A0F1E] mb-1">Area / town</label>
+                    <input id="qc-area" className={inputCls} value={area} onChange={(e) => setArea(e.target.value)} placeholder="Lekki Phase 1" maxLength={80} />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label htmlFor="qc-note" className="block text-xs font-semibold text-[#0A0F1E] mb-1">Anything we should know?</label>
+                    <textarea id="qc-note" className={inputCls} rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={2000} placeholder="e.g. I already have panels, roof is corrugated, want it done before December…" />
+                  </div>
+                </div>
+              )}
             </div>
 
             <button
@@ -268,11 +290,21 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
               }`}
             >
               <MessageCircle className="w-5 h-5" />
-              {status === 'submitting' ? 'Sending…' : 'Send & continue on WhatsApp'}
+              {status === 'submitting' ? 'Sending…' : 'Send'}
             </button>
-            <p className="text-[11px] text-[#64748B] text-center">
-              We send your quote to our team and open WhatsApp so you can chat with us directly. No spam.
-            </p>
+
+            <ol className="grid grid-cols-3 gap-2 text-center" aria-label="What happens next">
+              {[
+                'You send it',
+                "We confirm today's price with the seller in writing",
+                'You decide. Nothing to pay now',
+              ].map((step, i) => (
+                <li key={step} className="rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] px-2 py-2.5">
+                  <span className="block font-heading font-bold text-[#0A0F1E] text-sm">{i + 1}</span>
+                  <span className="block text-[11px] text-[#64748B] leading-snug mt-0.5">{step}</span>
+                </li>
+              ))}
+            </ol>
           </form>
         )}
     </Modal>

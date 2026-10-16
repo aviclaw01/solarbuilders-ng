@@ -9,6 +9,7 @@ import {
 import {
   validateFields,
   requiredText,
+  optionalText,
   requiredPhone,
   optionalEmail,
   cleanString,
@@ -77,10 +78,12 @@ export async function POST(req: Request) {
   const body = parsed.data;
 
   const validated = validateFields(body, {
-    name: requiredText("Name", 2, 100),
+    // Phone + state is all the form requires; the name is optional (C2).
+    name: optionalText("Name", 2, 100),
     phone: requiredPhone("WhatsApp number"),
     email: optionalEmail("Email"),
-    location: requiredText("Location", 2, 120),
+    // "Area, State" or just the state — the form always sends the state.
+    location: requiredText("State", 2, 120),
   });
   if (!validated.ok) {
     return fail("Please fix the highlighted fields.", 400, validated.errors as FieldErrors);
@@ -160,7 +163,7 @@ export async function POST(req: Request) {
         subject: `[SolarBuilders] 🛒 Order request ${ref} — ${esc(location)} — ₦${totals.best.toLocaleString()}`,
         html: `
           <h2>Order request ${esc(ref)}</h2>
-          <p><b>Name:</b> ${esc(name)}<br/>
+          <p><b>Name:</b> ${esc(name || "not provided")}<br/>
              <b>WhatsApp:</b> <a href="https://wa.me/${esc(phone.replace(/\D/g, ""))}">${esc(phone)}</a><br/>
              <b>Email:</b> ${esc(email || "not provided")}<br/>
              <b>Location:</b> ${esc(location)}<br/>
