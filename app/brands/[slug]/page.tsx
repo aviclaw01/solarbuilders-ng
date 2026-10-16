@@ -353,7 +353,7 @@ export default async function BrandPage({ params }: Props) {
       </main>
       <Footer />
 
-      {/* Phones only. FloatingWhatsApp is hidden on /brands/* so the two never stack. */}
+      {/* Phones only. FloatingWhatsApp hides itself on phones on /brands/* so the two never stack. */}
       <div className="md:hidden h-20" aria-hidden="true" />
       <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-100 bg-white/95 backdrop-blur px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))]">
         <WhatsAppLink

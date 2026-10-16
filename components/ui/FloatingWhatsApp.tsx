@@ -7,10 +7,11 @@ import { CONTACT_WHATSAPP } from '@/lib/site';
 export default function FloatingWhatsApp() {
   const pathname = usePathname();
   // The calculator has its own sticky action bar; the bubble sat on top of it.
-  // Brand pages carry per-model WhatsApp links plus their own sticky bar.
-  if (pathname === '/calculator' || pathname.startsWith('/brands/')) return null;
-  // /shop has a phone-only order bar with its own WhatsApp button.
-  const phoneHidden = pathname === '/shop' ? ' max-md:hidden' : '';
+  if (pathname === '/calculator') return null;
+  // /shop and /brands/* have a phone-only sticky bar with its own WhatsApp
+  // button; hide the bubble on phones there so the two never stack, but keep
+  // it on desktop where those bars do not render.
+  const phoneHidden = pathname === '/shop' || pathname.startsWith('/brands/') ? ' max-md:hidden' : '';
   return (
     <a
       href={`https://wa.me/${CONTACT_WHATSAPP}?text=Hi%2C%20I%20need%20help%20finding%20a%20solar%20installer`}
