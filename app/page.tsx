@@ -3,8 +3,10 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import ProductImage from '@/components/ui/ProductImage';
-import LeadCaptureModal from '@/components/ui/LeadCaptureModal';
-import { CATEGORY_LABEL, type ProductCategory } from '@/lib/brands';
+import BrandMark from '@/components/ui/BrandMark';
+import NeedBox from '@/components/ui/NeedBox';
+import PriceStamp from '@/components/ui/PriceStamp';
+import { CATEGORY_LABEL, getBrand, getComparison, type Brand, type ComparisonPair, type ProductCategory } from '@/lib/brands';
 import { catalogue, midPrice } from '@/lib/cart';
 import { PERSONAS } from '@/lib/find-personas';
 import { HEADLINE_PACKAGES, PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
@@ -13,7 +15,7 @@ import { ArrowRight, Briefcase, Building2, GraduationCap, Home, Laptop, ListChec
 
 export const metadata: Metadata = {
   title: "Real Nigerian Solar Prices — And We Buy It For You | SolarBuilders.ng",
-  description: `We publish what solar actually costs in Nigeria (Felicity, Deye, Growatt, Jinko — real listings, ${PRICES_LAST_UPDATED_LABEL}). Size your system free, then we order the equipment and put a vetted installer on the job in Lagos, Abuja, Port Harcourt and beyond.`,
+  description: `We publish what solar actually costs in Nigeria (Felicity, Deye, Growatt, Jinko — real listings, ${PRICES_LAST_UPDATED_LABEL}). Size your system free, then we order the equipment and connect you with an installer we have checked (CAC, past installs, references) in Lagos, Abuja, Port Harcourt and beyond.`,
   alternates: { canonical: 'https://solarbuildersng.com' },
 };
 
@@ -49,8 +51,22 @@ function featuredProducts() {
   return picked;
 }
 
+/** Brands people search for by name. Filtered against the catalogue so a renamed slug drops out instead of 404ing. */
+const POPULAR_BRAND_SLUGS = ['deye', 'felicity', 'growatt', 'ja-solar', 'jinko', 'dyness'];
+const COMPARE_SLUGS = ['growatt-vs-luxpower', 'deye-vs-growatt', 'deye-vs-felicity'];
+
+function popularBrands(): Brand[] {
+  return POPULAR_BRAND_SLUGS.map((s) => getBrand(s)).filter((b): b is Brand => Boolean(b));
+}
+
+function popularComparisons(): ComparisonPair[] {
+  return COMPARE_SLUGS.map((s) => getComparison(s)).filter((c): c is ComparisonPair => Boolean(c));
+}
+
 export default function HomePage() {
   const featured = featuredProducts();
+  const brands = popularBrands();
+  const comparisons = popularComparisons();
 
   return (
     <div className="min-h-screen bg-white">
@@ -58,7 +74,6 @@ export default function HomePage() {
       <main>
         {/* ──────────────── HERO ──────────────── */}
         <section className="px-4 sm:px-6 pt-16 pb-14 md:pt-28 md:pb-20 text-center">
-          <p className="text-sm font-semibold text-muted mb-5">Prices checked {PRICES_LAST_UPDATED_LABEL}</p>
           <h1 className="font-heading font-extrabold text-ink text-display max-w-[14ch] mx-auto">
             Solar for your home, priced in three taps
           </h1>
@@ -72,6 +87,7 @@ export default function HomePage() {
               Shop equipment <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
+          <PriceStamp className="mt-6" />
 
           {/* Straight into /find with the first answer already given. */}
           <ul className="max-w-4xl mx-auto mt-14 grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
@@ -99,6 +115,22 @@ export default function HomePage() {
               </Link>
             </li>
           </ul>
+        </section>
+
+        {/* ──────────────── TELL US WHAT YOU NEED ──────────────── */}
+        <section aria-labelledby="need-home-title" className="px-4 sm:px-6 pb-16 md:pb-24">
+          <div className="on-dark max-w-5xl mx-auto bg-night rounded-panel px-5 py-10 sm:px-10 md:px-14 md:py-14 grid md:grid-cols-[1fr_1.35fr] gap-8 md:gap-12 items-start">
+            <div className="text-left">
+              <p className="text-sm font-semibold text-sun">Not sure what to pick?</p>
+              <h2 id="need-home-title" className="font-heading font-extrabold text-white text-title mt-3">
+                Tell us what you need
+              </h2>
+              <p className="text-lead text-white/75 mt-4">
+                Write it the way you&apos;d say it. It opens WhatsApp with your message ready, and a person reads it.
+              </p>
+            </div>
+            <NeedBox placement="home" headingId="need-home-title" />
+          </div>
         </section>
 
         {/* ──────────────── REAL PRODUCTS ──────────────── */}
@@ -137,6 +169,62 @@ export default function HomePage() {
           </section>
         )}
 
+        {/* ──────────────── POPULAR BRANDS + COMPARE ──────────────── */}
+        {(brands.length > 0 || comparisons.length > 0) && (
+          <section className="px-4 sm:px-6 pb-16 md:pb-24">
+            <div className="max-w-6xl mx-auto space-y-12">
+              {brands.length > 0 && (
+                <div>
+                  <div className="flex items-end justify-between gap-4 mb-6">
+                    <h2 className="font-heading font-extrabold text-ink text-2xl sm:text-3xl">Popular brands</h2>
+                    <Link href="/brands" className="inline-flex items-center gap-1.5 font-heading font-bold text-ink hover:text-sun-ink whitespace-nowrap">
+                      All brands <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    </Link>
+                  </div>
+                  <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {brands.map((b) => (
+                      <li key={b.slug}>
+                        <Link
+                          href={`/brands/${b.slug}`}
+                          className="flex items-center gap-3 rounded-card bg-canvas px-4 py-4 hover:bg-sky transition-colors duration-150"
+                        >
+                          <BrandMark brand={b} size={36} />
+                          <span className="min-w-0">
+                            <span className="block font-heading font-bold text-ink leading-tight truncate">{b.name}</span>
+                            <span className="block text-xs text-muted mt-0.5 truncate">
+                              {b.categories.map((c) => CATEGORY_LABEL[c]).join(' · ')}
+                            </span>
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {comparisons.length > 0 && (
+                <div>
+                  <h2 className="font-heading font-extrabold text-ink text-2xl sm:text-3xl mb-6">Compare</h2>
+                  <ul className="grid sm:grid-cols-3 gap-3">
+                    {comparisons.map((c) => (
+                      <li key={c.slug}>
+                        <Link
+                          href={`/compare/${c.slug}`}
+                          className="flex items-center justify-between gap-3 rounded-card border border-line px-5 py-4 font-heading font-bold text-ink hover:border-ink-soft transition-colors duration-150"
+                        >
+                          <span>
+                            {c.a.name} <span className="text-muted font-semibold">vs</span> {c.b.name}
+                          </span>
+                          <ArrowRight className="w-4 h-4 text-ink-soft shrink-0" aria-hidden="true" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* ──────────────── WHAT HOMES PAY ──────────────── */}
         <section className="bg-canvas px-4 sm:px-6 py-16 md:py-24">
           <div className="max-w-3xl mx-auto">
@@ -163,7 +251,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        <LeadCaptureModal />
       </main>
       <Footer />
     </div>
