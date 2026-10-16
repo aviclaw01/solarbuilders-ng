@@ -1,18 +1,32 @@
 /**
  * SolarBuilders → Google Sheet backup (see app/lib/sheets.ts).
  *
- * Setup, once, in the Google Sheet that should hold the orders:
- *   1. Extensions → Apps Script. Paste this file. Save.
- *   2. Project Settings → Script properties → add WEBHOOK_SECRET (any long
- *      random string; the same value goes in Vercel as SHEETS_WEBHOOK_SECRET).
- *   3. Deploy → New deployment → Web app. Execute as: Me. Who has access:
- *      Anyone. Copy the URL into Vercel as SHEETS_WEBHOOK_URL.
+ * A standalone Apps Script project (owned by admin@nexprove.com) that writes
+ * into the sheet SHEET_ID. Setup, once:
+ *   1. Paste this file into the project. Run `setup` once and allow access; the
+ *      execution log prints the webhook secret (made here, kept in Script
+ *      Properties). That value goes in Vercel as SHEETS_WEBHOOK_SECRET.
+ *   2. Deploy → New deployment → Web app. Execute as: Me. Who has access:
+ *      Anyone. The URL goes in Vercel as SHEETS_WEBHOOK_URL.
  *
- * Rows go to the tab named TAB, or the first tab if there is none. Each key in the posted row
- * lands under the column with that header (case and spaces ignored); a key with
- * no column gets a new column at the end. Rename or reorder columns freely.
+ * Rows go to the tab named TAB, or the first tab if there is none. Each key in
+ * the posted row lands under the column with that header (case and spaces
+ * ignored); a key with no column gets a new column at the end. Rename or
+ * reorder columns freely.
  */
+var SHEET_ID = '1CaIXFMZ37dzQgXqM1L6lhiCQ3cZFkM1YtGuFnkjijk0';
 var TAB = 'Orders';
+
+function setup() {
+  var props = PropertiesService.getScriptProperties();
+  var secret = props.getProperty('WEBHOOK_SECRET');
+  if (!secret) {
+    secret = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+    props.setProperty('WEBHOOK_SECRET', secret);
+  }
+  SpreadsheetApp.openById(SHEET_ID).getName();
+  Logger.log('SHEETS_WEBHOOK_SECRET=' + secret);
+}
 
 function doPost(e) {
   var body = JSON.parse(e.postData.contents);
@@ -22,7 +36,7 @@ function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = SpreadsheetApp.openById(SHEET_ID);
     var sheet = ss.getSheetByName(TAB) || ss.getSheets()[0];
     var row = body.row || {};
     var norm = function (s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ''); };

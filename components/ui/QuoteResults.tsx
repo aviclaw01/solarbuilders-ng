@@ -242,7 +242,7 @@ export default function QuoteResults({
   const resetTierOptions = () => setOptions((prev) => ({ ...prev, [tier]: {} }));
 
   const renderCanvas = useCallback(async () => {
-    const { default: html2canvas } = await import('html2canvas');
+    const { default: html2canvas } = await import('html2canvas-pro');
     if (!cardRef.current) throw new Error('no card');
     return html2canvas(cardRef.current, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
   }, []);
@@ -288,7 +288,8 @@ export default function QuoteResults({
       pdf.save(`${fileBase}.pdf`);
       track('quote_download', { quoteCode: quote.code, tier: t.label, amount: t.total.best, format: 'pdf' });
       showToast('PDF saved');
-    } catch {
+    } catch (err) {
+      console.error('[quote] PDF export failed:', err);
       showToast("Couldn't create PDF — try the image");
     } finally {
       setBusy(null);
