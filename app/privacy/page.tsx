@@ -53,7 +53,7 @@ const SECTIONS: { h: string; body: React.ReactNode }[] = [
           with these events.
         </li>
         <li>
-          <strong>On your device:</strong> your cookie choice and your calculator and cart contents, kept in your
+          <strong>On your device:</strong> your calculator and cart contents, kept in your
           browser&apos;s local storage so you don&apos;t lose them. They are not sent to us until you submit a form.
         </li>
       </ul>
@@ -74,10 +74,6 @@ const SECTIONS: { h: string; body: React.ReactNode }[] = [
         <li>
           <strong>To understand which pages help people and fix what doesn&apos;t</strong> — first-party page and
           action counts (legitimate interest).
-        </li>
-        <li>
-          <strong>Google Analytics and Meta Pixel</strong> — only if you click Accept on the cookie card (consent).
-          Choose &ldquo;No thanks&rdquo; and they never load.
         </li>
         <li>
           <strong>To keep records the law requires</strong>, such as tax and accounting records (legal obligation).
@@ -101,7 +97,7 @@ const SECTIONS: { h: string; body: React.ReactNode }[] = [
           </li>
           <li>
             <strong>Service providers who run the site for us:</strong> Vercel (hosting), Supabase (database), Resend
-            (email), and — only with your consent — Google (Analytics) and Meta (Pixel).
+            (email). We use no advertising or third-party analytics trackers, and set no tracking cookies.
           </li>
           <li>Authorities, when the law requires it.</li>
         </ul>
@@ -138,7 +134,6 @@ const SECTIONS: { h: string; body: React.ReactNode }[] = [
           <li>correct it, or delete it where we no longer need it;</li>
           <li>stop or limit how we use it, or object to it;</li>
           <li>send it to you or another company in a common format;</li>
-          <li>withdraw consent — for analytics, clear your browser&apos;s site data and pick again.</li>
         </ul>
         <p>
           Email <a href={`mailto:${EMAIL}`}>{EMAIL}</a>. We reply within 30 days. If you are unhappy with our answer,

@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import "./globals.css";
 import PublicChrome from '@/components/ui/PublicChrome';
-import GoogleAnalytics from '@/components/ui/GoogleAnalytics';
-import MetaPixel from '@/components/ui/MetaPixel';
 import PageViewTracker from '@/components/ui/PageViewTracker';
 import ToastProvider from '@/components/ui/Toast';
 import { claimedSocials, CONTACT_WHATSAPP } from '@/lib/site';
@@ -192,8 +190,6 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} antialiased`} style={{ fontFamily: "'NairaBody', var(--font-body), sans-serif" }}>
-        <GoogleAnalytics />
-        <MetaPixel />
         <PageViewTracker />
         <ToastProvider>{children}</ToastProvider>
         <PublicChrome />

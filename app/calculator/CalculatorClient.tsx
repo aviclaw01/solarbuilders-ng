@@ -2,7 +2,8 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown, ListChecks, Wallet, Clock } from 'lucide-react';
+import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown, ListChecks, Wallet, Clock, MessageCircle } from 'lucide-react';
+import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import QuoteResults from '@/components/ui/QuoteResults';
 import {
   buildQuote,
@@ -532,7 +533,17 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
 
       <main className="max-w-2xl mx-auto px-4 pt-8 pb-32">
         <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">What do you want to power?</h1>
-        <p className="text-slate-500 text-sm mt-1 mb-6">
+        {/* FloatingWhatsApp is hidden here (it would cover the sticky bar), so
+            someone who can't list their appliances needs a way out. */}
+        <WhatsAppLink
+          text="Hi, I want solar for: "
+          placement="calculator_help"
+          className="inline-flex items-center gap-1.5 mt-1 text-sm font-semibold text-emerald-800 underline underline-offset-2 hover:text-emerald-900 min-h-[44px]"
+        >
+          <MessageCircle className="w-4 h-4" aria-hidden="true" />
+          Not sure? Describe it on WhatsApp
+        </WhatsAppLink>
+        <p className="text-slate-500 text-sm mb-6">
           Pick a starting point, adjust if you like, and we&apos;ll size and price the whole system — breakers and all.
         </p>
 
