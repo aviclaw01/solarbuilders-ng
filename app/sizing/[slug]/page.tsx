@@ -270,11 +270,6 @@ export default async function SizingScenarioPage({ params }: Props) {
       <header className="bg-white border-b border-slate-100 px-6 py-12 md:py-16">
         <div className="max-w-6xl mx-auto">
           <Breadcrumbs trail={[{ href: '/sizing', label: 'Sizing guides' }, { label: scenario.question }]} className="mb-6" />
-          <nav className="text-sm text-slate-500 mb-6">
-            <Link href="/sizing" className="hover:text-slate-700">Sizing</Link>
-            <span className="mx-2">/</span>
-            <span className="text-slate-600">{scenario.h1}</span>
-          </nav>
 
           <h1 className="font-heading font-extrabold text-[#0A0F1E] text-3xl md:text-5xl mb-5">
             {scenario.h1}
