@@ -101,7 +101,10 @@ export default function QuoteContactModal({ quote, tier, onClose }: Props) {
         // edits in place instead of dead-ending at the terminal screen. Only a
         // server/network failure (500, 429, no JSON) ends the session there.
         if (res.status === 400 && data?.fields) {
-          setErrors(data.fields as FieldErrors);
+          // The server validates the joined "area, state" as `location`; the
+          // form shows that error under the state picker.
+          const { location: locErr, ...rest } = data.fields as FieldErrors;
+          setErrors(locErr ? { ...rest, state: locErr } : rest);
           setServerError(typeof data.error === 'string' ? data.error : '');
           setStatus('idle');
           return;
