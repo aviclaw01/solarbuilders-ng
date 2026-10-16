@@ -27,7 +27,7 @@ import {
   writeCart,
   type CartLine,
 } from '@/lib/cart';
-import { buildQuote, decodeQuotePayload, formatNaira, parseGrid, parseTierOptions, type TierKey } from '@/lib/quote';
+import { buildQuote, decodeQuotePayload, formatNaira, parseBackupHours, parseGrid, parseTierOptions, type TierKey } from '@/lib/quote';
 import { isEmail, isPhone } from '@/lib/validation';
 import { track } from '@/lib/track';
 
@@ -132,7 +132,12 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
         const options = parseTierOptions(searchParams.get('inv'), searchParams.get('bat'));
         // ?grid= changes battery and panel size; without it a kit chosen for a
         // home with little grid arrived here re-sized for the default supply.
-        const quote = buildQuote(appliances, { [tier]: options }, parseGrid(searchParams.get('grid')));
+        const quote = buildQuote(
+          appliances,
+          { [tier]: options },
+          parseGrid(searchParams.get('grid')),
+          parseBackupHours(searchParams.get('bh')),
+        );
         const match = cartFromQuoteTier(quote.tiers[tier]);
         next = mergeQuoteLines(next, match.lines);
         writeCart(next);

@@ -9,6 +9,7 @@ import {
   buildQuote,
   decodeQuotePayload,
   formatNairaShort,
+  parseBackupHours,
   parseGrid,
   parseTierOptions,
   type GridSupply,
@@ -244,6 +245,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
   const [initialTier, setInitialTier] = useState<TierKey>('standard');
   const [initialOptions, setInitialOptions] = useState<QuoteOptions>({});
   const [grid, setGrid] = useState<GridSupply>('some');
+  const [backupHours, setBackupHours] = useState<number | undefined>(undefined);
   const [hours, setHours] = useState<Record<string, number>>({});
   const [customAppliances, setCustomAppliances] = useState<ApplianceItem[]>([]);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -273,6 +275,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
       if (Object.keys(o).length) setInitialOptions({ [tierParam]: o });
     }
     setGrid(parseGrid(searchParams.get('grid')));
+    setBackupHours(parseBackupHours(searchParams.get('bh')));
     setBriefRequested(searchParams.get('view') === 'brief');
 
     // ?budget=<naira> opens budget mode pre-filled. A ?q= quote still wins.
@@ -445,7 +448,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
   const totalWatts = selectedAppliances.reduce((sum, a) => sum + a.watts * a.qty, 0);
 
   if (showResults && selectedAppliances.length > 0) {
-    const quote = buildQuote(selectedAppliances, initialOptions, grid);
+    const quote = buildQuote(selectedAppliances, initialOptions, grid, backupHours);
     // Prices: always for your own fresh quote; on a shared link only for the
     // browser that generated it or an admin. Everyone else gets the brief.
     const mayPrice = !fromSharedLink || canSeePrices(quote.code);
@@ -484,7 +487,8 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
             initialTier={initialTier}
             initialOptions={initialOptions}
             grid={grid}
-            onGridChange={setGrid}
+            backupHours={backupHours}
+            onBackupHoursChange={setBackupHours}
             priced={priced}
             owner={!fromSharedLink}
             onShowPrices={mayPrice && briefRequested ? () => setBriefRequested(false) : undefined}

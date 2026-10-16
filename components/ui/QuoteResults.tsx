@@ -29,6 +29,7 @@ import {
   type TierOptions,
   type QuoteAppliance,
   type BatteryType,
+  BACKUP_HOURS,
   GRID_SUPPLY,
   GROWTH_ALLOWANCE,
   buildQuote,
@@ -47,13 +48,16 @@ import { rememberQuote } from '@/lib/quote-access';
 import { useToast } from '@/components/ui/Toast';
 import QuoteContactModal from './QuoteContactModal';
 import FinanceOptions from './FinanceOptions';
+import SizingSheet from './SizingSheet';
 
 interface Props {
   appliances: QuoteAppliance[];
   initialTier?: TierKey;
   initialOptions?: QuoteOptions;
   grid: GridSupply;
-  onGridChange: (g: GridSupply) => void;
+  /** Hours the system must run with no grid; unset = sized by the grid band */
+  backupHours?: number;
+  onBackupHoursChange: (h: number) => void;
   /** false → installer brief: everything except our prices */
   priced: boolean;
   /** true when this browser generated the quote; its codes are remembered */
@@ -128,23 +132,28 @@ const GROUPS: { key: BomLine['group']; title: string }[] = [
   { key: 'contingency', title: 'Allowance' },
 ];
 
-function GridPicker({ grid, onChange }: { grid: GridSupply; onChange: (g: GridSupply) => void }) {
+function BackupPicker({ hours, grid, onChange }: { hours?: number; grid: GridSupply; onChange: (h: number) => void }) {
   return (
     <fieldset className="mb-5">
-      <legend className="text-sm font-heading font-semibold text-slate-900 mb-2">How much grid power do you get?</legend>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        {GRID_SUPPLY.map((g) => {
-          const active = g.key === grid;
+      <legend className="text-sm font-heading font-semibold text-slate-900 mb-1">How long must it run with no grid?</legend>
+      {!hours && (
+        <p className="text-xs text-slate-500 mb-2">
+          Now sized for {GRID_SUPPLY.find((g) => g.key === grid)?.hint ?? 'some grid'}. Pick the hours you need.
+        </p>
+      )}
+      <div className="grid grid-cols-5 gap-2 mt-2">
+        {BACKUP_HOURS.map((h) => {
+          const active = h === hours;
           return (
             <label
-              key={g.key}
-              className={`cursor-pointer rounded-xl border px-3 py-2.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-slate-900 ${
+              key={h}
+              className={`cursor-pointer rounded-xl border px-2 py-2.5 text-center transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-slate-900 ${
                 active ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-900 hover:border-amber-400'
               }`}
             >
-              <input type="radio" name="grid" value={g.key} checked={active} onChange={() => onChange(g.key)} className="sr-only" />
-              <span className="block text-sm font-semibold">{g.label}</span>
-              <span className={`block text-[11px] ${active ? 'text-slate-300' : 'text-slate-500'}`}>{g.hint}</span>
+              <input type="radio" name="backup" value={h} checked={active} onChange={() => onChange(h)} className="sr-only" />
+              <span className="block text-sm font-semibold">{h === 24 ? 'All day' : `${h}h`}</span>
+              <span className={`block text-[10px] ${active ? 'text-slate-300' : 'text-slate-500'}`}>{h === 24 ? '24h' : 'no grid'}</span>
             </label>
           );
         })}
@@ -177,7 +186,8 @@ export default function QuoteResults({
   initialTier = 'standard',
   initialOptions = {},
   grid,
-  onGridChange,
+  backupHours,
+  onBackupHoursChange,
   priced,
   owner,
   onShowPrices,
@@ -197,7 +207,10 @@ export default function QuoteResults({
    */
   const trackedQuoteCodes = useRef<Set<string>>(new Set());
 
-  const quote: Quote = useMemo(() => buildQuote(appliances, options, grid), [appliances, options, grid]);
+  const quote: Quote = useMemo(
+    () => buildQuote(appliances, options, grid, backupHours),
+    [appliances, options, grid, backupHours],
+  );
   const t = quote.tiers[tier];
 
   useEffect(() => {
@@ -332,7 +345,7 @@ export default function QuoteResults({
         </div>
       )}
 
-      {priced && <GridPicker grid={grid} onChange={onGridChange} />}
+      {priced && <BackupPicker hours={backupHours} grid={grid} onChange={onBackupHoursChange} />}
 
       {/* Tier switcher */}
       <div className="grid grid-cols-3 gap-2 mb-4">
@@ -574,13 +587,19 @@ export default function QuoteResults({
             <p className="text-sm text-slate-900 mt-1">
               Designed for: {(quote.designPeakWatts / 1000).toFixed(2)}kW · {quote.designDailyKwh}kWh/day
             </p>
-            <p className="text-sm text-slate-900 mt-1">Grid: {GRID_SUPPLY.find((g) => g.key === quote.grid)?.label} ({GRID_SUPPLY.find((g) => g.key === quote.grid)?.hint})</p>
+            <p className="text-sm text-slate-900 mt-1">
+              {quote.backupHours
+                ? `Backup: ${quote.backupHours}h with no grid`
+                : `Grid: ${GRID_SUPPLY.find((g) => g.key === quote.grid)?.label} (${GRID_SUPPLY.find((g) => g.key === quote.grid)?.hint})`}
+            </p>
             <p className="text-xs text-slate-500 mt-2 leading-snug">
               We treat your list as the minimum and design {Math.round((GROWTH_ALLOWANCE - 1) * 100)}% above it, with the
               inverter never loaded past 80%. {t.note}
             </p>
           </div>
         </div>
+
+        <SizingSheet quote={quote} t={t} />
 
         {!priced && (
           <div className="mt-6">

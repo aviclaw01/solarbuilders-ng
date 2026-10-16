@@ -48,6 +48,7 @@ import {
   type InverterTier,
   type PriceRange,
 } from "./prices";
+import { acOutputBreaker, batteryBreaker, batteryCableMm2, pvStrings } from "./electrical";
 
 // ─────────────────────────────────────────────────────────
 // TYPES
@@ -74,6 +75,22 @@ export const GRID_SUPPLY: { key: GridSupply; label: string; hint: string }[] = [
   { key: "none", label: "No grid", hint: "off-grid / generator only" },
 ];
 export const DEFAULT_GRID: GridSupply = "some";
+
+/** "How long must it run with no grid?" — the calculator's backup-hours choices. */
+export const BACKUP_HOURS = [4, 6, 8, 12, 24] as const;
+
+export function parseBackupHours(v: string | null | undefined): number | undefined {
+  const n = Number(v);
+  return (BACKUP_HOURS as readonly number[]).includes(n) ? n : undefined;
+}
+
+/**
+ * Grid band implied by a backup-hours answer — drives the panel share, so a
+ * home that must ride 24h without grid gets the off-grid array.
+ */
+function gridForBackupHours(h: number): GridSupply {
+  return h <= 4 ? "good" : h <= 10 ? "some" : h <= 16 ? "poor" : "none";
+}
 
 export function parseGrid(v: string | null | undefined): GridSupply {
   return v === "good" || v === "some" || v === "poor" || v === "none" ? v : DEFAULT_GRID;
@@ -146,6 +163,10 @@ export interface Quote {
   designPeakWatts: number;
   designDailyKwh: number;
   grid: GridSupply;
+  /** Hours the system must run the list with no grid; unset = sized by grid band */
+  backupHours?: number;
+  /** Extra watts the largest motor draws while starting */
+  surgeWatts: number;
   options: QuoteOptions;
   tiers: Record<TierKey, TierQuote>;
 }
@@ -339,6 +360,7 @@ function buildTier(
   surgeWatts: number,
   grid: GridSupply,
   opts: TierOptions = {},
+  backup?: { hours: number; kwh: number },
 ): TierQuote {
   const cfg = TIER_CONFIG[key];
   const inverterTier = opts.inverterTier ?? cfg.inverterTier;
@@ -349,7 +371,12 @@ function buildTier(
 
   // Battery — the night/no-grid share of daily energy
   const coveredPeak = (designPeakWatts * Math.min(cfg.coveragePct, 100)) / 100;
-  const usableKwh = Math.max(1, designDailyKwh * NIGHT_SHARE[grid] * BATTERY_TIER_FACTOR[key]);
+  // Backup hours, when given, replace the grid-band estimate: the energy the
+  // list uses over that many hours, budget/premium scaled as before.
+  const usableKwh = Math.max(
+    1,
+    (backup ? backup.kwh : designDailyKwh * NIGHT_SHARE[grid]) * BATTERY_TIER_FACTOR[key],
+  );
   let batteryModules: number;
   let batteryKwh: number;
   let inverterKva: number;
@@ -371,7 +398,12 @@ function buildTier(
 
   // Backup hours with everything covered running at the average load — a conservative figure
   const usableInstalled = batteryKwh * (batteryType === "tubular" ? TUBULAR_USABLE : LITHIUM_USABLE);
-  const autonomyHours = Math.max(1, Math.round((usableInstalled * 1000) / Math.max(1, coveredPeak * LOAD_FACTOR)));
+  // With backup hours chosen, a bank that holds the list's energy for that time
+  // covers it; a smaller (budget) bank covers that share of it. Never more than
+  // asked: appliances that stop after their daily hours would inflate the figure.
+  const autonomyHours = backup
+    ? Math.max(1, Math.round(backup.hours * Math.min(1, usableInstalled / Math.max(0.1, backup.kwh))))
+    : Math.max(1, Math.round((usableInstalled * 1000) / Math.max(1, coveredPeak * LOAD_FACTOR)));
 
   // Panels — the solar share of daily energy (lead-acid charges ~15% less efficiently),
   // rounded up to pairs so the array splits into equal strings
@@ -421,9 +453,12 @@ function buildTier(
   ];
 
   // ── Balance of system, itemised
-  const strings = Math.max(1, Math.ceil(panelCount / 6));
+  const { strings } = pvStrings(panelCount);
   const pvCableM = 20 + panelCount * 2; // roof → inverter run + inter-row jumpers
   const bigSystem = inverterKva > 5;
+  // Breaker and cable from lib/electrical.ts, so the BOM matches the sizing sheet.
+  const batt = batteryBreaker(inverterKva);
+  const heavyBattery = batt.breakerA > 125;
   const bosLines: BomLine[] = [
     line("mounting", "Panel mounting", "Aluminium rails, mid/end clamps, roof hooks", panelCount, "panel", BOS_ITEMS.mounting_per_panel),
     line("pv_cable", "DC solar cable", "6mm² twin-core PV cable, roof to inverter", pvCableM, "m", BOS_ITEMS.pv_cable_per_m),
@@ -439,12 +474,12 @@ function buildTier(
     line(
       "battery_protection",
       "Battery breaker & cables",
-      bigSystem ? "160A+ DC MCCB, fuse, 35mm² battery cable, lugs" : "125A DC breaker, fuse, 25mm² battery cable, lugs",
+      `${batt.breakerA}A DC ${heavyBattery ? "MCCB" : "breaker"}, fuse, ${batteryCableMm2(inverterKva)}mm² battery cable, lugs`,
       1,
       "set",
-      bigSystem ? BOS_ITEMS.battery_protection_large : BOS_ITEMS.battery_protection,
+      heavyBattery ? BOS_ITEMS.battery_protection_large : BOS_ITEMS.battery_protection,
     ),
-    line("ac_protection", "AC breakers & surge protection", "2× 63A AC breakers, 4–6 way DB, AC surge protector", 1, "set", BOS_ITEMS.ac_protection),
+    line("ac_protection", "AC breakers & surge protection", `${acOutputBreaker(inverterKva).breakerA}A inverter-output and ${bigSystem ? 100 : 63}A grid-input 2-pole breakers, 4–6 way DB, AC surge protector`, 1, "set", BOS_ITEMS.ac_protection),
     line(
       "changeover",
       "Changeover switch",
@@ -539,7 +574,12 @@ function buildTier(
 /** Compact serialisable input: [id, name, watts, qty, hours][] */
 type QuoteInput = Array<[string, string, number, number, number]>;
 
-export function buildQuote(appliances: QuoteAppliance[], options: QuoteOptions = {}, grid: GridSupply = DEFAULT_GRID): Quote {
+export function buildQuote(
+  appliances: QuoteAppliance[],
+  options: QuoteOptions = {},
+  grid: GridSupply = DEFAULT_GRID,
+  backupHours?: number,
+): Quote {
   // Sort so the same appliances always produce the same code, regardless of
   // the order the UI hands them over (URL restore vs fresh selection).
   const selected = appliances
@@ -566,14 +606,24 @@ export function buildQuote(appliances: QuoteAppliance[], options: QuoteOptions =
   const surgeWatts = startingSurgeWatts(selected);
   const designPeakWatts = peakWatts * GROWTH_ALLOWANCE;
   const designDailyKwh = dailyKwh * GROWTH_ALLOWANCE;
+  // Each appliance runs for its own daily hours or the outage, whichever is shorter.
+  const bh = backupHours !== undefined && Number.isFinite(backupHours) && backupHours > 0 ? backupHours : undefined;
+  const backup = bh
+    ? {
+        hours: bh,
+        kwh: (selected.reduce((s, a) => s + a.watts * a.qty * Math.min(a.hoursPerDay, bh), 0) / 1000) * GROWTH_ALLOWANCE,
+      }
+    : undefined;
+  const g = bh ? gridForBackupHours(bh) : grid;
   const tiers = {
-    budget: buildTier("budget", designPeakWatts, designDailyKwh, surgeWatts, grid, options.budget),
-    standard: buildTier("standard", designPeakWatts, designDailyKwh, surgeWatts, grid, options.standard),
-    premium: buildTier("premium", designPeakWatts, designDailyKwh, surgeWatts, grid, options.premium),
+    budget: buildTier("budget", designPeakWatts, designDailyKwh, surgeWatts, g, options.budget, backup),
+    standard: buildTier("standard", designPeakWatts, designDailyKwh, surgeWatts, g, options.standard, backup),
+    premium: buildTier("premium", designPeakWatts, designDailyKwh, surgeWatts, g, options.premium, backup),
   };
   // Default grid keeps the hash of the appliance list alone, so a code still
   // identifies the same load it did before grid supply was an input.
-  const code = `SB-${tiers.standard.inverterKva}K-${shortHash(grid === DEFAULT_GRID ? json : `${json}|${grid}`)}`;
+  const variant = bh ? `|bh${bh}` : grid === DEFAULT_GRID ? "" : `|${grid}`;
+  const code = `SB-${tiers.standard.inverterKva}K-${shortHash(`${json}${variant}`)}`;
 
   return {
     code,
@@ -585,7 +635,9 @@ export function buildQuote(appliances: QuoteAppliance[], options: QuoteOptions =
     dailyKwh: Math.round(dailyKwh * 10) / 10,
     designPeakWatts: Math.round(designPeakWatts),
     designDailyKwh: Math.round(designDailyKwh * 10) / 10,
-    grid,
+    grid: g,
+    backupHours: bh,
+    surgeWatts: Math.round(surgeWatts),
     options,
     tiers,
   };
@@ -640,7 +692,7 @@ export function quoteUrl(quote: Quote, tier: TierKey, base: string): string {
   const extra = [
     o.inverterTier ? `inv=${o.inverterTier}` : "",
     o.battery ? `bat=${o.battery}` : "",
-    quote.grid !== DEFAULT_GRID ? `grid=${quote.grid}` : "",
+    quote.backupHours ? `bh=${quote.backupHours}` : quote.grid !== DEFAULT_GRID ? `grid=${quote.grid}` : "",
   ]
     .filter(Boolean)
     .join("&");

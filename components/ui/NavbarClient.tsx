@@ -22,7 +22,7 @@ export default function NavbarClient({
   plainLink,
 }: {
   menus: MenuGroup[];
-  /** optional top-level link beside the menus; none at the moment */
+  /** optional top-level link beside the menus (the load calculator) */
   plainLink?: MenuItem;
 }) {
   const [open, setOpen] = useState(false);

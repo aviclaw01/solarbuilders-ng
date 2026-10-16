@@ -225,6 +225,35 @@ check("panel unit price carries the sourcing fee",
   panelLine && `${panelLine.unitCost.best}`);
 check("installation is not marked up", installLine.unitCost.best === 0 || installLine.group === "excluded");
 
+group("backup hours drive storage");
+const bh4 = Q.buildQuote(home, {}, "some", 4);
+const bh24 = Q.buildQuote(home, {}, "some", 24);
+check("24h of backup gets more battery than 4h", bh24.tiers.standard.batteryKwh > bh4.tiers.standard.batteryKwh,
+  `${bh24.tiers.standard.batteryKwh} vs ${bh4.tiers.standard.batteryKwh}`);
+check("the standard tier covers the hours asked for", bh4.tiers.standard.autonomyHours === 4 && bh24.tiers.standard.autonomyHours === 24,
+  `${bh4.tiers.standard.autonomyHours}h / ${bh24.tiers.standard.autonomyHours}h`);
+check("backup hours change the code", bh4.code !== hq.code && bh4.code !== bh24.code);
+check("no backup hours leaves the quote as it was", Q.buildQuote(home, {}, "some", undefined).code === hq.code);
+check("the share link carries backup hours", Q.quoteUrl(bh4, "standard", "https://x").includes("bh=4"));
+check("parseBackupHours accepts only the offered choices", Q.parseBackupHours("8") === 8 && Q.parseBackupHours("7") === undefined && Q.parseBackupHours(null) === undefined);
+
+group("electrical sizing");
+const E = require(path.join(outDir, "electrical.js"));
+for (const kva of [1.5, 3.5, 5, 10]) {
+  const b = E.batteryBreaker(kva);
+  check(`${kva}kVA battery breaker is at least 125% of full-load current`, b.breakerA >= b.maxAmps * 1.25, `${b.breakerA}A for ${b.maxAmps.toFixed(0)}A`);
+}
+const sheet = E.electricalSheet(st, hq);
+for (const [name, run] of [["battery", sheet.battery.cable], ["pv", sheet.pv.cable], ["ac", sheet.ac.cable]]) {
+  check(`${name} cable keeps voltage drop inside ${run.limitPct}%`, run.dropPct <= run.limitPct, `${run.mm2}mm² ${run.dropPct}%`);
+}
+const longRun = E.electricalSheet(st, hq, { batteryM: 10 });
+check("a longer battery run never gets a thinner cable", longRun.battery.cable.mm2 >= sheet.battery.cable.mm2);
+check("the inverter carries the design load at 80%", sheet.inverter.continuousW >= sheet.inverter.designPeakW);
+check("the inverter surge covers the worst motor start", sheet.inverter.surgeW >= sheet.inverter.startW);
+const battLine = st.bom.find((l) => l.key === "battery_protection");
+check("the BOM battery breaker matches the sizing sheet", battLine.spec.startsWith(`${sheet.battery.breakerA}A`), battLine.spec);
+
 // ─────────────────────────────────────────────────────────────
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) {
