@@ -18,6 +18,7 @@ import {
   Sun,
   Check,
   Plus,
+  Phone,
 } from 'lucide-react';
 import {
   type BomLine,
@@ -40,7 +41,8 @@ import {
 import { INVERTER_BRANDS, PRICES_LAST_UPDATED_LABEL, type InverterTier } from '@/lib/prices';
 import { BRAND_SLUG_BY_NAME } from '@/lib/brand-slugs';
 import { SITE_URL } from '@/lib/site';
-import { track } from '@/lib/track';
+import { track, withCampaign } from '@/lib/track';
+import WhatsAppLink from './WhatsAppLink';
 import { rememberQuote } from '@/lib/quote-access';
 import { useToast } from '@/components/ui/Toast';
 import QuoteContactModal from './QuoteContactModal';
@@ -212,6 +214,10 @@ export default function QuoteResults({
   const fileBase = `SolarBuilders-${quote.code}-${t.label}${priced ? '' : '-brief'}`;
   const customised = !!(t.options.inverterTier || t.options.battery);
   const briefUrl = `${quoteUrl(quote, tier, SITE_URL)}&view=brief`;
+  /** The quote code lets the owner match the chat to the quote. */
+  const waQuoteText =
+    `Hi SolarBuilders, quote ${quote.code}: ${t.label} ${t.inverterKva}kVA, equipment ${formatNaira(t.total.best)} ` +
+    `(prices checked ${PRICES_LAST_UPDATED_LABEL}). ${withCampaign(quoteUrl(quote, tier, SITE_URL), 'quote_card')}`;
 
   const setTierOption = (patch: TierOptions) =>
     setOptions((prev) => ({ ...prev, [tier]: { ...(prev[tier] ?? {}), ...patch } }));
@@ -621,34 +627,45 @@ export default function QuoteResults({
       {/* ── Actions ───────────────────────────────────────── */}
       {priced ? (
         <div className="mt-5 space-y-3">
+          {/* WhatsApp first: most buyers would rather chat than fill a form, and
+              the whatsapp_click row carrying the quote code is the lead record.
+              /find proved this pattern. */}
+          <WhatsAppLink
+            text={waQuoteText}
+            placement="quote_card"
+            quoteCode={quote.code}
+            className="w-full bg-[#25D366] hover:brightness-95 text-ink py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition"
+          >
+            <MessageCircle className="w-5 h-5" aria-hidden="true" /> Send this quote on WhatsApp
+          </WhatsAppLink>
+          <p className="text-[12px] text-slate-600 text-center -mt-1">
+            Free. Nothing to pay now. A person replies on WhatsApp.
+          </p>
           <button
             onClick={() => {
               track('quote_form_open', { quoteCode: quote.code, tier: t.label, amount: t.total.best });
               setShowContact(true);
             }}
-            className="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition-colors"
-          >
-            <MessageCircle className="w-5 h-5" /> Get this system built
-          </button>
-          <button
-            onClick={copyInstallerLink}
             className="w-full flex items-center justify-center gap-2 border border-slate-300 hover:border-slate-900 text-slate-900 py-3 rounded-full text-sm font-semibold transition-colors"
           >
-            <Link2 className="w-4 h-4" /> Copy installer link (no prices)
+            <Phone className="w-4 h-4" aria-hidden="true" /> Or get a call back
           </button>
-          <div className="grid grid-cols-3 gap-2">
-            <button onClick={downloadPdf} disabled={busy !== null} className="flex items-center justify-center gap-1.5 border border-slate-200 hover:border-amber-400 text-slate-900 py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50">
-              <Download className="w-4 h-4" /> {busy === 'pdf' ? 'Saving…' : 'PDF'}
+          <div className="flex flex-wrap items-center justify-center gap-x-1 gap-y-1 pt-1">
+            <button onClick={copyInstallerLink} className="inline-flex items-center gap-1 px-2.5 min-h-[40px] rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-white transition-colors">
+              <Link2 className="w-3.5 h-3.5" aria-hidden="true" /> Copy installer link
             </button>
-            <button onClick={downloadPng} disabled={busy !== null} className="flex items-center justify-center gap-1.5 border border-slate-200 hover:border-amber-400 text-slate-900 py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50">
-              <ImageIcon className="w-4 h-4" /> {busy === 'png' ? 'Saving…' : 'Image'}
+            <button onClick={downloadPdf} disabled={busy !== null} className="inline-flex items-center gap-1 px-2.5 min-h-[40px] rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-white transition-colors disabled:opacity-50">
+              <Download className="w-3.5 h-3.5" aria-hidden="true" /> {busy === 'pdf' ? 'Saving…' : 'PDF'}
             </button>
-            <button onClick={share} className="flex items-center justify-center gap-1.5 border border-slate-200 hover:border-amber-400 text-slate-900 py-3 rounded-full text-sm font-semibold transition-colors">
-              <Share2 className="w-4 h-4" /> Share
+            <button onClick={downloadPng} disabled={busy !== null} className="inline-flex items-center gap-1 px-2.5 min-h-[40px] rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-white transition-colors disabled:opacity-50">
+              <ImageIcon className="w-3.5 h-3.5" aria-hidden="true" /> {busy === 'png' ? 'Saving…' : 'Image'}
+            </button>
+            <button onClick={share} className="inline-flex items-center gap-1 px-2.5 min-h-[40px] rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-white transition-colors">
+              <Share2 className="w-3.5 h-3.5" aria-hidden="true" /> Share
             </button>
           </div>
           <p className="text-[11px] text-slate-500 text-center">
-            Want independent quotes? Send installers the link above — they see what you need, not our prices, so you can
+            Want independent quotes? The installer link shows installers what you need, not our prices, so you can
             compare their figure with ours.
           </p>
           <FinanceOptions amount={t.total.best} quoteCode={quote.code} tier={t.label} />

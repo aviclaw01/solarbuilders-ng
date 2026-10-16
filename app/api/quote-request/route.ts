@@ -10,6 +10,7 @@ import {
 import {
   validateFields,
   requiredText,
+  optionalText,
   requiredPhone,
   optionalEmail,
   cleanString,
@@ -66,10 +67,12 @@ export async function POST(req: Request) {
   }
 
   const validated = validateFields(parsed.data, {
-    name: requiredText("Name", 2, 100),
+    // Phone + state is all the form requires; the name is optional (C2).
+    name: optionalText("Name", 2, 100),
     phone: requiredPhone("WhatsApp number"),
     email: optionalEmail("Email"),
-    location: requiredText("Location", 2, 120),
+    // "Area, State" or just the state — the form always sends the state.
+    location: requiredText("State", 2, 120),
     quoteCode: (v) => {
       const s = cleanString(v, 40);
       if (!s) return "Quote code is missing — regenerate the quote and try again.";
@@ -119,7 +122,7 @@ export async function POST(req: Request) {
           <h2>New quote request — ${esc(ref)}</h2>
           <p><b>Request reference:</b> ${esc(ref)}<br/>
              <b>Quote code:</b> ${esc(quoteCode)}<br/>
-             <b>Name:</b> ${esc(name)}<br/>
+             <b>Name:</b> ${esc(name || "not provided")}<br/>
              <b>WhatsApp:</b> <a href="https://wa.me/${esc(phone.replace(/\D/g, ""))}">${esc(phone)}</a><br/>
              <b>Email:</b> ${esc(email || "not provided")}<br/>
              <b>Location:</b> ${esc(location)}<br/>
