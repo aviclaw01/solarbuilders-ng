@@ -49,6 +49,7 @@ import {
   type PriceRange,
 } from "./prices";
 import { acOutputBreaker, batteryBreaker, batteryCableMm2, pvStrings } from "./electrical";
+import type { LiteCatalogue, LiteProduct } from "./catalogue-lite";
 
 // ─────────────────────────────────────────────────────────
 // TYPES
@@ -100,6 +101,14 @@ export function parseGrid(v: string | null | undefined): GridSupply {
 export interface TierOptions {
   inverterTier?: InverterTier;
   battery?: BatteryType;
+  /** The buyer's own sizes — the rest of the system re-sizes around them */
+  inverterKva?: number;
+  batteryModules?: number;
+  panelCount?: number;
+  /** Brand slugs from lib/brands.ts; priced off that brand's live listings */
+  inverterBrand?: string;
+  batteryBrand?: string;
+  panelBrand?: string;
 }
 export type QuoteOptions = Partial<Record<TierKey, TierOptions>>;
 
@@ -340,10 +349,12 @@ function line(
   unit: string,
   unitCost: PriceRange,
   group: BomLine["group"] = "bos",
+  /** catalogue listings already include the sourcing fee */
+  feeIncluded = false,
 ): BomLine {
   // Equipment and BOS are bought from third-party sellers, so they carry the
   // sourcing fee. Contingency is derived from these lines and already scales.
-  if (group === "equipment" || group === "bos") {
+  if (!feeIncluded && (group === "equipment" || group === "bos")) {
     unitCost = {
       low: withSourcingMargin(unitCost.low),
       best: withSourcingMargin(unitCost.best),
@@ -351,6 +362,33 @@ function line(
     };
   }
   return { key, item, spec, qty, unit, unitCost, lineCost: scale(unitCost, qty), group };
+}
+
+/** A catalogue listing as a price range: the spread sellers showed, midpoint as "best". */
+function listing(p: LiteProduct): PriceRange {
+  return { low: p.low, best: Math.round((p.low + p.high) / 2 / 100) * 100, high: p.high };
+}
+
+/** That brand's smallest inverter that covers the size; else its largest. */
+function pickInverter(c: LiteCatalogue, slug: string, kva: number): LiteProduct | null {
+  const own = c.inverter.filter((p) => p.slug === slug).sort((a, b) => a.size - b.size || a.low - b.low);
+  return own.find((p) => p.size >= kva) ?? own[own.length - 1] ?? null;
+}
+
+/** That brand's module nearest a 5kWh home module, on the bank's voltage. */
+function pickModule(c: LiteCatalogue, slug: string, volts: 24 | 48): LiteProduct | null {
+  const own = c.battery.filter(
+    (p) => p.slug === slug && !/high.voltage/i.test(p.spec) && (volts === 24 ? /\b24V\b/.test(p.spec) : !/\b24V\b/.test(p.spec)),
+  );
+  own.sort((a, b) => Math.abs(a.size - LITHIUM_MODULE_KWH) - Math.abs(b.size - LITHIUM_MODULE_KWH) || a.low - b.low);
+  return own[0] ?? null;
+}
+
+/** That brand's panel nearest the 600W modules retail now sells. */
+function pickPanel(c: LiteCatalogue, slug: string): LiteProduct | null {
+  const own = c.panel.filter((p) => p.slug === slug);
+  own.sort((a, b) => Math.abs(a.size - PANEL_WATTS) - Math.abs(b.size - PANEL_WATTS) || a.low - b.low);
+  return own[0] ?? null;
 }
 
 function buildTier(
@@ -361,6 +399,7 @@ function buildTier(
   grid: GridSupply,
   opts: TierOptions = {},
   backup?: { hours: number; kwh: number },
+  catalogue?: LiteCatalogue,
 ): TierQuote {
   const cfg = TIER_CONFIG[key];
   const inverterTier = opts.inverterTier ?? cfg.inverterTier;
@@ -380,20 +419,45 @@ function buildTier(
   let batteryModules: number;
   let batteryKwh: number;
   let inverterKva: number;
+  let moduleKwh = LITHIUM_MODULE_KWH;
+  let invPick: LiteProduct | null = null;
+  let batPick: LiteProduct | null = null;
+  const nominalKwh = usableKwh / LITHIUM_USABLE;
   if (batteryType === "tubular") {
     // 12V 200Ah units in series strings: 2 for 24V (<5kVA), 4 for 48V
     const series = inverterKvaRaw >= 5 ? 4 : 2;
     const perUnitUsable = TUBULAR_KWH * TUBULAR_USABLE;
     batteryModules = Math.max(series, Math.ceil(usableKwh / perUnitUsable / series) * series);
-    batteryKwh = Math.round(batteryModules * TUBULAR_KWH * 100) / 100;
     inverterKva = batteryModules > 8 ? Math.max(inverterKvaRaw, 5) : inverterKvaRaw;
   } else {
-    const nominalKwh = usableKwh / LITHIUM_USABLE;
     batteryModules = Math.max(1, Math.ceil(nominalKwh / LITHIUM_MODULE_KWH));
-    batteryKwh = Math.round(batteryModules * LITHIUM_MODULE_KWH * 100) / 100;
     // Banks above 2 modules (>10kWh) belong on a 48V system — installers move to
     // 5kVA/48V rather than paralleling many 24V modules on a small inverter.
     inverterKva = batteryModules > 2 ? Math.max(inverterKvaRaw, 5) : inverterKvaRaw;
+  }
+
+  // The buyer's own choices win; everything after this sizes around them.
+  if (opts.inverterKva) inverterKva = opts.inverterKva;
+  if (opts.inverterBrand && catalogue) {
+    invPick = pickInverter(catalogue, opts.inverterBrand, inverterKva);
+    if (invPick) inverterKva = invPick.size;
+  }
+  if (batteryType === "lithium") {
+    if (opts.batteryBrand && catalogue) {
+      batPick = pickModule(catalogue, opts.batteryBrand, inverterKva >= 5 ? 48 : 24);
+      if (batPick) {
+        moduleKwh = batPick.size;
+        batteryModules = Math.max(1, Math.ceil(nominalKwh / moduleKwh));
+      }
+    }
+    if (opts.batteryModules) batteryModules = opts.batteryModules;
+    batteryKwh = Math.round(batteryModules * moduleKwh * 100) / 100;
+  } else {
+    if (opts.batteryModules) {
+      const series = inverterKva >= 5 ? 4 : 2;
+      batteryModules = Math.max(series, Math.ceil(opts.batteryModules / series) * series);
+    }
+    batteryKwh = Math.round(batteryModules * TUBULAR_KWH * 100) / 100;
   }
 
   // Backup hours with everything covered running at the average load — a conservative figure
@@ -409,28 +473,37 @@ function buildTier(
   // rounded up to pairs so the array splits into equal strings
   const targetKwh = designDailyKwh * SOLAR_SHARE[grid] * cfg.panelFactor * (batteryType === "tubular" ? 1.15 : 1);
   const requiredWp = (targetKwh * 1000) / (PEAK_SUN_HOURS * SYSTEM_EFFICIENCY);
-  const panelCount = Math.max(2, Math.ceil(requiredWp / PANEL_WATTS / 2) * 2);
-  const arrayKwp = Math.round((panelCount * PANEL_WATTS) / 10) / 100;
+  const panPick = opts.panelBrand && catalogue ? pickPanel(catalogue, opts.panelBrand) : null;
+  const panelWatts = panPick?.size ?? PANEL_WATTS;
+  const panelCount = opts.panelCount ?? Math.max(2, Math.ceil(requiredWp / panelWatts / 2) * 2);
+  const arrayKwp = Math.round((panelCount * panelWatts) / 10) / 100;
 
-  // ── Major equipment
-  const invUnit = scale(INVERTER_PER_KVA[inverterTier], inverterKva * inverterSizeFactor(inverterKva));
-  const batUnit = batteryType === "tubular" ? TUBULAR_200AH : scale(LITHIUM_PER_KWH[inverterTier], LITHIUM_MODULE_KWH);
-  const panUnit = scale(PANEL_PER_WP, PANEL_WATTS);
-  const batteryBrands = batteryType === "tubular" ? TUBULAR_BRANDS : LITHIUM_BRANDS[inverterTier];
-  const panelBrands = PANEL_BRANDS.slice(0, 3);
+  // ── Major equipment. A chosen brand is priced off its own catalogue listing,
+  // which already carries the sourcing fee; otherwise the class price applies.
+  const invUnit = invPick ? listing(invPick) : scale(INVERTER_PER_KVA[inverterTier], inverterKva * inverterSizeFactor(inverterKva));
+  const batUnit =
+    batteryType === "tubular" ? TUBULAR_200AH : batPick ? listing(batPick) : scale(LITHIUM_PER_KWH[inverterTier], LITHIUM_MODULE_KWH);
+  const panUnit = panPick ? listing(panPick) : scale(PANEL_PER_WP, PANEL_WATTS);
+  const inverterBrands = invPick ? [invPick.brand] : INVERTER_BRANDS[inverterTier];
+  const batteryBrands = batteryType === "tubular" ? TUBULAR_BRANDS : batPick ? [batPick.brand] : LITHIUM_BRANDS[inverterTier];
+  const panelBrands = panPick ? [panPick.brand] : PANEL_BRANDS.slice(0, 3);
 
-  const invSpec = `${inverterKva}kVA ${inverterKva >= 5 ? "48V" : "24V"} hybrid`;
+  const invSpec = invPick
+    ? `${invPick.model} · ${inverterKva}kVA ${inverterKva >= 5 ? "48V" : "24V"}`
+    : `${inverterKva}kVA ${inverterKva >= 5 ? "48V" : "24V"} hybrid`;
   const batSpec =
     batteryType === "tubular"
       ? `200Ah 12V tubular deep-cycle · 2–4 yr life`
-      : `${LITHIUM_MODULE_KWH}kWh ${inverterKva >= 5 ? "48V 100Ah" : "24V 200Ah"} module · 10+ yr life`;
-  const panSpec = `${PANEL_WATTS}W mono/bifacial`;
+      : batPick
+        ? `${batPick.model} · ${batPick.size}kWh module`
+        : `${LITHIUM_MODULE_KWH}kWh ${inverterKva >= 5 ? "48V 100Ah" : "24V 200Ah"} module · 10+ yr life`;
+  const panSpec = panPick ? `${panPick.model} · ${panelWatts}W` : `${PANEL_WATTS}W mono/bifacial`;
 
   const equipmentLines: BomLine[] = [
     {
-      ...line("inverter", "Hybrid inverter", `${invSpec} — ${INVERTER_BRANDS[inverterTier].join(" / ")}`, 1, "unit", invUnit, "equipment"),
+      ...line("inverter", "Hybrid inverter", `${invSpec} — ${inverterBrands.join(" / ")}`, 1, "unit", invUnit, "equipment", !!invPick),
       specBase: invSpec,
-      brands: INVERTER_BRANDS[inverterTier],
+      brands: inverterBrands,
     },
     {
       ...line(
@@ -441,12 +514,13 @@ function buildTier(
         batteryType === "tubular" ? "battery" : "module",
         batUnit,
         "equipment",
+        !!batPick,
       ),
       specBase: batSpec,
       brands: batteryBrands,
     },
     {
-      ...line("panels", "Solar panels", `${panSpec} — ${panelBrands.join(" / ")}`, panelCount, "panel", panUnit, "equipment"),
+      ...line("panels", "Solar panels", `${panSpec} — ${panelBrands.join(" / ")}`, panelCount, "panel", panUnit, "equipment", !!panPick),
       specBase: panSpec,
       brands: panelBrands,
     },
@@ -550,14 +624,14 @@ function buildTier(
     tagline: cfg.tagline,
     inverterKva,
     inverterTier,
-    inverterBrands: INVERTER_BRANDS[inverterTier],
+    inverterBrands,
     batteryKwh,
     batteryModules,
     batteryType,
     batteryBrands,
     options: opts,
     panelCount,
-    panelWatts: PANEL_WATTS,
+    panelWatts,
     arrayKwp,
     autonomyHours,
     coveragePct: cfg.coveragePct,
@@ -579,6 +653,7 @@ export function buildQuote(
   options: QuoteOptions = {},
   grid: GridSupply = DEFAULT_GRID,
   backupHours?: number,
+  catalogue?: LiteCatalogue,
 ): Quote {
   // Sort so the same appliances always produce the same code, regardless of
   // the order the UI hands them over (URL restore vs fresh selection).
@@ -616,9 +691,9 @@ export function buildQuote(
     : undefined;
   const g = bh ? gridForBackupHours(bh) : grid;
   const tiers = {
-    budget: buildTier("budget", designPeakWatts, designDailyKwh, surgeWatts, g, options.budget, backup),
-    standard: buildTier("standard", designPeakWatts, designDailyKwh, surgeWatts, g, options.standard, backup),
-    premium: buildTier("premium", designPeakWatts, designDailyKwh, surgeWatts, g, options.premium, backup),
+    budget: buildTier("budget", designPeakWatts, designDailyKwh, surgeWatts, g, options.budget, backup, catalogue),
+    standard: buildTier("standard", designPeakWatts, designDailyKwh, surgeWatts, g, options.standard, backup, catalogue),
+    premium: buildTier("premium", designPeakWatts, designDailyKwh, surgeWatts, g, options.premium, backup, catalogue),
   };
   // Default grid keeps the hash of the appliance list alone, so a code still
   // identifies the same load it did before grid supply was an input.
@@ -692,11 +767,42 @@ export function quoteUrl(quote: Quote, tier: TierKey, base: string): string {
   const extra = [
     o.inverterTier ? `inv=${o.inverterTier}` : "",
     o.battery ? `bat=${o.battery}` : "",
+    o.inverterKva ? `kva=${o.inverterKva}` : "",
+    o.batteryModules ? `bm=${o.batteryModules}` : "",
+    o.panelCount ? `pc=${o.panelCount}` : "",
+    o.inverterBrand ? `ib=${o.inverterBrand}` : "",
+    o.batteryBrand ? `bb=${o.batteryBrand}` : "",
+    o.panelBrand ? `pb=${o.panelBrand}` : "",
     quote.backupHours ? `bh=${quote.backupHours}` : quote.grid !== DEFAULT_GRID ? `grid=${quote.grid}` : "",
   ]
     .filter(Boolean)
     .join("&");
   return `${base}/calculator?q=${quote.payload}&tier=${tier}${extra ? `&${extra}` : ""}`;
+}
+
+/** Inverter sizes a buyer can pick; the engine's own steps plus 3kVA. */
+export const INVERTER_SIZES = [1.5, 2.5, 3, 3.5, 5, 6, 8, 10, 12, 16, 20] as const;
+
+const SLUG = /^[a-z0-9-]{2,40}$/;
+function intIn(v: string | null, min: number, max: number): number | undefined {
+  const n = Number(v);
+  return Number.isInteger(n) && n >= min && n <= max ? n : undefined;
+}
+
+/** Every per-tier option a quote link can carry (?inv ?bat ?kva ?bm ?pc ?ib ?bb ?pb); junk is ignored. */
+export function parseTierOptionsFrom(sp: { get(k: string): string | null }): TierOptions {
+  const o = parseTierOptions(sp.get("inv"), sp.get("bat"));
+  const kva = Number(sp.get("kva"));
+  if ((INVERTER_SIZES as readonly number[]).includes(kva)) o.inverterKva = kva;
+  const bm = intIn(sp.get("bm"), 1, 40);
+  if (bm) o.batteryModules = bm;
+  const pc = intIn(sp.get("pc"), 1, 100);
+  if (pc) o.panelCount = pc;
+  for (const [k, field] of [["ib", "inverterBrand"], ["bb", "batteryBrand"], ["pb", "panelBrand"]] as const) {
+    const v = sp.get(k);
+    if (v && SLUG.test(v)) o[field] = v;
+  }
+  return o;
 }
 
 /** Parse ?inv= / ?bat= URL params into TierOptions (ignores junk) */

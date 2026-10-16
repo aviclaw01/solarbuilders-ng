@@ -254,6 +254,35 @@ check("the inverter surge covers the worst motor start", sheet.inverter.surgeW >
 const battLine = st.bom.find((l) => l.key === "battery_protection");
 check("the BOM battery breaker matches the sizing sheet", battLine.spec.startsWith(`${sheet.battery.breakerA}A`), battLine.spec);
 
+group("buyer overrides");
+const cat = {
+  inverter: [{ slug: "acme", brand: "Acme", model: "A-6K", spec: "6kVA 48V hybrid", size: 6, low: 700000, high: 900000 }],
+  battery: [
+    { slug: "acme", brand: "Acme", model: "B-5", spec: "5.12kWh 51.2V", size: 5.12, low: 1000000, high: 1200000 },
+    { slug: "acme", brand: "Acme", model: "B-24", spec: "5kWh 24V 200Ah", size: 5, low: 900000, high: 900000 },
+  ],
+  panel: [{ slug: "acme", brand: "Acme", model: "P-550", spec: "550W mono", size: 550, low: 100000, high: 120000 }],
+};
+const ov = Q.buildQuote(home, { standard: { inverterKva: 8, batteryModules: 5, panelCount: 13 } }).tiers.standard;
+check("an inverter size the buyer sets is kept", ov.inverterKva === 8, `${ov.inverterKva}`);
+check("a battery count the buyer sets is kept", ov.batteryModules === 5 && ov.batteryKwh === 25.6, `${ov.batteryModules} / ${ov.batteryKwh}`);
+check("a panel count the buyer sets is kept", ov.panelCount === 13, `${ov.panelCount}`);
+const ovBreaker = ov.bom.find((l) => l.key === "battery_protection").spec;
+check("protection re-sizes to the buyer's inverter", ovBreaker.startsWith("250A"), ovBreaker);
+check("mounting follows the buyer's panel count", ov.bom.find((l) => l.key === "mounting").qty === 13);
+const br = Q.buildQuote(home, { standard: { inverterBrand: "acme", batteryBrand: "acme", panelBrand: "acme" } }, "some", undefined, cat).tiers.standard;
+const brInv = br.bom.find((l) => l.key === "inverter");
+check("a chosen inverter brand is priced off its listing, fee not added twice", brInv.unitCost.low === 700000 && brInv.unitCost.high === 900000, JSON.stringify(brInv.unitCost));
+check("a chosen inverter brand sets the size to its model", br.inverterKva === 6, `${br.inverterKva}`);
+check("a 48V bank never gets a 24V module", br.bom.find((l) => l.key === "battery").spec.startsWith("B-5"));
+check("a chosen panel brand sets the panel watts", br.panelWatts === 550 && br.panelCount % 2 === 0, `${br.panelWatts}W × ${br.panelCount}`);
+check("unknown brand falls back to the class price", Q.buildQuote(home, { standard: { inverterBrand: "nobody" } }, "some", undefined, cat).tiers.standard.inverterBrands.length > 1);
+const url = Q.quoteUrl(Q.buildQuote(home, { standard: { inverterKva: 8, batteryModules: 5, panelCount: 13, inverterBrand: "acme" } }), "standard", "https://x");
+const sp = new URL(url).searchParams;
+const back = Q.parseTierOptionsFrom(sp);
+check("overrides survive the share link", back.inverterKva === 8 && back.batteryModules === 5 && back.panelCount === 13 && back.inverterBrand === "acme", url);
+check("junk overrides are ignored", Object.keys(Q.parseTierOptionsFrom(new URLSearchParams("kva=7&bm=-1&pc=abc&ib=../x"))).length === 0);
+
 // ─────────────────────────────────────────────────────────────
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) {

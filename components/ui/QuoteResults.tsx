@@ -49,6 +49,8 @@ import { useToast } from '@/components/ui/Toast';
 import QuoteContactModal from './QuoteContactModal';
 import FinanceOptions from './FinanceOptions';
 import SizingSheet from './SizingSheet';
+import AdjustSystem from './AdjustSystem';
+import type { LiteCatalogue } from '@/lib/catalogue-lite';
 
 interface Props {
   appliances: QuoteAppliance[];
@@ -58,6 +60,8 @@ interface Props {
   /** Hours the system must run with no grid; unset = sized by the grid band */
   backupHours?: number;
   onBackupHoursChange: (h: number) => void;
+  /** priced brand listings, so a brand the buyer picks is priced off its own listing */
+  catalogue?: LiteCatalogue;
   /** false → installer brief: everything except our prices */
   priced: boolean;
   /** true when this browser generated the quote; its codes are remembered */
@@ -188,6 +192,7 @@ export default function QuoteResults({
   grid,
   backupHours,
   onBackupHoursChange,
+  catalogue,
   priced,
   owner,
   onShowPrices,
@@ -208,8 +213,8 @@ export default function QuoteResults({
   const trackedQuoteCodes = useRef<Set<string>>(new Set());
 
   const quote: Quote = useMemo(
-    () => buildQuote(appliances, options, grid, backupHours),
-    [appliances, options, grid, backupHours],
+    () => buildQuote(appliances, options, grid, backupHours, catalogue),
+    [appliances, options, grid, backupHours, catalogue],
   );
   const t = quote.tiers[tier];
 
@@ -225,7 +230,7 @@ export default function QuoteResults({
 
   const canRun = whatYouCanRun(tier, quote.appliances, quote.peakWatts);
   const fileBase = `SolarBuilders-${quote.code}-${t.label}${priced ? '' : '-brief'}`;
-  const customised = !!(t.options.inverterTier || t.options.battery);
+  const customised = Object.values(t.options).some((v) => v !== undefined);
   const briefUrl = `${quoteUrl(quote, tier, SITE_URL)}&view=brief`;
   /** The quote code lets the owner match the chat to the quote. */
   const waQuoteText =
@@ -379,7 +384,9 @@ export default function QuoteResults({
         })}
       </div>
 
-      {/* Customise — tucked away: most people should not need it */}
+      {priced && <AdjustSystem t={t} catalogue={catalogue} onChange={setTierOption} onReset={customised ? resetTierOptions : undefined} />}
+
+      {/* Class and battery type — tucked away: most people should not need it */}
       {priced && (
         <div className="mb-5">
           <button

@@ -8,7 +8,7 @@
  *   3. Deploy → New deployment → Web app. Execute as: Me. Who has access:
  *      Anyone. Copy the URL into Vercel as SHEETS_WEBHOOK_URL.
  *
- * Rows go to the tab named TAB (created if missing). Each key in the posted row
+ * Rows go to the tab named TAB, or the first tab if there is none. Each key in the posted row
  * lands under the column with that header (case and spaces ignored); a key with
  * no column gets a new column at the end. Rename or reorder columns freely.
  */
@@ -23,7 +23,7 @@ function doPost(e) {
   lock.waitLock(10000);
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName(TAB) || ss.insertSheet(TAB);
+    var sheet = ss.getSheetByName(TAB) || ss.getSheets()[0];
     var row = body.row || {};
     var norm = function (s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ''); };
 

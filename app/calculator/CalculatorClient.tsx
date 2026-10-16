@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown, ListChecks, Wallet, Clock, MessageCircle } from 'lucide-react';
+import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown, ListChecks, Wallet, Clock, MessageCircle, SlidersHorizontal } from 'lucide-react';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import QuoteResults from '@/components/ui/QuoteResults';
 import {
@@ -11,21 +11,25 @@ import {
   formatNairaShort,
   parseBackupHours,
   parseGrid,
-  parseTierOptions,
+  parseTierOptionsFrom,
+  quoteUrl,
   type GridSupply,
   type QuoteOptions,
   type TierKey,
 } from '@/lib/quote';
-import { canSeePrices } from '@/lib/quote-access';
+import { canSeePrices, rememberQuote } from '@/lib/quote-access';
+import type { LiteCatalogue } from '@/lib/catalogue-lite';
+import SpecMode, { type SpecBuild } from './SpecMode';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import type { BudgetLookupData, LookupBuild } from '@/lib/budget-lookup';
 import BudgetMode from './BudgetMode';
 import { STEP1_APPLIANCES, STEP2_APPLIANCES, STEP3_APPLIANCES } from '@/lib/appliances';
 
-type Mode = 'appliances' | 'budget';
+type Mode = 'appliances' | 'spec' | 'budget';
 
 const MODES: { key: Mode; label: string; icon: typeof Wallet }[] = [
   { key: 'appliances', label: 'I know my appliances', icon: ListChecks },
+  { key: 'spec', label: 'I know some specs', icon: SlidersHorizontal },
   { key: 'budget', label: 'I know my budget', icon: Wallet },
 ];
 
@@ -231,9 +235,10 @@ interface ShellProps {
   navbar: React.ReactNode;
   footer: React.ReactNode;
   budgetData: BudgetLookupData;
+  catalogue: LiteCatalogue;
 }
 
-function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
+function CalculatorInner({ navbar, footer, budgetData, catalogue }: ShellProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [mode, setMode] = useState<Mode>('appliances');
@@ -271,7 +276,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
     const tierParam = searchParams.get('tier') as TierKey | null;
     if (tierParam && ['budget', 'standard', 'premium'].includes(tierParam)) {
       setInitialTier(tierParam);
-      const o = parseTierOptions(searchParams.get('inv'), searchParams.get('bat'));
+      const o = parseTierOptionsFrom(searchParams);
       if (Object.keys(o).length) setInitialOptions({ [tierParam]: o });
     }
     setGrid(parseGrid(searchParams.get('grid')));
@@ -419,6 +424,13 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
     );
   };
 
+  /** Specs → the normal results view, priced: this browser made the quote. */
+  const openSpecQuote = (b: SpecBuild) => {
+    const quote = buildQuote(b.appliances, { standard: b.options }, grid, b.backupHours, catalogue);
+    rememberQuote(quote.code);
+    router.push(quoteUrl(quote, 'standard', ''));
+  };
+
   const removeCustomAppliance = (id: string) => setCustomAppliances((prev) => prev.filter((a) => a.id !== id));
 
   const applyQuickStart = (items: { id: string; qty: number }[]) => {
@@ -448,7 +460,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
   const totalWatts = selectedAppliances.reduce((sum, a) => sum + a.watts * a.qty, 0);
 
   if (showResults && selectedAppliances.length > 0) {
-    const quote = buildQuote(selectedAppliances, initialOptions, grid, backupHours);
+    const quote = buildQuote(selectedAppliances, initialOptions, grid, backupHours, catalogue);
     // Prices: always for your own fresh quote; on a shared link only for the
     // browser that generated it or an admin. Everyone else gets the brief.
     const mayPrice = !fromSharedLink || canSeePrices(quote.code);
@@ -489,6 +501,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
             grid={grid}
             backupHours={backupHours}
             onBackupHoursChange={setBackupHours}
+            catalogue={catalogue}
             priced={priced}
             owner={!fromSharedLink}
             onShowPrices={mayPrice && briefRequested ? () => setBriefRequested(false) : undefined}
@@ -554,7 +567,7 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
         {/* Native radios: arrow keys, focus and announcement come for free. */}
         <fieldset className="mb-6">
           <legend className="sr-only">How do you want to start?</legend>
-          <div className="grid grid-cols-2 gap-1 p-1 bg-slate-200/60 rounded-full">
+          <div className="grid grid-cols-3 gap-1 p-1 bg-slate-200/60 rounded-full">
             {MODES.map(({ key, label, icon: Icon }) => {
               const active = mode === key;
               return (
@@ -582,6 +595,8 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
 
         {mode === 'budget' ? (
           <BudgetMode data={budgetData} digits={budgetDigits} onDigitsChange={changeBudget} onOpenQuote={openBudgetQuote} />
+        ) : mode === 'spec' ? (
+          <SpecMode catalogue={catalogue} onBuild={openSpecQuote} />
         ) : (
           <>
             <section className="mb-8">
@@ -786,10 +801,10 @@ function CalculatorInner({ navbar, footer, budgetData }: ShellProps) {
  * copy from the price/brand/sizing tables, so importing them here would pull all
  * of those tables into this route's client bundle a second time.
  */
-export default function CalculatorClient({ navbar, footer, budgetData }: ShellProps) {
+export default function CalculatorClient({ navbar, footer, budgetData, catalogue }: ShellProps) {
   return (
     <Suspense fallback={<div className="min-h-screen bg-sky">{navbar}</div>}>
-      <CalculatorInner navbar={navbar} footer={footer} budgetData={budgetData} />
+      <CalculatorInner navbar={navbar} footer={footer} budgetData={budgetData} catalogue={catalogue} />
     </Suspense>
   );
 }
