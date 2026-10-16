@@ -41,6 +41,8 @@ export const PRICE_GUIDE_TITLES = {
   '10kva-solar-system-price-nigeria': `10kVA Solar System Price in Nigeria (${PRICE_MONTH}), Itemised`,
   'inverter-price-nigeria': `Inverter Price in Nigeria (${PRICE_MONTH}): 1.5kVA to 10kVA by Brand Tier`,
   'solar-installation-cost-nigeria': `Solar Installation Cost in Nigeria (${PRICE_MONTH}): Labour, Materials and What a Quote Must Show`,
+  'lithium-battery-brands-nigeria': `Lithium Battery Brands in Nigeria (${PRICE_MONTH}): Felicity, Deye, Pylontech, Dyness, Blue Carbon and ITEL Prices`,
+  '5kw-hybrid-inverter-price-nigeria': `5kW Hybrid Inverter Price in Nigeria (${PRICE_MONTH}): Deye vs Growatt, Felicity, Luxpower, Solis`,
 } as const;
 
 export type PriceGuideSlug = keyof typeof PRICE_GUIDE_TITLES;

@@ -75,6 +75,7 @@ export default function InverterPricePage() {
       }
       faqs={faqs}
       related={[
+        { href: '/blog/5kw-hybrid-inverter-price-nigeria', label: '5kW inverter prices by model: Deye, Growatt, Felicity' },
         { href: '/blog/best-solar-inverter-nigeria', label: 'The best solar inverter, ranked by price per kVA' },
         { href: '/blog/inverter-size-guide', label: 'What size inverter do I need?' },
         { href: '/brands/deye', label: 'Deye inverter prices' },

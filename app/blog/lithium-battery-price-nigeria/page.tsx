@@ -102,6 +102,7 @@ export default function LithiumPricePage() {
       }
       faqs={faqs}
       related={[
+        { href: '/blog/lithium-battery-brands-nigeria', label: 'Lithium battery brands compared per kWh' },
         { href: '/blog/lithium-vs-tubular-battery-nigeria', label: 'Lithium vs tubular: the ten-year cost' },
         { href: '/brands/felicity', label: 'Felicity battery prices' },
         { href: '/brands/deye', label: 'Deye battery prices' },

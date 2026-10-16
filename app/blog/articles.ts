@@ -87,6 +87,16 @@ const PRICE_GUIDES: Article[] = [
     'What installers charge per kVA, the protection gear a proper install needs, the contingency line, and the eight things a quote must itemise.',
     '8 min read',
   ),
+  priceGuide(
+    'lithium-battery-brands-nigeria',
+    'Felicity, Deye, Pylontech, Dyness, Blue Carbon and ITEL batteries, model by model and per kWh, with what each brand is good for.',
+    '7 min read',
+  ),
+  priceGuide(
+    '5kw-hybrid-inverter-price-nigeria',
+    'Every 5kW inverter with a live Nigerian price, Deye against Growatt side by side, and how to tell a true hybrid from an off-grid one.',
+    '6 min read',
+  ),
 ];
 
 export const ARTICLES: Article[] = [
