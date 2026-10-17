@@ -68,3 +68,43 @@ export function outreachDm(brand: string): string {
 export function mailtoLink(to: string, brand: string): string {
   return `mailto:${to}?subject=${encodeURIComponent(outreachSubject(brand))}&body=${encodeURIComponent(outreachBody(brand))}`;
 }
+
+export type OutreachChannel = "email" | "whatsapp" | "instagram" | "facebook" | "linkedin" | "x" | "phone";
+
+export interface DraftRow {
+  slug: string;
+  channel: OutreachChannel;
+  to_addr: string | null;
+  subject: string | null;
+  body: string;
+  status: "draft" | "sent" | "failed";
+  error: string | null;
+  sent_at: string | null;
+}
+
+/** "08012345678" / "+234 801…" → "2348012345678" for wa.me */
+export function waDigits(p: string): string {
+  const d = p.replace(/\D/g, "");
+  return d.startsWith("0") ? `234${d.slice(1)}` : d;
+}
+
+/**
+ * The default draft for a brand: an email when we have an address, otherwise
+ * a DM on the best route we found — WhatsApp, then socials, then a call.
+ * Null when we found no route at all.
+ */
+export function defaultDraft(
+  slug: string,
+  brand: string,
+  c: Pick<OutreachRow, "email" | "phone" | "whatsapp" | "instagram" | "facebook" | "linkedin" | "x">,
+): DraftRow | null {
+  const base = { slug, status: "draft" as const, error: null, sent_at: null };
+  if (c.email) return { ...base, channel: "email", to_addr: c.email, subject: outreachSubject(brand), body: outreachBody(brand) };
+  const dm = outreachDm(brand);
+  if (c.whatsapp) return { ...base, channel: "whatsapp", to_addr: waDigits(c.whatsapp), subject: null, body: dm };
+  for (const ch of ["instagram", "facebook", "linkedin", "x"] as const) {
+    if (c[ch]) return { ...base, channel: ch, to_addr: c[ch], subject: null, body: dm };
+  }
+  if (c.phone) return { ...base, channel: "phone", to_addr: c.phone, subject: null, body: dm };
+  return null;
+}
