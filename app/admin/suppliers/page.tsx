@@ -9,6 +9,7 @@ import {
   isOutreachStatus,
   mailtoLink,
   outreachDm,
+  waDigits,
   type OutreachRow,
 } from "@/lib/brand-outreach";
 
@@ -97,11 +98,6 @@ const STATUS_STYLE: Record<string, string> = {
   deal: "bg-emerald-100 text-emerald-800",
   no_reply: "bg-rose-50 text-rose-700",
   declined: "bg-rose-100 text-rose-800",
-};
-
-const waDigits = (p: string) => {
-  const d = p.replace(/\D/g, "");
-  return d.startsWith("0") ? `234${d.slice(1)}` : d;
 };
 
 export default async function SuppliersPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
