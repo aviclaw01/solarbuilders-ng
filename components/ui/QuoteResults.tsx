@@ -47,6 +47,7 @@ import WhatsAppLink from './WhatsAppLink';
 import { rememberQuote } from '@/lib/quote-access';
 import { useToast } from '@/components/ui/Toast';
 import QuoteContactModal from './QuoteContactModal';
+import BuildRequestModal from './BuildRequestModal';
 import FinanceOptions from './FinanceOptions';
 import SizingSheet from './SizingSheet';
 import AdjustSystem from './AdjustSystem';
@@ -68,6 +69,8 @@ interface Props {
   owner: boolean;
   /** viewer may see prices but is previewing the installer brief */
   onShowPrices?: () => void;
+  /** Came from this brand's page — the main ask becomes a coded build request */
+  brand?: { slug: string; name: string };
 }
 
 const TIER_ORDER: TierKey[] = ['budget', 'standard', 'premium'];
@@ -196,6 +199,7 @@ export default function QuoteResults({
   priced,
   owner,
   onShowPrices,
+  brand,
 }: Props) {
   const [tier, setTier] = useState<TierKey>(initialTier);
   const [options, setOptions] = useState<QuoteOptions>(initialOptions);
@@ -203,6 +207,7 @@ export default function QuoteResults({
   const [customOpen, setCustomOpen] = useState(false);
   const { toast: showToast } = useToast();
   const [showContact, setShowContact] = useState(false);
+  const [showBuild, setShowBuild] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   /**
    * Top of funnel. Every conversion ratio this site reports divides by
@@ -657,14 +662,26 @@ export default function QuoteResults({
           {/* WhatsApp first: most buyers would rather chat than fill a form, and
               the whatsapp_click row carrying the quote code is the lead record.
               /find proved this pattern. */}
-          <WhatsAppLink
-            text={waQuoteText}
-            placement="quote_card"
-            quoteCode={quote.code}
-            className="w-full bg-[#25D366] hover:brightness-95 text-ink py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition"
-          >
-            <MessageCircle className="w-5 h-5" aria-hidden="true" /> Send this quote on WhatsApp
-          </WhatsAppLink>
+          {brand ? (
+            <button
+              onClick={() => {
+                track('quote_form_open', { quoteCode: quote.code, tier: t.label, amount: t.total.best, placement: `brand_build:${brand.slug}` });
+                setShowBuild(true);
+              }}
+              className="w-full bg-[#25D366] hover:brightness-95 text-ink py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition"
+            >
+              <MessageCircle className="w-5 h-5" aria-hidden="true" /> Get my system built
+            </button>
+          ) : (
+            <WhatsAppLink
+              text={waQuoteText}
+              placement="quote_card"
+              quoteCode={quote.code}
+              className="w-full bg-[#25D366] hover:brightness-95 text-ink py-4 rounded-full font-heading font-bold text-lg flex items-center justify-center gap-2 transition"
+            >
+              <MessageCircle className="w-5 h-5" aria-hidden="true" /> Send this quote on WhatsApp
+            </WhatsAppLink>
+          )}
           <p className="text-[12px] text-slate-600 text-center -mt-1">
             Free. Nothing to pay now. A person replies on WhatsApp.
           </p>
@@ -709,6 +726,7 @@ export default function QuoteResults({
       )}
 
       {showContact && <QuoteContactModal quote={quote} tier={tier} onClose={() => setShowContact(false)} />}
+      {showBuild && brand && <BuildRequestModal quote={quote} tier={tier} brand={brand} onClose={() => setShowBuild(false)} />}
     </div>
   );
 }

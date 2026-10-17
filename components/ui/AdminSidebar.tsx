@@ -11,6 +11,7 @@ import {
   Route,
   ShieldCheck,
   ShoppingCart,
+  Truck,
 } from 'lucide-react';
 
 /**
@@ -39,6 +40,7 @@ const GENERAL: NavItem[] = [
   { href: '/admin/leads', label: 'Leads', icon: <Inbox className="w-4 h-4" /> },
   { href: '/admin/orders', label: 'Orders', icon: <ShoppingCart className="w-4 h-4" /> },
   { href: '/admin/funnel', label: 'Funnel', icon: <BarChart3 className="w-4 h-4" /> },
+  { href: '/admin/suppliers', label: 'Suppliers', icon: <Truck className="w-4 h-4" /> },
 ];
 
 const SENIOR: NavItem[] = [

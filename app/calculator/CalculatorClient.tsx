@@ -236,9 +236,11 @@ interface ShellProps {
   footer: React.ReactNode;
   budgetData: BudgetLookupData;
   catalogue: LiteCatalogue;
+  /** slug -> name, so ?brand= from a brand page can be named on the quote */
+  brandNames: Record<string, string>;
 }
 
-function CalculatorInner({ navbar, footer, budgetData, catalogue }: ShellProps) {
+function CalculatorInner({ navbar, footer, budgetData, catalogue, brandNames }: ShellProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [mode, setMode] = useState<Mode>('appliances');
@@ -269,6 +271,8 @@ function CalculatorInner({ navbar, footer, budgetData, catalogue }: ShellProps) 
   const [fromSharedLink, setFromSharedLink] = useState(false);
   /** ?view=brief — show the installer brief even to someone allowed to see prices */
   const [briefRequested, setBriefRequested] = useState(false);
+  /** ?brand= — the visitor came from that brand's page; the quote's ask names it */
+  const brandSlug = searchParams.get('brand');
 
   // Restore: ?q=<payload> (a shared / saved quote) wins over localStorage.
   useEffect(() => {
@@ -293,7 +297,9 @@ function CalculatorInner({ navbar, footer, budgetData, catalogue }: ShellProps) 
 
     const fromUrl = q ? decodeQuotePayload(q) : null;
     if (fromUrl && fromUrl.length > 0) {
-      setFromSharedLink(true);
+      // A ?brand= link is the visitor's own list, just picked on a brand page
+      // (BrandQuoteBuilder) — theirs to price and keep, not someone else's quote.
+      setFromSharedLink(!searchParams.get('brand'));
       setMode('appliances');
       const qs: Record<string, number> = {};
       const hs: Record<string, number> = {};
@@ -505,6 +511,7 @@ function CalculatorInner({ navbar, footer, budgetData, catalogue }: ShellProps) 
             priced={priced}
             owner={!fromSharedLink}
             onShowPrices={mayPrice && briefRequested ? () => setBriefRequested(false) : undefined}
+            brand={brandSlug && brandNames[brandSlug] ? { slug: brandSlug, name: brandNames[brandSlug] } : undefined}
           />
 
           {priced && (
@@ -801,10 +808,10 @@ function CalculatorInner({ navbar, footer, budgetData, catalogue }: ShellProps) 
  * copy from the price/brand/sizing tables, so importing them here would pull all
  * of those tables into this route's client bundle a second time.
  */
-export default function CalculatorClient({ navbar, footer, budgetData, catalogue }: ShellProps) {
+export default function CalculatorClient({ navbar, footer, budgetData, catalogue, brandNames }: ShellProps) {
   return (
     <Suspense fallback={<div className="min-h-screen bg-sky">{navbar}</div>}>
-      <CalculatorInner navbar={navbar} footer={footer} budgetData={budgetData} catalogue={catalogue} />
+      <CalculatorInner navbar={navbar} footer={footer} budgetData={budgetData} catalogue={catalogue} brandNames={brandNames} />
     </Suspense>
   );
 }

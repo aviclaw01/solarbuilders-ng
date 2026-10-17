@@ -405,7 +405,7 @@ export default async function AdminLeadsPage({ searchParams }: PageProps) {
     const like = `*${searchTerm}*`;
     listParams.set(
       "or",
-      `(quote_code.ilike.${like},name.ilike.${like},phone.ilike.${like},location.ilike.${like})`,
+      `(reference.ilike.${like},quote_code.ilike.${like},name.ilike.${like},phone.ilike.${like},location.ilike.${like})`,
     );
   }
 

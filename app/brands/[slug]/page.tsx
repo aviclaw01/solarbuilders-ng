@@ -21,6 +21,8 @@ import { slugify } from '@/lib/utils';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
 import BrandMark from '@/components/ui/BrandMark';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import BrandQuoteBuilder from '@/components/ui/BrandQuoteBuilder';
+import { liteCatalogue } from '@/lib/catalogue-lite';
 import { ArrowRight, CheckCircle2, MessageCircle, Zap, Info, MapPin } from 'lucide-react';
 
 interface Props {
@@ -119,6 +121,17 @@ export default async function BrandPage({ params }: Props) {
     .filter((sc): sc is NonNullable<typeof sc> => !!sc)
     .slice(0, 3);
 
+  // Which quote lines this brand can price off its own listings; a vendor or a
+  // brand with no live listing in a category leaves that line on our default.
+  const lite = liteCatalogue();
+  const brandParams = [
+    lite.inverter.some((p) => p.slug === brand.slug) ? `ib=${brand.slug}` : '',
+    lite.battery.some((p) => p.slug === brand.slug) ? `bb=${brand.slug}` : '',
+    lite.panel.some((p) => p.slug === brand.slug) ? `pb=${brand.slug}` : '',
+  ]
+    .filter(Boolean)
+    .join('&');
+
   const waText = `Hi SolarBuilders, I'm interested in ${brand.name}${isMaker ? ' equipment' : ''}. Can you help me get a system built with it? ${SITE_URL}/brands/${brand.slug}`;
 
   // Brand + one Product/Offer per priced model. The Offer price is what puts a
@@ -181,18 +194,20 @@ export default async function BrandPage({ params }: Props) {
           </div>
           <p className="text-slate-600 text-lg max-w-2xl mb-6">{brand.tagline}</p>
           <div className="flex flex-wrap gap-3">
-            <WhatsAppLink text={waText} placement={`brand:${brand.slug}`} className="inline-flex items-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors">
-              <MessageCircle className="w-4 h-4" /> Get a system built with {isMaker ? brand.name : 'us'}
+            <a href="#build" className="inline-flex items-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors">
+              <Zap className="w-4 h-4" /> Get a system built with {isMaker ? brand.name : 'us'}
+            </a>
+            <WhatsAppLink text={waText} placement={`brand:${brand.slug}`} className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 font-semibold text-sm transition-colors">
+              <MessageCircle className="w-4 h-4" /> Just ask on WhatsApp
             </WhatsAppLink>
-            <Link href="/calculator" className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 font-semibold text-sm transition-colors">
-              <Zap className="w-4 h-4" /> Size my system
-            </Link>
           </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-12 grid lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2 space-y-10">
+          <BrandQuoteBuilder brandSlug={brand.slug} brandName={isMaker ? brand.name : 'solar'} brandParams={brandParams} />
+
           <section>
             <h2 className="font-heading font-bold text-slate-900 text-xl mb-3">About {brand.name}</h2>
             <p className="text-slate-600 leading-relaxed">{brand.description}</p>
