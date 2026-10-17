@@ -54,3 +54,17 @@ export const ALL_PRESET_APPLIANCES: PresetAppliance[] = [...STEP1_APPLIANCES, ..
 export function presetAppliance(id: string): PresetAppliance | undefined {
   return ALL_PRESET_APPLIANCES.find((a) => a.id === id);
 }
+
+/**
+ * The calculator's ?q= payload for a list of presets: base64url of
+ * [id, name, watts, qty, hoursPerDay] rows — the exact shape
+ * lib/quote.ts decodeQuotePayload reads. Kept here, with no imports, so a page
+ * that only links into the calculator (the brand pages) does not ship the
+ * quote engine to build its link.
+ */
+export function presetsPayload(qty: Record<string, number>): string {
+  const rows = ALL_PRESET_APPLIANCES.filter((a) => (qty[a.id] ?? 0) > 0).map((a) => [a.id, a.name, a.watts, qty[a.id], a.hoursPerDay]);
+  const json = JSON.stringify(rows);
+  const b64 = typeof window === 'undefined' ? Buffer.from(json, 'utf8').toString('base64') : btoa(unescape(encodeURIComponent(json)));
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
