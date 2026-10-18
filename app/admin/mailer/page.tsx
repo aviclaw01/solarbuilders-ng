@@ -3,13 +3,13 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { CheckCircle2, ExternalLink, Mail, MessageCircle, Phone, Send } from "lucide-react";
 import PageHeader from "@/components/ui/AdminPageHeader";
-import { BRANDS } from "@/lib/brands";
 import { LEAD_EMAILS, SITE_NAME } from "@/lib/site";
-import { defaultDraft, type DraftRow, type OutreachRow } from "@/lib/brand-outreach";
+import { defaultDraft, isOutreachSlug, outreachTargets, type DraftRow, type OutreachRow } from "@/lib/brand-outreach";
 
 /**
- * Outreach mailer — the catalogue request to every brand, drafted and held
- * here until someone sends it.
+ * Outreach mailer — the catalogue request to every brand we list, and the
+ * "want to be featured?" pitch to new brands, drafted and held here until
+ * someone sends it.
  *
  * Each brand with a contact gets a draft: an email when we found an address,
  * otherwise a DM for its WhatsApp or social page. Nothing goes out on its own.
@@ -72,10 +72,10 @@ const upsert = (table: string, row: Record<string, unknown>) =>
     body: JSON.stringify({ ...row, updated_at: new Date().toISOString() }),
   });
 
-/** The submitted draft, checked against the catalogue. */
+/** The submitted draft. */
 function readForm(formData: FormData) {
   const slug = String(formData.get("slug") ?? "");
-  if (!BRANDS.some((b) => b.slug === slug)) return null;
+  if (!isOutreachSlug(slug)) return null;
   return {
     slug,
     channel: String(formData.get("channel") ?? "email"),
@@ -161,7 +161,7 @@ const CHANNEL_LABEL: Record<string, string> = {
 };
 
 export default async function MailerPage({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
-  const { show } = await searchParams;
+  const { show } = await searchParams; // undefined = listed brands to send, "new" = prospects to send, "sent"
   const [contacts, saved] = await Promise.all([
     rest<OutreachRow[]>("brand_outreach?select=*"),
     rest<DraftRow[]>("outreach_drafts?select=*"),
@@ -169,22 +169,25 @@ export default async function MailerPage({ searchParams }: { searchParams: Promi
   const contactBySlug = new Map((contacts ?? []).map((r) => [r.slug, r]));
   const savedBySlug = new Map((saved ?? []).map((r) => [r.slug, r]));
 
-  const drafts = BRANDS.map((b) => {
+  const targets = outreachTargets(contacts);
+  const drafts = targets.map((b) => {
     const c = contactBySlug.get(b.slug);
-    const d = savedBySlug.get(b.slug) ?? (c ? defaultDraft(b.slug, b.name, c) : null);
+    const d = savedBySlug.get(b.slug) ?? (c ? defaultDraft(b, c) : null);
     return d ? { brand: b, d } : null;
   }).filter((x): x is NonNullable<typeof x> => !!x);
-  const noRoute = BRANDS.filter((b) => !drafts.some((x) => x.brand.slug === b.slug));
+  const noRoute = targets.filter((b) => !drafts.some((x) => x.brand.slug === b.slug));
 
   const pending = drafts.filter((x) => x.d.status !== "sent");
+  const pendingListed = pending.filter((x) => !x.brand.prospect);
+  const pendingNew = pending.filter((x) => x.brand.prospect);
   const sent = drafts.filter((x) => x.d.status === "sent");
-  const list = show === "sent" ? sent : pending;
+  const list = show === "sent" ? sent : show === "new" ? pendingNew : pendingListed;
 
   return (
     <div>
       <PageHeader
         title="Mailer"
-        subtitle={`Catalogue requests to the brands we list. Nothing is sent until you press Send. Emails go from ${LEAD_EMAILS[0]}; replies come back there.`}
+        subtitle={`Catalogue requests to the brands we list, and "want to be featured?" pitches to new ones. Nothing is sent until you press Send. Emails go from ${LEAD_EMAILS[0]}; replies come back there.`}
       />
 
       {(contacts === null || saved === null) && (
@@ -194,8 +197,11 @@ export default async function MailerPage({ searchParams }: { searchParams: Promi
       )}
 
       <div className="mb-4 flex flex-wrap gap-2 text-xs">
-        <Link href="/admin/mailer" className={`rounded-full px-3 py-1.5 border ${show !== "sent" ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200"}`}>
-          To send {pending.length}
+        <Link href="/admin/mailer" className={`rounded-full px-3 py-1.5 border ${show !== "sent" && show !== "new" ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200"}`}>
+          Listed brands {pendingListed.length}
+        </Link>
+        <Link href="/admin/mailer?show=new" className={`rounded-full px-3 py-1.5 border ${show === "new" ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200"}`}>
+          New brands {pendingNew.length}
         </Link>
         <Link href="/admin/mailer?show=sent" className={`rounded-full px-3 py-1.5 border ${show === "sent" ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200"}`}>
           Sent {sent.length}
@@ -211,6 +217,7 @@ export default async function MailerPage({ searchParams }: { searchParams: Promi
               <summary className="flex cursor-pointer list-none flex-wrap items-center gap-2 p-4">
                 {isEmail ? <Mail className="w-4 h-4 text-slate-500" /> : d.channel === "phone" ? <Phone className="w-4 h-4 text-slate-500" /> : <MessageCircle className="w-4 h-4 text-slate-500" />}
                 <span className="font-heading font-bold text-slate-900">{b.name}</span>
+                {b.prospect && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">new</span>}
                 <span className="text-xs text-slate-500">
                   {CHANNEL_LABEL[d.channel] ?? d.channel} · {d.to_addr}
                 </span>
@@ -275,7 +282,7 @@ export default async function MailerPage({ searchParams }: { searchParams: Promi
 
       {noRoute.length > 0 && show !== "sent" && (
         <p className="mt-6 text-xs text-slate-500">
-          No contact route found yet: {noRoute.map((b) => b.name).join(", ")}.
+          No contact route found yet: {noRoute.filter((b) => b.prospect === (show === "new")).map((b) => b.name).join(", ") || "none"}.
         </p>
       )}
     </div>
