@@ -24,3 +24,11 @@ create table if not exists public.brand_outreach (
 );
 
 alter table public.brand_outreach enable row level security;
+
+-- Prospects: brands we do not list yet but want to feature. Rows for listed
+-- brands leave these null — their name and kind come from lib/brands.ts.
+alter table public.brand_outreach add column if not exists prospect boolean not null default false;
+alter table public.brand_outreach add column if not exists name     text;
+alter table public.brand_outreach add column if not exists kind     text;   -- manufacturer | vendor
+alter table public.brand_outreach add column if not exists category text;   -- inverter | battery | panel | portable | distributor | dealer | epc …
+alter table public.brand_outreach add column if not exists website  text;

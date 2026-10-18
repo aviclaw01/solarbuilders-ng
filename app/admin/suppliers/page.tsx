@@ -3,22 +3,25 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { Globe, Mail, MessageCircle, Phone } from "lucide-react";
 import PageHeader from "@/components/ui/AdminPageHeader";
-import { BRANDS } from "@/lib/brands";
+import { getBrand } from "@/lib/brands";
 import {
   OUTREACH_STATUSES,
   isOutreachStatus,
+  isOutreachSlug,
   mailtoLink,
-  outreachDm,
+  outreachCopy,
+  outreachTargets,
   waDigits,
   type OutreachRow,
 } from "@/lib/brand-outreach";
 
 /**
- * Supplier outreach desk — every brand and vendor we list, the contacts we
- * found for it, and where the catalogue-request conversation stands.
+ * Supplier outreach desk — every brand and vendor we list, plus the prospects
+ * we want to feature, the contacts we found for each, and where the
+ * conversation stands.
  *
- * Brands come from lib/brands.ts (the catalogue); contacts and status from
- * Supabase `brand_outreach`. "Email" opens your mail app with the catalogue
+ * Listed brands come from lib/brands.ts (the catalogue); prospects, contacts
+ * and status from Supabase `brand_outreach`. "Email" opens your mail app with the catalogue
  * request already written; nothing is sent from here. Auth is proxy.ts.
  */
 
@@ -61,7 +64,7 @@ async function updateOutreach(formData: FormData) {
   const slug = String(formData.get("slug") ?? "");
   const status = formData.get("status");
   const notes = String(formData.get("notes") ?? "").slice(0, 2000);
-  if (!BRANDS.some((b) => b.slug === slug) || !isOutreachStatus(status)) {
+  if (!isOutreachSlug(slug) || !isOutreachStatus(status)) {
     console.error("[admin/suppliers] rejected update", slug, status);
     return;
   }
@@ -100,30 +103,35 @@ const STATUS_STYLE: Record<string, string> = {
   declined: "bg-rose-100 text-rose-800",
 };
 
-export default async function SuppliersPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
-  const { status: filter } = await searchParams;
+export default async function SuppliersPage({ searchParams }: { searchParams: Promise<{ status?: string; group?: string }> }) {
+  const { status: filter, group } = await searchParams;
   const rows = await fetchRows();
   const bySlug = new Map((rows ?? []).map((r) => [r.slug, r]));
 
-  const all = BRANDS.map((b) => {
-    const r = bySlug.get(b.slug);
+  const everyone = outreachTargets(rows).map((t) => {
+    const r = bySlug.get(t.slug);
+    const listed = getBrand(t.slug);
     return {
-      brand: b,
+      brand: t,
       row: r,
+      origin: listed?.origin ?? t.category ?? "",
       status: r?.status ?? "to_contact",
       email: r?.email ?? null,
-      phone: r?.phone ?? b.phones?.[0] ?? null,
-      whatsapp: r?.whatsapp ?? b.whatsapp ?? null,
+      phone: r?.phone ?? listed?.phones?.[0] ?? null,
+      whatsapp: r?.whatsapp ?? listed?.whatsapp ?? null,
     };
   });
+  const prospectCount = everyone.filter((x) => x.brand.prospect).length;
+  const all = group === "new" ? everyone.filter((x) => x.brand.prospect) : group === "listed" ? everyone.filter((x) => !x.brand.prospect) : everyone;
   const counts = Object.fromEntries(OUTREACH_STATUSES.map((s) => [s, all.filter((x) => x.status === s).length]));
   const list = isOutreachStatus(filter) ? all.filter((x) => x.status === filter) : all;
+  const groupQs = group === "new" || group === "listed" ? `group=${group}&` : "";
 
   return (
     <div>
       <PageHeader
         title="Suppliers"
-        subtitle={`${all.length} brands and vendors we list. Email opens your mail app with the catalogue request written; mark it emailed once sent.`}
+        subtitle={`${everyone.length - prospectCount} brands and vendors we list, ${prospectCount} new ones we want to feature. Email opens your mail app with the message written; mark it emailed once sent.`}
       />
 
       {rows === null && (
@@ -132,14 +140,30 @@ export default async function SuppliersPage({ searchParams }: { searchParams: Pr
         </p>
       )}
 
+      <div className="mb-2 flex flex-wrap gap-2 text-xs">
+        {[
+          ["", `Everyone ${everyone.length}`],
+          ["listed", `Listed ${everyone.length - prospectCount}`],
+          ["new", `New brands ${prospectCount}`],
+        ].map(([g, label]) => (
+          <Link
+            key={g}
+            href={g ? `/admin/suppliers?group=${g}` : "/admin/suppliers"}
+            className={`rounded-full px-3 py-1.5 border font-semibold ${(group ?? "") === g || (!g && group !== "new" && group !== "listed") ? "bg-[#0E7568] text-white border-[#0E7568]" : "bg-white border-slate-200"}`}
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
+
       <div className="mb-4 flex flex-wrap gap-2 text-xs">
-        <Link href="/admin/suppliers" className={`rounded-full px-3 py-1.5 border ${!isOutreachStatus(filter) ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200"}`}>
+        <Link href={`/admin/suppliers${groupQs ? `?${groupQs.slice(0, -1)}` : ""}`} className={`rounded-full px-3 py-1.5 border ${!isOutreachStatus(filter) ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200"}`}>
           All {all.length}
         </Link>
         {OUTREACH_STATUSES.map((s) => (
           <Link
             key={s}
-            href={`/admin/suppliers?status=${s}`}
+            href={`/admin/suppliers?${groupQs}status=${s}`}
             className={`rounded-full px-3 py-1.5 border ${filter === s ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200"}`}
           >
             {s.replace("_", " ")} {counts[s]}
@@ -148,7 +172,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams: Pr
       </div>
 
       <div className="space-y-2">
-        {list.map(({ brand: b, row: r, status, email, phone, whatsapp }) => {
+        {list.map(({ brand: b, row: r, origin, status, email, phone, whatsapp }) => {
           const socials = [
             ["Instagram", r?.instagram],
             ["LinkedIn", r?.linkedin],
@@ -160,15 +184,21 @@ export default async function SuppliersPage({ searchParams }: { searchParams: Pr
             <div key={b.slug} className="rounded-2xl border border-slate-200 bg-white p-4 grid gap-3 lg:grid-cols-12">
               <div className="lg:col-span-3">
                 <div className="flex items-center gap-2">
-                  <Link href={`/brands/${b.slug}`} className="font-heading font-bold text-slate-900 hover:underline">
-                    {b.name}
-                  </Link>
+                  {b.prospect ? (
+                    <span className="font-heading font-bold text-slate-900">{b.name}</span>
+                  ) : (
+                    <Link href={`/brands/${b.slug}`} className="font-heading font-bold text-slate-900 hover:underline">
+                      {b.name}
+                    </Link>
+                  )}
+                  {b.prospect && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">new</span>}
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_STYLE[status] ?? STATUS_STYLE.to_contact}`}>
                     {status.replace("_", " ")}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500">
-                  {b.kind} · {b.origin}
+                  {b.kind}
+                  {origin && ` · ${origin}`}
                   {r?.contacted_at && ` · emailed ${r.contacted_at.slice(0, 10)}`}
                 </p>
                 {r?.research_note && <p className="text-[11px] text-slate-500 mt-1">{r.research_note}</p>}
@@ -176,7 +206,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams: Pr
 
               <div className="lg:col-span-5 flex flex-wrap items-start gap-1.5 text-xs">
                 {email ? (
-                  <a href={mailtoLink(email, b.name)} className="inline-flex items-center gap-1 rounded-full bg-slate-900 text-white px-3 py-1.5 font-semibold">
+                  <a href={mailtoLink(email, b)} className="inline-flex items-center gap-1 rounded-full bg-slate-900 text-white px-3 py-1.5 font-semibold">
                     <Mail className="w-3.5 h-3.5" /> Email {email}
                   </a>
                 ) : (
@@ -184,7 +214,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams: Pr
                 )}
                 {whatsapp && (
                   <a
-                    href={`https://wa.me/${waDigits(whatsapp)}?text=${encodeURIComponent(outreachDm(b.name))}`}
+                    href={`https://wa.me/${waDigits(whatsapp)}?text=${encodeURIComponent(outreachCopy(b).dm)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 rounded-full bg-[#0E7568] text-white px-3 py-1.5 font-semibold"
