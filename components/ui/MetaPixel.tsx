@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
  * Funnel events (Lead, AddToCart, Contact…) are fanned out from lib/track.ts,
  * which no-ops unless this script actually mounted.
  */
-const PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
+const PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const CONSENT_KEY = 'cookie-consent';
 
 export default function MetaPixel() {

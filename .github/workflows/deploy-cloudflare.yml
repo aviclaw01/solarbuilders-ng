@@ -1,0 +1,39 @@
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Type check and quote-engine tests
+        run: |
+          npx tsc --noEmit
+          node scripts/quote-engine.test.mjs
+      # NEXT_PUBLIC_* values are baked in at build time, so the whole production
+      # env file lives in one repo secret (PRODUCTION_ENV) and is written here.
+      - name: Write production env
+        run: printf '%s' "$PRODUCTION_ENV" > .env.production
+        env:
+          PRODUCTION_ENV: ${{ secrets.PRODUCTION_ENV }}
+      - name: Build for Cloudflare
+        run: npx opennextjs-cloudflare build
+      - name: Deploy
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
