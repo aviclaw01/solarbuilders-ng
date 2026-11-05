@@ -43,7 +43,9 @@ export async function POST(req: Request) {
 
   const validated = validateFields(parsed.data, {
     location: requiredText("State", 2, 120),
-    quoteCode: (v) => (cleanString(v, 40) ? null : "Quote code is missing — regenerate the quote and try again."),
+    // A calculator quote carries its code; a "help me get a quote" request has
+    // no quote and describes the need in `needs` instead.
+    quoteCode: (v) => (cleanString(v, 40) ? null : cleanString(parsed.data.needs, 600) ? null : "Quote code is missing — regenerate the quote and try again."),
   });
   if (!validated.ok) return fail("Please fix the highlighted fields.", 400, validated.errors as FieldErrors);
 
@@ -59,18 +61,28 @@ export async function POST(req: Request) {
   const totalLow = naira(body.totalLow);
   const totalHigh = naira(body.totalHigh);
   const tier = cleanString(body.tier, 20);
-  const quoteCode = cleanString(body.quoteCode, 40);
+  const needs = cleanString(body.needs, 600);
+  const powerSource = ["solar-only", "has-grid", "has-generator"].includes(cleanString(body.powerSource, 20)) ? cleanString(body.powerSource, 20) : "";
+  const POWER_LABEL: Record<string, string> = {
+    "solar-only": "Wants to run on inverter/solar only",
+    "has-grid": "Has grid (NEPA) as a backup/alternate",
+    "has-generator": "Has a generator as a backup/alternate",
+  };
+  const ref0 = reference();
+  const quoteCode = cleanString(body.quoteCode, 40) || ref0;
   const quoteUrl = cleanString(body.quoteUrl, 300);
   const summary = cleanString(body.summary, 6000);
   const location = cleanString(body.location, 120);
   const appliances = cleanString(body.appliances, 1500);
-  const ref = reference();
+  const ref = ref0;
 
   const note = [
     brand ? `Brand: ${brand}` : "",
     budget ? `Budget: ₦${budget.toLocaleString()}` : "Budget: not given",
     appliances ? `Powering: ${appliances}` : "",
-    "Came from the brand page; reply arrives on WhatsApp with this code.",
+    needs ? `Main things to power: ${needs}` : "",
+    powerSource ? `Power situation: ${POWER_LABEL[powerSource]}` : "",
+    body.quoteCode ? "Came from a coded quote; reply arrives on WhatsApp with this code." : "No quote built: they asked us to put one together. Reply arrives on WhatsApp with this code.",
   ]
     .filter(Boolean)
     .join("\n");

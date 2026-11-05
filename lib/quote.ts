@@ -112,6 +112,19 @@ export interface TierOptions {
 }
 export type QuoteOptions = Partial<Record<TierKey, TierOptions>>;
 
+/**
+ * Whole-quote switches (not per tier).
+ *  - exact: size for the stated list only, with no growth allowance. The default
+ *    is "recommended": 25% above the list, the way an installer's engineer would.
+ *  - kit: include the installation kit (breakers, cabling, mounting, earthing …)
+ *    in the BOM and total. Off = main equipment only, for buyers who already have
+ *    or will source the kit separately.
+ */
+export interface QuoteSettings {
+  exact?: boolean;
+  kit?: boolean;
+}
+
 export const INVERTER_TIER_LABEL: Record<InverterTier, string> = {
   budget: "Budget class",
   mid: "Mid class",
@@ -168,6 +181,10 @@ export interface Quote {
   appliances: QuoteAppliance[];
   peakWatts: number;
   dailyKwh: number;
+  /** Sized for the stated list only (no growth allowance) */
+  exact: boolean;
+  /** Installation kit (BOS) is part of the BOM and total */
+  kit: boolean;
   /** Load the system is designed for: stated × growth allowance */
   designPeakWatts: number;
   designDailyKwh: number;
@@ -262,7 +279,7 @@ const TIER_CONFIG: Record<
   budget: {
     label: "Budget",
     emoji: "💰",
-    tagline: "Essentials, lowest cost",
+    tagline: "Cheapest build — tubular battery, essentials only",
     inverterTier: "budget",
     coveragePct: 60,
     panelFactor: 0.7,
@@ -406,10 +423,14 @@ function buildTier(
   opts: TierOptions = {},
   backup?: { hours: number; kwh: number },
   catalogue?: LiteCatalogue,
+  kit = true,
 ): TierQuote {
   const cfg = TIER_CONFIG[key];
   const inverterTier = opts.inverterTier ?? cfg.inverterTier;
-  const batteryType: BatteryType = opts.battery ?? "lithium";
+  // The cheapest tier defaults to tubular: it is the lowest build we would ever
+  // recommend (VL-001 / owner 2026-11-05 — a fridge, fans and lights should not
+  // come back as a lithium quote). Standard and premium default to lithium.
+  const batteryType: BatteryType = opts.battery ?? (key === "budget" ? "tubular" : "lithium");
 
   // Inverter — always from the full design peak (VL-001 BUG-3); premium gets a further 20% room to grow
   const inverterKvaRaw = pickKva(designPeakWatts * (key === "premium" ? 1.2 : 1), surgeWatts);
@@ -546,10 +567,10 @@ function buildTier(
     line(
       "pv_combiner",
       "PV combiner / isolator box",
-      "DC breaker + 1000V DC surge protector per string",
+      strings === 1 ? "DC breaker + 1000V DC surge protector (single string)" : "DC breaker + 1000V DC surge protector per string",
       Math.ceil(strings / 2),
       "box",
-      BOS_ITEMS.pv_combiner,
+      strings === 1 ? BOS_ITEMS.pv_combiner_single : BOS_ITEMS.pv_combiner,
     ),
     line(
       "battery_protection",
@@ -586,7 +607,10 @@ function buildTier(
   );
 
   const equipment = add(...equipmentLines.map((l) => l.lineCost));
-  const bos = add(...bosLines.map((l) => l.lineCost));
+  const ZERO: PriceRange = { low: 0, best: 0, high: 0 };
+  // Kit off: the BOM is the main equipment only, and the allowance (a % of the
+  // kit and equipment) shrinks with it.
+  const bos = kit ? add(...bosLines.map((l) => l.lineCost)) : ZERO;
   const base = add(equipment, bos);
   const contingency: PriceRange = {
     low: Math.round(base.low * CONTINGENCY_FRACTION.low),
@@ -598,11 +622,10 @@ function buildTier(
     best: Math.max(LABOUR_FLOOR, LABOUR_PER_KVA.best * inverterKva),
     high: Math.max(LABOUR_FLOOR * 1.5, LABOUR_PER_KVA.high * inverterKva),
   };
-  const ZERO: PriceRange = { low: 0, best: 0, high: 0 };
 
   const bom: BomLine[] = [
     ...equipmentLines,
-    ...bosLines,
+    ...(kit ? bosLines : []),
     line(
       "contingency",
       "Contingency",
@@ -660,7 +683,11 @@ export function buildQuote(
   grid: GridSupply = DEFAULT_GRID,
   backupHours?: number,
   catalogue?: LiteCatalogue,
+  settings: QuoteSettings = {},
 ): Quote {
+  const exact = settings.exact === true;
+  const kit = settings.kit !== false;
+  const growth = exact ? 1 : GROWTH_ALLOWANCE;
   // Sort so the same appliances always produce the same code, regardless of
   // the order the UI hands them over (URL restore vs fresh selection).
   const selected = appliances
@@ -685,25 +712,25 @@ export function buildQuote(
   const json = JSON.stringify(input);
   const payload = toBase64Url(json);
   const surgeWatts = startingSurgeWatts(selected);
-  const designPeakWatts = peakWatts * GROWTH_ALLOWANCE;
-  const designDailyKwh = dailyKwh * GROWTH_ALLOWANCE;
+  const designPeakWatts = peakWatts * growth;
+  const designDailyKwh = dailyKwh * growth;
   // Each appliance runs for its own daily hours or the outage, whichever is shorter.
   const bh = backupHours !== undefined && Number.isFinite(backupHours) && backupHours > 0 ? backupHours : undefined;
   const backup = bh
     ? {
         hours: bh,
-        kwh: (selected.reduce((s, a) => s + a.watts * a.qty * Math.min(a.hoursPerDay, bh), 0) / 1000) * GROWTH_ALLOWANCE,
+        kwh: (selected.reduce((s, a) => s + a.watts * a.qty * Math.min(a.hoursPerDay, bh), 0) / 1000) * growth,
       }
     : undefined;
   const g = bh ? gridForBackupHours(bh) : grid;
   const tiers = {
-    budget: buildTier("budget", designPeakWatts, designDailyKwh, surgeWatts, g, options.budget, backup, catalogue),
-    standard: buildTier("standard", designPeakWatts, designDailyKwh, surgeWatts, g, options.standard, backup, catalogue),
-    premium: buildTier("premium", designPeakWatts, designDailyKwh, surgeWatts, g, options.premium, backup, catalogue),
+    budget: buildTier("budget", designPeakWatts, designDailyKwh, surgeWatts, g, options.budget, backup, catalogue, kit),
+    standard: buildTier("standard", designPeakWatts, designDailyKwh, surgeWatts, g, options.standard, backup, catalogue, kit),
+    premium: buildTier("premium", designPeakWatts, designDailyKwh, surgeWatts, g, options.premium, backup, catalogue, kit),
   };
   // Default grid keeps the hash of the appliance list alone, so a code still
   // identifies the same load it did before grid supply was an input.
-  const variant = bh ? `|bh${bh}` : grid === DEFAULT_GRID ? "" : `|${grid}`;
+  const variant = (bh ? `|bh${bh}` : grid === DEFAULT_GRID ? "" : `|${grid}`) + (exact ? "|exact" : "") + (kit ? "" : "|nokit");
   const code = `SB-${tiers.standard.inverterKva}K-${shortHash(`${json}${variant}`)}`;
 
   return {
@@ -714,6 +741,8 @@ export function buildQuote(
     appliances: selected,
     peakWatts,
     dailyKwh: Math.round(dailyKwh * 10) / 10,
+    exact,
+    kit,
     designPeakWatts: Math.round(designPeakWatts),
     designDailyKwh: Math.round(designDailyKwh * 10) / 10,
     grid: g,
@@ -780,6 +809,8 @@ export function quoteUrl(quote: Quote, tier: TierKey, base: string): string {
     o.batteryBrand ? `bb=${o.batteryBrand}` : "",
     o.panelBrand ? `pb=${o.panelBrand}` : "",
     quote.backupHours ? `bh=${quote.backupHours}` : quote.grid !== DEFAULT_GRID ? `grid=${quote.grid}` : "",
+    quote.exact ? "sz=exact" : "",
+    quote.kit ? "" : "kit=0",
   ]
     .filter(Boolean)
     .join("&");
@@ -809,6 +840,11 @@ export function parseTierOptionsFrom(sp: { get(k: string): string | null }): Tie
     if (v && SLUG.test(v)) o[field] = v;
   }
   return o;
+}
+
+/** ?sz=exact and ?kit=0 from a quote link; anything else is the default (recommended size, kit included). */
+export function parseQuoteSettings(sp: { get(k: string): string | null }): QuoteSettings {
+  return { exact: sp.get("sz") === "exact", kit: sp.get("kit") !== "0" };
 }
 
 /** Parse ?inv= / ?bat= URL params into TierOptions (ignores junk) */
@@ -853,4 +889,34 @@ export function quoteToText(quote: Quote, tier: TierKey, base: string): string {
     `Rebuild this quote: ${quoteUrl(quote, tier, base)}`,
   ];
   return lines.join("\n");
+}
+
+/**
+ * The material list with no prices — what to take to another supplier or
+ * installer to get a comparable quote. Quantities and specs only.
+ */
+export function materialListRows(quote: Quote, tier: TierKey): { item: string; spec: string; qty: number; unit: string; group: string }[] {
+  return quote.tiers[tier].bom
+    .filter((l) => l.group !== "excluded" && l.group !== "contingency")
+    .map((l) => ({
+      item: l.item,
+      // plain spec without our brand shortlist when it is a class default? keep as-is: brands are a suggestion
+      spec: l.spec,
+      qty: l.qty,
+      unit: l.unit,
+      group: l.group === "equipment" ? "Main equipment" : "Installation kit",
+    }));
+}
+
+export function materialListCsv(quote: Quote, tier: TierKey): string {
+  const q = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
+  const t = quote.tiers[tier];
+  const head = [
+    `SolarBuilders.ng material list (no prices) — ${t.label}`,
+    `Quote code ${quote.code}`,
+    `System: ${t.inverterKva}kVA inverter, ${t.batteryKwh}kWh ${t.batteryType} battery, ${t.panelCount}x${t.panelWatts}W panels`,
+    quote.kit ? "" : "Installation kit not included in this list",
+  ].filter(Boolean);
+  const rows = materialListRows(quote, tier).map((r) => [r.group, r.item, r.spec, r.qty, r.unit].map(q).join(","));
+  return [...head.map((h) => q(h)), "", ["Group", "Item", "Specification", "Qty", "Unit"].map(q).join(","), ...rows].join("\r\n");
 }

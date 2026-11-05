@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Minus, Plus, X, Zap, ArrowRight, ArrowLeft, ChevronDown, ListChecks, Wallet, Clock, MessageCircle, SlidersHorizontal } from 'lucide-react';
-import WhatsAppLink from '@/components/ui/WhatsAppLink';
+import HelpQuote from '@/components/ui/HelpQuote';
 import QuoteResults from '@/components/ui/QuoteResults';
 import {
   buildQuote,
@@ -12,6 +12,8 @@ import {
   parseBackupHours,
   parseGrid,
   parseTierOptionsFrom,
+  parseQuoteSettings,
+  type QuoteSettings,
   quoteUrl,
   type GridSupply,
   type QuoteOptions,
@@ -272,6 +274,7 @@ function CalculatorInner({ navbar, footer, budgetData, catalogue, brandNames }: 
   /** ?view=brief — show the installer brief even to someone allowed to see prices */
   const [briefRequested, setBriefRequested] = useState(false);
   /** ?brand= — the visitor came from that brand's page; the quote's ask names it */
+  const [settings, setSettings] = useState<QuoteSettings>({});
   const brandSlug = searchParams.get('brand');
 
   // Restore: ?q=<payload> (a shared / saved quote) wins over localStorage.
@@ -283,6 +286,7 @@ function CalculatorInner({ navbar, footer, budgetData, catalogue, brandNames }: 
       const o = parseTierOptionsFrom(searchParams);
       if (Object.keys(o).length) setInitialOptions({ [tierParam]: o });
     }
+    setSettings(parseQuoteSettings(searchParams));
     setGrid(parseGrid(searchParams.get('grid')));
     setBackupHours(parseBackupHours(searchParams.get('bh')));
     setBriefRequested(searchParams.get('view') === 'brief');
@@ -466,7 +470,7 @@ function CalculatorInner({ navbar, footer, budgetData, catalogue, brandNames }: 
   const totalWatts = selectedAppliances.reduce((sum, a) => sum + a.watts * a.qty, 0);
 
   if (showResults && selectedAppliances.length > 0) {
-    const quote = buildQuote(selectedAppliances, initialOptions, grid, backupHours, catalogue);
+    const quote = buildQuote(selectedAppliances, initialOptions, grid, backupHours, catalogue, settings);
     // Prices: always for your own fresh quote; on a shared link only for the
     // browser that generated it or an admin. Everyone else gets the brief.
     const mayPrice = !fromSharedLink || canSeePrices(quote.code);
@@ -504,6 +508,7 @@ function CalculatorInner({ navbar, footer, budgetData, catalogue, brandNames }: 
             appliances={selectedAppliances}
             initialTier={initialTier}
             initialOptions={initialOptions}
+            initialSettings={settings}
             grid={grid}
             backupHours={backupHours}
             onBackupHoursChange={setBackupHours}
@@ -557,16 +562,15 @@ function CalculatorInner({ navbar, footer, budgetData, catalogue, brandNames }: 
 
       <main className="max-w-2xl mx-auto px-4 pt-8 pb-32">
         <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">What do you want to power?</h1>
-        {/* FloatingWhatsApp is hidden here (it would cover the sticky bar), so
-            someone who can't list their appliances needs a way out. */}
-        <WhatsAppLink
-          text="Hi, I want solar for: "
+        {/* Not everyone can use the calculator. Instead of a bare WhatsApp link,
+            ask the five things we'd ask in chat, so the first message says it all. */}
+        <HelpQuote
           placement="calculator_help"
           className="inline-flex items-center gap-1.5 mt-1 text-sm font-semibold text-emerald-800 underline underline-offset-2 hover:text-emerald-900 min-h-[44px]"
         >
           <MessageCircle className="w-4 h-4" aria-hidden="true" />
-          Not sure? Describe it on WhatsApp
-        </WhatsAppLink>
+          Not sure how this works? Let us put the quote together for you
+        </HelpQuote>
         <p className="text-slate-500 text-sm mb-6">
           Pick a starting point, adjust if you like, and we&apos;ll size and price the whole system — breakers and all.
         </p>

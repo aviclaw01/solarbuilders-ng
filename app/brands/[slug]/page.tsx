@@ -19,6 +19,7 @@ import { SITE_URL } from '@/lib/site';
 import { getScenario } from '@/lib/sizing';
 import { slugify } from '@/lib/utils';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
+import HelpQuote from '@/components/ui/HelpQuote';
 import BrandMark from '@/components/ui/BrandMark';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BrandQuoteBuilder from '@/components/ui/BrandQuoteBuilder';
@@ -197,9 +198,9 @@ export default async function BrandPage({ params }: Props) {
             <a href="#build" className="inline-flex items-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors">
               <Zap className="w-4 h-4" /> Get a system built with {isMaker ? brand.name : 'us'}
             </a>
-            <WhatsAppLink text={waText} placement={`brand:${brand.slug}`} className="inline-flex items-center gap-2 border border-slate-200 hover:border-slate-400 text-slate-700 rounded-full px-6 py-3 font-semibold text-sm transition-colors">
-              <MessageCircle className="w-4 h-4" /> Just ask on WhatsApp
-            </WhatsAppLink>
+            <HelpQuote placement={`brand:${brand.slug}`} brand={isMaker ? { slug: brand.slug, name: brand.name } : undefined}>
+              <MessageCircle className="w-4 h-4" /> Not sure? Tell us what you need
+            </HelpQuote>
           </div>
         </div>
       </div>
@@ -371,13 +372,13 @@ export default async function BrandPage({ params }: Props) {
       {/* Phones only. FloatingWhatsApp hides itself on phones on /brands/* so the two never stack. */}
       <div className="md:hidden h-20" aria-hidden="true" />
       <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-slate-100 bg-white/95 backdrop-blur px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))]">
-        <WhatsAppLink
-          text={waText}
+        <HelpQuote
           placement={`brand:${brand.slug}:sticky`}
+          brand={isMaker ? { slug: brand.slug, name: brand.name } : undefined}
           className="w-full min-h-11 rounded-full bg-[#0E7568] hover:bg-[#075E54] text-white text-sm font-semibold flex items-center justify-center gap-2 px-4 transition-colors"
         >
-          <MessageCircle className="w-4 h-4" aria-hidden="true" /> Price check on WhatsApp
-        </WhatsAppLink>
+          <MessageCircle className="w-4 h-4" aria-hidden="true" /> Get a quote for this brand
+        </HelpQuote>
       </div>
     </div>
   );

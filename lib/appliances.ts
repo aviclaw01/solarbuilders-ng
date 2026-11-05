@@ -21,7 +21,7 @@ export const STEP1_APPLIANCES: PresetAppliance[] = [
   { id: 'ac_1hp', name: 'Air Con (1HP)', emoji: '🌬️', watts: 900, hoursPerDay: 4 },
   { id: 'ac_1_5hp', name: 'Air Con (1.5HP)', emoji: '🌬️', watts: 1200, hoursPerDay: 4 },
   { id: 'ac_2hp', name: 'Air Con (2HP)', emoji: '🌬️', watts: 1800, hoursPerDay: 4 },
-  { id: 'deep_freezer', name: 'Deep Freezer', emoji: '❄️', watts: 250, hoursPerDay: 8 },
+  { id: 'deep_freezer', name: 'Deep Freezer', emoji: '❄️', watts: 300, hoursPerDay: 8 },
   { id: 'refrigerator', name: 'Refrigerator', emoji: '🧊', watts: 200, hoursPerDay: 8 },
   { id: 'water_pump', name: 'Water Pump', emoji: '🚿', watts: 750, hoursPerDay: 2 },
   { id: 'washing_machine', name: 'Washing Machine', emoji: '🧺', watts: 600, hoursPerDay: 1 },

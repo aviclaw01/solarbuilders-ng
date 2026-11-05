@@ -107,6 +107,8 @@ export const BOS_ITEMS = {
   mc4_pair: { low: 2_000, best: 3_000, high: 4_000 },
   /** PV combiner box + 2-pole 63A DC breaker + DC SPD (~₦40k + 16k + 15k) — per 2 strings */
   pv_combiner: { low: 50_000, best: 70_000, high: 120_000 },
+  /** Single-string array (2 panels): one 2-pole DC breaker + DC SPD in a small box */
+  pv_combiner_single: { low: 25_000, best: 38_000, high: 60_000 },
   /** 125A DC battery breaker, battery fuse, 25mm² cable pair with lugs (≤5kVA) */
   battery_protection: { low: 70_000, best: 110_000, high: 200_000 },
   /** Same with a 160A+ MCCB and heavier cable (above 5kVA) */
@@ -157,9 +159,9 @@ export const EQUIPMENT_VAT = 0;
  * changing anything above. Rounded to nearest ₦50k.
  */
 export const HEADLINE_PACKAGES = [
-  { label: "1.5–2.5kVA · 5kWh lithium", powers: "Lights, fans, TV, fridge — no AC", low: 2_100_000, high: 4_000_000 },
-  { label: "3.5kVA · 5kWh lithium", powers: "Small home, 1 small AC part-time", low: 3_700_000, high: 6_850_000 },
-  { label: "5kVA · 10kWh lithium", powers: "Family home with 1 AC", low: 4_600_000, high: 8_350_000 },
+  { label: "1.5–2.5kVA · 5kWh lithium", powers: "Lights, fans, TV, fridge — no AC", low: 2_050_000, high: 3_950_000 },
+  { label: "3.5kVA · 5kWh lithium", powers: "Small home, 1 small AC part-time", low: 3_750_000, high: 6_900_000 },
+  { label: "5kVA · 10kWh lithium", powers: "Family home with 1 AC", low: 4_650_000, high: 8_500_000 },
   { label: "8–10kVA · 15kWh lithium", powers: "Large home, 2–3 ACs", low: 8_250_000, high: 15_200_000 },
   { label: "15–20kVA · 20–30kWh", powers: "Office / commercial", low: 17_700_000, high: 31_600_000 },
 ] as const;

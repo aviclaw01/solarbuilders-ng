@@ -27,7 +27,7 @@ import {
   writeCart,
   type CartLine,
 } from '@/lib/cart';
-import { buildQuote, decodeQuotePayload, formatNaira, parseBackupHours, parseGrid, parseTierOptionsFrom, type TierKey } from '@/lib/quote';
+import { buildQuote, decodeQuotePayload, formatNaira, parseBackupHours, parseGrid, parseQuoteSettings, parseTierOptionsFrom, type TierKey } from '@/lib/quote';
 import { liteCatalogue } from '@/lib/catalogue-lite';
 import { isEmail, isPhone } from '@/lib/validation';
 import { track } from '@/lib/track';
@@ -139,6 +139,7 @@ function CartInner({ pricesAsOfLabel }: { pricesAsOfLabel: string }) {
           parseGrid(searchParams.get('grid')),
           parseBackupHours(searchParams.get('bh')),
           liteCatalogue(),
+          parseQuoteSettings(searchParams),
         );
         const match = cartFromQuoteTier(quote.tiers[tier]);
         next = mergeQuoteLines(next, match.lines);
