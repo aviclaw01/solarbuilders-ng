@@ -31,6 +31,7 @@ const BOS_LABELS: Record<keyof typeof BOS_ITEMS, string> = {
   pv_cable_per_m: '6mm² DC solar cable — per metre',
   mc4_pair: 'MC4 connector — per pair',
   pv_combiner: 'PV combiner box, DC breaker and DC surge protector',
+  pv_combiner_single: 'Small DC isolator box with breaker and surge protector (2-panel array)',
   battery_protection: 'Battery breaker, fuse and cable (up to 5kVA)',
   battery_protection_large: 'Battery breaker, fuse and cable (above 5kVA)',
   ac_protection: 'AC breakers, distribution board, AC surge protector',

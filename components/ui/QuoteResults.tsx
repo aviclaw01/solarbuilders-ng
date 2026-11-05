@@ -25,6 +25,7 @@ import {
   type GridSupply,
   type Quote,
   type QuoteOptions,
+  type QuoteSettings,
   type TierKey,
   type TierOptions,
   type QuoteAppliance,
@@ -36,6 +37,8 @@ import {
   formatNaira,
   formatNairaShort,
   formatRange,
+  materialListCsv,
+  materialListRows,
   quoteToText,
   quoteUrl,
 } from '@/lib/quote';
@@ -57,6 +60,7 @@ interface Props {
   appliances: QuoteAppliance[];
   initialTier?: TierKey;
   initialOptions?: QuoteOptions;
+  initialSettings?: QuoteSettings;
   grid: GridSupply;
   /** Hours the system must run with no grid; unset = sized by the grid band */
   backupHours?: number;
@@ -80,8 +84,8 @@ const INVERTER_CLASSES: { key: InverterTier; label: string }[] = [
   { key: 'premium', label: 'Premium' },
 ];
 const BATTERY_TYPES: { key: BatteryType; label: string; hint: string }[] = [
-  { key: 'lithium', label: 'Lithium', hint: '10+ yrs' },
-  { key: 'tubular', label: 'Tubular', hint: '2–4 yrs, cheaper' },
+  { key: 'tubular', label: 'Tubular', hint: 'Cheapest · lasts 2–4 yrs' },
+  { key: 'lithium', label: 'Lithium', hint: 'Dearer · lasts 10+ yrs' },
 ];
 
 /** What this tier can run at once — budget covers 60% of the load, greedy by size. */
@@ -192,6 +196,7 @@ export default function QuoteResults({
   appliances,
   initialTier = 'standard',
   initialOptions = {},
+  initialSettings = {},
   grid,
   backupHours,
   onBackupHoursChange,
@@ -203,6 +208,7 @@ export default function QuoteResults({
 }: Props) {
   const [tier, setTier] = useState<TierKey>(initialTier);
   const [options, setOptions] = useState<QuoteOptions>(initialOptions);
+  const [settings, setSettings] = useState<QuoteSettings>(initialSettings);
   const [busy, setBusy] = useState<'pdf' | 'png' | null>(null);
   const [customOpen, setCustomOpen] = useState(false);
   const { toast: showToast } = useToast();
@@ -218,8 +224,8 @@ export default function QuoteResults({
   const trackedQuoteCodes = useRef<Set<string>>(new Set());
 
   const quote: Quote = useMemo(
-    () => buildQuote(appliances, options, grid, backupHours, catalogue),
-    [appliances, options, grid, backupHours, catalogue],
+    () => buildQuote(appliances, options, grid, backupHours, catalogue, settings),
+    [appliances, options, grid, backupHours, catalogue, settings],
   );
   const t = quote.tiers[tier];
 
@@ -321,6 +327,29 @@ export default function QuoteResults({
     }
   }, [quote, tier, showToast]);
 
+  const downloadMaterialList = useCallback(() => {
+    track('quote_download', { quoteCode: quote.code, tier: t.label, format: 'material_list' });
+    const blob = new Blob(['\ufeff' + materialListCsv(quote, tier)], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `SolarBuilders-${quote.code}-${t.label}-material-list.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    showToast('Material list saved — no prices on it');
+  }, [quote, tier, t.label, showToast]);
+
+  const copyMaterialList = useCallback(async () => {
+    const text =
+      `Material list (no prices) — SolarBuilders.ng ${quote.code}, ${t.label}\n` +
+      materialListRows(quote, tier).map((r) => `• ${r.qty} ${r.unit}${r.qty > 1 && !['m', 'kVA', 'lot'].includes(r.unit) ? 's' : ''} — ${r.item}: ${r.spec}`).join('\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Material list copied — no prices');
+    } catch {
+      showToast("Couldn't copy");
+    }
+  }, [quote, tier, t.label, showToast]);
+
   const copyInstallerLink = useCallback(async () => {
     track('quote_share', { quoteCode: quote.code, tier: t.label, format: 'installer_brief' });
     const text =
@@ -372,6 +401,11 @@ export default function QuoteResults({
                 active ? 'border-amber-500 bg-amber-50 ring-1 ring-amber-500' : 'border-slate-200 bg-white hover:border-amber-300'
               }`}
             >
+              {k === 'budget' && (
+                <span className="absolute -top-2 right-2 text-[10px] bg-emerald-500 text-white px-1.5 py-0.5 rounded-full font-bold">
+                  Cheapest
+                </span>
+              )}
               {k === 'standard' && (
                 <span className="absolute -top-2 right-2 text-[10px] bg-amber-500 text-slate-900 px-1.5 py-0.5 rounded-full font-bold">
                   Recommended
@@ -390,6 +424,79 @@ export default function QuoteResults({
         })}
       </div>
 
+      {priced && (
+        <div className="mb-5 space-y-3">
+          {/* Battery: the biggest single price lever, so it is never hidden */}
+          <fieldset>
+            <legend className="text-sm font-heading font-semibold text-slate-900 mb-1.5">Battery for the {t.label} build</legend>
+            <div className="grid grid-cols-2 gap-2">
+              {BATTERY_TYPES.map((b) => {
+                const active = t.batteryType === b.key;
+                return (
+                  <button
+                    key={b.key}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setTierOption({ battery: b.key })}
+                    className={`rounded-xl px-3 py-2.5 text-left border transition-colors ${
+                      active ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-900 border-slate-200 hover:border-amber-400'
+                    }`}
+                  >
+                    <span className="block text-sm font-semibold">{b.label}</span>
+                    <span className={`block text-[11px] ${active ? 'text-slate-300' : 'text-slate-500'}`}>{b.hint}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          {/* Exact vs recommended size */}
+          <fieldset>
+            <legend className="text-sm font-heading font-semibold text-slate-900 mb-1.5">Size the system for</legend>
+            <div className="grid grid-cols-2 gap-2">
+              {([
+                { exact: true, label: 'Exactly my list', hint: `${(quote.peakWatts / 1000).toFixed(2)}kW, no extra` },
+                { exact: false, label: 'Recommended', hint: `+${Math.round((GROWTH_ALLOWANCE - 1) * 100)}% room to spare` },
+              ] as const).map((o) => {
+                const active = quote.exact === o.exact;
+                return (
+                  <button
+                    key={o.label}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setSettings((p) => ({ ...p, exact: o.exact }))}
+                    className={`rounded-xl px-3 py-2.5 text-left border transition-colors ${
+                      active ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-900 border-slate-200 hover:border-amber-400'
+                    }`}
+                  >
+                    <span className="block text-sm font-semibold">{o.label}</span>
+                    <span className={`block text-[11px] ${active ? 'text-slate-300' : 'text-slate-500'}`}>{o.hint}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[11px] text-slate-600 mt-1.5 leading-snug">
+              {quote.exact
+                ? 'Sized for exactly what you listed. It works, but has no room for a new appliance or a higher start-up draw.'
+                : `You listed ${(quote.peakWatts / 1000).toFixed(2)}kW. We usually size about ${Math.round((GROWTH_ALLOWANCE - 1) * 100)}% above that so the inverter is not run flat out. Want it exact? Switch above.`}
+            </p>
+          </fieldset>
+
+          <label className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-white px-3 py-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={quote.kit}
+              onChange={(e) => setSettings((p) => ({ ...p, kit: e.target.checked }))}
+              className="mt-0.5 w-4 h-4 accent-slate-900"
+            />
+            <span className="text-sm text-slate-900">
+              <span className="font-semibold">Include installation kit</span>
+              <span className="block text-[11px] text-slate-500">Breakers, cables, mounting, earthing, surge protection. Untick to price the main equipment only.</span>
+            </span>
+          </label>
+        </div>
+      )}
+
       {priced && <AdjustSystem t={t} catalogue={catalogue} onChange={setTierOption} onReset={customised ? resetTierOptions : undefined} />}
 
       {/* Class and battery type — tucked away: most people should not need it */}
@@ -400,12 +507,12 @@ export default function QuoteResults({
             aria-expanded={customOpen}
             className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900"
           >
-            <SlidersHorizontal className="w-4 h-4" /> Change inverter class or battery type
+            <SlidersHorizontal className="w-4 h-4" /> Change inverter class
             <ChevronDown className={`w-4 h-4 transition-transform ${customOpen ? 'rotate-180' : ''}`} />
           </button>
           {customOpen && (
             <div className="mt-3 bg-sky border border-slate-200 rounded-2xl p-4">
-              <div className="grid sm:grid-cols-2 gap-3">
+              <div className="grid gap-3">
                 <div>
                   <p className="text-[11px] text-slate-500 mb-1.5">Inverter class</p>
                   <div className="flex gap-1.5">
@@ -423,26 +530,6 @@ export default function QuoteResults({
                           <span className={`block text-[10px] font-normal ${active ? 'text-slate-300' : 'text-slate-500'}`}>
                             {INVERTER_BRANDS[c.key].slice(0, 2).join(' / ')}
                           </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-[11px] text-slate-500 mb-1.5">Battery</p>
-                  <div className="flex gap-1.5">
-                    {BATTERY_TYPES.map((b) => {
-                      const active = t.batteryType === b.key;
-                      return (
-                        <button
-                          key={b.key}
-                          onClick={() => setTierOption({ battery: b.key })}
-                          className={`flex-1 rounded-xl px-2 py-2 text-xs font-semibold border transition-colors ${
-                            active ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-900 border-slate-200 hover:border-amber-400'
-                          }`}
-                        >
-                          {b.label}
-                          <span className={`block text-[10px] font-normal ${active ? 'text-slate-300' : 'text-slate-500'}`}>{b.hint}</span>
                         </button>
                       );
                     })}
@@ -547,7 +634,7 @@ export default function QuoteResults({
               <tr>
                 <td className="pt-3 px-1 font-heading font-bold text-slate-900" colSpan={2}>
                   Estimated total
-                  <span className="block text-[11px] font-normal text-slate-500">excludes installation</span>
+                  <span className="block text-[11px] font-normal text-slate-500">{quote.kit ? 'excludes installation labour' : 'main equipment only — no installation kit or labour'}</span>
                 </td>
                 <td className="pt-3 px-1 text-right font-heading font-extrabold text-amber-700 text-lg whitespace-nowrap align-top">
                   {formatNaira(t.total.best)}
@@ -695,6 +782,12 @@ export default function QuoteResults({
             <Phone className="w-4 h-4" aria-hidden="true" /> Or get a call back
           </button>
           <div className="flex flex-wrap items-center justify-center gap-x-1 gap-y-1 pt-1">
+            <button onClick={downloadMaterialList} className="inline-flex items-center gap-1 px-2.5 min-h-[40px] rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-white transition-colors">
+              <Download className="w-3.5 h-3.5" aria-hidden="true" /> Material list (no prices)
+            </button>
+            <button onClick={copyMaterialList} className="inline-flex items-center gap-1 px-2.5 min-h-[40px] rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-white transition-colors">
+              <Link2 className="w-3.5 h-3.5" aria-hidden="true" /> Copy list
+            </button>
             <button onClick={copyInstallerLink} className="inline-flex items-center gap-1 px-2.5 min-h-[40px] rounded-full text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-white transition-colors">
               <Link2 className="w-3.5 h-3.5" aria-hidden="true" /> Copy installer link
             </button>
@@ -709,8 +802,8 @@ export default function QuoteResults({
             </button>
           </div>
           <p className="text-[11px] text-slate-500 text-center">
-            Want independent quotes? The installer link shows installers what you need, not our prices, so you can
-            compare their figure with ours.
+            Want to compare with someone else? Download the material list without prices, or copy the installer link,
+            and ask them to quote the same items.
           </p>
           <FinanceOptions amount={t.total.best} quoteCode={quote.code} tier={t.label} />
         </div>

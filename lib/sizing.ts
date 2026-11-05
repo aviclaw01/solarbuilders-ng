@@ -35,7 +35,7 @@ const PRESETS: Preset[] = [
   { id: "ac_1hp", name: "Air Con (1HP)", watts: 900, hoursPerDay: 4 },
   { id: "ac_1_5hp", name: "Air Con (1.5HP)", watts: 1200, hoursPerDay: 4 },
   { id: "ac_2hp", name: "Air Con (2HP)", watts: 1800, hoursPerDay: 4 },
-  { id: "deep_freezer", name: "Deep Freezer", watts: 250, hoursPerDay: 8 },
+  { id: "deep_freezer", name: "Deep Freezer", watts: 300, hoursPerDay: 8 },
   { id: "refrigerator", name: "Refrigerator", watts: 200, hoursPerDay: 8 },
   { id: "water_pump", name: "Water Pump", watts: 750, hoursPerDay: 2 },
   { id: "washing_machine", name: "Washing Machine", watts: 600, hoursPerDay: 1 },
@@ -407,7 +407,6 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
     [
       a("refrigerator"),
       a("deep_freezer"),
-      a("washing_machine"),
       a("tv_32"),
       a("decoder"),
       a("led_bulb", 10),
@@ -418,7 +417,7 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
       a("cctv"),
       a("security_light"),
     ],
-    "This is the entry-level inverter size Nigerian vendors quote for a flat with no air conditioning. The load below is one representative set of appliances that lands on it — not the only one. Swap the washing machine for an iron, or the freezer for a second fan, and you are still inside the same inverter.",
+    "This is the entry-level inverter size Nigerian vendors quote for a flat with no air conditioning. The load below is one representative set of appliances that lands on it — not the only one. Swap the freezer for an iron, or the TV for a second fan, and you are still inside the same inverter.",
     ["what-can-a-3-5kva-inverter-run", "how-many-solar-panels-for-1-bedroom-flat"],
   ),
   capacityScenario(
@@ -463,7 +462,6 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
       a("ac_1hp"),
       a("refrigerator"),
       a("deep_freezer"),
-      a("water_pump"),
       a("tv_55"),
       a("led_bulb", 12),
       a("ceiling_fan", 3),
@@ -473,7 +471,7 @@ export const SIZING_SCENARIOS: SizingScenario[] = [
       a("security_light"),
       a("wifi_router"),
     ],
-    "Whole-house territory: three air conditioners, a borehole pump and everything else, all available at once. The list below is one representative load that lands on this inverter size, not the only one — at this size the battery bank and the roof, not the inverter, are what limit you.",
+    "Whole-house territory: three air conditioners, a deep freezer and everything else, all available at once. The list below is one representative load that lands on this inverter size, not the only one — at this size the battery bank and the roof, not the inverter, are what limit you.",
     ["what-can-a-5kva-inverter-run", "solar-for-4-bedroom-house-with-2-acs"],
   ),
 ];
