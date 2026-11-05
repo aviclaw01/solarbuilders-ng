@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Logo from '@/components/ui/Logo';
 import { Phone, MapPin, MessageCircle, Instagram, Facebook, Twitter, Youtube, Linkedin } from 'lucide-react';
-import { CONTACT_WHATSAPP, whatsappLink, claimedSocials, type SocialAccount } from '@/lib/site';
+import { CONTACT_WHATSAPP, CONTACT_PHONE_DISPLAY, whatsappLink, claimedSocials, type SocialAccount } from '@/lib/site';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { comparisonPairs } from '@/lib/brands';
 import { getScenario } from '@/lib/sizing';
@@ -89,7 +89,7 @@ export default function Footer() {
               className="flex items-center gap-2 text-sm text-slate-400 hover:text-amber-400 transition-colors min-h-[40px]"
             >
               <Phone className="w-4 h-4 text-amber-400 flex-shrink-0" />
-              +234 916 839 4923
+              {CONTACT_PHONE_DISPLAY}
             </a>
             <a
               href={whatsappLink('Hi SolarBuilders, I have a question about going solar.')}
