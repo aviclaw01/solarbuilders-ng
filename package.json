@@ -12,8 +12,11 @@
     "smoke": "node scripts/partner-smoke.mjs",
     "dev:turbo": "next dev",
     "cf:build": "opennextjs-cloudflare build",
-    "cf:preview": "opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && wrangler deploy"
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "node scripts/cloudflare/cf-check.mjs --deploy",
+    "cf:check": "node scripts/cloudflare/cf-check.mjs",
+    "cf:check:quick": "node scripts/cloudflare/cf-check.mjs --quick",
+    "cf:env": "node scripts/cloudflare/env-audit.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
