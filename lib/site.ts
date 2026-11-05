@@ -4,8 +4,15 @@
 export const SITE_URL = "https://solarbuildersng.com";
 export const SITE_NAME = "SolarBuilders.ng";
 
-/** WhatsApp number that receives quote requests (digits only, with country code) */
-export const CONTACT_WHATSAPP = "2349168394923";
+/**
+ * THE contact number. Change it here only — WhatsApp links, tel: links, the
+ * footer, the contact page and the JSON-LD all read from this one constant.
+ * Digits only, with country code (234 + the number without its leading 0).
+ */
+export const CONTACT_WHATSAPP = "2348144549511";
+
+/** Same number as people read it: "+234 814 454 9511" (derived, never typed twice) */
+export const CONTACT_PHONE_DISPLAY = `+${CONTACT_WHATSAPP.slice(0, 3)} ${CONTACT_WHATSAPP.slice(3, 6)} ${CONTACT_WHATSAPP.slice(6, 9)} ${CONTACT_WHATSAPP.slice(9)}`;
 
 /** Inboxes that receive quote-request emails */
 export const LEAD_EMAILS = ["hello@solarbuildersng.com", "solar@nexprove.com"];
