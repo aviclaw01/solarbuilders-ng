@@ -17,7 +17,8 @@ import { useEffect, useState } from 'react';
  * Funnel events (Lead, AddToCart, Contact…) are fanned out from lib/track.ts,
  * which no-ops unless this script actually mounted.
  */
-const PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
+// Public dataset id ("Solar Builders NG"); env overrides it.
+const PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID || "2167530774160487";
 const CONSENT_KEY = 'cookie-consent';
 
 export default function MetaPixel() {
