@@ -7,6 +7,7 @@ import { catalogue, midPrice, productSize } from '@/lib/cart';
 import type { ProductCategory } from '@/lib/brands';
 import { PRICES_LAST_UPDATED_LABEL } from '@/lib/prices';
 import { SHOP_FAQS, faqPageJsonLd } from '@/lib/faq';
+import HelpQuote from '@/components/ui/HelpQuote';
 import ShopClient, { type ShopItem, type SizeUnit } from './ShopClient';
 import { SITE_URL } from '@/lib/site';
 
@@ -107,6 +108,21 @@ return (
           <Link href="/find" className="text-sm font-semibold text-ink hover:text-sun-ink inline-flex items-center gap-1">
             Not sure what you need? Find my kit <span aria-hidden="true">→</span>
           </Link>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-6">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="font-heading font-bold text-ink">Don&apos;t know what to buy?</p>
+            <p className="text-sm text-slate-600">
+              Tell us where you are, what you want to power and your budget. We put the quote together for you. Free.
+            </p>
+          </div>
+          <HelpQuote
+            placement="shop"
+            className="inline-flex items-center justify-center gap-2 bg-[#0E7568] hover:bg-[#075E54] text-white rounded-full px-6 py-3 font-semibold text-sm transition-colors flex-shrink-0"
+          />
         </div>
       </div>
 
