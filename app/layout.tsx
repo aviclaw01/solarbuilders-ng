@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import "./globals.css";
 import PublicChrome from '@/components/ui/PublicChrome';
+import GoogleAnalytics from '@/components/ui/GoogleAnalytics';
+import MetaPixel from '@/components/ui/MetaPixel';
 import PageViewTracker from '@/components/ui/PageViewTracker';
 import AutoTrack from '@/components/ui/AutoTrack';
 import ToastProvider from '@/components/ui/Toast';
@@ -191,6 +193,8 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} antialiased`} style={{ fontFamily: "'NairaBody', var(--font-body), sans-serif" }}>
+        <GoogleAnalytics />
+        <MetaPixel />
         <PageViewTracker />
         <AutoTrack />
         <ToastProvider>{children}</ToastProvider>
