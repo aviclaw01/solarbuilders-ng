@@ -32,7 +32,7 @@ import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import net from "node:net";
 import path from "node:path";
-import { audit } from "./env-audit.mjs";
+import { audit, classify, scanCode } from "./env-audit.mjs";
 
 const ROOT = findRoot(process.cwd());
 process.chdir(ROOT);
@@ -98,8 +98,9 @@ function readJson(f) {
 function run(label, cmd, args, { allowFail = false, env = {}, shell = false } = {}) {
   const t0 = Date.now();
   if (VERBOSE) console.log(c(90, `$ ${[cmd, ...args].join(" ")}`));
+  // Always capture (steps parse the output); in verbose/CI mode echo it as well.
   const r = spawnSync(cmd, args, {
-    stdio: VERBOSE ? "inherit" : "pipe",
+    stdio: ["ignore", "pipe", "pipe"],
     encoding: "utf8",
     shell,
     env: { ...process.env, FORCE_COLOR: "0", ...env },
@@ -107,6 +108,7 @@ function run(label, cmd, args, { allowFail = false, env = {}, shell = false } = 
   });
   const ms = Date.now() - t0;
   const out = `${r.stdout ?? ""}${r.stderr ?? ""}`;
+  if (VERBOSE && out.trim()) process.stdout.write(out.endsWith("\n") ? out : out + "\n");
   if (r.status === 0) {
     if (label) record(label, "pass", "", ms);
     return { ok: true, out, ms };
@@ -216,7 +218,7 @@ function stepEnv() {
   // pulled .env file lists them, so flag every one the code reads.
   const platform = Object.entries(report).filter(([k, r]) => r.class === "platform" && r.usedIn.length && !varNames.includes(k)).map(([k, r]) => `${k} (${r.usedIn[0]})`);
   const other = gaps.filter(([k, r]) => !required.has(k) && r.class !== "public" && r.class !== "platform").map(([k]) => k);
-  const src = `env files, ${varNames.length} wrangler vars, ` + (secretNames ? `${secretNames.length} Worker secrets` : "Worker secrets not checked (not logged in to Cloudflare)");
+  const src = `env files, ${varNames.length} wrangler vars, ` + (secretNames ? `${secretNames.length} Worker secrets` : "Worker secrets not checked (not logged in, or the Worker isn't deployed yet)");
   const ms = Date.now() - t0;
   if (hardMissing.length) record("env", "fail", `required but not set: ${hardMissing.join(", ")}. Sources: ${src}`, ms);
   const notes = [];
@@ -305,7 +307,8 @@ async function smoke(base, label, { retries = 0, max = cfg.smoke.maxPages, log =
 
 async function stepLocalSmoke() {
   if (!fs.existsSync(".open-next/worker.js")) return record("runtime smoke (local workerd)", "fail", "no .open-next/worker.js. The build didn't produce a worker.");
-  if (!fs.existsSync(".dev.vars")) record("runtime smoke (local workerd)", "warn", "no .dev.vars: the local Worker has no server secrets, so pages that need them may 500. Copy your production env to .dev.vars (git-ignored).");
+  const serverVars = [...scanCode(ROOT).keys()].filter((n) => !["public", "platform"].includes(classify(n)));
+  if (!fs.existsSync(".dev.vars") && serverVars.length) record("runtime smoke (local workerd)", "warn", "no .dev.vars: the local Worker has no server secrets, so pages that need them may 500. Copy your production env to .dev.vars (git-ignored).");
   const port = await freePort();
   const base = `http://127.0.0.1:${port}`;
   const child = spawn(EXEC[0], [...EXEC.slice(1), "wrangler", "dev", "--port", String(port), "--ip", "127.0.0.1", "--local", "--log-level", "warn"], {
