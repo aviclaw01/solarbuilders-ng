@@ -1,0 +1,26 @@
+{
+  "plan": "free",
+  "checks": [
+    "node scripts/quote-engine.test.mjs",
+    "node scripts/check-content-prices.mjs",
+    "node scripts/check-db-columns.mjs"
+  ],
+  "requiredEnv": ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "RESEND_API_KEY", "ADMIN_USER", "ADMIN_PASSWORD"],
+  "optionalEnv": [
+    "NEXT_PUBLIC_FB_PIXEL_ID",
+    "ADMIN_DEV_TOOLS",
+    "PARTNER_ACCOUNT_NAME",
+    "PARTNER_ACCOUNT_NUMBER",
+    "PARTNER_BANK_NAME",
+    "SHEETS_WEBHOOK_SECRET",
+    "SHEETS_WEBHOOK_URL"
+  ],
+  "smoke": {
+    "paths": ["/", "/calculator", "/shop", "/brands", "/contact", "/api/health", "/admin/leads"],
+    "expect": { "/admin/leads": [401] },
+    "sitemap": true,
+    "maxPages": 30
+  },
+  "siteUrl": "https://solarbuildersng.com",
+  "previews": false
+}

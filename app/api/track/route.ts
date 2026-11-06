@@ -87,9 +87,11 @@ export async function POST(req: Request) {
     // agent test runs added ~125 events in one morning).
     const host = new URL(req.url).hostname;
     const isLocal = host === "localhost" || host === "::1" || host.startsWith("127.");
-    if (isLocal || (process.env.VERCEL_ENV && process.env.VERCEL_ENV !== "production")) return noContent;
+    // APP_ENV is set in wrangler.jsonc "vars" (Cloudflare never sets VERCEL_ENV).
+    const deployEnv = process.env.APP_ENV;
+    if (isLocal || (deployEnv && deployEnv !== "production")) return noContent;
 
-    if (process.env.VERCEL_ENV === "production") {
+    if (deployEnv === "production") {
       // Browsers always send Origin on a POST (fetch and sendBeacon alike);
       // Referer is the fallback. Neither present, or a foreign host: drop.
       const from = headerHost(req.headers.get("origin")) ?? headerHost(req.headers.get("referer"));
