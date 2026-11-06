@@ -424,7 +424,11 @@ async function main() {
   const workersDev = d.out.match(/https:\/\/[^\s]+\.workers\.dev/)?.[0];
   const base = cfg.siteUrl ?? workersDev;
   if (!base) return record("live smoke", "warn", "no siteUrl in cloudflare.config.json and no workers.dev URL. Live check skipped.");
-  await sleep(5000);
+  // A new workers.dev hostname takes 1-3 min to resolve; wait for DNS rather than
+  // rolling back a healthy deploy.
+  const deadline = Date.now() + 180000;
+  while (Date.now() < deadline && !(await get(base + "/", 10000)).status) await sleep(5000);
+  await sleep(3000);
   const ok = await smoke(base, `live smoke ${base}`, { retries: 2, max: Math.min(10, cfg.smoke.maxPages) });
   if (!ok) {
     const rb = exec("rollback to previous version", ["wrangler", "rollback", "--message", "cf-check: live smoke failed", "--yes"]);
