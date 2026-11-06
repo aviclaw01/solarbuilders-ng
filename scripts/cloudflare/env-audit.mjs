@@ -113,7 +113,15 @@ export function scanCode(root) {
  * discover: also read .env*, .dev.vars and docker-compose files under root.
  * extraNames: names known to exist elsewhere (e.g. `wrangler secret list`).
  */
-export function audit({ root = ".", files = [], discover = true, extraNames = [] } = {}) {
+/** .env, .env.local, .env.development*, .env.test*: never a source for production values. */
+const DEV_FILE = /(^|\/)\.env(\.local|\.development(\.local)?|\.test(\.local)?)?$/;
+
+/**
+ * strictProd (the migration CLI): a value found only in a dev file is reported as
+ * "dev-only" and NOT merged. Dev secrets in production log users out (auth secrets)
+ * or point at sandboxes (payment/API test keys). The owner confirms or replaces them.
+ */
+export function audit({ root = ".", files = [], discover = true, extraNames = [], strictProd = false } = {}) {
   root = path.resolve(root);
   const used = scanCode(root);
   const found = discover
@@ -128,6 +136,23 @@ export function audit({ root = ".", files = [], discover = true, extraNames = []
 
   const have = {};
   const blank = {};
+  const devOnly = {};
+  // Vercel "Sensitive" vars pull as "" or as a placeholder word such as "[sensitive]".
+  // A placeholder looks set, so treat it, and any one value shared by 3+ secret-looking
+  // names, as blank.
+  const PLACEHOLDER = /^\[?\s*(sensitive|redacted|hidden|encrypted|secret|masked)\s*\]?$/i;
+  const seen = new Map();
+  for (const f of envFiles) {
+    let text;
+    try {
+      text = fs.readFileSync(f, "utf8");
+    } catch {
+      continue;
+    }
+    const vars = /docker-compose/.test(f) ? parseCompose(text) : parseEnv(text);
+    for (const [k, v] of Object.entries(vars)) if (v && /KEY|SECRET|TOKEN|PASSWORD|PRODUCT/.test(k)) seen.set(v, (seen.get(v) ?? 0) + 1);
+  }
+  const isPlaceholder = (v) => PLACEHOLDER.test(v) || (v.length < 24 && (seen.get(v) ?? 0) >= 3);
   for (const f of envFiles) {
     let text;
     try {
@@ -137,7 +162,12 @@ export function audit({ root = ".", files = [], discover = true, extraNames = []
     }
     const vars = /docker-compose/.test(f) ? parseCompose(text) : parseEnv(text);
     const rel = path.relative(root, f) || f;
-    for (const [k, v] of Object.entries(vars)) {
+    for (const [k, raw] of Object.entries(vars)) {
+      const v = raw && isPlaceholder(raw) ? "" : raw;
+      if (v && strictProd && DEV_FILE.test(rel)) {
+        if (!have[k] && !devOnly[k]) devOnly[k] = rel;
+        continue;
+      }
       if (v && !have[k]) have[k] = { value: v, source: rel };
       else if (!v && !blank[k]) blank[k] = rel;
     }
@@ -148,11 +178,11 @@ export function audit({ root = ".", files = [], discover = true, extraNames = []
   for (const n of [...new Set([...used.keys(), ...Object.keys(have), ...Object.keys(blank)])].sort()) {
     if (RUNTIME.test(n)) continue;
     const inCode = used.has(n);
-    const status = have[n] ? (inCode ? "ok" : "unused") : blank[n] ? (inCode ? "empty" : "unused") : "missing";
+    const status = have[n] ? (inCode ? "ok" : "unused") : devOnly[n] ? (inCode ? "dev-only" : "unused") : blank[n] ? (inCode ? "empty" : "unused") : "missing";
     report[n] = {
       status,
       class: classify(n),
-      source: have[n]?.source ?? blank[n] ?? null,
+      source: have[n]?.source ?? devOnly[n] ?? blank[n] ?? null,
       usedIn: inCode ? [...used.get(n)].slice(0, 5) : [],
     };
   }
@@ -171,7 +201,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   };
   const root = path.resolve(opt("--root", "."));
   const outDir = path.resolve(opt("--out", path.join(root, ".migration")));
-  const { report, have, envFiles } = audit({ root, files: args });
+  const { report, have, envFiles } = audit({ root, files: args, strictProd: true });
 
   fs.mkdirSync(outDir, { recursive: true });
   const quote = (v) => (/[\s#"'$`\\]/.test(v) ? JSON.stringify(v) : v);
@@ -183,14 +213,19 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       .join("\n") + "\n",
     { mode: 0o600 },
   );
-  const need = Object.entries(report).filter(([, r]) => (r.status === "empty" || r.status === "missing") && r.class !== "platform");
+  const need = Object.entries(report).filter(([, r]) => ["empty", "missing", "dev-only"].includes(r.status) && r.class !== "platform");
   fs.writeFileSync(
     path.join(outDir, ".env.production.missing"),
     [
       "# Fill in each value in your editor, save, and tell the agent. Never paste values into chat.",
       "# Leave a line blank if the app does not need it.",
       "",
-      ...need.flatMap(([k, r]) => [`# ${k} (${r.class})${r.usedIn.length ? `, read in ${r.usedIn.join(", ")}` : ""}`, `${k}=`, ""]),
+      ...need.flatMap(([k, r]) => [
+        `# ${k} (${r.class})${r.usedIn.length ? `, read in ${r.usedIn.join(", ")}` : ""}` +
+          (r.status === "dev-only" ? `\n#   only a DEV value exists (${r.source}). Use the production value; reuse the dev one only if it truly is the same` : ""),
+        `${k}=`,
+        "",
+      ]),
     ].join("\n"),
     { mode: 0o600 },
   );
@@ -201,6 +236,6 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   console.log(pad("NAME", 38) + pad("STATUS", 9) + pad("CLASS", 12) + "SOURCE");
   for (const [k, r] of Object.entries(report)) console.log(pad(k, 38) + pad(r.status, 9) + pad(r.class, 12) + (r.source ?? ""));
   const count = (s) => Object.values(report).filter((r) => r.status === s).length;
-  console.log(`\nok ${count("ok")} · empty ${count("empty")} · missing ${count("missing")} · unused ${count("unused")}`);
+  console.log(`\nok ${count("ok")} · dev-only ${count("dev-only")} · empty ${count("empty")} · missing ${count("missing")} · unused ${count("unused")}`);
   console.log(`wrote ${path.relative(process.cwd(), outDir) || "."}/{.env.merged,.env.production.missing,env-audit.json}. Values are never printed.`);
 }

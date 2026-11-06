@@ -275,7 +275,12 @@ const RUNTIME_ERROR = /\b(Uncaught|Unhandled|TypeError|ReferenceError|SyntaxErro
 async function smoke(base, label, { retries = 0, max = cfg.smoke.maxPages, log = null } = {}) {
   const t0 = Date.now();
   const timeoutMs = cfg.smoke.timeoutMs ?? 20000;
-  const paths = await smokePaths(base, timeoutMs, max);
+  const sampled = await smokePaths(base, timeoutMs, max);
+  // Configured paths are loaded twice: state shared across requests (a module-level DB
+  // pool, a cached socket) works on the first request and hangs or throws on the next.
+  // That's the most common "works locally, dies on Workers" bug.
+  const configured = cfg.smoke.paths ?? ["/"];
+  const paths = [...sampled, ...configured];
   const bad = [];
   let slowest = { p: "", ms: 0 };
   for (const p of paths) {
@@ -300,8 +305,9 @@ async function smoke(base, label, { retries = 0, max = cfg.smoke.maxPages, log =
     if (r.ms > slowest.ms) slowest = { p, ms: r.ms };
   }
   const ms = Date.now() - t0;
-  if (bad.length) record(label, "fail", `${bad.length}/${paths.length} paths failed\n${bad.join("\n")}`, ms);
-  else record(label, "pass", `${paths.length} paths OK, slowest ${slowest.p} ${(slowest.ms / 1000).toFixed(1)}s`, ms);
+  const uniqBad = [...new Set(bad)];
+  if (uniqBad.length) record(label, "fail", `${uniqBad.length} failed of ${paths.length} requests (key paths are loaded twice)\n${uniqBad.join("\n")}`, ms);
+  else record(label, "pass", `${paths.length} requests OK (key paths twice), slowest ${slowest.p} ${(slowest.ms / 1000).toFixed(1)}s`, ms);
   return !bad.length;
 }
 
