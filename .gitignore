@@ -39,3 +39,8 @@ next-env.d.ts
 .open-next
 .wrangler
 .dev.vars
+
+# Cloudflare Workers
+.dev.vars.*
+.migration
+.cf-check
