@@ -13,13 +13,9 @@ import { ShieldCheck, MapPin, Wrench, CheckCircle, ArrowRight, MessageCircle, Ca
 export const dynamic = 'force-dynamic';
 
 /**
- * KNOWN, UNFIXED: an unknown slug here still answers 200 with the not-found
- * body — a soft-404. The four sibling routes in this commit were fixed with
- * `dynamicParams = false`; that does not apply here, because this route is
- * data-driven and has no generateStaticParams. notFound() in generateMetadata,
- * dropping force-dynamic, and revalidate = 0 were all tried and none changed
- * the status. Low urgency while `partners` has no rows, so there are no real
- * profile URLs to crawl. See #28.
+ * Unknown slugs 404 with a real 404 status. That depends on there being no
+ * loading.tsx above this segment: a loading boundary streams a 200 head before
+ * notFound() runs (#28). Keep loading boundaries scoped (see app/admin/loading.tsx).
  */
 
 type Props = { params: Promise<{ slug: string }> };
