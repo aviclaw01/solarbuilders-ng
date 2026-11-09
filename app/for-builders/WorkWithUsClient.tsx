@@ -33,12 +33,19 @@ const SERVICES = [
 /** The API stores years as a number; these buckets map to honest values. */
 const YEARS_OPTIONS = [
   { label: 'Less than 1 year', value: 0 },
-  { label: '1–3 years', value: 2 },
+  { label: '1–2 years', value: 1 },
+  { label: '2–3 years', value: 2 },
   { label: '3–5 years', value: 4 },
   { label: '5+ years', value: 6 },
 ];
 
 /** Kept in step with SYSTEM_SIZES in lib/partners.ts — the exact dashes matter. */
+/** Installers need at least this many years of hands-on installs (owner rule, 2026-11-09). */
+const MIN_INSTALLER_YEARS = 2;
+
+const tooNewToInstall = (f: { kind: string; yearsInBusiness: string }) =>
+  (f.kind === 'installer' || f.kind === 'both') && f.yearsInBusiness !== '' && Number(f.yearsInBusiness) < MIN_INSTALLER_YEARS;
+
 const SYSTEM_SIZES = ['1–2kVA', '3–5kVA', '5–10kVA', '10kVA+'];
 
 
@@ -359,7 +366,7 @@ export default function WorkWithUsClient({ navbar, footer }: { navbar: React.Rea
   }, [formData, sent]);
 
   const step1Valid =
-    formData.kind && formData.businessName.trim() && formData.contactName.trim() && formData.email.trim() && formData.whatsapp.trim() && formData.city.trim() && formData.state && formData.yearsInBusiness;
+    formData.kind && formData.businessName.trim() && formData.contactName.trim() && formData.email.trim() && formData.whatsapp.trim() && formData.city.trim() && formData.state && formData.yearsInBusiness && !tooNewToInstall(formData);
   const step2Valid = formData.services.length > 0 && formData.systemSizes.length > 0;
   const step4Valid = Object.values(formData.agreements).every(Boolean);
   const canAdvance = step === 1 ? Boolean(step1Valid) : step === 2 ? step2Valid : step === 3 ? true : step4Valid;
@@ -577,6 +584,12 @@ function StepBusiness({ formData: f, updateForm }: StepProps) {
           <option value="">Select one</option>
           {YEARS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
+        {tooNewToInstall(f) ? (
+          <p className="mt-2 text-sm text-rose-700" role="alert">
+            We only send jobs to installers with at least {MIN_INSTALLER_YEARS} years of hands-on installs. If you work under an
+            experienced lead installer, ask them to apply, or apply again once you reach {MIN_INSTALLER_YEARS} years.
+          </p>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

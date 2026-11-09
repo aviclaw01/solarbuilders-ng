@@ -87,6 +87,20 @@ export function outreachTargets(rows: OutreachRow[] | null): OutreachTarget[] {
 
 const PHONE_DISPLAY = `+${CONTACT_WHATSAPP.slice(0, 3)} ${CONTACT_WHATSAPP.slice(3, 6)} ${CONTACT_WHATSAPP.slice(6, 9)} ${CONTACT_WHATSAPP.slice(9)}`;
 
+/**
+ * What we need from every manufacturer/distributor before we can quote a
+ * customer outside Lagos without a manual check. Same list in email and DM.
+ */
+export const SUPPLY_QUESTIONS = [
+  "Which states do you have warehouses or official dealers in, and the address of each?",
+  "Do you deliver to other states? Is there a fixed delivery rate per state (or per kg/item), and how many days does it take?",
+  "Your dealer/installer price list for Nigeria, and any minimum order quantity.",
+  "Warranty on each product line: how long, what voids it, and how a customer makes a claim in Nigeria (who swaps a failed unit, and how fast).",
+  "After-sales: do you have trained or certified installers you can send with a delivery to install or inspect, in which states, and at what fee?",
+] as const;
+
+const questionList = () => SUPPLY_QUESTIONS.map((q, i) => `${i + 1}. ${q}`);
+
 export function outreachSubject(brand: string): string {
   return `Featuring ${brand} on ${SITE_NAME} — catalogue request`;
 }
@@ -97,7 +111,9 @@ export function outreachBody(brand: string): string {
     "",
     `I'm writing from ${SITE_NAME} (${SITE_URL}), a Nigerian platform that helps homes and businesses size, price and buy solar systems. ${brand} is already listed on our site, and customers regularly ask us to build systems with your products.`,
     "",
-    "We'd like to feature your range properly, with accurate models, specs and prices. Could you send us your current product catalogue and price list for the Nigerian market?",
+    "We'd like to feature your range properly, with accurate models, specs and prices, and order through you for customers across the country. To do that we need:",
+    "",
+    ...questionList(),
     "",
     "Once we've reviewed it we'd like to talk about working together. Could you also share a phone or WhatsApp number for the right person on your side, so we can structure this properly?",
     "",
@@ -110,7 +126,7 @@ export function outreachBody(brand: string): string {
 
 /** Short WhatsApp/DM version of the same ask. */
 export function outreachDm(brand: string): string {
-  return `Hello ${brand} team — this is ${SITE_NAME} (${SITE_URL}). We list ${brand} and our customers ask for it. Could you send your current Nigerian catalogue and price list, and a number for the right person so we can discuss featuring your products? Thank you. ${PHONE_DISPLAY} · ${LEAD_EMAILS[0]}`;
+  return `Hello ${brand} team — this is ${SITE_NAME} (${SITE_URL}). We list ${brand} and our customers ask for it. Could you send your current Nigerian catalogue and dealer price list, and tell us: which states you have warehouses in, whether you deliver to other states (fixed rate? how many days?), your warranty and claims process, and whether you have installers you can send with a delivery? Thank you. ${PHONE_DISPLAY} · ${LEAD_EMAILS[0]}`;
 }
 
 /** The pitch to a brand we don't list yet: would they like to be featured? */
@@ -130,7 +146,11 @@ export function prospectBody(brand: string, kind: BrandKind): string {
     "",
     offer,
     "",
-    "Are you in? If so, could you send us your current product catalogue and price list for the Nigerian market, and a phone or WhatsApp number for the right person on your side so we can set this up properly?",
+    "Are you in? If so, please send your current product catalogue, and answers to these so we can quote customers in every state:",
+    "",
+    ...questionList(),
+    "",
+    "And a phone or WhatsApp number for the right person on your side so we can set this up properly.",
     "",
     `You can reach us on ${PHONE_DISPLAY} (call or WhatsApp) or at ${LEAD_EMAILS[0]}.`,
     "",
@@ -140,7 +160,7 @@ export function prospectBody(brand: string, kind: BrandKind): string {
 }
 
 export function prospectDm(brand: string): string {
-  return `Hello ${brand} team — this is ${SITE_NAME} (${SITE_URL}). We help Nigerian homes and businesses size and buy solar systems, and we'd like to feature ${brand} on our platform. Are you in? If so, could you send your current catalogue and price list, and a number for the right person? Thank you. ${PHONE_DISPLAY} · ${LEAD_EMAILS[0]}`;
+  return `Hello ${brand} team — this is ${SITE_NAME} (${SITE_URL}). We help Nigerian homes and businesses size and buy solar systems, and we'd like to feature ${brand} on our platform. Are you in? If so, please send your catalogue and dealer price list, which states you have warehouses in, whether you deliver to other states (fixed rate? days?), your warranty/claims process, and whether you have installers you can send with a delivery. Thank you. ${PHONE_DISPLAY} · ${LEAD_EMAILS[0]}`;
 }
 
 export function outreachCopy(t: Pick<OutreachTarget, "name" | "kind" | "prospect">): { subject: string; body: string; dm: string } {
