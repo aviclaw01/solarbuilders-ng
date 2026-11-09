@@ -1,7 +1,8 @@
 /**
- * Route-change fallback shown while a dynamic segment streams in
- * (/partners/[slug], the admin dashboards). Static pages are prerendered and
- * never show this. Kept brand-consistent with app/not-found.tsx.
+ * Route-change fallback for the admin dashboards. Deliberately NOT at the app
+ * root: a root loading boundary wraps every page in Suspense, so the 200 head
+ * streams before notFound() can run — that is what made /partners/<unknown>
+ * a soft-404 (#28). Kept brand-consistent with app/not-found.tsx.
  */
 export default function Loading() {
   return (
