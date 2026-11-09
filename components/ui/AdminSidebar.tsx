@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Lock,
   Mail,
+  MessageSquareText,
   Route,
   ShieldCheck,
   ShoppingCart,
@@ -39,6 +40,7 @@ export interface NavItem {
 const GENERAL: NavItem[] = [
   { href: '/admin', label: 'Overview', icon: <LayoutDashboard className="w-4 h-4" /> },
   { href: '/admin/leads', label: 'Leads', icon: <Inbox className="w-4 h-4" /> },
+  { href: '/admin/replies', label: 'Replies', icon: <MessageSquareText className="w-4 h-4" /> },
   { href: '/admin/orders', label: 'Orders', icon: <ShoppingCart className="w-4 h-4" /> },
   { href: '/admin/funnel', label: 'Funnel', icon: <BarChart3 className="w-4 h-4" /> },
   { href: '/admin/suppliers', label: 'Suppliers', icon: <Truck className="w-4 h-4" /> },
