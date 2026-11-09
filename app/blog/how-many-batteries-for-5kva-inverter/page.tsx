@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { LITHIUM_MODULE_KWH, LITHIUM_PER_KWH, PRICES_LAST_UPDATED_LABEL, SOURCING_MARGIN_LABEL, TUBULAR_200AH } from '@/lib/prices';
-import { formatNaira, formatNairaShort } from '@/lib/quote';
+import { formatNairaShort } from '@/lib/quote';
 import { getScenario, scenarioQuote } from '@/lib/sizing';
 import { SITE_URL } from '@/lib/site';
 import { A, GridTable, H2, Note, P, PriceGuideShell, PriceTable, guideWhatsappText, type Faq } from '../_components/PriceGuide';

@@ -8,7 +8,6 @@ import { HEADLINE_PACKAGES } from '@/lib/prices';
 import { formatNairaShort } from '@/lib/quote';
 import { generatorCostPerDay } from '@/lib/energy-costs';
 import { SITE_URL } from '@/lib/site';
-import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Solar in Lagos — 2026 Prices, Brands & Quotes',

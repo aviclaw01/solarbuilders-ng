@@ -6,7 +6,6 @@ import BrandCard from '@/components/ui/BrandCard';
 import { getBrand, vendors } from '@/lib/brands';
 import { HEADLINE_PACKAGES } from '@/lib/prices';
 import { formatNairaShort } from '@/lib/quote';
-import { CheckCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Solar in Enugu — 2026 Prices, Brands & Quotes',

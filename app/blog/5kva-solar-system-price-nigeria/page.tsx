@@ -158,7 +158,7 @@ export default function FiveKvaPricePage() {
       <P>
         At 80% continuous loading a 5kVA inverter carries about 4kW all day, which is enough for one or two 1.5HP ACs,
         a fridge and freezer, a pump and the normal household electronics — as long as the motors do not all start in
-        the same second. The battery sets how long it does that after dark: this build's {num(t.batteryKwh)}kWh gives
+        the same second. The battery sets how long it does that after dark: this build&rsquo;s {num(t.batteryKwh)}kWh gives
         roughly {t.autonomyHours} hours with everything covered running at an average load. Our{' '}
         <A href="/sizing/what-can-a-5kva-inverter-run">what can a 5kVA inverter run</A> page lists one full load that lands
         on this size, appliance by appliance.

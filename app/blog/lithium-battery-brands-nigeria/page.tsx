@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { manufacturers, unitPriceStats, type Brand, type Product } from '@/lib/brands';
 import { LITHIUM_MODULE_KWH, PRICES_LAST_UPDATED_LABEL, SOURCING_MARGIN_LABEL } from '@/lib/prices';
-import { formatNaira, formatNairaShort } from '@/lib/quote';
+import { formatNairaShort } from '@/lib/quote';
 import { SITE_URL } from '@/lib/site';
 import { A, GridTable, H2, Note, P, PriceGuideShell, guideWhatsappText, type Faq } from '../_components/PriceGuide';
 import { LOAD_5KVA, PRICE_GUIDE_TITLES, buildFor, calculatorHref, tierBuilds } from '../_lib/price-guides';
