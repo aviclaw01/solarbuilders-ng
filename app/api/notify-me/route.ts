@@ -5,21 +5,26 @@ import {
   readJson,
   fail,
   esc,
-  insertLeadRow,
   isHoneypotFilled,
 } from "@/lib/api";
-import { validateFields, requiredEmail, optionalText, cleanString, type FieldErrors } from "@/lib/validation";
+import { validateFields, requiredPhone, cleanString, type FieldErrors } from "@/lib/validation";
 import { FROM_EMAIL, LEAD_EMAILS } from "@/lib/site";
+import { storeLead } from "@/lib/leads";
 
 /**
- * "Notify me" signup — a bare email (plus optional location) for visitors who
- * want a nudge when new prices or brands land.
+ * Price watch — "message me on WhatsApp when these prices change".
+ * Called by components/ui/PriceWatch.tsx on the brand pages and price guides.
  *
- * There is no mail-out infrastructure yet, so requests are acknowledged,
- * rate-limited and emailed to the team like every other lead rather than
- * silently vanishing into an unused table.
+ * There is no automated mail-out. The row lands in `leads` (kind
+ * `price_watch`) where the /admin/leads desk shows it next to every other
+ * enquiry, and the team messages the number by hand after a price check.
+ * The form says exactly that, so nobody is promised an alert system.
  *
- *   200 { ok: true }   400 { ok: false, error, fields? }   429 { ok: false, error }
+ * Same two independent sinks as api/lead-capture: row AND email, and the
+ * answer says which worked.
+ *
+ *   200 { ok: true, emailed, stored }   400 { ok: false, error, fields? }
+ *   429 { ok: false, error }            500 { ok: false, error }
  */
 
 export const dynamic = "force-dynamic";
@@ -44,19 +49,25 @@ export async function POST(req: Request) {
   }
 
   const validated = validateFields(parsed.data, {
-    email: requiredEmail("Email"),
-    location: optionalText("Location", 1, 80),
+    whatsapp: requiredPhone("WhatsApp number"),
   });
   if (!validated.ok) {
     return fail("Please fix the highlighted fields.", 400, validated.errors as FieldErrors);
   }
 
-  const email = cleanString(parsed.data.email, 254);
-  const location = cleanString(parsed.data.location, 80);
+  const whatsapp = cleanString(parsed.data.whatsapp, 30);
+  // What they want to hear about, e.g. "Felicity prices"; `source` is the page.
+  const topic = cleanString(parsed.data.topic, 120) || "solar prices";
+  const source = cleanString(parsed.data.source, 120);
+
+  const stored = await storeLead({
+    kind: "price_watch",
+    phone: whatsapp,
+    message: `Message me when ${topic} change.`,
+    payload: { topic, source },
+  });
 
   let emailed = false;
-  let stored = false;
-
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
     try {
@@ -65,9 +76,8 @@ export async function POST(req: Request) {
       await resend.emails.send({
         from: FROM_EMAIL,
         to: LEAD_EMAILS,
-        replyTo: email,
-        subject: `[SolarBuilders] Notify Me — ${location || "location not given"}`,
-        html: `<h2>Notify Me Request</h2><p><b>Email:</b> ${esc(email)}<br/><b>Location:</b> ${esc(location || "not given")}</p>`,
+        subject: `[SolarBuilders] Price watch — ${topic}`,
+        html: `<h2>Price watch signup</h2><p><b>WhatsApp:</b> ${esc(whatsapp)}<br/><b>Wants:</b> ${esc(topic)}<br/><b>Page:</b> ${esc(source || "not given")}</p><p>Message them by hand after the next price check.</p>`,
       });
       emailed = true;
     } catch (err) {
@@ -77,15 +87,9 @@ export async function POST(req: Request) {
     console.warn("[notify-me] RESEND_API_KEY not set — relying on the DB sink");
   }
 
-  stored = await insertLeadRow("notify_me", {
-    email,
-    location: location || null,
-  });
-
   if (!emailed && !stored) {
-    return fail("We couldn't save that just now. Please try again in a minute.", 500);
+    return fail("We couldn't save that just now. Please try again in a minute, or message us on WhatsApp.", 500);
   }
 
   return Response.json({ ok: true, emailed, stored });
 }
-

@@ -178,6 +178,7 @@ export default function Footer() {
             <li><Link href="/blog" className={linkCls}>Solar guides</Link></li>
             <li><Link href="/about" className={linkCls}>Our story</Link></li>
             <li><Link href="/contact" className={linkCls}>Contact</Link></li>
+            <li><Link href="/reviews" className={linkCls}>Leave a review</Link></li>
           </Column>
 
           {/* Recruitment, not buying — out of the main nav. "Verified partners"

@@ -2,6 +2,8 @@
 --
 --   lead_capture  ← POST /api/lead-capture   (homepage "size it for me" modal)
 --   contact       ← POST /api/contact        (the contact form)
+--   price_watch   ← POST /api/notify-me      ("message me when prices change"; sent by hand)
+--   review        ← POST /api/submit-review  (customer review; moderated, never auto-published)
 --
 -- Priced requests have their own tables because they carry a quote and a
 -- total: quote_requests and order_requests. These two do not — they are
@@ -15,7 +17,7 @@ create table if not exists public.leads (
   id          bigint generated always as identity primary key,
   created_at  timestamptz not null default now(),
 
-  kind        text not null,                 -- lead_capture | contact
+  kind        text not null,                 -- lead_capture | contact | price_watch | review
   name        text,                          -- lead_capture does not collect one
   phone       text,
   email       text,

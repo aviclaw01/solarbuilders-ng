@@ -13,6 +13,7 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import WhatsAppLink from '@/components/ui/WhatsAppLink';
+import PriceWatch from '@/components/ui/PriceWatch';
 import { PRICES_LAST_UPDATED, PRICES_LAST_UPDATED_LABEL, type PriceRange } from '@/lib/prices';
 import { formatNaira } from '@/lib/quote';
 import { brandSlugByName, getBrand, getComparison } from '@/lib/brands';
@@ -289,6 +290,10 @@ export function PriceGuideShell({
                 <MessageCircle className="w-4 h-4" /> {whatsapp.label}
               </WhatsAppLink>
             </div>
+          </div>
+
+          <div className="mt-6">
+            <PriceWatch topic="these prices" source={`blog:${slug}`} />
           </div>
         </article>
       </main>

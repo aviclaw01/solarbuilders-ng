@@ -23,6 +23,7 @@ import HelpQuote from '@/components/ui/HelpQuote';
 import BrandMark from '@/components/ui/BrandMark';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BrandQuoteBuilder from '@/components/ui/BrandQuoteBuilder';
+import PriceWatch from '@/components/ui/PriceWatch';
 import { liteCatalogue } from '@/lib/catalogue-lite';
 import { ArrowRight, CheckCircle2, MessageCircle, Zap, Info, MapPin } from 'lucide-react';
 
@@ -356,6 +357,8 @@ export default async function BrandPage({ params }: Props) {
               </div>
             </section>
           )}
+
+          <PriceWatch topic={`${brand.name} prices`} source={`brand:${brand.slug}`} />
 
           <section className="bg-slate-900 rounded-2xl p-5 text-center">
             <p className="font-heading font-bold text-white mb-1">Want this in your build?</p>
