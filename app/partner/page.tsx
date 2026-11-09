@@ -14,8 +14,9 @@ import {
   Phone,
   ShieldCheck,
 } from 'lucide-react';
-import { readPartnerSession } from '@/lib/partner-auth';
-import { listJobsForPartner, listPaymentsForPartner, commissionBank } from '@/lib/partner-db';
+import { cookies } from 'next/headers';
+import { readPartnerSession, hashToken, PORTAL_COOKIE } from '@/lib/partner-auth';
+import { listJobsForPartner, listPaymentsForPartner, commissionBank, dbGetChecked } from '@/lib/partner-db';
 import { PARTNER_STATUS_META, commissionRateOf, type PartnerJobRow, type PartnerRow } from '@/lib/partners';
 import {
   AVAILABILITY_STALE_DAYS,
@@ -83,7 +84,10 @@ export default async function PartnerPortalPage({ searchParams }: Props) {
   const loginError = error === 'link' || error === 'unavailable' ? LOGIN_ERRORS[error] : null;
   const partner = await readPartnerSession(true);
 
-  if (!partner) return <SignedOut loginError={loginError} />;
+  if (!partner) {
+    if (await sessionLookupFailed()) return <SessionUnavailable />;
+    return <SignedOut loginError={loginError} />;
+  }
 
   const now = new Date();
   const [jobs, payments] = await Promise.all([
@@ -487,6 +491,49 @@ function Banner({
         <h2 className="font-heading font-bold mb-1">{title}</h2>
         <p className="text-sm leading-relaxed">{children}</p>
       </div>
+    </div>
+  );
+}
+
+/**
+ * readPartnerSession() returns null both for "no such token" and for "the
+ * database did not answer" (dbGet turns failures into []). A partner with a valid
+ * cookie must not be told their link is dead because Supabase blipped (#26), so
+ * when there IS a cookie and the session came back empty, re-ask with the checked
+ * read. Only a genuine failure counts; the cookie is never touched here.
+ */
+async function sessionLookupFailed(): Promise<boolean> {
+  const token = (await cookies()).get(PORTAL_COOKIE)?.value;
+  if (!token) return false;
+  const hash = hashToken(token);
+  if (!hash) return false;
+  const res = await dbGetChecked<{ id: number }>('partners', {
+    select: 'id',
+    portal_token_hash: `eq.${hash}`,
+    limit: '1',
+  });
+  return !res.ok;
+}
+
+function SessionUnavailable() {
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <main className="max-w-3xl mx-auto px-6 py-12">
+        <Banner tone="amber" icon={Clock} title="We could not reach your record just now">
+          This is a problem on our side — you are still signed in and your link still works. Refresh in a moment. If it
+          keeps happening, message us.
+        </Banner>
+        <div className="text-center mt-6">
+          <Link
+            href="/partner"
+            className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white rounded-full px-6 py-3 font-heading font-bold text-sm transition-colors min-h-[48px]"
+          >
+            Refresh
+          </Link>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
