@@ -9,7 +9,7 @@ export const SITE_NAME = "SolarBuilders.ng";
  * footer, the contact page and the JSON-LD all read from this one constant.
  * Digits only, with country code (234 + the number without its leading 0).
  */
-export const CONTACT_WHATSAPP = "2349168394923";
+export const CONTACT_WHATSAPP = "2348144549511";
 
 /** Same number as people read it: "+234 814 454 9511" (derived, never typed twice) */
 export const CONTACT_PHONE_DISPLAY = `+${CONTACT_WHATSAPP.slice(0, 3)} ${CONTACT_WHATSAPP.slice(3, 6)} ${CONTACT_WHATSAPP.slice(6, 9)} ${CONTACT_WHATSAPP.slice(9)}`;
