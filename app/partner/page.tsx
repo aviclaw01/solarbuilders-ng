@@ -17,7 +17,7 @@ import {
 import { cookies } from 'next/headers';
 import { readPartnerSession, hashToken, PORTAL_COOKIE } from '@/lib/partner-auth';
 import { listJobsForPartner, listPaymentsForPartner, commissionBank, dbGetChecked } from '@/lib/partner-db';
-import { PARTNER_STATUS_META, commissionRateOf, type PartnerJobRow, type PartnerRow } from '@/lib/partners';
+import { PARTNER_STATUS_META, commissionRateOf, type PartnerJobRow } from '@/lib/partners';
 import {
   AVAILABILITY_STALE_DAYS,
   OFFER_WINDOW_HOURS,

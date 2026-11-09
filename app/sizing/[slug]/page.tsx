@@ -525,7 +525,7 @@ export default async function SizingScenarioPage({ params }: Props) {
                 and round up to a size sold in Nigeria. That gives {num(standard.inverterKva)}kVA. Sizing the inverter on
                 an average instead of the peak is the single most common mistake in Nigerian quotes: the system works
                 until the day everything is on, then it trips. Motors — pumps, fridges, compressors — also pull several
-                times their running watts for the first second, so check the inverter's surge rating, not just its kVA.
+                times their running watts for the first second, so check the inverter&rsquo;s surge rating, not just its kVA.
               </p>
             </div>
 
@@ -544,7 +544,7 @@ export default async function SizingScenarioPage({ params }: Props) {
             </div>
 
             <div className="rounded-2xl border border-slate-100 p-6">
-              <h3 className="font-heading font-bold text-[#0A0F1E] mb-2">The panels come from the day's energy</h3>
+              <h3 className="font-heading font-bold text-[#0A0F1E] mb-2">The panels come from the day&rsquo;s energy</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
                 This load uses {kwh(quote.dailyKwh)} a day. A Nigerian roof averages about {SIZING_RULES.peakSunHours}{' '}
                 peak sun hours, and roughly {Math.round(SIZING_RULES.systemEfficiency * 100)}% of what the panels make

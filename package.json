@@ -6,6 +6,7 @@
     "dev": "node scripts/dev.mjs",
     "build": "next build",
     "start": "next start",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node scripts/partner-routing.test.mjs",
     "prices:check": "node scripts/check-headline-prices.mjs",
