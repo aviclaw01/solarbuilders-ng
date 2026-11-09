@@ -75,6 +75,8 @@ interface Enquiry {
 const ENQUIRY_KIND_LABEL: Record<string, string> = {
   lead_capture: "Homepage — size it for me",
   contact: "Contact form",
+  price_watch: "Price watch — message me when prices change",
+  review: "Customer review — moderate before use",
 };
 
 /** Newest enquiry rows, plus the exact total so "newest 100 of N" is honest. */
@@ -670,8 +672,8 @@ function EnquiriesSection({
     <section className="mt-10">
       <h2 className="font-heading font-bold text-slate-900 text-lg mb-1">Enquiries</h2>
       <p className="text-slate-500 text-sm mb-4">
-        The homepage &ldquo;size it for me&rdquo; modal and the contact form. No quote attached &mdash; somebody asking
-        us to get in touch.
+        The homepage &ldquo;size it for me&rdquo; modal, the contact form, price-watch signups and customer reviews.
+        No quote attached &mdash; somebody asking us to get in touch. Reviews are never published automatically.
         {result.ok && result.total !== null && result.total > result.rows.length && (
           <> Showing the newest {result.rows.length} of {result.total}.</>
         )}

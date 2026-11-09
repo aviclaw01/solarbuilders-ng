@@ -5,25 +5,34 @@ import {
   readJson,
   fail,
   esc,
-  insertLeadRow,
   isHoneypotFilled,
 } from "@/lib/api";
 import {
   validateFields,
   requiredText,
   optionalText,
+  requiredPhone,
   cleanString,
   type FieldErrors,
 } from "@/lib/validation";
 import { FROM_EMAIL, LEAD_EMAILS } from "@/lib/site";
+import { storeLead } from "@/lib/leads";
 
 /**
- * Review submission — forwarded to the team's inbox for moderation before
- * anything is published. Hardened like every public form: rate limit,
- * honeypot, per-field validation, HTML escaping, and the rating clamped to
- * 1–5 so a crafted payload can't put junk in the email.
+ * Customer review — the form at /reviews (app/reviews/ReviewForm.tsx), the
+ * link we send customers after an install.
  *
- *   200 { ok: true }   400 { ok: false, error, fields? }   429 { ok: false, error }
+ * MODERATED, NEVER SELF-PUBLISHING. The row lands in `leads` (kind `review`,
+ * status `new`) on the /admin/leads desk and in the team's inbox. Nothing on
+ * the site reads reviews back out; publishing one is a deliberate human step
+ * after checking the WhatsApp number against a real job. The number is for
+ * that check only and is never shown.
+ *
+ * Hardened like every public form: rate limit, honeypot, per-field
+ * validation, HTML escaping, and the rating clamped to 1–5.
+ *
+ *   200 { ok: true, emailed, stored }   400 { ok: false, error, fields? }
+ *   429 { ok: false, error }            500 { ok: false, error }
  */
 
 export const dynamic = "force-dynamic";
@@ -48,19 +57,20 @@ export async function POST(req: Request) {
   }
 
   const validated = validateFields(parsed.data, {
-    builderName: requiredText("Builder", 1, 120),
     authorName: requiredText("Your name", 2, 80),
-    location: optionalText("Location", 1, 80),
+    whatsapp: requiredPhone("WhatsApp number"),
+    location: optionalText("Location", 2, 80),
+    installer: optionalText("Installer", 2, 120),
     reviewBody: requiredText("Review", 20, 3000),
   });
   if (!validated.ok) {
     return fail("Please fix the highlighted fields.", 400, validated.errors as FieldErrors);
   }
 
-  const builderSlug = cleanString(parsed.data.builderSlug, 120);
-  const builderName = cleanString(parsed.data.builderName, 120);
   const authorName = cleanString(parsed.data.authorName, 80);
+  const whatsapp = cleanString(parsed.data.whatsapp, 30);
   const location = cleanString(parsed.data.location, 80);
+  const installer = cleanString(parsed.data.installer, 120);
   const ratingNum = Number(parsed.data.rating);
   const rating = Number.isFinite(ratingNum) ? Math.max(1, Math.min(5, Math.round(ratingNum))) : 0;
   const reviewBody = cleanString(parsed.data.reviewBody, 3000);
@@ -69,9 +79,16 @@ export async function POST(req: Request) {
     return fail("Please choose a star rating.", 400, { rating: "Pick a rating from 1 to 5 stars." } as FieldErrors);
   }
 
-  let emailed = false;
-  let stored = false;
+  const stored = await storeLead({
+    kind: "review",
+    name: authorName,
+    phone: whatsapp,
+    location: location || null,
+    message: `${rating}/5${installer ? ` — installer: ${installer}` : ""}\n\n${reviewBody}`,
+    payload: { rating, installer: installer || null, moderation: "pending" },
+  });
 
+  let emailed = false;
   const apiKey = process.env.RESEND_API_KEY;
   if (apiKey) {
     try {
@@ -80,8 +97,8 @@ export async function POST(req: Request) {
       await resend.emails.send({
         from: FROM_EMAIL,
         to: LEAD_EMAILS,
-        subject: `New Review — ${builderName}`,
-        html: `<p><b>Builder:</b> ${esc(builderName)} (${esc(builderSlug)})<br/><b>Author:</b> ${esc(authorName)}<br/><b>Location:</b> ${esc(location || "not given")}<br/><b>Rating:</b> ${rating}/5<br/><b>Review:</b><br/>${esc(reviewBody).replace(/\n/g, "<br/>")}</p>`,
+        subject: `[SolarBuilders] New review (${rating}/5) — moderate before use`,
+        html: `<h2>New customer review — not published</h2><p><b>Name:</b> ${esc(authorName)}<br/><b>WhatsApp:</b> ${esc(whatsapp)}<br/><b>Location:</b> ${esc(location || "not given")}<br/><b>Installer:</b> ${esc(installer || "not given")}<br/><b>Rating:</b> ${rating}/5</p><p>${esc(reviewBody).replace(/\n/g, "<br/>")}</p><p>Check the number against a real job before using this anywhere.</p>`,
       });
       emailed = true;
     } catch (err) {
@@ -91,19 +108,9 @@ export async function POST(req: Request) {
     console.warn("[submit-review] RESEND_API_KEY not set — relying on the DB sink");
   }
 
-  stored = await insertLeadRow("reviews", {
-    builder_slug: builderSlug || null,
-    builder_name: builderName,
-    author_name: authorName,
-    location: location || null,
-    rating,
-    body: reviewBody,
-  });
-
   if (!emailed && !stored) {
     return fail("We couldn't send your review just now. Please try again in a minute.", 500);
   }
 
   return Response.json({ ok: true, emailed, stored });
 }
-

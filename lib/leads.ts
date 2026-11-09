@@ -16,7 +16,12 @@
  * we genuinely do not have it.
  */
 
-export type LeadKind = "lead_capture" | "contact";
+/**
+ * lead_capture ← api/lead-capture, contact ← api/contact,
+ * price_watch ← api/notify-me ("message me when these prices change"),
+ * review ← api/submit-review (held for moderation; nothing publishes it).
+ */
+export type LeadKind = "lead_capture" | "contact" | "price_watch" | "review";
 
 export interface LeadRow {
   kind: LeadKind;
